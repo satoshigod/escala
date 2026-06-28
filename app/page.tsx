@@ -1,65 +1,195 @@
-import Image from "next/image";
+'use client'
+
+import { useState } from 'react'
+import { supabase } from '../lib/supabase'
 
 export default function Home() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [nombre, setNombre] = useState('')
+  const [mensaje, setMensaje] = useState('')
+  const [cargando, setCargando] = useState(false)
+
+  async function registrarse() {
+    setCargando(true)
+    setMensaje('')
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nombre }
+      }
+    })
+
+    if (error) {
+      setMensaje('Error: ' + error.message)
+    } else {
+      setMensaje('✅ Registro exitoso. Revisa tu email para confirmar.')
+    }
+
+    setCargando(false)
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main style={{
+      minHeight: '100vh',
+      background: '#0D1B3E',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: 'Inter, sans-serif',
+      padding: '2rem'
+    }}>
+      <div style={{
+        background: 'rgba(255,255,255,0.05)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '16px',
+        padding: '2.5rem',
+        width: '100%',
+        maxWidth: '400px'
+      }}>
+        <div style={{
+          fontSize: '1.5rem',
+          fontWeight: '900',
+          color: '#fff',
+          marginBottom: '0.25rem',
+          letterSpacing: '-0.03em'
+        }}>
+          Esca<span style={{color:'#1D9E75'}}>la</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div style={{
+          fontSize: '0.82rem',
+          color: '#8FA3CC',
+          marginBottom: '2rem'
+        }}>
+          Plataforma de empresas colaborativas
         </div>
-      </main>
-    </div>
-  );
+
+        <div style={{marginBottom: '1rem'}}>
+          <label style={{
+            display: 'block',
+            fontSize: '0.72rem',
+            fontWeight: '600',
+            color: '#8FA3CC',
+            marginBottom: '0.4rem',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>Nombre completo</label>
+          <input
+            type="text"
+            value={nombre}
+            onChange={e => setNombre(e.target.value)}
+            placeholder="Tu nombre"
+            style={{
+              width: '100%',
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '8px',
+              padding: '0.75rem 1rem',
+              color: '#fff',
+              fontSize: '0.9rem',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
+        </div>
+
+        <div style={{marginBottom: '1rem'}}>
+          <label style={{
+            display: 'block',
+            fontSize: '0.72rem',
+            fontWeight: '600',
+            color: '#8FA3CC',
+            marginBottom: '0.4rem',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder="tu@email.com"
+            style={{
+              width: '100%',
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '8px',
+              padding: '0.75rem 1rem',
+              color: '#fff',
+              fontSize: '0.9rem',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
+        </div>
+
+        <div style={{marginBottom: '1.5rem'}}>
+          <label style={{
+            display: 'block',
+            fontSize: '0.72rem',
+            fontWeight: '600',
+            color: '#8FA3CC',
+            marginBottom: '0.4rem',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase'
+          }}>Contraseña</label>
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="Mínimo 6 caracteres"
+            style={{
+              width: '100%',
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: '8px',
+              padding: '0.75rem 1rem',
+              color: '#fff',
+              fontSize: '0.9rem',
+              outline: 'none',
+              boxSizing: 'border-box'
+            }}
+          />
+        </div>
+
+        <button
+          onClick={registrarse}
+          disabled={cargando}
+          style={{
+            width: '100%',
+            background: cargando ? '#0F6E56' : '#1D9E75',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '0.9rem',
+            fontSize: '0.95rem',
+            fontWeight: '700',
+            cursor: cargando ? 'not-allowed' : 'pointer',
+            transition: 'background 0.2s'
+          }}
+        >
+          {cargando ? 'Registrando...' : 'Crear cuenta en Escala'}
+        </button>
+
+        {mensaje && (
+          <div style={{
+            marginTop: '1rem',
+            padding: '0.875rem',
+            borderRadius: '8px',
+            fontSize: '0.82rem',
+            background: mensaje.includes('✅')
+              ? 'rgba(29,158,117,0.1)'
+              : 'rgba(216,90,48,0.1)',
+            border: mensaje.includes('✅')
+              ? '1px solid rgba(29,158,117,0.3)'
+              : '1px solid rgba(216,90,48,0.3)',
+            color: mensaje.includes('✅') ? '#1D9E75' : '#D85A30'
+          }}>
+            {mensaje}
+          </div>
+        )}
+      </div>
+    </main>
+  )
 }
