@@ -25,14 +25,14 @@ export default function ProyectoDetalle({ params }) {
       setUsuario(user)
 
       const [proyRes, rolesRes] = await Promise.all([
-        fetch('/api/proyectos'),
+        fetch(`/api/proyectos/${params.id}`),
         fetch(`/api/roles?proyecto_id=${params.id}`)
       ])
 
       const proyData = await proyRes.json()
       const rolesData = await rolesRes.json()
 
-      const proy = proyData.proyectos?.find(p => p.id === params.id)
+      const proy = proyData.proyecto
       setProyecto(proy || null)
       setRoles(rolesData.roles || [])
       setCargando(false)
