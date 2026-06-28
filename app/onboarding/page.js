@@ -1,0 +1,163 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { supabase } from '../../lib/supabase'
+
+const roles = [
+  { id: 'ideador', icon: '💡', label: 'Ideador', desc: 'Tengo una idea de negocio' },
+  { id: 'capitalista', icon: '💰', label: 'Capitalista', desc: 'Tengo capital para invertir' },
+  { id: 'especialista', icon: '🔧', label: 'Especialista', desc: 'Tengo conocimiento profesional' },
+  { id: 'ejecutor', icon: '⚙️', label: 'Ejecutor', desc: 'Sé construir y operar empresas' },
+  { id: 'angel', icon: '🌟', label: 'Ángel de Impulso', desc: 'Quiero financiar un hito' },
+]
+
+export default function Onboarding() {
+  const [paso, setPaso] = useState(1)
+  const [usuario, setUsuario] = useState(null)
+  const [form, setForm] = useState({
+    nombre: '',
+    ciudad: '',
+    whatsapp: '',
+    rol_principal: '',
+    especialidad: '',
+    lo_que_aporto: '',
+    lo_que_busco: '',
+  })
+  const [cargando, setCargando] = useState(false)
+  const [mensaje, setMensaje] = useState('')
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) window.location.href = '/'
+      setUsuario(data.user)
+      setForm(f => ({ ...f, nombre: data.user.user_metadata?.nombre || '' }))
+    })
+  }, [])
+
+  function actualizar(campo, valor) {
+    setForm(f => ({ ...f, [campo]: valor }))
+  }
+
+  async function guardar() {
+    setCargando(true)
+    setMensaje('')
+
+    const res = await fetch('/api/usuarios', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: usuario.id, ...form })
+    })
+
+    const data = await res.json()
+
+    if (data.error) {
+      setMensaje('Error: ' + data.error)
+      setCargando(false)
+      return
+    }
+
+    window.location.href = '/dashboard'
+  }
+
+  const s = {
+    wrap: { minHeight: '100vh', background: '#0D1B3E', fontFamily: 'Inter, sans-serif', padding: '2rem 1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+    card: { width: '100%', maxWidth: '520px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '2.5rem' },
+    logo: { fontSize: '1.1rem', fontWeight: '900', color: '#fff', marginBottom: '0.25rem' },
+    logoSpan: { color: '#1D9E75' },
+    paso: { fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#8FA3CC', marginBottom: '1.5rem' },
+    titulo: { fontSize: '1.4rem', fontWeight: '800', color: '#fff', marginBottom: '0.4rem', letterSpacing: '-0.02em' },
+    subtitulo: { fontSize: '0.85rem', color: '#8FA3CC', marginBottom: '2rem', lineHeight: '1.6' },
+    label: { display: 'block', fontSize: '0.72rem', fontWeight: '600', color: '#8FA3CC', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' },
+    input: { width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', marginBottom: '1rem', fontFamily: 'Inter, sans-serif' },
+    textarea: { width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', marginBottom: '1rem', fontFamily: 'Inter, sans-serif', resize: 'vertical', minHeight: '80px' },
+    btn: { width: '100%', background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.9rem', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter, sans-serif' },
+    btnSec: { width: '100%', background: 'transparent', color: '#8FA3CC', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif', marginBottom: '0.75rem' },
+    rolGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' },
+    rolCard: activo => ({ background: activo ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.04)', border: activo ? '2px solid #1D9E75' : '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '1rem', cursor: 'pointer', transition: 'all 0.2s' }),
+    rolIcon: { fontSize: '1.4rem', marginBottom: '0.4rem' },
+    rolLabel: { fontSize: '0.85rem', fontWeight: '700', color: '#fff', marginBottom: '0.2rem' },
+    rolDesc: { fontSize: '0.72rem', color: '#8FA3CC' },
+    progBar: { height: '4px', background: 'rgba(255,255,255,0.08)', borderRadius: '2px', marginBottom: '2rem', overflow: 'hidden' },
+    progFill: { height: '100%', background: '#1D9E75', borderRadius: '2px', transition: 'width 0.4s ease', width: paso === 1 ? '33%' : paso === 2 ? '66%' : '100%' },
+    error: { background: 'rgba(216,90,48,0.1)', border: '1px solid rgba(216,90,48,0.3)', borderRadius: '8px', padding: '0.875rem', color: '#D85A30', fontSize: '0.82rem', marginTop: '1rem' },
+  }
+
+  return (
+    <main style={s.wrap}>
+      <div style={s.card}>
+        <div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div>
+
+        <div style={s.progBar}><div style={s.progFill}></div></div>
+
+        {paso === 1 && (
+          <>
+            <div style={s.paso}>Paso 1 de 3 — Datos básicos</div>
+            <div style={s.titulo}>Cuéntanos quién eres</div>
+            <div style={s.subtitulo}>Esta información aparece en tu perfil público de Escala.</div>
+
+            <label style={s.label}>Nombre completo</label>
+            <input style={s.input} value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} placeholder="Tu nombre completo" />
+
+            <label style={s.label}>Ciudad</label>
+            <input style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
+
+            <label style={s.label}>WhatsApp</label>
+            <input style={s.input} value={form.whatsapp} onChange={e => actualizar('whatsapp', e.target.value)} placeholder="+57 300 123 4567" />
+
+            <button style={s.btn} onClick={() => form.nombre && form.ciudad ? setPaso(2) : setMensaje('Completa nombre y ciudad')}>
+              Continuar →
+            </button>
+            {mensaje && <div style={s.error}>{mensaje}</div>}
+          </>
+        )}
+
+        {paso === 2 && (
+          <>
+            <div style={s.paso}>Paso 2 de 3 — Tu perfil</div>
+            <div style={s.titulo}>¿Desde dónde llegas?</div>
+            <div style={s.subtitulo}>Selecciona el perfil que mejor describe lo que tienes para aportar.</div>
+
+            <div style={s.rolGrid}>
+              {roles.map(r => (
+                <div key={r.id} style={s.rolCard(form.rol_principal === r.id)} onClick={() => actualizar('rol_principal', r.id)}>
+                  <div style={s.rolIcon}>{r.icon}</div>
+                  <div style={s.rolLabel}>{r.label}</div>
+                  <div style={s.rolDesc}>{r.desc}</div>
+                </div>
+              ))}
+            </div>
+
+            <label style={s.label}>Tu especialidad o profesión</label>
+            <input style={s.input} value={form.especialidad} onChange={e => actualizar('especialidad', e.target.value)} placeholder="Ej: Abogado, Programador, Diseñador..." />
+
+            <button style={s.btnSec} onClick={() => setPaso(1)}>← Volver</button>
+            <button style={s.btn} onClick={() => form.rol_principal ? setPaso(3) : setMensaje('Selecciona tu perfil')}>
+              Continuar →
+            </button>
+            {mensaje && <div style={s.error}>{mensaje}</div>}
+          </>
+        )}
+
+        {paso === 3 && (
+          <>
+            <div style={s.paso}>Paso 3 de 3 — Tu aporte</div>
+            <div style={s.titulo}>¿Qué tienes y qué buscas?</div>
+            <div style={s.subtitulo}>Esto nos ayuda a conectarte con los proyectos correctos.</div>
+
+            <label style={s.label}>¿Qué tienes para aportar?</label>
+            <textarea style={s.textarea} value={form.lo_que_aporto} onChange={e => actualizar('lo_que_aporto', e.target.value)} placeholder="Ej: 10 años de experiencia en derecho comercial, contactos en el sector financiero..." />
+
+            <label style={s.label}>¿Qué buscas en Escala?</label>
+            <textarea style={s.textarea} value={form.lo_que_busco} onChange={e => actualizar('lo_que_busco', e.target.value)} placeholder="Ej: Un proyecto con potencial donde mi conocimiento se convierta en participación..." />
+
+            <button style={s.btnSec} onClick={() => setPaso(2)}>← Volver</button>
+            <button style={{ ...s.btn, background: cargando ? '#0F6E56' : '#1D9E75' }} onClick={guardar} disabled={cargando}>
+              {cargando ? 'Guardando...' : 'Completar mi perfil →'}
+            </button>
+            {mensaje && <div style={s.error}>{mensaje}</div>}
+          </>
+        )}
+      </div>
+    </main>
+  )
+}
