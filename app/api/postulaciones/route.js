@@ -25,8 +25,12 @@ export async function GET(request) {
 }
 
 // POST — crear postulación
-export async fexport async fexport async fexport async fexport async fexport async fexport async fexportd,export async fexport async fexport async fexpor_id) {
-export async fexport async erroexport async fexport async erroexpostatus: 400 })
+export async function POST(request) {
+  const body = await request.json()
+  const { rol_id, postulante_id, mensaje } = body
+
+  if (!rol_id || !postulante_id) {
+    return Response.json({ error: 'Faltan campos requeridos' }, { status: 400 })
   }
 
   const { data, error } = await supabase
