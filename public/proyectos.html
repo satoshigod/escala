@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escala — Proyectos activos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--navy:#0D1B3E;--cream:#F7F5F0;--white:#fff;--green:#1D9E75;--green-light:#E1F5EE;--amber:#E8A020;--amber-light:#FDF3DC;--coral:#D85A30;--coral-light:#FAECE7;--purple:#534AB7;--purple-light:#EEEDFE;--gray-900:#111827;--gray-700:#374151;--gray-500:#6B7280;--gray-300:#D1D5DB;--gray-100:#F9FAFB;--dark-muted:#8FA3CC;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--gray-900);overflow-x:hidden;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,27,62,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);height:60px;display:flex;align-items:center;padding:0 2rem;gap:1rem;}
+.nav-logo{font-size:1.1rem;font-weight:900;color:#fff;letter-spacing:-0.03em;}
+.nav-logo span{color:var(--green);}
+.nav-back{color:var(--dark-muted);font-size:0.82rem;text-decoration:none;transition:color 0.2s;}
+.nav-back:hover{color:#fff;}
+.nav-right{margin-left:auto;display:flex;gap:0.75rem;align-items:center;}
+.nav-cta{background:var(--green);color:#fff;padding:0.4rem 1rem;border-radius:6px;font-size:0.8rem;font-weight:700;text-decoration:none;}
+
+.hero{background:var(--navy);padding:7rem 2rem 4rem;text-align:center;}
+.container{max-width:1100px;margin:0 auto;}
+.eyebrow{display:inline-block;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);padding:0.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:900;letter-spacing:-0.035em;line-height:1.05;color:#fff;margin-bottom:1rem;}
+.hero h1 span{color:var(--green);}
+.hero-sub{font-size:0.95rem;color:var(--dark-muted);max-width:520px;margin:0 auto 2.5rem;line-height:1.7;}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.08);padding-top:2rem;}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:#fff;}
+.stat-val.green{color:var(--green);}
+.stat-val.amber{color:var(--amber);}
+.stat-label{font-size:0.72rem;color:var(--dark-muted);margin-top:0.2rem;}
+
+/* TIPO TABS */
+.tipo-bar{background:var(--white);border-bottom:1px solid var(--gray-300);padding:1rem 2rem;position:sticky;top:60px;z-index:90;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.tipo-tab{padding:0.5rem 1.25rem;border-radius:20px;border:1px solid var(--gray-300);background:transparent;font-size:0.85rem;font-weight:600;color:var(--gray-500);cursor:pointer;transition:all 0.2s;font-family:'Inter',sans-serif;}
+.tipo-tab:hover{border-color:var(--navy);color:var(--navy);}
+.tipo-tab.active-a{background:var(--navy);color:#fff;border-color:var(--navy);}
+.tipo-tab.active-b{background:var(--green);color:#fff;border-color:var(--green);}
+.tipo-tab.active-all{background:var(--navy);color:#fff;border-color:var(--navy);}
+.tipo-badge{font-size:0.68rem;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:0.35rem;}
+.badge-a{background:var(--amber-light);color:#633806;}
+.badge-b{background:var(--green-light);color:#085041;}
+
+/* SECCIÓN CREACIÓN */
+.seccion-creacion{padding:3rem 2rem 1rem;}
+.seccion-transformacion{padding:1rem 2rem 3rem;}
+.sec-header{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;}
+.sec-tipo{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 12px;border-radius:20px;}
+.sec-tipo-a{background:var(--amber-light);color:#633806;}
+.sec-tipo-b{background:var(--green-light);color:#085041;}
+.sec-title{font-size:1.3rem;font-weight:800;color:var(--navy);letter-spacing:-0.02em;}
+.sec-desc{font-size:0.85rem;color:var(--gray-500);line-height:1.6;max-width:600px;}
+
+/* CARDS CREACIÓN */
+.proyectos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;margin-bottom:2rem;}
+.proyecto-card{background:var(--white);border:1px solid var(--gray-300);border-radius:14px;overflow:hidden;transition:all 0.2s;text-decoration:none;display:block;}
+.proyecto-card:hover{border-color:var(--green);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.07);}
+.proyecto-card.featured{border:2px solid var(--green);}
+.card-top{padding:1.5rem;border-bottom:1px solid var(--gray-100);}
+.card-badges{display:flex;gap:0.4rem;margin-bottom:1rem;flex-wrap:wrap;}
+.cbadge{font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+.b-piloto{background:#FDF3DC;color:#633806;}
+.b-activo{background:var(--green-light);color:#085041;}
+.b-featured{background:var(--green);color:#fff;}
+.card-logo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:0.875rem;}
+.card-name{font-size:1.05rem;font-weight:800;letter-spacing:-0.02em;color:var(--navy);margin-bottom:0.3rem;}
+.card-tagline{font-size:0.8rem;color:var(--gray-500);line-height:1.5;margin-bottom:0.875rem;}
+.roles-needed{display:flex;gap:0.35rem;flex-wrap:wrap;}
+.role-tag{font-size:0.68rem;padding:2px 7px;border-radius:6px;font-weight:600;}
+.role-open{background:var(--coral-light);color:var(--coral);}
+.role-filled{background:var(--green-light);color:var(--green);text-decoration:line-through;opacity:0.7;}
+.progress-wrap{margin-top:0.875rem;}
+.progress-bar{height:5px;background:var(--gray-300);border-radius:3px;overflow:hidden;margin:4px 0;}
+.progress-fill{height:100%;border-radius:3px;background:var(--green);}
+.progress-label{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--gray-500);}
+.card-bottom{padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;}
+.card-meta{display:flex;gap:1.25rem;}
+.meta-val{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:700;color:var(--navy);}
+.meta-label{font-size:0.62rem;color:var(--gray-500);margin-top:1px;}
+.card-action{background:var(--navy);color:#fff;padding:0.45rem 0.875rem;border-radius:6px;font-size:0.78rem;font-weight:700;white-space:nowrap;}
+.proyecto-card:hover .card-action{background:var(--green);}
+.proyecto-card.featured .card-action{background:var(--green);}
+
+/* CARDS TRANSFORMACIÓN */
+.brechas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;}
+.brecha-card{background:var(--white);border:1px solid var(--gray-300);border-radius:14px;padding:1.5rem;transition:all 0.2s;cursor:pointer;}
+.brecha-card:hover{border-color:var(--green);transform:translateY(-2px);}
+.bc-header{display:flex;align-items:center;gap:0.875rem;margin-bottom:1.1rem;}
+.bc-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.bc-nombre{font-size:1rem;font-weight:700;color:var(--navy);}
+.bc-sector{font-size:0.72rem;color:var(--gray-500);margin-top:1px;}
+.bc-brechas{display:flex;flex-direction:column;gap:0.45rem;margin-bottom:1.1rem;}
+.bi{display:flex;align-items:flex-start;gap:0.5rem;font-size:0.8rem;color:var(--gray-700);line-height:1.4;}
+.bi-dot{width:5px;height:5px;border-radius:50%;background:var(--coral);flex-shrink:0;margin-top:6px;}
+.bc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--gray-100);}
+.bc-esp{font-size:0.72rem;color:var(--gray-500);}
+.bc-esp strong{color:var(--navy);font-weight:600;}
+.bc-cta{background:var(--green-light);color:var(--green);padding:0.4rem 0.875rem;border-radius:6px;font-size:0.75rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.bc-cta:hover{background:var(--green);color:#fff;}
+
+/* COMING SOON */
+.coming-card{background:var(--white);border:1px dashed var(--gray-300);border-radius:14px;padding:2rem;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:220px;}
+.cs-icon{font-size:2rem;opacity:0.2;margin-bottom:0.75rem;}
+.cs-title{font-size:0.9rem;font-weight:600;color:var(--gray-400);}
+.cs-sub{font-size:0.78rem;color:var(--gray-300);max-width:180px;line-height:1.5;margin-top:0.35rem;}
+
+/* PUBLICAR */
+.publicar-section{background:var(--navy);padding:4rem 2rem;text-align:center;}
+.publicar-section h2{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:900;letter-spacing:-0.03em;color:#fff;margin-bottom:1rem;}
+.publicar-section p{font-size:0.95rem;color:var(--dark-muted);max-width:520px;margin:0 auto 2rem;line-height:1.7;}
+.pub-btns{display:flex;gap:0.875rem;justify-content:center;flex-wrap:wrap;}
+.btn-pub{display:inline-block;background:var(--green);color:#fff;padding:0.875rem 1.75rem;border-radius:8px;font-size:0.95rem;font-weight:700;text-decoration:none;transition:background 0.2s;}
+.btn-pub:hover{background:#178f67;}
+.btn-pub-sec{display:inline-block;background:transparent;color:#fff;border:1px solid rgba(255,255,255,0.25);padding:0.875rem 1.75rem;border-radius:8px;font-size:0.95rem;font-weight:600;text-decoration:none;transition:all 0.2s;}
+.btn-pub-sec:hover{border-color:rgba(255,255,255,0.6);}
+
+footer{background:var(--navy);padding:2rem;text-align:center;color:var(--dark-muted);font-size:0.82rem;border-top:1px solid rgba(255,255,255,0.06);}
+footer .logo{font-size:1rem;font-weight:900;color:#fff;margin-bottom:0.35rem;}
+footer .logo span{color:var(--green);}
+
+@media(max-width:768px){
+  .proyectos-grid,.brechas-grid{grid-template-columns:1fr;}
+  nav .nav-right .nav-cta{display:none;}
+  .tipo-bar{padding:0.75rem 1rem;}
+}
+
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;margin-left:auto;}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;border-radius:2px;transition:all 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:rgba(13,27,62,0.98);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);z-index:99;padding:1rem 2rem 1.5rem;flex-direction:column;gap:0;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{color:#8FA3CC;text-decoration:none;font-size:0.95rem;font-weight:500;padding:0.875rem 0;border-bottom:1px solid rgba(255,255,255,0.06);transition:color 0.2s;display:flex;align-items:center;justify-content:space-between;}
+.mobile-menu a:last-child{border-bottom:none;}
+.mobile-menu a:hover{color:#fff;}
+.mobile-menu a.m-green{color:#1D9E75;}
+.mobile-menu a.m-amber{color:#E8A020;}
+.mobile-menu a.m-cta{background:#1D9E75;color:#fff;padding:0.75rem 1rem;border-radius:8px;text-align:center;justify-content:center;font-weight:700;margin-top:0.75rem;border:none;}
+@media(max-width:768px){.nav-links{display:none!important;}.nav-cta{display:none!important;}.hamburger{display:flex;}}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">← Inicio</a>
+  <div class="nav-logo">Esca<span>la</span></div>
+  <div class="nav-right">
+    <a href="index.html#registro" class="nav-cta">Registrarme</a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html" onclick="closeMenu()">← Inicio</a>
+  <a href="proyectos.html" class="m-green" onclick="closeMenu()">Proyectos ✦</a>
+  <a href="impulso.html" class="m-amber" onclick="closeMenu()">Ángel de Impulso ✦</a>
+  <a href="proyecto-escala.html" onclick="closeMenu()">Proyecto Escala →</a>
+  <a href="costos.html" onclick="closeMenu()">Costos →</a>
+  <a href="index.html#registro" class="m-cta" onclick="closeMenu()">Registrarme gratis →</a>
+</div>
+
+<div class="hero">
+  <div class="eyebrow">Proyectos activos</div>
+  <h1>Aquí nacen las<br><span>empresas de mañana</span></h1>
+  <p class="hero-sub">Proyectos de creación desde cero y empresas existentes que necesitan transformarse. En ambos casos, tu aporte se registra, se valora y se protege.</p>
+  <div class="hero-stats">
+    <div><div class="stat-val amber">Tipo A</div><div class="stat-label">Proyectos de creación</div></div>
+    <div><div class="stat-val green">Tipo B</div><div class="stat-label">Proyectos de transformación</div></div>
+    <div><div class="stat-val">9</div><div class="stat-label">Sectores con brechas identificadas</div></div>
+    <div><div class="stat-val">+40</div><div class="stat-label">Brechas específicas mapeadas</div></div>
+  </div>
+</div>
+
+<!-- BARRA DE TIPO -->
+<div class="tipo-bar">
+  <button class="tipo-tab active-all" onclick="filtrarTipo('all',this)">Todos los proyectos</button>
+  <button class="tipo-tab" onclick="filtrarTipo('creacion',this)">
+    Creación desde cero <span class="tipo-badge badge-a">Tipo A</span>
+  </button>
+  <button class="tipo-tab" onclick="filtrarTipo('transformacion',this)">
+    Transformación de empresa existente <span class="tipo-badge badge-b">Tipo B</span>
+  </button>
+</div>
+
+<!-- TIPO A: CREACIÓN -->
+<section class="seccion-creacion" id="sec-creacion">
+<div class="container">
+  <div class="sec-header">
+    <span class="sec-tipo sec-tipo-a">Tipo A — Creación</span>
+    <div>
+      <div class="sec-title">Empresas nuevas que buscan equipo y capital</div>
+      <div class="sec-desc">Proyectos que parten de cero. El modelo clásico de Escala: aportes registrados, tres carriles de compensación, deuda diferida hasta que opera.</div>
+    </div>
+  </div>
+
+  <div class="proyectos-grid">
+
+    <!-- ESCALA PILOTO -->
+    <a href="proyecto-escala.html" class="proyecto-card featured" data-cat="creacion">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="cbadge b-featured">⭐ Proyecto piloto</span>
+          <span class="cbadge b-activo">Activo</span>
+        </div>
+        <div class="card-logo" style="background:var(--green-light);">🌱</div>
+        <div class="card-name">Escala</div>
+        <div class="card-tagline">La plataforma de aportes para crear empresas — construida con su propio modelo</div>
+        <div class="roles-needed">
+          <span class="role-tag role-filled">✓ Fundador</span>
+          <span class="role-tag role-filled">✓ Desarrollador</span>
+          <span class="role-tag role-open">Inversionista</span>
+          <span class="role-tag role-open">Abogado</span>
+          <span class="role-tag role-open">Contador</span>
+          <span class="role-tag role-open">Diseñador</span>
+          <span class="role-tag role-open">Community manager</span>
+          <span class="role-tag role-open">Asistente virtual</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Equipo formado</span><span>1 / 9</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:11%"></div></div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="card-meta">
+          <div><div class="meta-val">$1.47M</div><div class="meta-label">Capital inicial</div></div>
+          <div><div class="meta-val">6</div><div class="meta-label">Roles abiertos</div></div>
+          <div><div class="meta-val">Medellín</div><div class="meta-label">Ciudad</div></div>
+        </div>
+        <div class="card-action">Ver proyecto →</div>
+      </div>
+    </a>
+
+    <!-- EKIVIBE -->
+    <a href="#ekivibe-detalle" class="proyecto-card" data-cat="creacion" style="text-decoration:none;display:block;">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="cbadge b-activo">Activo</span>
+          <span class="cbadge" style="background:#FEE2E2;color:#712B13;">🐴 Ecuestre</span>
+          <span class="cbadge" style="background:#FEF3C7;color:#633806;">Emprendimiento familiar</span>
+        </div>
+        <div class="card-logo" style="background:#FEF3C7;">🐴</div>
+        <div class="card-name">Ekivibe</div>
+        <div class="card-tagline">Galletas y snacks naturales para caballos — un negocio que nació del amor por los animales</div>
+        <div style="font-size:0.78rem;color:var(--gray-500);line-height:1.5;margin-bottom:0.875rem;">Fundado por una joven apasionada por el mundo ecuestre que quiere comprarse su caballo. El producto ya existe. El mercado existe. Falta el equipo y el capital para escalar.</div>
+        <div class="roles-needed">
+          <span class="role-tag role-open">Inversionista inicial</span>
+          <span class="role-tag role-open">Veterinario / Zootecnista</span>
+          <span class="role-tag role-open">Diseñador de empaque</span>
+          <span class="role-tag role-open">Contador</span>
+          <span class="role-tag role-open">Conector sector ecuestre</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label"><span>Equipo formado</span><span>1 / 6</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:16%;background:var(--amber);"></div></div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="card-meta">
+          <div><div class="meta-val" style="color:var(--amber);">$8M</div><div class="meta-label">Capital inicial</div></div>
+          <div><div class="meta-val">400K+</div><div class="meta-label">Caballos en Colombia</div></div>
+          <div><div class="meta-val">Medellín</div><div class="meta-label">Ciudad</div></div>
+        </div>
+        <div class="card-action" style="background:var(--amber);">Ver proyecto →</div>
+      </div>
+    </a>
+
+    <div class="coming-card">
+      <div class="cs-icon">💡</div>
+      <div class="cs-title">Tu proyecto de creación aquí</div>
+      <div class="cs-sub">Publica tu idea y encuentra el equipo que necesitas para construirla.</div>
+    </div>
+
+    <div class="coming-card">
+      <div class="cs-icon">🚀</div>
+      <div class="cs-title">Próximamente</div>
+      <div class="cs-sub">Los primeros proyectos externos se están incorporando.</div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- TIPO B: TRANSFORMACIÓN -->
+<section class="seccion-transformacion" id="sec-transformacion">
+<div class="container">
+  <div class="sec-header">
+    <span class="sec-tipo sec-tipo-b">Tipo B — Transformación</span>
+    <div>
+      <div class="sec-title">Empresas existentes que necesitan resolver una brecha</div>
+      <div class="sec-desc">Ya operan y facturan, pero tienen un problema específico sin resolver. El especialista aporta la solución — cobra cuando el resultado llega, como porcentaje de lo que genera o ahorra.</div>
+    </div>
+  </div>
+
+  <div class="brechas-grid" id="brechas-grid">
+
+    <div class="brecha-card" onclick="postularBrecha('Restaurante — Redes sociales y pedidos online')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#FEE2E2;">🍽️</div>
+        <div><div class="bc-nombre">Restaurante</div><div class="bc-sector">Gastronomía · Medellín y Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>No tiene redes sociales ni sabe gestionarlas</div>
+        <div class="bi"><div class="bi-dot"></div>No recibe pedidos online ni por WhatsApp Business</div>
+        <div class="bi"><div class="bi-dot"></div>No gestiona reputación en Google Maps</div>
+        <div class="bi"><div class="bi-dot"></div>Sin sistema de reservas digital</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Community manager + desarrollador<br><strong>Pago:</strong> % de nuevos ingresos generados</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Tienda o comercio — Ventas online e inventario')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#FEF3C7;">🏪</div>
+        <div><div class="bc-nombre">Tienda o comercio local</div><div class="bc-sector">Comercio · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>No vende online — pierde clientes que compran por internet</div>
+        <div class="bi"><div class="bi-dot"></div>Sin control de inventario — compra de más o se queda sin stock</div>
+        <div class="bi"><div class="bi-dot"></div>No sabe qué productos son más rentables</div>
+        <div class="bi"><div class="bi-dot"></div>Sin catálogo digital ni sistema de cotización rápida</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Programador + experto e-commerce<br><strong>Pago:</strong> % ventas online generadas</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Consultorio o clínica — Digitalización y agenda')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#E1F5EE;">🏥</div>
+        <div><div class="bc-nombre">Consultorio o clínica</div><div class="bc-sector">Salud · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Agenda manual en cuaderno — sin confirmaciones automáticas</div>
+        <div class="bi"><div class="bi-dot"></div>Historiales clínicos en papel sin digitalización</div>
+        <div class="bi"><div class="bi-dot"></div>Facturación manual con errores y tiempo perdido</div>
+        <div class="bi"><div class="bi-dot"></div>Sin seguimiento post-consulta ni recordatorios</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Programador + contador<br><strong>Pago:</strong> Pago diferido al implementar</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Firma de abogados o contadores — Presencia digital y CRM')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#EEEDFE;">💼</div>
+        <div><div class="bc-nombre">Firma de abogados o contadores</div><div class="bc-sector">Servicios profesionales · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Sin página web ni posicionamiento en Google</div>
+        <div class="bi"><div class="bi-dot"></div>Gestiona documentos por correo sin sistema de versiones</div>
+        <div class="bi"><div class="bi-dot"></div>Sin CRM — pierde seguimiento de prospectos y clientes</div>
+        <div class="bi"><div class="bi-dot"></div>No mide rentabilidad por cliente ni tiempo por caso</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Desarrollador + marketing digital<br><strong>Pago:</strong> % nuevos clientes captados</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Constructora o ferretería — Cotizaciones y portafolio digital')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#FAECE7;">🏗️</div>
+        <div><div class="bc-nombre">Constructora o ferretería</div><div class="bc-sector">Construcción · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Cotizaciones manuales en Excel — lentas y sin seguimiento</div>
+        <div class="bi"><div class="bi-dot"></div>Sin seguimiento de obras en tiempo real</div>
+        <div class="bi"><div class="bi-dot"></div>Gestión de contratistas informal sin contratos digitales</div>
+        <div class="bi"><div class="bi-dot"></div>Sin portafolio digital para conseguir nuevos clientes</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Programador + diseñador<br><strong>Pago:</strong> % contratos nuevos conseguidos</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Colegio o academia — Plataforma online y captación')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#EAF3DE;">🎓</div>
+        <div><div class="bc-nombre">Colegio, academia o instituto</div><div class="bc-sector">Educación · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Sin plataforma online — no puede ofrecer clases virtuales</div>
+        <div class="bi"><div class="bi-dot"></div>Cobros manuales sin pagos en línea ni recordatorios</div>
+        <div class="bi"><div class="bi-dot"></div>Sin certificados digitales verificables</div>
+        <div class="bi"><div class="bi-dot"></div>Depende del voz a voz sin medir resultados</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Desarrollador + marketing<br><strong>Pago:</strong> % nuevos estudiantes captados</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Empresa de transporte — Rastreo y optimización de rutas')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#E6F1FB;">🚛</div>
+        <div><div class="bc-nombre">Empresa de transporte</div><div class="bc-sector">Logística · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Sin rastreo en tiempo real para el cliente</div>
+        <div class="bi"><div class="bi-dot"></div>Rutas sin optimizar — gasta más combustible del necesario</div>
+        <div class="bi"><div class="bi-dot"></div>Sin facturación automática ni reportes por cliente</div>
+        <div class="bi"><div class="bi-dot"></div>Coordina por WhatsApp sin trazabilidad</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Programador + experto en operaciones<br><strong>Pago:</strong> % ahorro en costos operativos</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Finca o empresa agroindustrial — Canal directo y exportación')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#EAF3DE;">🌾</div>
+        <div><div class="bc-nombre">Finca o empresa agroindustrial</div><div class="bc-sector">Agro · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Solo vende a intermediarios — sin canal directo al consumidor</div>
+        <div class="bi"><div class="bi-dot"></div>Sin certificaciones de calidad ni trazabilidad para exportar</div>
+        <div class="bi"><div class="bi-dot"></div>Sin control de costos por hectárea o cultivo</div>
+        <div class="bi"><div class="bi-dot"></div>Sin presencia digital para compradores internacionales</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Marketing + contador + abogado<br><strong>Pago:</strong> % nuevos canales de venta</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Taller o manufacturera — Sistema de producción y costos')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#FAEEDA;">⚙️</div>
+        <div><div class="bc-nombre">Taller o manufacturera</div><div class="bc-sector">Manufactura · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Sin órdenes de producción — gestiona todo en papel</div>
+        <div class="bi"><div class="bi-dot"></div>Control de materias primas manual — no sabe cuándo pedir</div>
+        <div class="bi"><div class="bi-dot"></div>No calcula el costo real por producto</div>
+        <div class="bi"><div class="bi-dot"></div>Sin gestión de proveedores — compra sin comparar</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Ing. industrial + contador<br><strong>Pago:</strong> % reducción de costos</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Empresa con nómina desordenada — Gestión de RRHH')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#EEEDFE;">👥</div>
+        <div><div class="bc-nombre">Empresa con nómina desordenada</div><div class="bc-sector">Recursos humanos · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Nómina en Excel con errores frecuentes y tiempo perdido</div>
+        <div class="bi"><div class="bi-dot"></div>Sin proceso de selección — contrata por intuición sin filtros</div>
+        <div class="bi"><div class="bi-dot"></div>Sin evaluaciones de desempeño ni plan de crecimiento</div>
+        <div class="bi"><div class="bi-dot"></div>Alta rotación por falta de estructura de compensación clara</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Contador + psicólogo organizacional<br><strong>Pago:</strong> Pago diferido + % reducción rotación</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Hotel o hospedaje — Reservas online y reputación digital')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#FEF3C7;">🏨</div>
+        <div><div class="bc-nombre">Hotel o hospedaje</div><div class="bc-sector">Turismo · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>Sin motor de reservas propio — depende solo de Booking o Airbnb</div>
+        <div class="bi"><div class="bi-dot"></div>Sin estrategia de reputación en plataformas de reseñas</div>
+        <div class="bi"><div class="bi-dot"></div>Sin paquetes ni experiencias adicionales para aumentar ticket</div>
+        <div class="bi"><div class="bi-dot"></div>Sin base de datos de clientes para fidelización</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Desarrollador + marketing digital<br><strong>Pago:</strong> % reservas directas generadas</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+    <div class="brecha-card" onclick="postularBrecha('Empresa sin estrategia financiera — Tesorería y proyecciones')">
+      <div class="bc-header">
+        <div class="bc-icon" style="background:#E6F1FB;">📊</div>
+        <div><div class="bc-nombre">Empresa sin estrategia financiera</div><div class="bc-sector">Finanzas · Colombia</div></div>
+      </div>
+      <div class="bc-brechas">
+        <div class="bi"><div class="bi-dot"></div>No sabe si gana o pierde realmente — solo mira el banco</div>
+        <div class="bi"><div class="bi-dot"></div>Sin flujo de caja proyectado — siempre en modo crisis</div>
+        <div class="bi"><div class="bi-dot"></div>Sin separación de finanzas personales y empresariales</div>
+        <div class="bi"><div class="bi-dot"></div>No puede acceder a crédito por falta de estados financieros</div>
+      </div>
+      <div class="bc-footer">
+        <div class="bc-esp"><strong>Especialista:</strong> Contador + asesor financiero<br><strong>Pago:</strong> Pago diferido al implementar</div>
+        <button class="bc-cta">Aportar →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+
+<!-- DETALLE EKIVIBE -->
+<section id="ekivibe-detalle" style="background:var(--white);padding:4rem 2rem;border-top:1px solid var(--gray-300);">
+<div class="container">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;">
+
+    <div>
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <div style="width:56px;height:56px;border-radius:14px;background:#FEF3C7;display:flex;align-items:center;justify-content:center;font-size:1.75rem;flex-shrink:0;">🐴</div>
+        <div>
+          <div style="font-size:1.5rem;font-weight:900;letter-spacing:-0.03em;color:var(--navy);">Ekivibe</div>
+          <div style="font-size:0.82rem;color:var(--gray-500);">Snacks naturales para caballos · Medellín, Colombia</div>
+        </div>
+      </div>
+
+      <div style="font-size:0.95rem;color:var(--gray-700);line-height:1.7;margin-bottom:1.5rem;">
+        Una joven apasionada por el mundo ecuestre empezó a hacer galletas naturales para caballos con un objetivo claro: ganar suficiente para comprarse el suyo. El producto ya tiene receta propia, primeros clientes y validación real. Ahora necesita el equipo y el capital para convertirse en una empresa.
+      </div>
+
+      <div style="background:#FEF3C7;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#633806;margin-bottom:1rem;">Por qué este mercado</div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.82rem;color:#7A4F0A;"><span style="font-weight:700;flex-shrink:0;">→</span>Colombia tiene más de 400.000 caballos registrados</div>
+          <div style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.82rem;color:#7A4F0A;"><span style="font-weight:700;flex-shrink:0;">→</span>El dueño de un caballo gasta entre $800K y $3M mensuales en cuidado</div>
+          <div style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.82rem;color:#7A4F0A;"><span style="font-weight:700;flex-shrink:0;">→</span>Snacks para caballos casi no existen en el mercado local — se importan</div>
+          <div style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.82rem;color:#7A4F0A;"><span style="font-weight:700;flex-shrink:0;">→</span>Cultura ecuestre fuerte en Antioquia, Cundinamarca y Eje Cafetero</div>
+          <div style="display:flex;align-items:flex-start;gap:0.6rem;font-size:0.82rem;color:#7A4F0A;"><span style="font-weight:700;flex-shrink:0;">→</span>Precio unitario viable: $15.000–$25.000 por paquete de snacks</div>
+        </div>
+      </div>
+
+      <div style="background:var(--green-light);border-radius:12px;padding:1.5rem;">
+        <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#085041;margin-bottom:0.875rem;">Lo que ya tiene</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:#0F6E56;"><span style="color:var(--green);font-weight:700;">✓</span>Receta propia validada</div>
+          <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:#0F6E56;"><span style="color:var(--green);font-weight:700;">✓</span>Primeros clientes reales en el mundo ecuestre</div>
+          <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:#0F6E56;"><span style="color:var(--green);font-weight:700;">✓</span>Conocimiento profundo del mercado — lo vive desde adentro</div>
+          <div style="display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:#0F6E56;"><span style="color:var(--green);font-weight:700;">✓</span>La historia más poderosa de todas: una hija que quiere su caballo</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--gray-500);margin-bottom:1.25rem;">Roles que necesita Ekivibe</div>
+
+      <div style="display:flex;flex-direction:column;gap:0.875rem;margin-bottom:2rem;">
+
+        <div style="border:2px solid var(--amber);border-radius:12px;padding:1.25rem;background:var(--amber-light);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
+            <div style="font-size:0.9rem;font-weight:700;color:var(--navy);">💵 Inversionista inicial</div>
+            <span style="font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--amber);color:#fff;">Prioritario</span>
+          </div>
+          <div style="font-size:0.78rem;color:#7A4F0A;margin-bottom:0.5rem;">Capital para primer lote de producción, empaque y registro INVIMA.</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.9rem;font-weight:700;color:#633806;">$8.000.000 → Acciones + prima</div>
+        </div>
+
+        <div style="border:1px solid var(--gray-300);border-radius:12px;padding:1.25rem;">
+          <div style="font-size:0.9rem;font-weight:700;color:var(--navy);margin-bottom:0.35rem;">🐎 Veterinario o Zootecnista</div>
+          <div style="font-size:0.78rem;color:var(--gray-500);margin-bottom:0.5rem;">Valida la fórmula nutricional, asesora el proceso de certificación INVIMA y da respaldo técnico al producto.</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:600;color:var(--purple);">Deuda diferida · $2.500.000</div>
+        </div>
+
+        <div style="border:1px solid var(--gray-300);border-radius:12px;padding:1.25rem;">
+          <div style="font-size:0.9rem;font-weight:700;color:var(--navy);margin-bottom:0.35rem;">🎨 Diseñador de empaque y marca</div>
+          <div style="font-size:0.78rem;color:var(--gray-500);margin-bottom:0.5rem;">Diseña el empaque, la identidad visual de Ekivibe y los materiales para presentación a tiendas y clubes ecuestres.</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:600;color:var(--purple);">Deuda diferida · $1.800.000</div>
+        </div>
+
+        <div style="border:1px solid var(--gray-300);border-radius:12px;padding:1.25rem;">
+          <div style="font-size:0.9rem;font-weight:700;color:var(--navy);margin-bottom:0.35rem;">🧮 Contador</div>
+          <div style="font-size:0.78rem;color:var(--gray-500);margin-bottom:0.5rem;">Estructura la empresa, maneja la contabilidad inicial y asesora el manejo tributario del negocio.</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:600;color:var(--purple);">Deuda diferida · $400.000/mes</div>
+        </div>
+
+        <div style="border:1px solid var(--gray-300);border-radius:12px;padding:1.25rem;">
+          <div style="font-size:0.9rem;font-weight:700;color:var(--navy);margin-bottom:0.35rem;">🤝 Conector sector ecuestre</div>
+          <div style="font-size:0.78rem;color:var(--gray-500);margin-bottom:0.5rem;">Tiene relaciones con clubes ecuestres, veterinarias y competencias. Abre los primeros canales de distribución.</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:600;color:var(--purple);">% de ventas generadas</div>
+        </div>
+
+      </div>
+
+      <button onclick="postularEkivibe()" style="width:100%;background:var(--amber);color:#fff;border:none;padding:1rem;border-radius:8px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:0.5rem;" onmouseover="this.style.background='#c98a18'" onmouseout="this.style.background='var(--amber)'">
+        📲 Quiero aportar a Ekivibe
+      </button>
+      <p style="text-align:center;font-size:0.72rem;color:var(--gray-500);margin-top:0.6rem;">Se abre WhatsApp con tu postulación lista. Sin compromisos hasta firmar el contrato.</p>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<script>
+function postularEkivibe() {
+  var msg =
+    '🐴 *Quiero aportar a EKIVIBE en Escala*\n\n' +
+    'Me interesa participar en el proyecto Ekivibe — snacks naturales para caballos.\n\n' +
+    'Por favor cuéntame más sobre el rol disponible y el contrato de entrada.';
+  window.open('https://wa.me/573005485019?text=' + encodeURIComponent(msg), '_blank');
+}
+</script>
+
+<!-- CTA PUBLICAR -->
+<section class="publicar-section">
+  <h2>¿Cuál es tu caso?</h2>
+  <p>Publica tu empresa o proyecto en Escala. Si es de creación, encontramos el equipo y el capital. Si ya operas y tienes una brecha, encontramos el especialista que la resuelve.</p>
+  <div class="pub-btns">
+    <a href="index.html#registro" class="btn-pub">Tengo una empresa con una brecha →</a>
+    <a href="index.html#registro" class="btn-pub-sec">Quiero publicar un proyecto nuevo</a>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">Esca<span>la</span></div>
+  <p>Proyectos activos · Colombia 2025</p>
+</footer>
+
+<script>
+function filtrarTipo(tipo, btn) {
+  document.querySelectorAll('.tipo-tab').forEach(b => {
+    b.classList.remove('active-all','active-a','active-b');
+  });
+  if (tipo === 'all') btn.classList.add('active-all');
+  else if (tipo === 'creacion') btn.classList.add('active-a');
+  else btn.classList.add('active-b');
+
+  var secA = document.getElementById('sec-creacion');
+  var secB = document.getElementById('sec-transformacion');
+
+  if (tipo === 'all') {
+    secA.style.display = '';
+    secB.style.display = '';
+    document.querySelectorAll('.proyecto-card, .coming-card, .brecha-card').forEach(c => {
+      c.style.setProperty('display', 'block', 'important');
+    });
+  } else if (tipo === 'creacion') {
+    secA.style.display = '';
+    secB.style.display = 'none';
+    document.querySelectorAll('.proyecto-card, .coming-card').forEach(c => {
+      c.style.setProperty('display', 'block', 'important');
+    });
+  } else {
+    secA.style.display = 'none';
+    secB.style.display = '';
+    document.querySelectorAll('.brecha-card').forEach(c => {
+      c.style.setProperty('display', 'block', 'important');
+    });
+  }
+}
+
+function postularBrecha(brecha) {
+  var msg = '🌱 *Quiero aportar en Escala — Tipo B*\n\n' +
+    '🏢 *Empresa / brecha:* ' + brecha + '\n\n' +
+    'Me interesa conocer más detalles sobre cómo puedo aportar como especialista en este tipo de proyecto.';
+  window.open('https://wa.me/573005485019?text=' + encodeURIComponent(msg), '_blank');
+}
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }
+  });
+}, {threshold:0.08});
+document.querySelectorAll('.proyecto-card,.brecha-card,.coming-card').forEach(el => {
+  el.style.opacity='0'; el.style.transform='translateY(14px)';
+  el.style.transition='opacity 0.4s ease,transform 0.4s ease';
+  obs.observe(el);
+});
+</script>
+<script>
+function toggleMenu(){var h=document.getElementById('hamburger');var m=document.getElementById('mobile-menu');h.classList.toggle('open');m.classList.toggle('open');}
+function closeMenu(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobile-menu').classList.remove('open');}
+window.addEventListener('scroll',function(){closeMenu();},{passive:true});
+</script>
+</body>
+</html>

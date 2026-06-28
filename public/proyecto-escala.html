@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proyecto Escala — El primer caso real del modelo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --navy:#0D1B3E;--navy2:#152848;
+  --cream:#F7F5F0;--white:#fff;
+  --green:#1D9E75;--gl:#E1F5EE;
+  --amber:#E8A020;--al:#FDF3DC;
+  --coral:#D85A30;--cl:#FAECE7;
+  --purple:#534AB7;--pl:#EEEDFE;
+  --g9:#111827;--g7:#374151;--g5:#6B7280;--g3:#D1D5DB;--g1:#F9FAFB;
+  --dm:#8FA3CC;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--g9);overflow-x:hidden;font-size:16px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,27,62,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);height:60px;display:flex;align-items:center;padding-inline:1.25rem;gap:0.75rem;}
+.nav-logo{font-size:1.1rem;font-weight:900;color:#fff;letter-spacing:-0.03em;}
+.nav-logo span{color:var(--green);}
+.nav-back{color:var(--dm);font-size:0.82rem;text-decoration:none;transition:color 0.2s;}
+.nav-back:hover{color:#fff;}
+.nav-r{margin-left:auto;display:flex;gap:0.5rem;align-items:center;}
+.nav-tag{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--amber);background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.25);padding:0.28rem 0.75rem;border-radius:20px;display:none;}
+@media(min-width:600px){.nav-tag{display:block;}}
+.nav-cta{background:var(--green);color:#fff;padding:0.4rem 0.875rem;border-radius:6px;font-size:0.8rem;font-weight:700;text-decoration:none;}
+
+/* HAMBURGER */
+.hbg{display:flex;flex-direction:column;gap:5px;cursor:pointer;padding:4px;background:none;border:none;}
+.hbg span{display:block;width:22px;height:2px;background:#fff;border-radius:2px;transition:all 0.3s;}
+.hbg.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hbg.open span:nth-child(2){opacity:0;}
+.hbg.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+@media(min-width:900px){.hbg{display:none!important;}.nav-cta-d{display:block!important;}}
+.nav-cta-d{display:none;}
+
+/* MOB MENU */
+.mob-menu{display:none;position:fixed;top:60px;left:0;right:0;bottom:0;background:rgba(13,27,62,0.99);z-index:99;padding:1.5rem 1.25rem;flex-direction:column;gap:0;overflow-y:auto;}
+.mob-menu.open{display:flex;}
+.mob-menu a{color:var(--dm);font-size:0.95rem;font-weight:500;padding:0.875rem 0;border-bottom:1px solid rgba(255,255,255,0.07);transition:color 0.2s;display:flex;align-items:center;justify-content:space-between;}
+.mob-menu a:hover{color:#fff;}
+.mob-menu a.mg{color:var(--green);}
+.mob-menu a.mc{background:var(--green);color:#fff;padding:0.75rem 1rem;border-radius:8px;text-align:center;justify-content:center;font-weight:700;margin-top:1rem;border:none;}
+
+/* CONTAINER */
+.container{max-width:1100px;margin-inline:auto;padding-inline:1.25rem;}
+
+/* HERO */
+.hero{background:var(--navy);padding-top:5rem;padding-bottom:3rem;padding-inline:1.25rem;}
+.hero-inner{display:grid;grid-template-columns:1fr;gap:2rem;}
+@media(min-width:700px){.hero-inner{grid-template-columns:1fr 340px;align-items:start;}}
+.hero-eye{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.25);padding:0.3rem 0.875rem;border-radius:20px;margin-bottom:1.25rem;}
+.hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-0.035em;line-height:1.05;color:#fff;margin-bottom:1rem;}
+.hero h1 span{color:var(--green);}
+.hero-desc{font-size:0.9rem;color:var(--dm);line-height:1.7;margin-bottom:1.25rem;}
+.hero-tags{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.htag{font-size:0.72rem;padding:0.28rem 0.75rem;border-radius:20px;background:rgba(255,255,255,0.08);color:var(--dm);font-weight:500;}
+.hero-3nums{display:grid;grid-template-columns:repeat(3,1fr);gap:0.875rem;}
+.h3n{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:0.875rem;text-align:center;}
+.h3n-v{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:#fff;line-height:1;}
+.h3n-v.am{color:var(--amber);}
+.h3n-v.pu{color:#AFA9EC;}
+.h3n-l{font-size:0.65rem;color:var(--dm);margin-top:3px;line-height:1.3;}
+
+/* SIDEBAR CARD */
+.sidebar-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:1.25rem;}
+@media(min-width:700px){.sidebar-card{position:sticky;top:80px;}}
+.sc-title{font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--dm);margin-bottom:0.875rem;}
+.sc-bar-label{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--dm);margin-bottom:4px;}
+.sc-bar{height:7px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;margin-bottom:1rem;}
+.sc-bar-fill{height:100%;border-radius:4px;background:var(--green);}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;}
+.sc-n{background:rgba(255,255,255,0.05);border-radius:8px;padding:0.65rem;text-align:center;}
+.sc-nv{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:#fff;}
+.sc-nv.g{color:var(--green);} .sc-nv.r{color:var(--coral);}
+.sc-nl{font-size:0.62rem;color:var(--dm);margin-top:2px;}
+.sc-nota{background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:8px;padding:0.75rem;margin-bottom:1rem;font-size:0.75rem;color:#F0C060;line-height:1.5;}
+.sc-btn{display:block;background:var(--green);color:#fff;padding:0.8rem;border-radius:8px;font-size:0.875rem;font-weight:800;text-align:center;text-decoration:none;transition:background 0.2s;}
+.sc-btn:hover{background:#178f67;}
+.sc-wa{font-size:0.7rem;text-align:center;color:var(--dm);margin-top:0.5rem;opacity:0.8;}
+
+/* SECCIONES */
+section{padding-block:3rem;padding-inline:1.25rem;}
+.ey{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:0.6rem;}
+.ttl{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;letter-spacing:-0.03em;color:var(--navy);margin-bottom:0.75rem;line-height:1.1;}
+.sub{font-size:0.875rem;color:var(--g5);line-height:1.7;max-width:560px;}
+
+/* CASO REAL */
+.caso-section{background:var(--white);}
+.pasos{display:flex;flex-direction:column;gap:0;margin-top:2rem;position:relative;}
+.pasos::before{content:'';position:absolute;left:19px;top:0;bottom:0;width:2px;background:var(--g3);}
+.paso{display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:1.75rem;position:relative;}
+.paso:last-child{margin-bottom:0;}
+.paso-num{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:800;flex-shrink:0;z-index:1;}
+.paso-done{background:var(--green);color:#fff;}
+.paso-act{background:var(--amber);color:#fff;box-shadow:0 0 0 4px rgba(232,160,32,0.15);}
+.paso-pend{background:var(--white);border:2px solid var(--g3);color:var(--g5);}
+.paso-body{flex:1;padding-top:0.25rem;}
+.paso-etapa{font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:0.2rem;}
+.pe-done{color:var(--green);}
+.pe-act{color:var(--amber);}
+.pe-pend{color:var(--g5);}
+.paso-title{font-size:0.95rem;font-weight:700;color:var(--g9);margin-bottom:0.35rem;}
+.paso-desc{font-size:0.8rem;color:var(--g5);line-height:1.6;margin-bottom:0.75rem;}
+.paso-items{display:flex;flex-direction:column;gap:0.3rem;}
+.paso-item{font-size:0.78rem;color:var(--g7);display:flex;align-items:flex-start;gap:0.4rem;}
+.paso-item span{color:var(--green);font-weight:700;flex-shrink:0;}
+.paso-wa{display:inline-flex;align-items:center;gap:0.4rem;background:var(--green);color:#fff;padding:0.5rem 0.875rem;border-radius:6px;font-size:0.78rem;font-weight:700;text-decoration:none;margin-top:0.75rem;transition:background 0.2s;}
+.paso-wa:hover{background:#178f67;}
+.paso-wa-a{background:var(--amber);}
+.paso-wa-a:hover{background:#c98a18;}
+
+/* ROLES */
+.roles-section{background:var(--cream);}
+.roles-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:2rem;}
+@media(min-width:600px){.roles-grid{grid-template-columns:1fr 1fr;}}
+.rcard{border-radius:12px;padding:1.25rem;position:relative;}
+.rcard-prior{border:2px solid var(--amber);background:var(--al);}
+.rcard-open{border:1px solid var(--g3);background:var(--white);}
+.rcard-filled{border:1px solid var(--green);background:var(--gl);opacity:0.8;}
+.rcard-badge{position:absolute;top:1rem;right:1rem;font-size:0.62rem;font-weight:700;padding:2px 8px;border-radius:10px;}
+.rb-p{background:var(--amber);color:#fff;}
+.rb-o{background:var(--cl);color:var(--coral);}
+.rb-f{background:var(--gl);color:var(--green);}
+.rcard-icon{font-size:1.4rem;margin-bottom:0.6rem;}
+.rcard-name{font-size:0.95rem;font-weight:700;color:var(--navy);margin-bottom:0.3rem;}
+.rcard-desc{font-size:0.78rem;color:var(--g5);line-height:1.5;margin-bottom:0.875rem;}
+.rcard-acts{margin-bottom:0.875rem;}
+.ra-lbl{font-size:0.65rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--g5);margin-bottom:0.4rem;}
+.ra-item{font-size:0.75rem;color:var(--g7);padding:0.2rem 0 0.2rem 0.875rem;position:relative;line-height:1.4;}
+.ra-item::before{content:'→';position:absolute;left:0;color:var(--green);font-size:0.7rem;}
+.rcard-comp{padding:0.75rem;border-radius:8px;margin-bottom:0.875rem;}
+.rc-p{background:rgba(232,160,32,0.1);}
+.rc-o{background:var(--g1);}
+.rc-f{background:rgba(29,158,117,0.08);}
+.rc-label{font-size:0.65rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--g5);margin-bottom:0.2rem;}
+.rc-val{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--navy);}
+.rcard-btn{display:block;text-align:center;padding:0.6rem;border-radius:8px;font-size:0.8rem;font-weight:700;text-decoration:none;transition:all 0.2s;border:none;cursor:pointer;font-family:'Inter',sans-serif;width:100%;}
+.rb-btn-p{background:var(--amber);color:#fff;}
+.rb-btn-p:hover{background:#c98a18;}
+.rb-btn-o{background:var(--navy);color:#fff;}
+.rb-btn-o:hover{background:var(--green);}
+.rb-btn-f{background:var(--gl);color:var(--green);pointer-events:none;}
+
+/* APORTES TABLE */
+.aportes-section{background:var(--white);}
+.aport-table{width:100%;border-collapse:collapse;margin-top:1.5rem;}
+.aport-table th{background:var(--navy);color:#fff;padding:0.7rem 0.875rem;font-size:0.72rem;font-weight:600;letter-spacing:0.04em;text-align:left;}
+.aport-table td{padding:0.8rem 0.875rem;border-bottom:1px solid var(--g3);font-size:0.82rem;vertical-align:middle;}
+.aport-table tr:hover td{background:var(--g1);}
+.aport-quien{font-weight:600;color:var(--g9);}
+.aport-anon{color:var(--g3);font-style:italic;}
+.abadge{font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:10px;}
+.ab-cash{background:var(--al);color:#633806;}
+.ab-serv{background:var(--pl);color:var(--purple);}
+.ab-tool{background:var(--g1);color:var(--g5);}
+.aporte-val{font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:600;color:var(--navy);}
+.aestado{font-size:0.68rem;font-weight:600;padding:2px 7px;border-radius:10px;}
+.ae-reg{background:#E6F1FB;color:#0C447C;}
+.ae-pend{background:var(--al);color:#633806;}
+
+/* FASE 0 NOTA */
+.fase0{background:var(--navy);padding-block:3rem;padding-inline:1.25rem;}
+.f0-inner{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem;}
+.f0-tag{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.25);padding:0.3rem 0.875rem;border-radius:20px;margin-bottom:1.25rem;}
+.f0-title{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:900;letter-spacing:-0.03em;color:#fff;margin-bottom:0.875rem;line-height:1.1;}
+.f0-title span{color:var(--green);}
+.f0-desc{font-size:0.875rem;color:var(--dm);line-height:1.7;margin-bottom:1.5rem;max-width:580px;}
+.f0-steps{display:grid;grid-template-columns:1fr;gap:0.75rem;margin-bottom:1.75rem;}
+@media(min-width:500px){.f0-steps{grid-template-columns:1fr 1fr;}}
+.f0-step{background:rgba(255,255,255,0.05);border-radius:10px;padding:1rem;}
+.f0s-n{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:rgba(255,255,255,0.12);margin-bottom:0.35rem;}
+.f0s-t{font-size:0.875rem;font-weight:700;color:#fff;margin-bottom:0.2rem;}
+.f0s-d{font-size:0.75rem;color:var(--dm);line-height:1.5;}
+.f0-wa{display:inline-flex;align-items:center;gap:0.75rem;background:var(--green);color:#fff;padding:1rem 2rem;border-radius:8px;font-size:1rem;font-weight:800;text-decoration:none;transition:background 0.2s;box-shadow:0 0 30px rgba(29,158,117,0.3);}
+.f0-wa:hover{background:#178f67;}
+.f0-nota{font-size:0.75rem;color:var(--dm);margin-top:0.875rem;opacity:0.8;line-height:1.5;}
+
+/* RIESGO */
+.riesgo-section{background:var(--cream);}
+.riesgo-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1.5rem;}
+@media(min-width:600px){.riesgo-grid{grid-template-columns:1fr 1fr;}}
+.riesgo-card{border-radius:12px;padding:1.5rem;}
+.rc-cash{background:var(--al);border:1px solid rgba(232,160,32,0.3);}
+.rc-serv{background:var(--pl);border:1px solid rgba(83,74,183,0.2);}
+.rc-icon{font-size:1.25rem;margin-bottom:0.6rem;}
+.rc-title{font-size:0.9rem;font-weight:700;color:var(--navy);margin-bottom:0.4rem;}
+.rc-desc{font-size:0.8rem;color:var(--g7);line-height:1.6;}
+
+footer{background:var(--navy);padding:2rem 1.25rem;text-align:center;color:var(--dm);font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);}
+.foot-logo{font-size:1rem;font-weight:900;color:#fff;margin-bottom:0.35rem;}
+.foot-logo span{color:var(--green);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="proyectos.html" class="nav-back">← Proyectos</a>
+  <div class="nav-logo">Esca<span>la</span></div>
+  <div class="nav-r">
+    <span class="nav-tag">Proyecto piloto</span>
+    <a href="#postularse" class="nav-cta">Quiero aportar</a>
+    <button class="hbg" id="hbg" onclick="toggleMenu()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mob-menu" id="mob-menu">
+  <a href="index.html" onclick="closeMenu()">← Inicio</a>
+  <a href="proyectos.html" onclick="closeMenu()">← Proyectos</a>
+  <a href="#caso-real" onclick="closeMenu()">El caso real →</a>
+  <a href="#roles" onclick="closeMenu()">Roles abiertos →</a>
+  <a href="#aportes" onclick="closeMenu()">Aportes registrados →</a>
+  <a href="#postularse" class="mg" onclick="closeMenu()">Quiero aportar →</a>
+  <a href="impulso.html" onclick="closeMenu()">Ángel de Impulso ✦</a>
+  <a href="costos.html" onclick="closeMenu()">Costos →</a>
+  <a href="#postularse" class="mc" onclick="closeMenu()">📲 Aportar por WhatsApp</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+<div class="container">
+<div class="hero-inner">
+
+  <div>
+    <div class="hero-eye">⭐ Proyecto piloto · Fase 0 · Medellín</div>
+    <h1>Escala — La plataforma<br>que <span>estás viendo ahora</span></h1>
+    <p class="hero-desc">Este es el proyecto 1 dentro de Escala. Lo estamos construyendo usando exactamente el modelo que le ofreceremos a otros proyectos. Cada rol que falta es una oportunidad real de aporte. Quien entra ahora entra como fundador.</p>
+
+    <div class="hero-tags">
+      <span class="htag">🏙️ Medellín</span>
+      <span class="htag">💻 Plataforma digital</span>
+      <span class="htag">📋 Fase 0 — Pre-operativa</span>
+      <span class="htag">Postulación vía WhatsApp</span>
+    </div>
+
+    <div style="background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:10px;padding:0.875rem 1.1rem;margin-bottom:1.5rem;">
+      <div style="font-size:0.75rem;color:#F0C060;line-height:1.6;"><strong style="color:var(--amber);">📌 Fase 0:</strong> El sitio que estás viendo es el sitio de presentación, construido con inteligencia artificial. La plataforma operativa real — con registro, perfiles, contratos digitales y sistema de calificación — aún no existe. Ese es exactamente el trabajo que necesita el desarrollador que estamos buscando.</div>
+    </div>
+
+    <div class="hero-3nums">
+      <div class="h3n"><div class="h3n-v am">$1.470.000</div><div class="h3n-l">Capital inicial necesario</div></div>
+      <div class="h3n"><div class="h3n-v pu">$5.645.000</div><div class="h3n-l">Deuda diferida mes 1</div></div>
+      <div class="h3n"><div class="h3n-v" style="color:var(--green);">Mes 11–12</div><div class="h3n-l">Punto de equilibrio</div></div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar-card">
+    <div class="sc-title">Estado del proyecto</div>
+    <div class="sc-bar-label"><span>Roles cubiertos</span><span>1 de 11</span></div>
+    <div class="sc-bar"><div class="sc-bar-fill" style="width:9%"></div></div>
+    <div class="sc-grid">
+      <div class="sc-n"><div class="sc-nv g">1</div><div class="sc-nl">Roles cubiertos</div></div>
+      <div class="sc-n"><div class="sc-nv r">10</div><div class="sc-nl">Roles abiertos</div></div>
+      <div class="sc-n"><div class="sc-nv">$0</div><div class="sc-nl">Caja actual</div></div>
+      <div class="sc-n"><div class="sc-nv" style="font-size:0.82rem;">Fase 0</div><div class="sc-nl">Pre-operativa</div></div>
+    </div>
+    <div class="sc-nota">⚠️ En esta fase toda la postulación y comunicación es por WhatsApp. No hay plataforma operativa todavía.</div>
+    <a href="#postularse" class="sc-btn">📲 Quiero aportar a Escala</a>
+    <p class="sc-wa">Se abre WhatsApp directamente. Sin formularios.</p>
+  </div>
+
+</div>
+</div>
+</div>
+
+<!-- EL CASO REAL -->
+<section class="caso-section" id="caso-real">
+<div class="container">
+  <span class="ey">Escala como primer caso real</span>
+  <h2 class="ttl">Construimos Escala<br>con el modelo de Escala</h2>
+  <p class="sub">No le podemos vender a otros un modelo que no hemos aplicado en nosotros mismos. Cada paso que damos es a la vez una operación real y una demostración del modelo.</p>
+
+  <div class="pasos">
+
+    <div class="paso">
+      <div class="paso-num paso-done">✓</div>
+      <div class="paso-body">
+        <div class="paso-etapa pe-done">Completado · Junio 2025</div>
+        <div class="paso-title">El fundador publica el proyecto con sus necesidades</div>
+        <div class="paso-desc">Exactamente como cualquier ideador haría en Escala. Modelo de negocio definido, roles identificados, condiciones de cada aporte documentadas, sitio de presentación publicado.</div>
+        <div class="paso-items">
+          <div class="paso-item"><span>✓</span>Modelo de negocio: dos tipos de proyecto, cuatro perfiles, tres carriles, ocho modalidades</div>
+          <div class="paso-item"><span>✓</span>Sitio de presentación en GitHub Pages con 6 páginas</div>
+          <div class="paso-item"><span>✓</span>9 roles identificados con actividades, valor de mercado y condiciones</div>
+          <div class="paso-item"><span>✓</span>Canal de postulación activo por WhatsApp</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-num paso-act">2</div>
+      <div class="paso-body">
+        <div class="paso-etapa pe-act">En curso — Ahora mismo</div>
+        <div class="paso-title">Conseguir el equipo fundador bajo el modelo Escala</div>
+        <div class="paso-desc">Cada rol que se cubre es a la vez un paso operativo real y una demostración del modelo. Ningún rol se paga de entrada — todos entran con contrato firmado y aporte diferido registrado.</div>
+        <div class="paso-items">
+          <div class="paso-item"><span>→</span>Inversionista: aporta los $1.470.000 de caja obligatoria — recibe acciones fundador</div>
+          <div class="paso-item"><span>→</span>Desarrollador: construye la plataforma operativa — mayor aporte técnico del proyecto</div>
+          <div class="paso-item"><span>→</span>Abogado, contador, diseñador, CM, asistente: deuda diferida con contrato firmado</div>
+        </div>
+        <a href="#postularse" class="paso-wa paso-wa-a">📲 Quiero ser parte del equipo fundador</a>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-num paso-pend">3</div>
+      <div class="paso-body">
+        <div class="paso-etapa pe-pend">Pendiente · Mes 1</div>
+        <div class="paso-title">Constitución legal de Escala SAS</div>
+        <div class="paso-desc">Con el inversionista inicial y el abogado confirmados, se constituye la empresa. El abogado de Escala será el primer profesional que firma un contrato bajo el modelo — convirtiéndose en el primer caso real de la plataforma.</div>
+        <div class="paso-items">
+          <div class="paso-item"><span>→</span>Dominio escala.co + constitución SAS + registro DIAN = $1.470.000</div>
+          <div class="paso-item"><span>→</span>Abogado: estatutos, pacto de socios, contrato tipo especialista, T&C, política de privacidad</div>
+          <div class="paso-item"><span>→</span>Apertura cuenta bancaria empresarial</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-num paso-pend">4</div>
+      <div class="paso-body">
+        <div class="paso-etapa pe-pend">Pendiente · Mes 1–2</div>
+        <div class="paso-title">Primer contrato firmado bajo el modelo Escala</div>
+        <div class="paso-desc">Cada miembro del equipo fundador firma su contrato de entrada con las condiciones exactas que Escala le ofrecerá a todos los proyectos futuros. Ese proceso documenta el modelo en la práctica.</div>
+        <div class="paso-items">
+          <div class="paso-item"><span>→</span>El abogado redacta el contrato tipo que se usará en TODOS los proyectos de Escala</div>
+          <div class="paso-item"><span>→</span>Cada rol firma: valor de mercado, carril preferido, actividades concretas, condiciones de salida, riesgo explícito</div>
+          <div class="paso-item"><span>→</span>En fase 0: PDF firmado y escaneado. Cuando la plataforma opere: firma digital integrada</div>
+          <div class="paso-item"><span>→</span>Registro de aportes mensual en hoja compartida hasta que la plataforma esté lista</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-num paso-pend">5</div>
+      <div class="paso-body">
+        <div class="paso-etapa pe-pend">Pendiente · Mes 2–7</div>
+        <div class="paso-title">El desarrollador construye la plataforma operativa</div>
+        <div class="paso-desc">El sitio de presentación existe. Lo que hay que construir es la plataforma real donde cualquier proyecto puede publicarse, cualquier especialista puede postularse, los contratos se generan automáticamente y los aportes se registran con trazabilidad.</div>
+        <div class="paso-items">
+          <div class="paso-item"><span>→</span>Mes 1: arquitectura, base de datos, autenticación y perfiles</div>
+          <div class="paso-item"><span>→</span>Mes 2: publicación de proyectos y postulación a roles</div>
+          <div class="paso-item"><span>→</span>Mes 3: contratos digitales y registro de aportes</div>
+          <div class="paso-item"><span>→</span>Mes 4–5: sistema de calificación y Escala Score</div>
+          <div class="paso-item"><span>→</span>Mes 5–6: pasarela de pagos y distribución automática</div>
+        </div>
+        <a href="desarrollo.html" class="paso-wa" style="background:var(--purple);">📋 Ver plan detallado de desarrollo →</a>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-num paso-pend">6</div>
+      <div class="paso-body">
+        <div class="paso-etapa pe-pend">Pendiente · Mes 2–5 (paralelo)</div>
+        <div class="paso-title">Primeros proyectos externos operando manualmente</div>
+        <div class="paso-desc">Mientras se construye la plataforma, Escala opera los primeros proyectos externos de forma manual: WhatsApp + contratos PDF + hoja de seguimiento compartida. Eso genera los primeros casos reales antes de que exista una sola línea de código de la plataforma.</div>
+        <div class="paso-items">
+          <div class="paso-item"><span>→</span>Ekivibe (galletas para caballos) ya está identificado como proyecto 2</div>
+          <div class="paso-item"><span>→</span>Cada proyecto manual documenta exactamente lo que la plataforma necesita automatizar</div>
+          <div class="paso-item"><span>→</span>El proceso manual genera los primeros testimonios reales del modelo</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-num paso-pend">7</div>
+      <div class="paso-body">
+        <div class="paso-etapa pe-pend">Pendiente · Mes 6–7</div>
+        <div class="paso-title">Lanzamiento de la plataforma operativa</div>
+        <div class="paso-desc">La plataforma está lista para recibir los primeros proyectos reales. Escala tiene contratos firmados, aportes registrados, casos documentados y un equipo que demostró que el modelo funciona. Ese es el momento de buscar la primera ronda de inversión.</div>
+        <div class="paso-items">
+          <div class="paso-item"><span>→</span>Al menos 3 proyectos externos con hitos cumplidos como evidencia</div>
+          <div class="paso-item"><span>→</span>Equipo fundador completo con contratos y aportes registrados</div>
+          <div class="paso-item"><span>→</span>Métricas reales para presentar a inversionistas — no un pitch deck</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- ROLES ABIERTOS -->
+<section class="roles-section" id="roles">
+<div class="container">
+  <span class="ey">Roles del proyecto piloto</span>
+  <h2 class="ttl">¿Qué necesita Escala?</h2>
+  <p class="sub">Cada rol tiene actividades concretas, valor de mercado definido y condiciones claras. No son empleos — son aportes con contrato firmado y compensación diferida.</p>
+
+  <div class="roles-grid">
+
+    <!-- FUNDADOR CUBIERTO -->
+    <div class="rcard rcard-filled">
+      <span class="rcard-badge rb-f">✓ Cubierto</span>
+      <div class="rcard-icon">⚙️</div>
+      <div class="rcard-name">Fundador / Ejecutor</div>
+      <div class="rcard-desc">Lidera la visión, coordina el equipo y ejecuta el día a día. Define el modelo, publica el proyecto y consigue el equipo.</div>
+      <div class="rcard-comp rc-f"><div class="rc-label">Compensación</div><div class="rc-val">Equity fundador</div></div>
+      <button class="rcard-btn rb-btn-f">✓ Cubierto</button>
+    </div>
+
+    <!-- INVERSIONISTA PRIORITARIO -->
+    <div class="rcard rcard-prior">
+      <span class="rcard-badge rb-p">🔥 Prioritario</span>
+      <div class="rcard-icon">💵</div>
+      <div class="rcard-name">Inversionista inicial</div>
+      <div class="rcard-desc">El único rol que requiere desembolso de dinero real. Aporta el capital mínimo para que Escala exista legalmente. Sin este aporte, nada más puede avanzar.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">¿Qué cubre?</div>
+        <div class="ra-item">Dominio escala.co — $120.000</div>
+        <div class="ra-item">Constitución SAS ante notaría — $1.200.000</div>
+        <div class="ra-item">Registro DIAN (RUT) — $150.000</div>
+      </div>
+      <div class="rcard-comp rc-p"><div class="rc-label">Aporte total</div><div class="rc-val">$1.470.000 en efectivo</div></div>
+      <div class="rcard-comp rc-p" style="margin-top:0.5rem;"><div class="rc-label">Compensación</div><div class="rc-val">Acciones fundadoras + prima de riesgo etapa temprana</div></div>
+      <button class="rcard-btn rb-btn-p" onclick="postularRol('Inversionista inicial — $1.470.000 en efectivo')">📲 Quiero ser el inversionista</button>
+    </div>
+
+    <!-- DESARROLLADOR PRIORITARIO -->
+    <div class="rcard rcard-prior">
+      <span class="rcard-badge rb-p">🔥 Prioritario</span>
+      <div class="rcard-icon">💻</div>
+      <div class="rcard-name">Desarrollador — Plataforma operativa</div>
+      <div class="rcard-desc">El aporte técnico más importante del proyecto. El sitio de presentación ya existe. Lo que hay que construir es la plataforma real: registro de usuarios, contratos digitales, sistema de calificación y distribución automática.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Lo que hay que construir</div>
+        <div class="ra-item">Sistema de registro y perfiles de usuarios por rol</div>
+        <div class="ra-item">Panel de publicación y gestión de proyectos</div>
+        <div class="ra-item">Registro digital de aportes con trazabilidad completa</div>
+        <div class="ra-item">Generación automática y firma digital de contratos</div>
+        <div class="ra-item">Motor de calificación y Escala Score</div>
+        <div class="ra-item">Pasarela de pagos y distribución automática de utilidades</div>
+      </div>
+      <div class="rcard-comp rc-p"><div class="rc-label">Valor de mercado estimado</div><div class="rc-val">$25.000.000 – $60.000.000</div></div>
+      <div class="rcard-comp rc-p" style="margin-top:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val">Deuda diferida + participación en Escala a definir con el fundador</div></div>
+      <div style="background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:8px;padding:0.75rem;margin-bottom:0.875rem;font-size:0.75rem;color:#F0C060;line-height:1.5;">El porcentaje de participación se define en la negociación directa con el fundador, considerando el alcance real del trabajo, el tiempo comprometido y las condiciones del proyecto.</div>
+      <a href="desarrollo.html" style="display:block;text-align:center;background:rgba(255,255,255,0.08);color:var(--dm);padding:0.5rem;border-radius:7px;font-size:0.75rem;font-weight:600;text-decoration:none;margin-bottom:0.6rem;transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📋 Ver plan detallado de desarrollo y valoración →</a>
+      <button class="rcard-btn rb-btn-p" onclick="postularRol('Desarrollador — Plataforma operativa Escala')">📲 Quiero ser el desarrollador</button>
+    </div>
+
+    <!-- ABOGADO -->
+    <div class="rcard rcard-open">
+      <span class="rcard-badge rb-o">Abierto</span>
+      <div class="rcard-icon">⚖️</div>
+      <div class="rcard-name">Abogado</div>
+      <div class="rcard-desc">Redacta los documentos legales de Escala. Especialmente el contrato tipo que se usará para TODOS los especialistas de TODOS los proyectos futuros en la plataforma. Su trabajo es el cimiento legal del modelo.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Entregables concretos</div>
+        <div class="ra-item">Contrato tipo de entrada para especialistas</div>
+        <div class="ra-item">Contrato de inversionista y Ángel de Impulso</div>
+        <div class="ra-item">Pacto de socios fundadores</div>
+        <div class="ra-item">Términos y condiciones de la plataforma</div>
+        <div class="ra-item">Política de privacidad (Ley 1581)</div>
+      </div>
+      <div class="rcard-comp rc-o"><div class="rc-label">Valor de mercado</div><div class="rc-val">$1.400.000</div></div>
+      <div class="rcard-comp rc-o" style="margin-top:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val">Deuda diferida — pago cuando Escala opere</div></div>
+      <button class="rcard-btn rb-btn-o" onclick="postularRol('Abogado — deuda diferida $1.400.000')">📲 Quiero ser el abogado</button>
+    </div>
+
+    <!-- CONTADOR -->
+    <div class="rcard rcard-open">
+      <span class="rcard-badge rb-o">Abierto</span>
+      <div class="rcard-icon">🧮</div>
+      <div class="rcard-name">Contador</div>
+      <div class="rcard-desc">Lleva la contabilidad de Escala desde el primer día. Configura el esquema tributario, procesa las declaraciones y emite los informes financieros que necesitan los inversionistas.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Actividades concretas</div>
+        <div class="ra-item">Configuración tributaria ante la DIAN</div>
+        <div class="ra-item">Contabilidad mensual básica</div>
+        <div class="ra-item">Declaraciones de IVA bimestral</div>
+        <div class="ra-item">Informes financieros mensuales para el equipo</div>
+        <div class="ra-item">Implementación de facturación electrónica</div>
+      </div>
+      <div class="rcard-comp rc-o"><div class="rc-label">Valor de mercado</div><div class="rc-val">$400.000 / mes</div></div>
+      <div class="rcard-comp rc-o" style="margin-top:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val">Deuda diferida acumulada mensual</div></div>
+      <button class="rcard-btn rb-btn-o" onclick="postularRol('Contador — deuda diferida $400.000/mes')">📲 Quiero ser el contador</button>
+    </div>
+
+    <!-- DISEÑADOR -->
+    <div class="rcard rcard-open">
+      <span class="rcard-badge rb-o">Abierto</span>
+      <div class="rcard-icon">🎨</div>
+      <div class="rcard-name">Diseñador</div>
+      <div class="rcard-desc">Crea la identidad visual definitiva de Escala y diseña los flujos de usuario de la plataforma operativa. Su trabajo se usará durante años — es la cara del proyecto ante miles de usuarios.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Entregables concretos</div>
+        <div class="ra-item">Logo definitivo de Escala (versiones color, blanco, ícono)</div>
+        <div class="ra-item">Manual de marca básico</div>
+        <div class="ra-item">Wireframes y UI de la plataforma operativa</div>
+        <div class="ra-item">Templates para redes sociales</div>
+      </div>
+      <div class="rcard-comp rc-o"><div class="rc-label">Valor de mercado</div><div class="rc-val">$800.000 + UI según scope</div></div>
+      <div class="rcard-comp rc-o" style="margin-top:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val">Deuda diferida — pago cuando Escala opere</div></div>
+      <button class="rcard-btn rb-btn-o" onclick="postularRol('Diseñador — deuda diferida $800.000 + UI')">📲 Quiero ser el diseñador</button>
+    </div>
+
+    <!-- COMMUNITY MANAGER -->
+    <div class="rcard rcard-open">
+      <span class="rcard-badge rb-o">Abierto</span>
+      <div class="rcard-icon">📱</div>
+      <div class="rcard-name">Community Manager</div>
+      <div class="rcard-desc">Gestiona la presencia digital de Escala mensualmente. Es quien construye la comunidad de especialistas e ideadores que necesita la plataforma para arrancar.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Actividades concretas</div>
+        <div class="ra-item">12–16 publicaciones mensuales en LinkedIn e Instagram</div>
+        <div class="ra-item">Gestión de WhatsApp Business corporativo</div>
+        <div class="ra-item">Respuesta a comentarios y mensajes</div>
+        <div class="ra-item">Reporte mensual de métricas y crecimiento</div>
+      </div>
+      <div class="rcard-comp rc-o"><div class="rc-label">Valor de mercado</div><div class="rc-val">$700.000 / mes</div></div>
+      <div class="rcard-comp rc-o" style="margin-top:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val">Deuda diferida acumulada mensual</div></div>
+      <button class="rcard-btn rb-btn-o" onclick="postularRol('Community Manager — deuda diferida $700.000/mes')">📲 Quiero ser el CM</button>
+    </div>
+
+    <!-- ASISTENTE VIRTUAL -->
+    <div class="rcard rcard-open">
+      <span class="rcard-badge rb-o">Abierto</span>
+      <div class="rcard-icon">📋</div>
+      <div class="rcard-name">Asistente virtual</div>
+      <div class="rcard-desc">Primer punto de contacto con las personas que se registran en Escala. Gestiona el WhatsApp corporativo, agenda reuniones y hace el seguimiento de cada postulación recibida. Trabajo remoto part-time.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Actividades concretas</div>
+        <div class="ra-item">Revisión y respuesta de correos diarios</div>
+        <div class="ra-item">Primer contacto con postulantes por WhatsApp</div>
+        <div class="ra-item">Agenda de reuniones del fundador</div>
+        <div class="ra-item">Seguimiento de registros y postulaciones recibidas</div>
+        <div class="ra-item">Actualización del estado de cada rol en el sitio</div>
+      </div>
+      <div class="rcard-comp rc-o"><div class="rc-label">Valor de mercado</div><div class="rc-val">$800.000 / mes</div></div>
+      <div class="rcard-comp rc-o" style="margin-top:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val">Deuda diferida acumulada mensual</div></div>
+      <button class="rcard-btn rb-btn-o" onclick="postularRol('Asistente virtual — deuda diferida $800.000/mes')">📲 Quiero ser la asistente</button>
+    </div>
+
+    <!-- GERENTE DE PROYECTO -->
+    <div class="rcard rcard-prior">
+      <span class="rcard-badge rb-p">🔥 Prioritario</span>
+      <div class="rcard-icon">🗂️</div>
+      <div class="rcard-name">Gerente de Proyecto</div>
+      <div class="rcard-desc">El fundador no puede construir esto solo. El Gerente de Proyecto coordina el equipo día a día, hace seguimiento a cada rol, gestiona los entregables y mantiene el proyecto avanzando. Es quien libera al fundador para que pueda enfocarse en conseguir socios e inversión.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Actividades concretas</div>
+        <div class="ra-item">Coordinación semanal con cada rol del equipo</div>
+        <div class="ra-item">Seguimiento de entregables y fechas comprometidas</div>
+        <div class="ra-item">Gestión del expediente del proyecto (contratos, aportes, hitos)</div>
+        <div class="ra-item">Reporte quincenal al fundador del estado real del proyecto</div>
+        <div class="ra-item">Gestión de la agenda de reuniones con socios y postulantes</div>
+        <div class="ra-item">Primer filtro de postulaciones entrantes por WhatsApp</div>
+      </div>
+      <div class="rcard-comp rc-p"><div class="rc-label">Valor de mercado</div><div class="rc-val">$2.500.000 – $4.000.000 / mes</div></div>
+      <div class="rcard-comp rc-p" style="margin-top:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val">Deuda diferida acumulada · Se paga cuando Escala opere y facture</div></div>
+      <div style="background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:8px;padding:0.75rem;margin-bottom:0.875rem;font-size:0.75rem;color:#F0C060;line-height:1.5;">Este rol puede evolucionar a socio ejecutor dependiendo del compromiso y los resultados demostrados durante la etapa pre-operativa.</div>
+      <button class="rcard-btn rb-btn-p" onclick="postularRol('Gerente de Proyecto — deuda diferida hasta que Escala opere')">📲 Quiero ser el Gerente de Proyecto</button>
+    </div>
+
+    <!-- CO-FUNDADOR / IDEADOR -->
+    <div class="rcard rcard-open" style="border:2px solid var(--green);background:var(--gl);">
+      <span class="rcard-badge" style="background:var(--green);color:#fff;">💡 Co-fundador</span>
+      <div class="rcard-icon">🤝</div>
+      <div class="rcard-name">Co-fundador / Ideador aliado</div>
+      <div class="rcard-desc">Escala no es solo un proyecto técnico — es una idea que necesita personas que crean en ella y quieran construirla. Si tienes experiencia en emprendimiento, en ecosistemas de inversión, en derecho empresarial o en tecnología, y quieres ser parte desde la raíz, este es tu rol.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">¿Qué aporta un co-fundador?</div>
+        <div class="ra-item">Visión y criterio para tomar decisiones estratégicas</div>
+        <div class="ra-item">Red de contactos para conseguir los primeros proyectos</div>
+        <div class="ra-item">Experiencia en ecosistemas de inversión o emprendimiento</div>
+        <div class="ra-item">Capacidad de abrir puertas que el fundador solo no puede abrir</div>
+        <div class="ra-item">Compromiso de largo plazo con el proyecto — no un servicio puntual</div>
+      </div>
+      <div class="rcard-comp" style="background:rgba(29,158,117,0.12);border-radius:8px;padding:0.75rem;margin-bottom:0.5rem;"><div class="rc-label">Modalidad</div><div class="rc-val" style="color:var(--green);">Participación en Escala · A definir según aporte real</div></div>
+      <div class="rcard-comp" style="background:rgba(29,158,117,0.12);border-radius:8px;padding:0.75rem;margin-bottom:0.875rem;"><div class="rc-label">¿Esto es para ti si...</div><div class="rc-val" style="color:var(--green);font-size:0.78rem;font-family:'Inter',sans-serif;font-weight:500;">Crees que hay un mercado real aquí, tienes algo concreto que aportar y quieres ser parte de construir la infraestructura para el emprendimiento colaborativo en Latinoamérica.</div></div>
+      <button class="rcard-btn" style="background:var(--green);color:#fff;" onclick="postularRol('Co-fundador / Ideador aliado — quiero construir Escala')">📲 Quiero ser co-fundador de Escala</button>
+    </div>
+
+    <!-- ÁNGEL DE IMPULSO -->
+    <div class="rcard rcard-open" style="border-color:var(--purple);">
+      <span class="rcard-badge" style="background:var(--pl);color:var(--purple);">✦ Especial</span>
+      <div class="rcard-icon">🌟</div>
+      <div class="rcard-name">Ángel de Impulso</div>
+      <div class="rcard-desc">No es un socio ni un inversionista. Financia un hito específico — la Cámara de Comercio, el logo, la primera campaña — sin esperar equity ni devolución. A cambio recibe seguimiento total del proyecto y prioridad en rondas futuras.</div>
+      <div class="rcard-acts">
+        <div class="ra-lbl">Hitos que puede financiar</div>
+        <div class="ra-item">Dominio web — $120.000</div>
+        <div class="ra-item">Cámara de Comercio — $300.000–$600.000</div>
+        <div class="ra-item">Registro de marca SIC — $1.500.000</div>
+        <div class="ra-item">Primera campaña digital — $500.000</div>
+        <div class="ra-item">Fotografía institucional — $600.000</div>
+      </div>
+      <div class="rcard-comp" style="background:var(--pl);margin-bottom:0.875rem;border-radius:8px;padding:0.75rem;"><div class="rc-label">Modalidad</div><div class="rc-val" style="color:var(--purple);">Sin equity · Sin devolución · Con trazabilidad total</div></div>
+      <button class="rcard-btn" style="background:var(--purple);color:#fff;" onclick="postularRol('Angel de Impulso — financiar un hito de Escala')">📲 Quiero ser Ángel de Impulso</button>
+    </div>
+
+  </div>
+</div>
+</section>
+
+<!-- APORTES REGISTRADOS -->
+<section class="aportes-section" id="aportes">
+<div class="container">
+  <span class="ey">Registro de aportes</span>
+  <h2 class="ttl">Lo que ya está aportado</h2>
+  <p class="sub">Transparencia total desde el día 1. Cada aporte queda registrado con valor, tipo y estado.</p>
+
+  <div style="overflow-x:auto;border-radius:12px;border:1px solid var(--g3);margin-top:1.5rem;">
+  <table class="aport-table">
+    <thead>
+      <tr>
+        <th>Aportante</th>
+        <th>Rol</th>
+        <th>Tipo</th>
+        <th>Valor registrado</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="aport-quien">Fundador</div><div style="font-size:0.7rem;color:var(--g5);">Medellín</div></td>
+        <td style="font-size:0.8rem;">Ejecutor / Gerente</td>
+        <td><span class="abadge ab-serv">Tiempo + liderazgo</span></td>
+        <td class="aporte-val">Equity fundador</td>
+        <td><span class="aestado ae-reg">Registrado</span></td>
+      </tr>
+      <tr>
+        <td><div class="aport-quien">Claude AI</div><div style="font-size:0.7rem;color:var(--g5);">Sitio de presentación</div></td>
+        <td style="font-size:0.8rem;">Sitio web estático</td>
+        <td><span class="abadge ab-tool">Herramienta IA</span></td>
+        <td class="aporte-val">$0</td>
+        <td><span class="aestado ae-reg">Registrado</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Inversionista inicial</td>
+        <td><span class="abadge ab-cash">Capital efectivo</span></td>
+        <td class="aporte-val">$1.470.000</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Desarrollador plataforma</td>
+        <td><span class="abadge ab-serv">Desarrollo full-stack</span></td>
+        <td class="aporte-val">$25M – $60M</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Abogado</td>
+        <td><span class="abadge ab-serv">Servicio profesional</span></td>
+        <td class="aporte-val">$1.400.000</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Contador</td>
+        <td><span class="abadge ab-serv">Servicio profesional</span></td>
+        <td class="aporte-val">$400.000/mes</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Diseñador</td>
+        <td><span class="abadge ab-serv">Servicio profesional</span></td>
+        <td class="aporte-val">$800.000</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Community Manager</td>
+        <td><span class="abadge ab-serv">Tiempo</span></td>
+        <td class="aporte-val">$700.000/mes</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Gerente de Proyecto</td>
+        <td><span class="abadge ab-serv">Gestión y coordinación</span></td>
+        <td class="aporte-val">$2.5M–$4M/mes</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Co-fundador</td>
+        <td><span class="abadge ab-serv">Visión + red + estrategia</span></td>
+        <td class="aporte-val">A definir</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+      <tr style="opacity:0.5;">
+        <td><div class="aport-anon">— Pendiente</div></td>
+        <td style="font-size:0.8rem;">Asistente virtual</td>
+        <td><span class="abadge ab-serv">Tiempo</span></td>
+        <td class="aporte-val">$800.000/mes</td>
+        <td><span class="aestado ae-pend">Buscando</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- FASE 0 — CTA PRINCIPAL -->
+<section class="fase0" id="postularse">
+<div class="container">
+<div class="f0-inner">
+  <div class="f0-tag">📲 Fase 0 — Postulación por WhatsApp</div>
+  <h2 class="f0-title">En esta fase todo es<br>por <span>WhatsApp directo</span></h2>
+  <p class="f0-desc">No hay formulario, no hay plataforma todavía. La postulación es directa: le escribes al fundador, le cuentas quién eres y qué rol te interesa, y coordinamos una conversación. Sin burocracia. Sin procesos largos. Así funciona la Fase 0.</p>
+
+  <div class="f0-steps">
+    <div class="f0-step">
+      <div class="f0s-n">01</div>
+      <div class="f0s-t">Nos escribes por WhatsApp</div>
+      <div class="f0s-d">Le cuentas al fundador quién eres, qué rol te interesa y por qué quieres ser parte de Escala.</div>
+    </div>
+    <div class="f0-step">
+      <div class="f0s-n">02</div>
+      <div class="f0s-t">Coordinamos una conversación</div>
+      <div class="f0s-d">Una llamada o reunión para conocerte mejor, resolver dudas y ver si hay afinidad con el proyecto.</div>
+    </div>
+    <div class="f0-step">
+      <div class="f0s-n">03</div>
+      <div class="f0s-t">Revisas el contrato de entrada</div>
+      <div class="f0s-d">El abogado prepara el contrato con las condiciones específicas de tu rol. Lo revisas con calma antes de comprometerte.</div>
+    </div>
+    <div class="f0-step">
+      <div class="f0s-n">04</div>
+      <div class="f0s-t">Firmas y empiezas a aportar</div>
+      <div class="f0s-d">Contrato firmado (PDF en fase 0). Tus aportes se registran mes a mes. La deuda queda documentada desde el primer día.</div>
+    </div>
+  </div>
+
+  <a href="https://wa.me/573005485019?text=Hola%2C%20vi%20el%20proyecto%20Escala%20y%20quiero%20conocer%20m%C3%A1s%20sobre%20c%C3%B3mo%20aportar%20al%20equipo%20fundador."
+     class="f0-wa" target="_blank">
+    <span>📲</span>
+    <span>Escribirle al fundador por WhatsApp</span>
+  </a>
+  <p class="f0-nota">Al hacer clic se abre WhatsApp con un mensaje inicial listo. Sin compromisos hasta firmar el contrato. El contrato especifica claramente el riesgo de no pago si Escala no entra en operación.</p>
+</div>
+</div>
+</section>
+
+<!-- RIESGOS -->
+<section class="riesgo-section">
+<div class="container">
+  <span class="ey">Transparencia total</span>
+  <h2 class="ttl">Los riesgos que debes conocer<br>antes de aportar</h2>
+  <p class="sub">En Escala no hay letra pequeña. El riesgo es explícito en el contrato. No es engaño — es el modelo aplicado a sí mismo.</p>
+  <div class="riesgo-grid">
+    <div class="riesgo-card rc-cash">
+      <div class="rc-icon">💵</div>
+      <div class="rc-title">Si aportaste dinero real (inversionista)</div>
+      <div class="rc-desc">Si Escala no entra en operación en los primeros 12 meses, el capital aportado puede perderse total o parcialmente. A cambio, quien entra en esta etapa recibe condiciones de accionista fundador — las mejores condiciones posibles dentro del modelo.</div>
+    </div>
+    <div class="riesgo-card rc-serv">
+      <div class="rc-icon">📋</div>
+      <div class="rc-title">Si aportaste servicio o tiempo (especialista)</div>
+      <div class="rc-desc">Si Escala no entra en operación, la deuda registrada puede no pagarse. El aportante de servicio conoce este riesgo desde el inicio y lo firma en su contrato de entrada. No es empleado — es aportante con riesgo compartido y potencial de compensación si el proyecto despega.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div style="background:var(--navy);padding:1.5rem 1.25rem;text-align:center;">
+  <a href="proyectos.html" style="color:var(--dm);font-size:0.875rem;text-decoration:none;border:1px solid rgba(255,255,255,0.12);padding:0.6rem 1.25rem;border-radius:8px;display:inline-block;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.35)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='var(--dm)'">← Ver todos los proyectos</a>
+</div>
+
+<footer>
+  <div class="foot-logo">Esca<span>la</span></div>
+  <p>Proyecto piloto · Colombia 2025</p>
+</footer>
+
+<script>
+function toggleMenu(){document.getElementById('hbg').classList.toggle('open');document.getElementById('mob-menu').classList.toggle('open');}
+function closeMenu(){document.getElementById('hbg').classList.remove('open');document.getElementById('mob-menu').classList.remove('open');}
+window.addEventListener('scroll',function(){closeMenu();},{passive:true});
+
+function postularRol(rol){
+  var msg='🌱 *Postulación al equipo fundador de ESCALA*\n\n🎯 *Rol de interés:* '+rol+'\n\nQuiero conocer más detalles sobre este rol y recibir el contrato de entrada para revisarlo.';
+  window.open('https://wa.me/573005485019?text='+encodeURIComponent(msg),'_blank');
+}
+
+var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){x.target.style.opacity='1';x.target.style.transform='translateY(0)';}});},{threshold:0.06});
+document.querySelectorAll('.rcard,.paso,.f0-step').forEach(function(el){
+  el.style.opacity='0';el.style.transform='translateY(12px)';
+  el.style.transition='opacity 0.4s ease,transform 0.4s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>

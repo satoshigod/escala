@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escala — Estructura de aportes y deudas etapa 1</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root {
+  --navy:#0D1B3E; --cream:#F7F5F0; --white:#FFFFFF;
+  --green:#1D9E75; --green-light:#E1F5EE;
+  --amber:#E8A020; --amber-light:#FDF3DC;
+  --coral:#D85A30; --coral-light:#FAECE7;
+  --purple:#534AB7; --purple-light:#EEEDFE;
+  --gray-900:#111827; --gray-700:#374151;
+  --gray-500:#6B7280; --gray-300:#D1D5DB; --gray-100:#F9FAFB;
+  --dark-muted:#8FA3CC;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--gray-900);overflow-x:hidden;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,27,62,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);height:60px;display:flex;align-items:center;padding:0 2rem;gap:1rem;}
+.nav-logo{font-size:1.1rem;font-weight:900;color:#fff;letter-spacing:-0.03em;}
+.nav-logo span{color:var(--green);}
+.nav-back{color:var(--dark-muted);font-size:0.82rem;text-decoration:none;transition:color 0.2s;}
+.nav-back:hover{color:#fff;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:1rem;}
+.nav-tag{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--amber);background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.25);padding:0.3rem 0.875rem;border-radius:20px;}
+
+.hero{background:var(--navy);padding:7rem 2rem 4rem;text-align:center;}
+.eyebrow{display:inline-block;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--amber);background:rgba(232,160,32,0.12);border:1px solid rgba(232,160,32,0.25);padding:0.35rem 1rem;border-radius:20px;margin-bottom:1.5rem;}
+.hero h1{font-size:clamp(2rem,5vw,3.8rem);font-weight:900;letter-spacing:-0.035em;line-height:1.05;color:#fff;margin-bottom:1rem;max-width:800px;margin-left:auto;margin-right:auto;}
+.hero h1 span{color:var(--amber);}
+.hero-sub{font-size:0.95rem;color:var(--dark-muted);max-width:560px;margin:0 auto 2.5rem;line-height:1.7;}
+.hero-nums{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.08);padding-top:2rem;}
+.hnum-val{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;}
+.hnum-label{font-size:0.72rem;color:var(--dark-muted);margin-top:0.2rem;}
+
+.container{max-width:1100px;margin:0 auto;padding:0 2rem;}
+section{padding:4rem 2rem;}
+
+/* CATEGORÍA HEADERS */
+.cat-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:2px solid;}
+.cat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+.cat-title{font-size:1.2rem;font-weight:800;letter-spacing:-0.02em;}
+.cat-sub{font-size:0.85rem;margin-top:2px;}
+
+/* CARDS DE ÍTEMS */
+.items-grid{display:grid;gap:0.75rem;margin-bottom:2.5rem;}
+.item-card{background:var(--white);border-radius:12px;padding:1.25rem 1.5rem;display:grid;grid-template-columns:1fr auto;gap:1rem;align-items:start;border:1px solid var(--gray-300);}
+.item-name{font-size:0.95rem;font-weight:700;color:var(--gray-900);margin-bottom:3px;}
+.item-desc{font-size:0.8rem;color:var(--gray-500);line-height:1.5;}
+.item-provider{font-size:0.72rem;color:var(--gray-500);margin-top:4px;}
+.item-right{text-align:right;flex-shrink:0;}
+.item-val{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--gray-900);white-space:nowrap;}
+.item-freq{font-size:0.7rem;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block;margin-top:4px;white-space:nowrap;}
+.item-tipo{font-size:0.7rem;padding:2px 8px;border-radius:10px;font-weight:700;display:inline-block;margin-top:4px;}
+
+/* COLORES POR CATEGORÍA */
+.cat-inversion .cat-header{border-color:var(--amber);color:var(--amber);}
+.cat-inversion .cat-icon{background:var(--amber-light);}
+.cat-inversion .item-card{border-left:3px solid var(--amber);}
+.cat-inversion .item-val{color:#7A4F0A;}
+.badge-inversion{background:var(--amber-light);color:#633806;}
+
+.cat-deuda .cat-header{border-color:var(--purple);color:var(--purple);}
+.cat-deuda .cat-icon{background:var(--purple-light);}
+.cat-deuda .item-card{border-left:3px solid var(--purple);}
+.cat-deuda .item-val{color:var(--purple);}
+.badge-deuda{background:var(--purple-light);color:var(--purple);}
+
+.cat-eliminar .cat-header{border-color:var(--gray-300);color:var(--gray-500);}
+.cat-eliminar .cat-icon{background:var(--gray-100);}
+.cat-eliminar .item-card{border-left:3px solid var(--gray-300);opacity:0.7;}
+.cat-eliminar .item-val{color:var(--gray-500);}
+.badge-eliminar{background:var(--gray-100);color:var(--gray-500);}
+
+/* TABLA RESUMEN */
+.resumen-section{background:var(--navy);}
+.resumen-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:2.5rem;}
+.rcard{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:1.5rem;}
+.rcard-label{font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--dark-muted);margin-bottom:0.5rem;}
+.rcard-val{font-family:'JetBrains Mono',monospace;font-size:1.75rem;font-weight:700;color:#fff;line-height:1;margin-bottom:0.4rem;}
+.rcard-val.amber{color:var(--amber);}
+.rcard-val.green{color:var(--green);}
+.rcard-val.purple{color:#AFA9EC;}
+.rcard-sub{font-size:0.8rem;color:var(--dark-muted);line-height:1.5;}
+
+/* REGLAS DEL JUEGO */
+.reglas{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2.5rem;}
+.regla{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.25rem;}
+.regla-num{font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--amber);font-weight:700;margin-bottom:0.5rem;}
+.regla-title{font-size:0.9rem;font-weight:700;color:#fff;margin-bottom:0.4rem;}
+.regla-desc{font-size:0.82rem;color:var(--dark-muted);line-height:1.5;}
+
+/* COMPARATIVO */
+.comp-section{background:var(--white);}
+.comp-table{width:100%;border-collapse:collapse;margin-top:2rem;}
+.comp-table th{background:var(--navy);color:#fff;padding:0.75rem 1rem;font-size:0.78rem;font-weight:600;letter-spacing:0.04em;text-align:left;}
+.comp-table th:not(:first-child){text-align:center;}
+.comp-table td{padding:0.875rem 1rem;border-bottom:1px solid var(--gray-300);font-size:0.875rem;vertical-align:middle;}
+.comp-table td:not(:first-child){text-align:center;}
+.comp-table tr:hover{background:var(--gray-100);}
+.check{color:var(--green);font-size:1.1rem;font-weight:700;}
+.cross{color:var(--coral);font-size:1.1rem;}
+.maybe{color:var(--amber);font-size:0.9rem;font-weight:600;}
+.td-name{font-weight:600;color:var(--gray-900);}
+.td-desc{font-size:0.75rem;color:var(--gray-500);margin-top:2px;}
+
+/* NOTA */
+.nota{background:var(--amber-light);border-left:3px solid var(--amber);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1.5rem 0;font-size:0.875rem;color:#633806;line-height:1.6;}
+.nota strong{color:#412402;}
+
+.back-bar{background:var(--navy);padding:2rem;text-align:center;}
+.back-btn{display:inline-flex;align-items:center;gap:0.5rem;color:var(--dark-muted);font-size:0.875rem;text-decoration:none;border:1px solid rgba(255,255,255,0.15);padding:0.75rem 1.5rem;border-radius:8px;transition:all 0.2s;}
+.back-btn:hover{border-color:rgba(255,255,255,0.4);color:#fff;}
+
+footer{background:var(--navy);padding:2rem;text-align:center;color:var(--dark-muted);font-size:0.82rem;border-top:1px solid rgba(255,255,255,0.06);}
+footer .logo{font-size:1rem;font-weight:900;color:#fff;margin-bottom:0.4rem;}
+footer .logo span{color:var(--green);}
+
+@media(max-width:768px){
+  .resumen-grid,.reglas{grid-template-columns:1fr;}
+  nav .nav-right .nav-tag{display:none;}
+  .item-card{grid-template-columns:1fr;}
+}
+
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;margin-left:auto;}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;border-radius:2px;transition:all 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:rgba(13,27,62,0.98);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);z-index:99;padding:1rem 2rem 1.5rem;flex-direction:column;gap:0;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{color:#8FA3CC;text-decoration:none;font-size:0.95rem;font-weight:500;padding:0.875rem 0;border-bottom:1px solid rgba(255,255,255,0.06);transition:color 0.2s;display:flex;align-items:center;justify-content:space-between;}
+.mobile-menu a:last-child{border-bottom:none;}
+.mobile-menu a:hover{color:#fff;}
+.mobile-menu a.m-green{color:#1D9E75;}
+.mobile-menu a.m-amber{color:#E8A020;}
+.mobile-menu a.m-cta{background:#1D9E75;color:#fff;padding:0.75rem 1rem;border-radius:8px;text-align:center;justify-content:center;font-weight:700;margin-top:0.75rem;border:none;}
+@media(max-width:768px){.nav-links{display:none!important;}.nav-cta{display:none!important;}.hamburger{display:flex;}}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-back">← Volver</a>
+  <div class="nav-logo">Esca<span>la</span></div>
+  <div class="nav-right">
+    <span class="nav-tag">Etapa 1 — Pre-operativa</span>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html" onclick="closeMenu()">← Inicio</a>
+  <a href="proyectos.html" class="m-green" onclick="closeMenu()">Proyectos ✦</a>
+  <a href="impulso.html" class="m-amber" onclick="closeMenu()">Ángel de Impulso ✦</a>
+  <a href="proyecto-escala.html" onclick="closeMenu()">Proyecto Escala →</a>
+  <a href="costos.html" onclick="closeMenu()">Costos →</a>
+  <a href="index.html#registro" class="m-cta" onclick="closeMenu()">Registrarme gratis →</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow">Modelo de aportes · Etapa 1</div>
+  <h1>Lo que sale de caja,<br>lo que se vuelve <span>deuda</span>,<br>lo que se elimina</h1>
+  <p class="hero-sub">Reformulamos cada costo de lanzamiento bajo el modelo de Escala: mínimo desembolso real, máximo aporte diferido, cero gasto innecesario hasta que la empresa opere y genere ingresos.</p>
+  <div class="hero-nums">
+    <div>
+      <div class="hnum-val" style="color:var(--amber)">$1.470.000</div>
+      <div class="hnum-label">Sale de caja sí o sí</div>
+    </div>
+    <div>
+      <div class="hnum-val" style="color:#AFA9EC">$8.150.000</div>
+      <div class="hnum-label">Deuda diferida / mes</div>
+    </div>
+    <div>
+      <div class="hnum-val" style="color:var(--green)">$0</div>
+      <div class="hnum-label">Gasto en ítems eliminados</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECCIÓN PRINCIPAL -->
+<section style="background:var(--cream);">
+<div class="container">
+
+  <!-- CATEGORÍA 1: INVERSIÓN OBLIGATORIA -->
+  <div class="cat-inversion">
+    <div class="cat-header">
+      <div class="cat-icon">💵</div>
+      <div>
+        <div class="cat-title">Categoría 1 — Sale dinero sí o sí</div>
+        <div class="cat-sub" style="color:#854F0B">No se puede diferir ni convertir en aporte. Alguien tiene que desembolsar. Quien lo hace recibe acciones o préstamo con interés preferencial.</div>
+      </div>
+    </div>
+    <div class="items-grid">
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Dominio escala.co</div>
+          <div class="item-desc">Sin dominio no hay presencia. No se puede evitar ni diferir. Pago anual obligatorio desde el día 1.</div>
+          <div class="item-provider">NIC Colombia / GoDaddy</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$120.000</div>
+          <div class="item-freq badge-inversion">Anual</div>
+          <div class="item-tipo badge-inversion">→ Acción o préstamo</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Constitución SAS ante notaría y Cámara de Comercio</div>
+          <div class="item-desc">Sin empresa legal no hay contratos válidos, no hay cuenta bancaria, no hay facturación. Obligatorio para operar.</div>
+          <div class="item-provider">Notaría + Cámara de Comercio Medellín</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$1.200.000</div>
+          <div class="item-freq badge-inversion">Único</div>
+          <div class="item-tipo badge-inversion">→ Acción o préstamo</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Registro ante la DIAN (RUT)</div>
+          <div class="item-desc">Obligatorio para facturar. Sin RUT activo no se puede cobrar legalmente. Se hace con el contador en el mismo proceso de constitución.</div>
+          <div class="item-provider">DIAN Colombia</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$150.000</div>
+          <div class="item-freq badge-inversion">Único</div>
+          <div class="item-tipo badge-inversion">→ Acción o préstamo</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nota">
+      <strong>Total salida real de caja en etapa 1: $1.470.000</strong><br>
+      Quien aporte este dinero no lo pierde — lo convierte en acciones de Escala o en un préstamo con interés preferencial (mínimo DTF + 4 puntos). Hubo desembolso real, hay retorno con prima de riesgo.
+    </div>
+  </div>
+
+  <!-- CATEGORÍA 2: DEUDA DIFERIDA -->
+  <div class="cat-deuda" style="margin-top:3rem;">
+    <div class="cat-header">
+      <div class="cat-icon">📋</div>
+      <div>
+        <div class="cat-title">Categoría 2 — Aporte que se vuelve deuda de la empresa</div>
+        <div class="cat-sub" style="color:var(--purple)">Servicios que alguien presta sin cobrar ahora. La empresa registra la deuda con contrato. Cuando opere y genere caja, se paga o se convierte en equity según los tres carriles del modelo.</div>
+      </div>
+    </div>
+    <div class="items-grid">
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Hosting web</div>
+          <div class="item-desc">El que pague el hosting mensual es inversionista de Escala. La empresa le registra esa deuda. Valor mensual, acumulable.</div>
+          <div class="item-provider">GoDaddy / GitHub Pages (gratis en etapa 1 — GitHub Pages no cuesta nada)</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$0 – $80.000/mes</div>
+          <div class="item-freq badge-deuda">Mensual</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Correo corporativo Google Workspace</div>
+          <div class="item-desc">Quien pague el correo corporativo hace un aporte mensual. La empresa acumula la deuda. En etapa 1 se puede usar Gmail gratuito con dominio propio como alternativa temporal.</div>
+          <div class="item-provider">Google Workspace / Gmail gratis</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$0 – $60.000/mes</div>
+          <div class="item-freq badge-deuda">Mensual</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Secretaria / asistente virtual</div>
+          <div class="item-desc">Responde correos, gestiona WhatsApp, agenda reuniones. No cobra ahora — la empresa le registra el valor de mercado de su tiempo como deuda. Con riesgo explícito de no pago si la empresa no opera.</div>
+          <div class="item-provider">Freelance remoto · Valor de mercado: $800.000/mes</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$800.000/mes</div>
+          <div class="item-freq badge-deuda">Mensual</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Abogado — constitución, T&C y contratos</div>
+          <div class="item-desc">Redacta los contratos de entrada de especialistas, términos y condiciones y pacto de socios. Aporta su conocimiento ahora, la empresa le queda debiendo el valor de mercado de su trabajo.</div>
+          <div class="item-provider">Abogado comercial · Valor de mercado: $1.400.000 único</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$1.400.000</div>
+          <div class="item-freq badge-deuda">Único</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Contador — configuración tributaria y contabilidad</div>
+          <div class="item-desc">Hace el RUT, configura el régimen tributario, lleva la contabilidad mensual básica. Aporta su servicio, la empresa le registra la deuda mes a mes.</div>
+          <div class="item-provider">Contador externo · Valor de mercado: $400.000/mes</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$400.000/mes</div>
+          <div class="item-freq badge-deuda">Mensual</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Diseñador — identidad visual (logo + marca)</div>
+          <div class="item-desc">Crea el logo, paleta y manual de marca de Escala. Aporta el trabajo ahora, recibe el pago o las acciones cuando la empresa opere.</div>
+          <div class="item-provider">Diseñador freelance · Valor de mercado: $800.000 único</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$800.000</div>
+          <div class="item-freq badge-deuda">Único</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Community manager — redes sociales</div>
+          <div class="item-desc">Gestiona LinkedIn, Instagram y WhatsApp Business de Escala. Aporta su tiempo mensual, la empresa acumula la deuda con contrato firmado.</div>
+          <div class="item-provider">Freelance · Valor de mercado: $700.000/mes</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$700.000/mes</div>
+          <div class="item-freq badge-deuda">Mensual</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Registro de marca ante SIC</div>
+          <div class="item-desc">Si hay alguien dispuesto a pagar este trámite, se registra como deuda o acción. Si no hay caja para esto en etapa 1, se puede diferir hasta mes 3-4 sin perder prioridad crítica.</div>
+          <div class="item-provider">SIC Colombia · Clases 35 y 36</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$1.500.000</div>
+          <div class="item-freq badge-deuda">Único</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Firma digital de contratos (DocuSign / HelloSign)</div>
+          <div class="item-desc">Para los contratos de entrada de especialistas. Quien pague la suscripción hace un aporte mensual. Alternativa gratuita: PDF firmado a mano escaneado en etapa 1.</div>
+          <div class="item-provider">DocuSign / HelloSign · Alternativa: PDF firmado</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$0 – $80.000/mes</div>
+          <div class="item-freq badge-deuda">Mensual</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Línea telefónica WhatsApp Business</div>
+          <div class="item-desc">SIM dedicada para contacto corporativo. Quien pague el plan hace un aporte mensual pequeño. WhatsApp Business en sí es gratis.</div>
+          <div class="item-provider">Claro / Movistar · Plan básico</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$45.000/mes</div>
+          <div class="item-freq badge-deuda">Mensual</div>
+          <div class="item-tipo badge-deuda">→ Deuda diferida</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nota" style="background:var(--purple-light);border-color:var(--purple);color:var(--purple);">
+      <strong style="color:#26215C">Total deuda diferida estimada mes 1: $5.645.000</strong> — Deuda acumulada mensual recurrente: $1.945.000/mes. Cada peso de esta categoría tiene contrato firmado. El aportante conoce el riesgo: si la empresa no opera, puede no recuperar nada. Si opera, cobra con los tres carriles del modelo.
+    </div>
+  </div>
+
+  <!-- CATEGORÍA 3: ELIMINADOS -->
+  <div class="cat-eliminar" style="margin-top:3rem;">
+    <div class="cat-header">
+      <div class="cat-icon">🚫</div>
+      <div>
+        <div class="cat-title">Categoría 3 — Eliminados en etapa 1</div>
+        <div class="cat-sub">No son necesarios para que la empresa exista y opere mínimamente. Se activan cuando haya caja generada por la operación.</div>
+      </div>
+    </div>
+    <div class="items-grid">
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Coworking / oficina</div>
+          <div class="item-desc">No se necesita espacio físico en etapa 1. Todo se opera de forma remota. Se activa cuando el equipo supere 3 personas presenciales o cuando haya caja.</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$350.000/mes</div>
+          <div class="item-freq badge-eliminar">Diferir</div>
+          <div class="item-tipo badge-eliminar">Activa en etapa 2</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Pauta digital (Meta Ads / LinkedIn Ads)</div>
+          <div class="item-desc">En etapa 1 el crecimiento es orgánico: LinkedIn personal, WhatsApp, referencias. La pauta paga se activa cuando haya producto validado y caja suficiente.</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$500.000/mes</div>
+          <div class="item-freq badge-eliminar">Diferir</div>
+          <div class="item-tipo badge-eliminar">Activa en etapa 2</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Video institucional</div>
+          <div class="item-desc">Un video corto tiene impacto, pero no es bloqueante para conseguir los primeros 5 proyectos. Se produce cuando haya validación y caja.</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$700.000</div>
+          <div class="item-freq badge-eliminar">Diferir</div>
+          <div class="item-tipo badge-eliminar">Activa en etapa 2</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Evento de lanzamiento</div>
+          <div class="item-desc">Un evento presencial es poderoso pero costoso. En etapa 1 se reemplaza por reuniones 1 a 1 por Zoom o en café. El evento se hace cuando hay algo concreto que mostrar.</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$600.000</div>
+          <div class="item-freq badge-eliminar">Diferir</div>
+          <div class="item-tipo badge-eliminar">Activa en etapa 2</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Papelería corporativa</div>
+          <div class="item-desc">Tarjetas de presentación digitales (Blinq, HiHello) cuestan $0 y funcionan mejor. La papelería física se imprime solo para reuniones formales con inversionistas grandes.</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">$180.000</div>
+          <div class="item-freq badge-eliminar">Diferir</div>
+          <div class="item-tipo badge-eliminar">Activa en etapa 2</div>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div>
+          <div class="item-name">Asesor comercial dedicado</div>
+          <div class="item-desc">En etapa 1 el fundador es el vendedor. Las primeras 10 conversaciones comerciales las hace quien lidera. El asesor entra cuando el proceso ya está probado.</div>
+        </div>
+        <div class="item-right">
+          <div class="item-val">Comisión</div>
+          <div class="item-freq badge-eliminar">Diferir</div>
+          <div class="item-tipo badge-eliminar">Activa en etapa 2</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nota">
+      <strong>Total eliminado en etapa 1: $2.330.000+ en costos que no bloquean el arranque.</strong> Se activan solo cuando hay caja generada por la operación — no antes.
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- RESUMEN FINANCIERO -->
+<section class="resumen-section">
+<div class="container">
+  <span style="display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:0.75rem;">Resumen del modelo</span>
+  <h2 style="font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:800;letter-spacing:-0.03em;color:#fff;margin-bottom:0.75rem;">Lo que necesita el inversionista para decidir</h2>
+  <p style="font-size:0.95rem;color:var(--dark-muted);max-width:540px;line-height:1.7;">Tres números. Una decisión clara.</p>
+
+  <div class="resumen-grid">
+    <div class="rcard">
+      <div class="rcard-label">Sale de caja — obligatorio</div>
+      <div class="rcard-val amber">$1.470.000</div>
+      <div class="rcard-sub">Dominio + constitución SAS + DIAN. Lo mínimo para que la empresa exista legalmente. Quien lo pone recibe acciones o préstamo con interés preferencial.</div>
+    </div>
+    <div class="rcard">
+      <div class="rcard-label">Deuda diferida mes 1</div>
+      <div class="rcard-val purple">$5.645.000</div>
+      <div class="rcard-sub">Servicios aportados sin cobro inmediato. Cada aportante firma contrato. La empresa les queda debiendo. Se paga cuando opere — con los tres carriles del modelo.</div>
+    </div>
+    <div class="rcard">
+      <div class="rcard-label">Deuda acumulada mensual</div>
+      <div class="rcard-val" style="color:#fff;">$1.945.000</div>
+      <div class="rcard-sub">Lo que la empresa acumula como deuda diferida cada mes mientras no opera: secretaria + contador + community manager + teléfono + correo.</div>
+    </div>
+  </div>
+
+  <div class="reglas">
+    <div class="regla">
+      <div class="regla-num">Regla 01</div>
+      <div class="regla-title">El que desembolsa recibe prima</div>
+      <div class="regla-desc">Si alguien pone dinero real en etapa 1 (dominio, constitución, DIAN), ese dinero se convierte en acciones al valor más favorable o en préstamo con interés preferencial mínimo DTF + 4 puntos. El riesgo de etapa temprana se compensa con condiciones mejores.</div>
+    </div>
+    <div class="regla">
+      <div class="regla-num">Regla 02</div>
+      <div class="regla-title">El que aporta servicio asume el riesgo explícito</div>
+      <div class="regla-desc">Cada aportante de servicio firma un contrato donde reconoce que si la empresa no opera en los primeros 12 meses, puede no recuperar su deuda. No es engaño — es el modelo de Escala aplicado a Escala misma.</div>
+    </div>
+    <div class="regla">
+      <div class="regla-num">Regla 03</div>
+      <div class="regla-title">Todo queda registrado desde el primer día</div>
+      <div class="regla-desc">Cada hora, cada servicio, cada peso aportado queda en el sistema con fecha, valor de mercado y contrato firmado. No hay compromisos verbales. La plataforma es el registro.</div>
+    </div>
+    <div class="regla">
+      <div class="regla-num">Regla 04</div>
+      <div class="regla-title">Los eliminados no bloquean el arranque</div>
+      <div class="regla-desc">Coworking, pauta, video, evento y papelería no son necesarios para conseguir los primeros proyectos y los primeros ingresos. Se activan solo cuando la caja lo permite — no antes.</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- COMPARATIVO ANTES / DESPUÉS -->
+<section class="comp-section">
+<div class="container">
+  <span style="display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:0.75rem;">Antes vs ahora</span>
+  <h2 style="font-size:clamp(1.8rem,3.5vw,2.5rem);font-weight:800;letter-spacing:-0.03em;color:var(--navy);margin-bottom:0.75rem;">El modelo tradicional vs el modelo Escala</h2>
+  <p style="font-size:0.95rem;color:var(--gray-500);max-width:540px;line-height:1.7;">La misma empresa, la misma etapa — pero con una estructura financiera completamente distinta.</p>
+
+  <div style="overflow-x:auto;border-radius:12px;border:1px solid var(--gray-300);margin-top:2rem;">
+  <table class="comp-table">
+    <thead>
+      <tr>
+        <th style="width:30%">Ítem</th>
+        <th style="width:20%">Modelo tradicional</th>
+        <th style="width:20%">Modelo Escala</th>
+        <th style="width:30%">Diferencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><div class="td-name">Dominio web</div><div class="td-desc">escala.co</div></td>
+        <td><span class="maybe">$120.000 gasto</span></td>
+        <td><span class="check">$120.000 → acción</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">No es un gasto — es una inversión con retorno</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Constitución SAS</div></td>
+        <td><span class="maybe">$1.200.000 gasto</span></td>
+        <td><span class="check">$1.200.000 → acción</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Quien lo paga se vuelve accionista fundador</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Hosting</div></td>
+        <td><span class="maybe">$80.000/mes gasto</span></td>
+        <td><span class="check">$0 — GitHub Pages</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Eliminado en etapa 1. Costo cero.</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Secretaria</div></td>
+        <td><span class="maybe">$800.000/mes gasto</span></td>
+        <td><span class="check">$800.000/mes → deuda</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Sale cero de caja. Queda deuda registrada.</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Abogado</div></td>
+        <td><span class="maybe">$1.400.000 gasto</span></td>
+        <td><span class="check">$1.400.000 → deuda</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Aporta conocimiento, recibe deuda con contrato</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Contador</div></td>
+        <td><span class="maybe">$400.000/mes gasto</span></td>
+        <td><span class="check">$400.000/mes → deuda</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Sale cero de caja. Queda deuda registrada.</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Diseñador</div></td>
+        <td><span class="maybe">$800.000 gasto</span></td>
+        <td><span class="check">$800.000 → deuda</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Aporta trabajo, recibe deuda o equity</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Community manager</div></td>
+        <td><span class="maybe">$700.000/mes gasto</span></td>
+        <td><span class="check">$700.000/mes → deuda</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Sale cero de caja. Queda deuda registrada.</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Coworking</div></td>
+        <td><span class="maybe">$350.000/mes gasto</span></td>
+        <td><span class="check">$0 — eliminado</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Trabajo remoto en etapa 1. Se activa después.</td>
+      </tr>
+      <tr>
+        <td><div class="td-name">Pauta digital</div></td>
+        <td><span class="maybe">$500.000/mes gasto</span></td>
+        <td><span class="check">$0 — eliminado</span></td>
+        <td style="font-size:0.8rem;color:var(--gray-500)">Crecimiento orgánico en etapa 1.</td>
+      </tr>
+      <tr style="background:var(--gray-100);">
+        <td><div class="td-name" style="color:var(--navy)">TOTAL SALIDA DE CAJA MES 1</div></td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--coral);">$6.330.000</span></td>
+        <td><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--green);">$1.470.000</span></td>
+        <td style="font-size:0.875rem;font-weight:700;color:var(--green);">Ahorro real: $4.860.000</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<div class="back-bar">
+  <a href="index.html" class="back-btn">← Volver a la página principal de Escala</a>
+</div>
+
+<footer>
+  <div class="logo">Esca<span>la</span></div>
+  <p>Etapa 1 — Modelo de aportes y deudas · Colombia 2025</p>
+  <p style="margin-top:0.3rem;opacity:0.5;font-size:0.75rem">Valores en pesos colombianos · Precios de mercado junio 2025</p>
+</footer>
+
+<script>
+function toggleMenu(){var h=document.getElementById('hamburger');var m=document.getElementById('mobile-menu');h.classList.toggle('open');m.classList.toggle('open');}
+function closeMenu(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobile-menu').classList.remove('open');}
+window.addEventListener('scroll',function(){closeMenu();},{passive:true});
+</script>
+</body>
+</html>

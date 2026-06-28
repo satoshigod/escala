@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escala — Algo grande está llegando</title>
+<meta property="og:title" content="Escala — Algo grande está llegando">
+<meta property="og:description" content="La plataforma donde tu conocimiento, tu tiempo y tu experiencia se convierten en patrimonio.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: #060D1F;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* FONDO ANIMADO */
+.bg {
+  position: fixed; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse 120% 80% at 50% -10%, rgba(29,158,117,0.18) 0%, transparent 60%),
+              radial-gradient(ellipse 80% 60% at 80% 100%, rgba(83,74,183,0.12) 0%, transparent 50%),
+              radial-gradient(ellipse 60% 40% at 10% 80%, rgba(232,160,32,0.08) 0%, transparent 50%);
+}
+
+.particles {
+  position: fixed; inset: 0; z-index: 0; overflow: hidden;
+}
+.particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: rgba(29,158,117,0.6);
+  animation: float linear infinite;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-20px) translateX(var(--dx)); opacity: 0; }
+}
+
+/* CONTENIDO */
+.wrap {
+  position: relative; z-index: 10;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+/* LOGO */
+.logo {
+  font-size: 1rem; font-weight: 900; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.4);
+  margin-bottom: 4rem;
+  animation: fadeDown 1s ease both;
+}
+.logo span { color: #1D9E75; }
+
+/* HEADLINE */
+.headline {
+  font-size: clamp(2.8rem, 8vw, 6.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  margin-bottom: 2.5rem;
+  animation: fadeUp 1s 0.2s ease both;
+}
+.headline .line1 { display: block; color: #fff; }
+.headline .line2 { display: block; color: #1D9E75; }
+.headline .line3 { display: block; color: rgba(255,255,255,0.35); font-size: 0.55em; font-weight: 500; letter-spacing: -0.01em; margin-top: 0.3em; line-height: 1.4; }
+
+/* FRASES ROTATIVAS */
+.rotator-wrap {
+  height: 2.5rem;
+  overflow: hidden;
+  margin-bottom: 3rem;
+  animation: fadeUp 1s 0.4s ease both;
+}
+.rotator {
+  display: flex; flex-direction: column;
+  animation: rotate 12s linear infinite;
+}
+.rotator-item {
+  height: 2.5rem; display: flex; align-items: center; justify-content: center;
+  font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  color: rgba(255,255,255,0.6);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.rotator-item em { color: #1D9E75; font-style: normal; font-weight: 700; }
+@keyframes rotate {
+  0%   { transform: translateY(0); }
+  14%  { transform: translateY(0); }
+  17%  { transform: translateY(-2.5rem); }
+  31%  { transform: translateY(-2.5rem); }
+  34%  { transform: translateY(-5rem); }
+  48%  { transform: translateY(-5rem); }
+  51%  { transform: translateY(-7.5rem); }
+  65%  { transform: translateY(-7.5rem); }
+  68%  { transform: translateY(-10rem); }
+  82%  { transform: translateY(-10rem); }
+  85%  { transform: translateY(-12.5rem); }
+  99%  { transform: translateY(-12.5rem); }
+  100% { transform: translateY(0); }
+}
+
+/* DOLORES */
+.dolores {
+  display: flex; flex-wrap: wrap; gap: 0.75rem;
+  justify-content: center; max-width: 680px;
+  margin-bottom: 3.5rem;
+  animation: fadeUp 1s 0.6s ease both;
+}
+.dolor {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.55);
+  transition: all 0.3s;
+}
+.dolor:hover {
+  background: rgba(29,158,117,0.15);
+  border-color: rgba(29,158,117,0.4);
+  color: #fff;
+}
+
+/* CTA */
+.ctas {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  animation: fadeUp 1s 0.8s ease both;
+}
+.btn-wa {
+  display: inline-flex; align-items: center; gap: 0.75rem;
+  background: #1D9E75; color: #fff;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1rem; font-weight: 800;
+  text-decoration: none;
+  transition: all 0.25s;
+  box-shadow: 0 0 40px rgba(29,158,117,0.35);
+}
+.btn-wa:hover {
+  background: #178f67;
+  transform: translateY(-2px);
+  box-shadow: 0 0 60px rgba(29,158,117,0.5);
+}
+.btn-wa .wa-icon { font-size: 1.25rem; }
+
+.btn-ver {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem; font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  padding-bottom: 2px;
+}
+.btn-ver:hover { color: rgba(255,255,255,0.8); }
+
+/* NÚMERO GRANDE */
+.numero {
+  position: fixed;
+  bottom: -2rem; right: -1rem;
+  font-size: clamp(12rem, 30vw, 22rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: rgba(255,255,255,0.02);
+  line-height: 1;
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+}
+
+/* BARRA INFERIOR */
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 20;
+  padding: 0.875rem 2rem;
+  display: flex; align-items: center; justify-content: center; gap: 2rem;
+  background: rgba(6,13,31,0.8);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  flex-wrap: wrap;
+}
+.bar-item {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.78rem; color: rgba(255,255,255,0.3);
+}
+.bar-item strong { color: rgba(255,255,255,0.7); }
+.bar-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #1D9E75;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .headline { margin-bottom: 2rem; }
+  .dolores { gap: 0.5rem; }
+  .bottom-bar { gap: 1rem; }
+}
+
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;margin-left:auto;}
+.hamburger span{display:block;width:24px;height:2px;background:#fff;border-radius:2px;transition:all 0.3s;}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{display:none;position:fixed;top:60px;left:0;right:0;background:rgba(13,27,62,0.98);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);z-index:99;padding:1rem 2rem 1.5rem;flex-direction:column;gap:0;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{color:#8FA3CC;text-decoration:none;font-size:0.95rem;font-weight:500;padding:0.875rem 0;border-bottom:1px solid rgba(255,255,255,0.06);transition:color 0.2s;display:flex;align-items:center;justify-content:space-between;}
+.mobile-menu a:last-child{border-bottom:none;}
+.mobile-menu a:hover{color:#fff;}
+.mobile-menu a.m-green{color:#1D9E75;}
+.mobile-menu a.m-amber{color:#E8A020;}
+.mobile-menu a.m-cta{background:#1D9E75;color:#fff;padding:0.75rem 1rem;border-radius:8px;text-align:center;justify-content:center;font-weight:700;margin-top:0.75rem;border:none;}
+@media(max-width:768px){.nav-links{display:none!important;}.nav-cta{display:none!important;}.hamburger{display:flex;}}
+
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="particles" id="particles"></div>
+<div class="numero">E</div>
+
+<div class="wrap">
+
+  <div class="logo">Esca<span>la</span></div>
+
+  <h1 class="headline">
+    <span class="line1">Tu conocimiento</span>
+    <span class="line2">vale más</span>
+    <span class="line3">de lo que el mundo te ha pagado hasta hoy.</span>
+  </h1>
+
+  <div class="rotator-wrap">
+    <div class="rotator">
+      <div class="rotator-item">El abogado que lleva 15 años haciendo rico a otros — <em>sin ser socio de nada.</em></div>
+      <div class="rotator-item">La persona que apoyó el negocio toda su vida — <em>sin ser reconocida.</em></div>
+      <div class="rotator-item">El profesional de 40 que siente que le falta algo — <em>sin saber cómo canalizarlo.</em></div>
+      <div class="rotator-item">El inversionista con capital — <em>sin un proyecto concreto donde ponerlo.</em></div>
+      <div class="rotator-item">La idea perfecta en una página de GitHub — <em>que nunca se ejecutó.</em></div>
+      <div class="rotator-item">Todos tenemos algo valioso. <em>Muy pocas plataformas ayudan a convertirlo en patrimonio.</em></div>
+    </div>
+  </div>
+
+  <div class="dolores">
+    <span class="dolor">El talento atrapado</span>
+    <span class="dolor">La crisis de los 40</span>
+    <span class="dolor">El capital sin destino</span>
+    <span class="dolor">La idea sin equipo</span>
+    <span class="dolor">La experiencia no reconocida</span>
+    <span class="dolor">La esposa invisible</span>
+    <span class="dolor">El profesional que nunca fue socio</span>
+    <span class="dolor">La empresa que no puede crecer</span>
+  </div>
+
+  <div class="ctas">
+    <a href="https://wa.me/573005485019?text=Vi%20tu%20perfil%20y%20quiero%20saber%20m%C3%A1s%20sobre%20Escala"
+       class="btn-wa" target="_blank">
+      <span class="wa-icon">📲</span>
+      Quiero saber más
+    </a>
+  </div>
+
+</div>
+
+<div class="bottom-bar">
+  <div class="bar-item"><div class="bar-dot"></div> <span>Buscando socios fundadores</span></div>
+  <div class="bar-item">⚙️ <span><strong>Ejecutor</strong> · Medellín</span></div>
+  <div class="bar-item">💡 <span><strong>Proyecto piloto activo</strong></span></div>
+  <div class="bar-item">🌱 <span><strong>Escala</strong> · Colombia 2025</span></div>
+</div>
+
+<script>
+// Partículas flotantes
+(function() {
+  var container = document.getElementById('particles');
+  for (var i = 0; i < 35; i++) {
+    var p = document.createElement('div');
+    p.className = 'particle';
+    var size = Math.random() * 2 + 1;
+    p.style.cssText = [
+      'left:' + Math.random() * 100 + '%',
+      'width:' + size + 'px',
+      'height:' + size + 'px',
+      'animation-duration:' + (Math.random() * 15 + 8) + 's',
+      'animation-delay:' + (Math.random() * 10) + 's',
+      '--dx:' + (Math.random() * 120 - 60) + 'px',
+      'opacity:' + (Math.random() * 0.5 + 0.1),
+      'background:' + (Math.random() > 0.7 ? 'rgba(232,160,32,0.5)' : 'rgba(29,158,117,0.5)')
+    ].join(';');
+    container.appendChild(p);
+  }
+})();
+</script>
+
+<script>
+function toggleMenu(){var h=document.getElementById('hamburger');var m=document.getElementById('mobile-menu');h.classList.toggle('open');m.classList.toggle('open');}
+function closeMenu(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobile-menu').classList.remove('open');}
+window.addEventListener('scroll',function(){closeMenu();},{passive:true});
+</script>
+</body>
+</html>
