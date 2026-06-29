@@ -39,8 +39,8 @@ const fases = [
     num: '03',
     titulo: 'Frontend operativo (plataforma real)',
     estado: 'progreso',
-    valor_total: 14000000,
-    valor_hecho: 14000000,
+    valor_total: 15500000,
+    valor_hecho: 15500000,
     hitos: [
       { num: '3.1', nombre: 'Registro y onboarding de usuarios — 3 pasos', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '3.2', nombre: 'Perfil público de usuario con Escala Score', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
@@ -49,6 +49,7 @@ const fases = [
       { num: '3.5', nombre: 'Dashboard centro de control completo', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '3.6', nombre: 'Hitos, aportes, postulaciones y panel fundador', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '3.7', nombre: 'Panel de administración Escala', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '3.8', nombre: 'Perfil público de usuario con Score y contacto directo', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
