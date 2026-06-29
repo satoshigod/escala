@@ -59,13 +59,25 @@ export default function Workspace() {
         return
       }
 
+      // Cargar postulaciones aceptadas de todos los roles para mostrar el equipo
+      const postEquipo = []
+      await Promise.all(todosRoles.map(async rol => {
+        const r = await fetch('/api/postulaciones?rol_id=' + rol.id)
+        const d = await r.json()
+        if (d.postulaciones) {
+          d.postulaciones.filter(p => p.estado === 'aceptada').forEach(p => {
+            postEquipo.push({...p, rol_nombre: rol.nombre})
+          })
+        }
+      }))
+
       setAcceso(true)
       setProyecto(proy)
       setPerfil(perfilData.usuario)
       setRoles(todosRoles)
       setHitos(hitosData.hitos || [])
       setAportes(aportesData.aportes || [])
-      setPostulaciones(todasPost)
+      setPostulaciones(postEquipo)
       setCargando(false)
     }
     cargar()
