@@ -1,1 +1,1 @@
-export default function Home() { if (typeof window !== 'undefined') { window.location.href = '/index.html' } return null }
+import { redirect } from "next/navigation"; export default function Home() { redirect("/index.html"); }
