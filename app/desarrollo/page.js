@@ -102,9 +102,9 @@ const fases = [
   {
     num: '09',
     titulo: 'Workspace del proyecto — colaboración del equipo',
-    estado: 'progreso',
+    estado: 'completa',
     valor_total: 10000000,
-    valor_hecho: 7000000,
+    valor_hecho: 10000000,
     hitos: [
       { num: '9.1', nombre: 'Workspace con 5 tabs: Resumen, Hitos, Equipo, Mis aportes, Economía', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
       { num: '9.2', nombre: 'Control de acceso — solo miembros aceptados y fundador', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
@@ -113,8 +113,8 @@ const fases = [
       { num: '9.5', nombre: 'Tab aportes — registrar aportes directamente en el workspace', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
       { num: '9.6', nombre: 'Tab economía — deuda diferida, participación, carriles explicados', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
       { num: '9.7', nombre: 'Links al workspace desde dashboard fundador y especialista', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '9.8', nombre: 'Chat interno del equipo por proyecto', done: false, valor: 1500000, quien: 'Desarrollador' },
-      { num: '9.9', nombre: 'Notificaciones en tiempo real dentro del workspace', done: false, valor: 1500000, quien: 'Desarrollador' },
+      { num: '9.8', nombre: 'Chat interno del equipo por proyecto — tiempo real con Supabase Realtime', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '9.9', nombre: 'Notificaciones por email — nueva postulacion, aceptada, rechazada con Resend', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
