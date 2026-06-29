@@ -309,9 +309,12 @@ export default function Dashboard() {
                 )}
 
                 <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
-                  <a href="/admin" style={{fontSize:'0.78rem',fontWeight:'600',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>📬 Panel completo de postulaciones</a>
-                  <a href="/carril" style={{fontSize:'0.78rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.1)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>🛤️ Definir carriles</a>
+                  <a href="/admin" style={{fontSize:'0.78rem',fontWeight:'600',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>📬 Panel completo</a>
+                  <a href="/metricas" style={{fontSize:'0.78rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.1)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>📊 Métricas</a>
+                  <a href="/invitar" style={{fontSize:'0.78rem',fontWeight:'600',color:'#1D9E75',background:'rgba(29,158,117,0.1)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>✉️ Invitar</a>
+                  <a href="/carril" style={{fontSize:'0.78rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.1)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>🛤️ Carriles</a>
                   <a href="/hitos" style={{fontSize:'0.78rem',fontWeight:'600',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>🎯 Hitos</a>
+                  {misProyectos.length > 0 && <a href={'/p/'+misProyectos[0].id} target="_blank" style={{fontSize:'0.78rem',fontWeight:'600',color:'#8FA3CC',background:'rgba(255,255,255,0.06)',padding:'0.5rem 1rem',borderRadius:'8px',textDecoration:'none'}}>🔗 Link público</a>}
                 </div>
               </div>
             )}
