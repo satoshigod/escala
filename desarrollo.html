@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escala — Seguimiento de Desarrollo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --navy:#0D1B3E;--navy2:#152848;
+  --cream:#F7F5F0;--white:#fff;
+  --green:#1D9E75;--gl:#E1F5EE;
+  --amber:#E8A020;--al:#FDF3DC;
+  --coral:#D85A30;--cl:#FAECE7;
+  --purple:#534AB7;--pl:#EEEDFE;
+  --g9:#111827;--g7:#374151;--g5:#6B7280;--g3:#D1D5DB;--g1:#F9FAFB;
+  --dm:#8FA3CC;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--g9);overflow-x:hidden;}
+.container{max-width:1000px;margin-inline:auto;padding-inline:1.25rem;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,27,62,0.97);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);height:60px;display:flex;align-items:center;padding-inline:1.25rem;gap:0.75rem;}
+.nav-logo{font-size:1.1rem;font-weight:900;color:#fff;letter-spacing:-0.03em;}
+.nav-logo span{color:var(--green);}
+.nav-back{color:var(--dm);font-size:0.82rem;text-decoration:none;}
+.nav-back:hover{color:#fff;}
+.nav-r{margin-left:auto;}
+.nav-tag{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--green);background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);padding:0.28rem 0.75rem;border-radius:20px;}
+
+/* HERO */
+.hero{background:var(--navy);padding:5rem 1.25rem 3rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(29,158,117,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero-eye{display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);padding:0.3rem 0.875rem;border-radius:20px;margin-bottom:1.25rem;}
+.hero h1{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;letter-spacing:-0.035em;color:#fff;margin-bottom:0.875rem;line-height:1.1;}
+.hero h1 span{color:var(--green);}
+.hero-sub{font-size:0.9rem;color:var(--dm);line-height:1.7;max-width:620px;margin-bottom:2rem;}
+
+/* RESUMEN FINANCIERO */
+.fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+@media(min-width:600px){.fin-grid{grid-template-columns:repeat(4,1fr);}}
+.fin-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.1rem;text-align:center;}
+.fin-val{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;line-height:1;margin-bottom:0.3rem;}
+.fin-val.g{color:var(--green);}
+.fin-val.a{color:var(--amber);}
+.fin-val.r{color:var(--coral);}
+.fin-val.w{color:#fff;}
+.fin-label{font-size:0.68rem;color:var(--dm);line-height:1.3;}
+
+/* BARRA DE PROGRESO GLOBAL */
+.prog-wrap{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.25rem;}
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;}
+.prog-title{font-size:0.82rem;font-weight:600;color:#fff;}
+.prog-pct{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:var(--green);}
+.prog-bar{height:10px;background:rgba(255,255,255,0.08);border-radius:5px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--green),#25c795);transition:width 0.8s ease;}
+.prog-sublabel{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--dm);margin-top:0.5rem;}
+
+/* NOTA IMPORTANTE */
+.nota-dev{background:rgba(232,160,32,0.08);border:1px solid rgba(232,160,32,0.2);border-radius:10px;padding:1rem 1.25rem;margin:2rem 0;font-size:0.82rem;color:#F0C060;line-height:1.6;}
+.nota-dev strong{color:var(--amber);}
+
+/* SECCIONES */
+section{padding-block:2.5rem;}
+.ey{font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:0.6rem;}
+.ttl{font-size:clamp(1.3rem,3vw,1.8rem);font-weight:800;letter-spacing:-0.03em;color:var(--navy);margin-bottom:0.75rem;line-height:1.1;}
+.sub{font-size:0.875rem;color:var(--g5);line-height:1.7;max-width:600px;}
+
+/* FASE HEADER */
+.fase-hdr{display:flex;align-items:flex-start;gap:1rem;padding:1.25rem 1.5rem;border-radius:14px;margin-bottom:1.25rem;margin-top:2rem;}
+.fh-verde{background:var(--gl);border:1px solid rgba(29,158,117,0.3);}
+.fh-amber{background:var(--al);border:1px solid rgba(232,160,32,0.3);}
+.fh-gris{background:var(--g1);border:1px solid var(--g3);}
+.fh-num{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;line-height:1;flex-shrink:0;}
+.fhg .fh-num{color:rgba(29,158,117,0.3);}
+.fha .fh-num{color:rgba(232,160,32,0.3);}
+.fhx .fh-num{color:rgba(0,0,0,0.1);}
+.fh-title{font-size:1rem;font-weight:800;color:var(--navy);margin-bottom:0.2rem;}
+.fh-sub{font-size:0.78rem;color:var(--g5);line-height:1.5;}
+.fh-dur{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:0.5rem;}
+.dur-g{background:rgba(29,158,117,0.15);color:var(--green);}
+.dur-a{background:rgba(232,160,32,0.15);color:#7A4F0A;}
+.dur-x{background:var(--g1);color:var(--g5);}
+.fh-val{font-family:'JetBrains Mono',monospace;font-size:0.8rem;font-weight:700;margin-top:0.35rem;}
+.fhg .fh-val{color:var(--green);}
+.fha .fh-val{color:var(--amber);}
+.fhx .fh-val{color:var(--g5);}
+
+/* HITOS */
+.hitos{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1rem;}
+.hito{border-radius:10px;padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:start;transition:all 0.2s;}
+.hito-done{background:var(--gl);border:1px solid rgba(29,158,117,0.25);}
+.hito-act{background:var(--al);border:1px solid rgba(232,160,32,0.3);}
+.hito-pend{background:var(--white);border:1px solid var(--g3);}
+.hito-check{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;margin-top:2px;}
+.hc-done{background:var(--green);color:#fff;}
+.hc-act{background:var(--amber);color:#fff;}
+.hc-pend{background:var(--white);border:2px solid var(--g3);color:var(--g3);}
+.hito-body{}
+.hito-name{font-size:0.9rem;font-weight:700;margin-bottom:0.2rem;}
+.hito-done .hito-name{color:#085041;}
+.hito-act .hito-name{color:#633806;}
+.hito-pend .hito-name{color:var(--g7);}
+.hito-desc{font-size:0.75rem;line-height:1.5;}
+.hito-done .hito-desc{color:#0F6E56;}
+.hito-act .hito-desc{color:#854F0B;}
+.hito-pend .hito-desc{color:var(--g5);}
+.hito-sub{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.4rem;}
+.hsub-tag{font-size:0.65rem;padding:1px 6px;border-radius:6px;font-weight:600;}
+.hst-d{background:rgba(29,158,117,0.15);color:var(--green);}
+.hst-a{background:rgba(232,160,32,0.15);color:#854F0B;}
+.hst-p{background:var(--g1);color:var(--g5);}
+.hito-val{text-align:right;flex-shrink:0;}
+.hv-num{font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;white-space:nowrap;}
+.hito-done .hv-num{color:var(--green);}
+.hito-act .hv-num{color:var(--amber);}
+.hito-pend .hv-num{color:var(--g5);}
+.hv-label{font-size:0.62rem;margin-top:2px;}
+.hito-done .hv-label{color:#0F6E56;}
+.hito-act .hv-label{color:#854F0B;}
+.hito-pend .hv-label{color:var(--g3);}
+
+/* SUBTOTAL FASE */
+.fase-subtotal{background:var(--navy);border-radius:10px;padding:0.875rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.5rem;}
+.fst-label{font-size:0.75rem;color:var(--dm);}
+.fst-val{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;}
+.fst-done{color:var(--green);}
+.fst-pend{color:var(--dm);}
+.fst-total{color:#fff;}
+
+/* RESUMEN FINAL */
+.resumen-section{background:var(--navy);padding:3rem 1.25rem;}
+.res-inner{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem;}
+.res-title{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:0.5rem;}
+.res-sub{font-size:0.82rem;color:var(--dm);margin-bottom:1.5rem;line-height:1.5;}
+.res-tabla{width:100%;border-collapse:collapse;}
+.res-tabla td{padding:0.75rem 0.875rem;border-bottom:1px solid rgba(255,255,255,0.07);font-size:0.85rem;}
+.res-tabla tr:last-child td{border-bottom:none;}
+.rtd-label{color:var(--dm);}
+.rtd-done{color:var(--green);font-family:'JetBrains Mono',monospace;font-weight:600;text-align:right;}
+.rtd-pend{color:var(--dm);font-family:'JetBrains Mono',monospace;text-align:right;}
+.rtd-total{color:#fff;font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right;font-size:1rem;}
+.rtd-label-total{color:#fff;font-weight:700;}
+.res-nota{background:rgba(29,158,117,0.1);border:1px solid rgba(29,158,117,0.2);border-radius:10px;padding:1.1rem;margin-top:1.25rem;font-size:0.8rem;color:var(--dm);line-height:1.6;}
+.res-nota strong{color:var(--green);}
+
+footer{background:var(--navy);padding:2rem 1.25rem;text-align:center;color:var(--dm);font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);}
+.foot-logo{font-size:1rem;font-weight:900;color:#fff;margin-bottom:0.35rem;}
+.foot-logo span{color:var(--green);}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="proyecto-escala.html" class="nav-back">← Proyecto Escala</a>
+  <div class="nav-logo">Esca<span>la</span></div>
+  <div class="nav-r">
+    <span class="nav-tag">Seguimiento de desarrollo</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+<div class="container">
+  <div class="hero-eye">🛠️ Plan de desarrollo · Actualizado en tiempo real</div>
+  <h1>Lo que ya está construido.<br><span>Lo que falta por construir.</span></h1>
+  <p class="hero-sub">Cada hito completado tiene un valor de mercado real. Lo que resolvemos con IA va reduciendo la deuda diferida que le quedará al desarrollador cuando entre al equipo. Esta página es el expediente técnico del proyecto.</p>
+
+  <div class="fin-grid">
+    <div class="fin-card">
+      <div class="fin-val g" id="val-done">$23.200.000</div>
+      <div class="fin-label">Valor ya construido<br>(IA + fundador)</div>
+    </div>
+    <div class="fin-card">
+      <div class="fin-val r" id="val-pend">$31.800.000</div>
+      <div class="fin-label">Valor pendiente<br>(requiere desarrollador)</div>
+    </div>
+    <div class="fin-card">
+      <div class="fin-val w" id="val-total">$55.000.000</div>
+      <div class="fin-label">Valor total estimado<br>de la plataforma</div>
+    </div>
+    <div class="fin-card">
+      <div class="fin-val a" id="pct-done">42.2%</div>
+      <div class="fin-label">Porcentaje completado<br>del desarrollo total</div>
+    </div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-header">
+      <span class="prog-title">Progreso total del desarrollo</span>
+      <span class="prog-pct" id="prog-pct">5.8%</span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:5.8%"></div></div>
+    <div class="prog-sublabel">
+      <span>$0</span>
+      <span id="prog-done-label">$3.200.000 completados</span>
+      <span>$55.000.000</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CONTENIDO PRINCIPAL -->
+<section style="background:var(--cream);">
+<div class="container">
+
+  <div class="nota-dev">
+    <strong>¿Cómo funciona esta página?</strong> Cada hito tiene un valor de mercado estimado. Los hitos marcados en verde ya están resueltos — con IA, con el fundador o con herramientas gratuitas. Ese valor se descuenta de la deuda diferida que le quedará al desarrollador. <strong>El desarrollador entra a construir lo que falta — no lo que ya existe.</strong>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- FASE 1: PRESENTACIÓN Y DISEÑO -->
+  <!-- ══════════════════════════════════ -->
+  <div class="fase-hdr fh-verde fhg">
+    <div class="fh-num">01</div>
+    <div>
+      <div class="fh-title">Presentación y diseño web</div>
+      <div class="fh-sub">Todo lo relacionado con el sitio de presentación, la identidad visual básica y la arquitectura de la información.</div>
+      <span class="fh-dur dur-g">✓ Completada</span>
+      <div class="fh-val">Valor completado: $3.200.000 de $3.200.000</div>
+    </div>
+  </div>
+
+  <div class="hitos">
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Arquitectura de información y navegación</div>
+        <div class="hito-desc">6 páginas definidas con flujo de navegación completo: index, proyectos, proyecto-escala, costos, impulso, coming. Menú responsive con hamburguesa en móvil.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$400.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Diseño visual y sistema de estilos</div>
+        <div class="hito-desc">Paleta de colores, tipografía (Inter + JetBrains Mono), tokens CSS, componentes reutilizables, diseño mobile-first con breakpoints en 640px y 900px.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$600.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Página principal (index.html)</div>
+        <div class="hito-desc">Hero, historia de los 4 personajes, por qué existe Escala, beneficios, flujo de 7 pasos, casos reales con filtros, 5 perfiles interactivos, compensación, quién puede participar, motor de compensación, protección jurídica, visión, formulario WhatsApp.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$800.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Página de proyectos (proyectos.html)</div>
+        <div class="hito-desc">Listado de proyectos Tipo A y Tipo B con filtros interactivos. 12 tarjetas de brechas por sector. Cards de proyectos activos. Navegación entre secciones.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$400.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Página de proyecto piloto (proyecto-escala.html)</div>
+        <div class="hito-desc">Caso real con 7 pasos, 11 roles con actividades y condiciones, tabla de aportes registrados, proceso de postulación Fase 0, sección de riesgos.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$400.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Página Ángel de Impulso + Paquetes (impulso.html)</div>
+        <div class="hito-desc">Concepto del Ángel, tabla comparativa donación/inversión/impulso, 12 hitos financiables, 8 paquetes B2B con precios, 4 tipos de ángeles, proceso de trazabilidad.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$300.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Página de costos (costos.html)</div>
+        <div class="hito-desc">Modelo de aportes etapa 1 con las tres categorías: sale de caja, deuda diferida y eliminados. Comparativo antes/después. Cuatro reglas del modelo.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$200.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Página de expectativa para WhatsApp (coming.html)</div>
+        <div class="hito-desc">Landing page con animación de partículas, frases rotativas, dolores del modelo y botón directo a WhatsApp. Para el perfil del fundador.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$100.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+  </div>
+
+  <div class="fase-subtotal">
+    <div class="fst-label">Fase 1 — Presentación y diseño</div>
+    <div>
+      <span class="fst-val fst-done">$3.200.000 completados</span>
+      <span style="color:var(--dm);font-size:0.75rem;margin-left:0.5rem;">de $3.200.000</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- FASE 2: BACKEND Y BASE DE DATOS -->
+  <!-- ══════════════════════════════════ -->
+  <div class="fase-hdr fh-gris fhx">
+    <div class="fh-num">02</div>
+    <div>
+      <div class="fh-title">Backend y base de datos</div>
+      <div class="fh-sub">La infraestructura que hace funcionar la plataforma. Base de datos, autenticación, API y lógica de negocio.</div>
+      <span class="fh-dur dur-x">⏳ Pendiente — Requiere desarrollador</span>
+      <div class="fh-val" style="color:var(--g5);">Valor pendiente: $12.000.000</div>
+    </div>
+  </div>
+
+  <div class="hitos">
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Modelo de datos completo</div>
+        <div class="hito-desc">8 tablas implementadas en Supabase PostgreSQL: perfiles, proyectos, roles, postulaciones, aportes, hitos, contratos, impulsos. Con RLS, triggers y funciones automáticas.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Sistema de autenticación</div>
+        <div class="hito-desc">Supabase Auth configurado. Soporta registro con email, Google OAuth, recuperación de contraseña y verificación de email. El trigger handle_new_user() crea el perfil automáticamente al registrarse.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Supabase Auth + Claude AI</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$1.500.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">API REST de proyectos y roles</div>
+        <div class="hito-desc">3 endpoints funcionando: /api/proyectos (GET listar + POST crear), /api/usuarios (GET perfil + PATCH actualizar), /api/roles (GET listar + POST crear + PATCH actualizar estado). Probados en localhost:3000.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.500.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">API de aportes y registro de hitos</div>
+        <div class="hito-desc">3 endpoints adicionales funcionando en producción: /api/aportes (GET + POST + PATCH validar), /api/hitos (GET + POST + PATCH completar), /api/postulaciones (GET + POST + PATCH aceptar/rechazar). Total: 6 endpoints REST en escala-blush-nine.vercel.app</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">2.5</div>
+      <div class="hito-body">
+        <div class="hito-name">Sistema de notificaciones</div>
+        <div class="hito-desc">Notificaciones por email para eventos clave: nuevo postulante, hito completado, contrato generado, aporte validado. Integración con SendGrid o Resend.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$1.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">2.6</div>
+      <div class="hito-body">
+        <div class="hito-name">Almacenamiento de archivos</div>
+        <div class="hito-desc">Subida y gestión de documentos: contratos firmados, evidencias de aportes, portafolios. Supabase Storage o Cloudflare R2.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$1.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Infraestructura y despliegue</div>
+        <div class="hito-desc">GitHub + Vercel + Supabase conectados. CI/CD automático — cada push a GitHub despliega en Vercel. Variables de entorno configuradas. OG image para preview en WhatsApp. URL pública: escala-blush-nine.vercel.app</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$500.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+  </div>
+
+  <div class="fase-subtotal">
+    <div class="fst-label">Fase 2 — Backend y base de datos</div>
+    <div>
+      <span class="fst-val fst-done">$8.500.000 completados</span>
+      <span style="color:var(--dm);font-size:0.75rem;margin-left:0.5rem;">de $12.000.000</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- FASE 3: FRONTEND OPERATIVO -->
+  <!-- ══════════════════════════════════ -->
+  <div class="fase-hdr fh-gris fhx">
+    <div class="fh-num">03</div>
+    <div>
+      <div class="fh-title">Frontend operativo (plataforma real)</div>
+      <div class="fh-sub">Las pantallas reales donde los usuarios registran, gestionan y hacen seguimiento de sus proyectos. Diferente al sitio de presentación.</div>
+      <span class="fh-dur dur-x">⏳ Pendiente — Requiere desarrollador</span>
+      <div class="fh-val" style="color:var(--g5);">Valor pendiente: $14.000.000</div>
+    </div>
+  </div>
+
+  <div class="hitos">
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Registro y onboarding de usuarios</div>
+        <div class="hito-desc">Flujo completo: /registro (crear cuenta + iniciar sesión) → /onboarding (3 pasos: datos básicos, perfil, aporte) → /dashboard. Conectado a Supabase Auth y tabla perfiles.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Perfil público de usuario con Escala Score</div>
+        <div class="hito-desc">Dashboard con perfil completo: nombre, ciudad, WhatsApp, rol principal, especialidad, lo que aporta. Escala Score, proyectos completados y estado de la plataforma en tiempo real.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Publicación y gestión de proyectos</div>
+        <div class="hito-desc">/proyectos con listado en tiempo real desde Supabase y formulario de publicación completo: nombre, descripción, tipo A/B, sector, ciudad. ESCALA publicado como primer proyecto activo de la plataforma.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$3.000.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-done">
+      <div class="hito-check hc-done">✓</div>
+      <div class="hito-body">
+        <div class="hito-name">Panel de registro de aportes</div>
+        <div class="hito-desc">Página de detalle de proyecto con 9 roles reales, valores, modalidades en español y botón de postulación funcional. Postulaciones se guardan en Supabase en tiempo real. Cards de proyectos con link directo al detalle.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-d">Completado</span><span class="hsub-tag hst-d">Claude AI + Fundador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.500.000</div><div class="hv-label">Valor de mercado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">3.5</div>
+      <div class="hito-body">
+        <div class="hito-name">Dashboard del proyecto</div>
+        <div class="hito-desc">Vista unificada para el equipo: hitos, aportes acumulados, deuda registrada por rol, estado de contratos y próximas acciones requeridas.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">3.6</div>
+      <div class="hito-body">
+        <div class="hito-name">Panel del Ángel de Impulso</div>
+        <div class="hito-desc">Explorador de hitos disponibles para financiar, proceso de pago de un hito, expediente del proyecto financiado y seguimiento de impacto.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$1.500.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">3.7</div>
+      <div class="hito-body">
+        <div class="hito-name">Panel de administración Escala</div>
+        <div class="hito-desc">Vista interna para el equipo de Escala: todos los proyectos, aportes, contratos, usuarios y métricas de la plataforma.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$1.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+  </div>
+
+  <div class="fase-subtotal">
+    <div class="fst-label">Fase 3 — Frontend operativo</div>
+    <div>
+      <span class="fst-val fst-done">$9.500.000 completados</span>
+      <span style="color:var(--dm);font-size:0.75rem;margin-left:0.5rem;">de $14.000.000</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- FASE 4: CONTRATOS Y DOCUMENTOS -->
+  <!-- ══════════════════════════════════ -->
+  <div class="fase-hdr fh-gris fhx">
+    <div class="fh-num">04</div>
+    <div>
+      <div class="fh-title">Contratos digitales y documentos</div>
+      <div class="fh-sub">El diferenciador de Escala. Generación automática, firma digital y custodia de contratos.</div>
+      <span class="fh-dur dur-x">⏳ Pendiente — Requiere desarrollador + abogado</span>
+      <div class="fh-val" style="color:var(--g5);">Valor pendiente: $8.000.000</div>
+    </div>
+  </div>
+
+  <div class="hitos">
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">4.1</div>
+      <div class="hito-body">
+        <div class="hito-name">Plantillas legales base</div>
+        <div class="hito-desc">El abogado redacta las 3 plantillas: contrato de especialista, contrato de inversionista, contrato de Ángel de Impulso. Con todos los campos variables identificados.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Abogado + Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$1.400.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">4.2</div>
+      <div class="hito-body">
+        <div class="hito-name">Motor de generación automática de contratos</div>
+        <div class="hito-desc">Al aceptar a un especialista, el sistema genera automáticamente el contrato con los campos completados: nombre, rol, valor, carril, actividades, fecha, condiciones.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">4.3</div>
+      <div class="hito-body">
+        <div class="hito-name">Integración de firma digital</div>
+        <div class="hito-desc">Integración con API de firma digital (DocuSign o HelloSign). Flujo de firma para ambas partes. Contrato firmado inmutable guardado en el expediente.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.500.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">4.4</div>
+      <div class="hito-body">
+        <div class="hito-name">Expediente digital del proyecto</div>
+        <div class="hito-desc">Repositorio inmutable por proyecto: contratos firmados, aportes con evidencia, hitos con fecha y responsable, calificaciones. Exportable a PDF para inversionistas.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.100.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+  </div>
+
+  <div class="fase-subtotal">
+    <div class="fst-label">Fase 4 — Contratos y documentos</div>
+    <div>
+      <span class="fst-val fst-pend">$0 completados</span>
+      <span style="color:var(--dm);font-size:0.75rem;margin-left:0.5rem;">de $8.000.000</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- FASE 5: CALIFICACIÓN Y SCORE -->
+  <!-- ══════════════════════════════════ -->
+  <div class="fase-hdr fh-gris fhx">
+    <div class="fh-num">05</div>
+    <div>
+      <div class="fh-title">Sistema de calificación y Escala Score</div>
+      <div class="fh-sub">El activo más valioso de Escala a largo plazo. Reputación basada en hechos verificables.</div>
+      <span class="fh-dur dur-x">⏳ Pendiente — Requiere desarrollador</span>
+      <div class="fh-val" style="color:var(--g5);">Valor pendiente: $8.000.000</div>
+    </div>
+  </div>
+
+  <div class="hitos">
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">5.1</div>
+      <div class="hito-body">
+        <div class="hito-name">Sistema de evaluación por hito</div>
+        <div class="hito-desc">Al completar cada hito, ejecutor y capitalista califican a cada especialista en 4 dimensiones: cumplimiento, calidad, comunicación y recomendación.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">5.2</div>
+      <div class="hito-body">
+        <div class="hito-name">Algoritmo del Escala Score</div>
+        <div class="hito-desc">Cálculo del puntaje por usuario: promedio de calificaciones, cumplimiento de aportes prometidos, proyectos completados vs abandonados, empresas activas a 12 meses.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.500.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">5.3</div>
+      <div class="hito-body">
+        <div class="hito-name">Panel de definición de carril (A/B/C)</div>
+        <div class="hito-desc">Interfaz para que ejecutor y capitalista definan juntos el carril de cada especialista. Requiere aprobación de ambos. Genera el documento de cambio de carril.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">5.4</div>
+      <div class="hito-body">
+        <div class="hito-name">Track record público por usuario</div>
+        <div class="hito-desc">Perfil con: empresas ayudadas, empresas activas, capital levantado por proyectos donde participó, empleos creados, ventas acumuladas. El "LinkedIn de los hechos reales".</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$1.500.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+  </div>
+
+  <div class="fase-subtotal">
+    <div class="fst-label">Fase 5 — Calificación y Escala Score</div>
+    <div>
+      <span class="fst-val fst-pend">$0 completados</span>
+      <span style="color:var(--dm);font-size:0.75rem;margin-left:0.5rem;">de $8.000.000</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ -->
+  <!-- FASE 6: PAGOS Y DISTRIBUCIÓN -->
+  <!-- ══════════════════════════════════ -->
+  <div class="fase-hdr fh-gris fhx">
+    <div class="fh-num">06</div>
+    <div>
+      <div class="fh-title">Pagos y distribución automática</div>
+      <div class="fh-sub">Cuando la empresa genera ingresos, la distribución sigue las reglas pactadas sin renegociaciones.</div>
+      <span class="fh-dur dur-x">⏳ Pendiente — Requiere desarrollador + contador</span>
+      <div class="fh-val" style="color:var(--g5);">Valor pendiente: $9.800.000</div>
+    </div>
+  </div>
+
+  <div class="hitos">
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">6.1</div>
+      <div class="hito-body">
+        <div class="hito-name">Integración Wompi (pagos Colombia)</div>
+        <div class="hito-desc">Pagos con PSE, tarjetas débito/crédito y Nequi. Cobro de suscripciones de la plataforma y comisiones de éxito. Webhooks para confirmar pagos.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.500.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">6.2</div>
+      <div class="hito-body">
+        <div class="hito-name">Motor de distribución automática</div>
+        <div class="hito-desc">Cuando un proyecto registra ingresos, el sistema calcula la distribución según contratos firmados y genera comprobantes para cada miembro.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$3.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">6.3</div>
+      <div class="hito-body">
+        <div class="hito-name">Pago de hitos del Ángel de Impulso</div>
+        <div class="hito-desc">Flujo de pago de un hito específico: el Ángel paga → el dinero queda en custodia → se libera cuando el hito se ejecuta y se evidencia.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.000.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+    <div class="hito hito-pend">
+      <div class="hito-check hc-pend">6.4</div>
+      <div class="hito-body">
+        <div class="hito-name">Facturación electrónica DIAN</div>
+        <div class="hito-desc">Integración con proveedor autorizado DIAN para emisión de facturas electrónicas por las transacciones de la plataforma. El contador define el esquema.</div>
+        <div class="hito-sub"><span class="hsub-tag hst-p">Pendiente</span><span class="hsub-tag hst-p">Desarrollador + Contador</span></div>
+      </div>
+      <div class="hito-val"><div class="hv-num">$2.300.000</div><div class="hv-label">Valor estimado</div></div>
+    </div>
+
+  </div>
+
+  <div class="fase-subtotal">
+    <div class="fst-label">Fase 6 — Pagos y distribución</div>
+    <div>
+      <span class="fst-val fst-pend">$0 completados</span>
+      <span style="color:var(--dm);font-size:0.75rem;margin-left:0.5rem;">de $9.800.000</span>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- RESUMEN FINANCIERO FINAL -->
+<section class="resumen-section">
+<div class="container">
+<div class="res-inner">
+  <div class="res-title">Resumen financiero del desarrollo</div>
+  <div class="res-sub">Este es el argumento para la negociación con el desarrollador. Lo que ya existe tiene valor real — y reduce la deuda diferida que le quedará al entrar.</div>
+
+  <table class="res-tabla">
+    <tr>
+      <td class="rtd-label">Fase 1 — Presentación y diseño (completada)</td>
+      <td class="rtd-done">$3.200.000 ✓</td>
+    </tr>
+    <tr>
+      <td class="rtd-label">Fase 2 — Backend y base de datos (en progreso)</td>
+      <td class="rtd-done">$8.500.000 ✓ <span style="color:var(--dm);font-size:0.75rem;">de $12.000.000</span></td>
+    </tr>
+    <tr>
+      <td class="rtd-label">Fase 3 — Frontend operativo (en progreso)</td>
+      <td class="rtd-done">$9.500.000 ✓ <span style="color:var(--dm);font-size:0.75rem;">de $14.000.000</span></td>
+    </tr>
+    <tr>
+      <td class="rtd-label">Fase 4 — Contratos y documentos</td>
+      <td class="rtd-pend">$8.000.000</td>
+    </tr>
+    <tr>
+      <td class="rtd-label">Fase 5 — Calificación y Escala Score</td>
+      <td class="rtd-pend">$8.000.000</td>
+    </tr>
+    <tr>
+      <td class="rtd-label">Fase 6 — Pagos y distribución</td>
+      <td class="rtd-pend">$9.800.000</td>
+    </tr>
+    <tr style="border-top:1px solid rgba(255,255,255,0.15);">
+      <td class="rtd-label-total">Valor total estimado de la plataforma</td>
+      <td class="rtd-total">$55.000.000</td>
+    </tr>
+    <tr>
+      <td class="rtd-label-total" style="color:var(--green);">Ya construido (descontable)</td>
+      <td class="rtd-total" style="color:var(--green);">− $23.200.000</td>
+    </tr>
+    <tr>
+      <td class="rtd-label-total">Deuda diferida máxima para el desarrollador</td>
+      <td class="rtd-total" style="color:var(--amber);">$31.800.000</td>
+    </tr>
+  </table>
+
+  <div class="res-nota">
+    <strong>A medida que avancemos con IA</strong> este valor irá bajando. Cada hito que resolvamos juntos — documentación técnica, especificaciones de API, diseño de flujos, pruebas de concepto — reduce la deuda diferida del desarrollador y fortalece nuestra posición en la negociación. <strong>El desarrollador entra a construir lo que falta, no a repetir lo que ya existe.</strong>
+  </div>
+</div>
+</div>
+</section>
+
+<div style="background:var(--navy);padding:1.5rem 1.25rem;text-align:center;border-top:1px solid rgba(255,255,255,0.06);">
+  <a href="proyecto-escala.html" style="color:var(--dm);font-size:0.875rem;text-decoration:none;border:1px solid rgba(255,255,255,0.12);padding:0.6rem 1.25rem;border-radius:8px;display:inline-block;" onmouseover="this.style.borderColor='rgba(255,255,255,0.35)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='var(--dm)'">← Volver al proyecto Escala</a>
+</div>
+
+<footer>
+  <div class="foot-logo">Esca<span>la</span></div>
+  <p>Seguimiento de desarrollo · Actualizado en tiempo real · Colombia 2025</p>
+</footer>
+
+</body>
+</html>
