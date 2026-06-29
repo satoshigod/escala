@@ -67,25 +67,25 @@ const fases = [
   {
     num: '05',
     titulo: 'Sistema de calificación y Escala Score',
-    estado: 'progreso',
+    estado: 'completa',
     valor_total: 8000000,
-    valor_hecho: 6000000,
+    valor_hecho: 8000000,
     hitos: [
       { num: '5.1', nombre: 'Sistema de evaluación por hito', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '5.2', nombre: 'Algoritmo del Escala Score', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '5.3', nombre: 'Panel de definición de carril (A/B/C)', done: false, valor: 2000000, quien: 'Desarrollador' },
+      { num: '5.3', nombre: 'Panel de definición de carril (A/B/C)', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '5.4', nombre: 'Track record público por usuario', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
     num: '06',
     titulo: 'Pagos y distribución automática',
-    estado: 'pendiente',
+    estado: 'progreso',
     valor_total: 9800000,
-    valor_hecho: 0,
+    valor_hecho: 3000000,
     hitos: [
       { num: '6.1', nombre: 'Integración Wompi (pagos Colombia)', done: false, valor: 2500000, quien: 'Desarrollador' },
-      { num: '6.2', nombre: 'Motor de distribución automática', done: false, valor: 3000000, quien: 'Desarrollador' },
+      { num: '6.2', nombre: 'Motor de distribución automática', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
       { num: '6.3', nombre: 'Pago de hitos del Ángel de Impulso', done: false, valor: 2000000, quien: 'Desarrollador' },
       { num: '6.4', nombre: 'Facturación electrónica DIAN', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
     ]
