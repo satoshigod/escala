@@ -120,7 +120,7 @@ export default function ProyectoDetalle() {
                   {rol.valor_mercado ? '$' + rol.valor_mercado.toLocaleString() : 'A negociar'}
                 </div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.875rem'}}>
-                  {rol.modalidad}
+                  {rol.modalidad==='deuda_diferida'?'Deuda diferida':rol.modalidad==='equity'?'Equity':rol.modalidad==='success_fee'?'Success Fee':rol.modalidad}
                 </div>
                 {rol.estado === 'abierto' ? (
                   <div>
