@@ -167,8 +167,9 @@ export default function Tareas() {
 
   const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
+  const [verTodas, setVerTodas] = useState(esFundador)
   const tareasFiltradas = tareas.filter(t => {
-    if (!esFundador && !esGerente && t.asignado_a !== usuario?.id) return false
+    if (!esFundador && !verTodas && t.asignado_a !== usuario?.id) return false
     if (filtroRol !== 'todos' && t.rol_nombre !== filtroRol) return false
     if (filtroEstado !== 'todos' && t.estado !== filtroEstado) return false
     return true
@@ -210,6 +211,11 @@ export default function Tareas() {
           </div>
           {(esFundador || esGerente) && (
             <div style={{display:'flex',gap:'0.5rem'}}>
+              {esGerente && !esFundador && (
+                <button onClick={()=>setVerTodas(!verTodas)} style={{background: verTodas ? 'rgba(232,160,32,0.15)' : 'rgba(255,255,255,0.06)', color: verTodas ? '#E8A020' : '#8FA3CC', border: verTodas ? '1px solid rgba(232,160,32,0.3)' : '1px solid rgba(255,255,255,0.12)', borderRadius:'8px', padding:'0.6rem 1rem', fontSize:'0.78rem', fontWeight:'600', cursor:'pointer', fontFamily:'Inter,sans-serif'}}>
+                  {verTodas ? '👤 Ver solo mis tareas' : '👥 Ver todas las tareas'}
+                </button>
+              )}
               <button onClick={() => {setMostrarInicializar(!mostrarInicializar);setMostrarNueva(false)}} style={{background:'rgba(232,160,32,0.1)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'8px',padding:'0.6rem 1rem',fontSize:'0.78rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
                 📋 Cargar plantilla de rol
               </button>
