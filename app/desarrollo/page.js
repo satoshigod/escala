@@ -144,6 +144,21 @@ const fases = [
     ]
   },
   {
+    num: '12',
+    titulo: 'Plan de trabajo por rol — tareas y seguimiento',
+    estado: 'completa',
+    valor_total: 5000000,
+    valor_hecho: 5000000,
+    hitos: [
+      { num: '12.1', nombre: 'Plantillas de tareas iniciales por rol — Abogado, Contador, Desarrollador, Gerente, Diseñador, CM, Inversionista', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '12.2', nombre: 'Carga de plantilla por rol con asignación a miembro del equipo', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '12.3', nombre: 'Flujo de estados: pendiente → en progreso → completada → verificada', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '12.4', nombre: 'Verificación de tareas por fundador o gerente de proyecto', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '12.5', nombre: 'Crear tareas nuevas con razón de creación visible para el equipo', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '12.6', nombre: 'Filtros por rol y estado + barra de progreso general', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
     num: '07',
     titulo: 'Contratos digitales y documentos legales',
     estado: 'pendiente',
