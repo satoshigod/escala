@@ -137,7 +137,7 @@ export default function Proyectos() {
             ) : (
               <div style={s.grid}>
                 {proyectos.map(p => (
-                  <div key={p.id} style={s.card}>
+                  <div key={p.id} style={s.card} onClick={() => window.location.href="/proyectos/"+p.id} onMouseOver={e=>e.currentTarget.style.cursor="pointer"}>
                     <div style={s.cardTop}>
                       <div style={s.cardTipo}>Tipo {p.tipo} — {p.tipo === 'A' ? 'Creación' : 'Transformación'}</div>
                       <div style={s.cardNombre}>{p.nombre}</div>
