@@ -84,7 +84,7 @@ export default function Admin() {
         <div style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div>
         <div style={{display:'flex',gap:'1.5rem'}}>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
-          <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
+          <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Hitos</a><a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
           <a href="/postulaciones" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mis postulaciones</a>
           <a href="/admin" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Panel fundador</a>
         </div>
@@ -102,7 +102,7 @@ export default function Admin() {
             <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🚀</div>
             <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>No tienes proyectos publicados</div>
             <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Publica tu primer proyecto para empezar a recibir postulaciones.</div>
-            <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a>
+            <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Hitos</a><a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a>
           </div>
         ) : (
           <>
