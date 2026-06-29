@@ -37,32 +37,34 @@ const fases = [
   },
   {
     num: '03',
-    titulo: 'Frontend operativo (plataforma real)',
-    estado: 'progreso',
-    valor_total: 15500000,
-    valor_hecho: 15500000,
+    titulo: 'Frontend operativo — plataforma real',
+    estado: 'completa',
+    valor_total: 17000000,
+    valor_hecho: 17000000,
     hitos: [
       { num: '3.1', nombre: 'Registro y onboarding de usuarios — 3 pasos', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '3.2', nombre: 'Perfil público de usuario con Escala Score', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '3.3', nombre: 'Publicación y gestión de proyectos', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
-      { num: '3.4', nombre: 'Detalle de proyecto con roles y postulación real', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '3.5', nombre: 'Dashboard centro de control completo', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '3.6', nombre: 'Hitos, aportes, postulaciones y panel fundador', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '3.7', nombre: 'Panel de administración Escala', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '3.8', nombre: 'Perfil público de usuario con Score y contacto directo', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '3.2', nombre: 'Publicación y gestión de proyectos con listado en tiempo real', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
+      { num: '3.3', nombre: 'Detalle de proyecto con 9 roles reales y postulación real', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '3.4', nombre: 'Panel de aportes con trazabilidad completa', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '3.5', nombre: 'Panel fundador — postulaciones recibidas por rol con aceptar/rechazar', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '3.6', nombre: 'Panel postulante — historial de postulaciones enviadas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '3.7', nombre: 'Hitos del proyecto — crear, completar, expediente', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '3.8', nombre: 'Perfil público de usuario con Score, métricas y WhatsApp directo', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '3.9', nombre: 'Panel de administración interno Escala con tabs', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '3.10', nombre: 'Link perfil postulante desde panel fundador', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
     num: '04',
-    titulo: 'Contratos digitales y documentos',
-    estado: 'pendiente',
-    valor_total: 8000000,
-    valor_hecho: 0,
+    titulo: 'Dashboard contextual multi-rol',
+    estado: 'completa',
+    valor_total: 5500000,
+    valor_hecho: 5500000,
     hitos: [
-      { num: '4.1', nombre: 'Plantillas legales base (abogado + desarrollador)', done: false, valor: 1400000, quien: 'Abogado + Desarrollador' },
-      { num: '4.2', nombre: 'Motor de generación automática de contratos', done: false, valor: 2000000, quien: 'Desarrollador' },
-      { num: '4.3', nombre: 'Integración de firma digital (DocuSign/HelloSign)', done: false, valor: 2500000, quien: 'Desarrollador' },
-      { num: '4.4', nombre: 'Expediente digital del proyecto exportable a PDF', done: false, valor: 2100000, quien: 'Desarrollador' },
+      { num: '4.1', nombre: 'Dashboard con 3 tabs: Especialista / Fundador / Notificaciones', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '4.2', nombre: 'Tab especialista — postulaciones, score, explorar proyectos, aportes, carril', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '4.3', nombre: 'Tab fundador — mis proyectos, postulaciones recibidas, hitos, ingresos', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '4.4', nombre: 'Tab notificaciones — aceptaciones, rechazos, nuevas postulaciones recibidas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
@@ -72,23 +74,49 @@ const fases = [
     valor_total: 8000000,
     valor_hecho: 8000000,
     hitos: [
-      { num: '5.1', nombre: 'Sistema de evaluación por hito', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '5.2', nombre: 'Algoritmo del Escala Score', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '5.3', nombre: 'Panel de definición de carril (A/B/C)', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '5.4', nombre: 'Track record público por usuario', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '5.1', nombre: 'Algoritmo del Escala Score — 4 dimensiones verificables', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '5.2', nombre: 'Página Mi Score con gráfico circular, métricas y cómo subir', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '5.3', nombre: 'Panel de definición de carril A/B/C por postulación', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '5.4', nombre: 'Track record público — historial verificable en perfil de usuario', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
     num: '06',
-    titulo: 'Pagos y distribución automática',
+    titulo: 'Ingresos, pagos y distribución',
     estado: 'progreso',
     valor_total: 9800000,
     valor_hecho: 5000000,
     hitos: [
-      { num: '6.1', nombre: 'Integración Wompi (pagos Colombia)', done: false, valor: 2500000, quien: 'Desarrollador' },
-      { num: '6.2', nombre: 'Motor de distribución automática', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
-      { num: '6.3', nombre: 'Pago de hitos del Ángel de Impulso', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '6.1', nombre: 'Registro de ingresos con preview de distribución automática', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
+      { num: '6.2', nombre: 'Panel Ángel de Impulso — explorar hitos, financiar, historial', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '6.3', nombre: 'Integración Wompi (pagos Colombia)', done: false, valor: 2500000, quien: 'Desarrollador' },
       { num: '6.4', nombre: 'Facturación electrónica DIAN', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
+    ]
+  },
+  {
+    num: '07',
+    titulo: 'Contratos digitales y documentos legales',
+    estado: 'pendiente',
+    valor_total: 8000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '7.1', nombre: 'Plantillas legales base (abogado + desarrollador)', done: false, valor: 1400000, quien: 'Abogado + Desarrollador' },
+      { num: '7.2', nombre: 'Motor de generación automática de contratos', done: false, valor: 2000000, quien: 'Desarrollador' },
+      { num: '7.3', nombre: 'Integración de firma digital (DocuSign/HelloSign)', done: false, valor: 2500000, quien: 'Desarrollador' },
+      { num: '7.4', nombre: 'Expediente digital del proyecto exportable a PDF', done: false, valor: 2100000, quien: 'Desarrollador' },
+    ]
+  },
+  {
+    num: '08',
+    titulo: 'Mejoras de plataforma y escala',
+    estado: 'pendiente',
+    valor_total: 6000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '8.1', nombre: 'Notificaciones push y email en tiempo real', done: false, valor: 1500000, quien: 'Desarrollador' },
+      { num: '8.2', nombre: 'Subida de archivos y evidencias de aportes', done: false, valor: 1000000, quien: 'Desarrollador' },
+      { num: '8.3', nombre: 'Búsqueda y filtros avanzados de proyectos y perfiles', done: false, valor: 1500000, quien: 'Desarrollador' },
+      { num: '8.4', nombre: 'App móvil (React Native o PWA)', done: false, valor: 2000000, quien: 'Desarrollador' },
     ]
   },
 ]
@@ -96,10 +124,10 @@ const fases = [
 export default function Desarrollo() {
   const [faseAbierta, setFaseAbierta] = useState(null)
 
-  const totalPlataforma = 55000000
+  const totalPlataforma = fases.reduce((s, f) => s + f.valor_total, 0)
   const totalHecho = fases.reduce((s, f) => s + f.valor_hecho, 0)
   const totalPendiente = totalPlataforma - totalHecho
-  const pct = Math.round((totalHecho / totalPlataforma) * 100 * 10) / 10
+  const pct = Math.round((totalHecho / totalPlataforma) * 1000) / 10
 
   const fmt = v => '$' + v.toLocaleString('es-CO')
 
@@ -121,7 +149,7 @@ export default function Desarrollo() {
         <div style={{marginBottom:'2rem'}}>
           <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Seguimiento técnico</div>
           <div style={{fontSize:'clamp(1.5rem,3vw,2rem)',fontWeight:'900',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>Plan de desarrollo</div>
-          <div style={{fontSize:'0.85rem',color:'#8FA3CC'}}>Lo que ya está construido reduce la deuda diferida del desarrollador.</div>
+          <div style={{fontSize:'0.85rem',color:'#8FA3CC'}}>Lo que ya está construido — pagado por el fundador con IA — reduce la deuda diferida del desarrollador.</div>
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'1rem',marginBottom:'2rem'}}>
@@ -148,7 +176,7 @@ export default function Desarrollo() {
             <span>Progreso total</span><span>{pct}%</span>
           </div>
           <div style={{height:'8px',background:'rgba(255,255,255,0.08)',borderRadius:'4px',overflow:'hidden'}}>
-            <div style={{height:'100%',width:pct+'%',background:'linear-gradient(90deg,#1D9E75,#25c795)',borderRadius:'4px',transition:'width 0.8s ease'}}></div>
+            <div style={{height:'100%',width:pct+'%',background:'linear-gradient(90deg,#1D9E75,#25c795)',borderRadius:'4px'}}></div>
           </div>
           <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.68rem',color:'#8FA3CC',marginTop:'4px'}}>
             <span>$0</span><span>{fmt(totalHecho)} completados</span><span>{fmt(totalPlataforma)}</span>
