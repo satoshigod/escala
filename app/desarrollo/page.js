@@ -82,11 +82,11 @@ const fases = [
     titulo: 'Pagos y distribución automática',
     estado: 'progreso',
     valor_total: 9800000,
-    valor_hecho: 3000000,
+    valor_hecho: 5000000,
     hitos: [
       { num: '6.1', nombre: 'Integración Wompi (pagos Colombia)', done: false, valor: 2500000, quien: 'Desarrollador' },
       { num: '6.2', nombre: 'Motor de distribución automática', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
-      { num: '6.3', nombre: 'Pago de hitos del Ángel de Impulso', done: false, valor: 2000000, quien: 'Desarrollador' },
+      { num: '6.3', nombre: 'Pago de hitos del Ángel de Impulso', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '6.4', nombre: 'Facturación electrónica DIAN', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
     ]
   },
