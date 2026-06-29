@@ -1,278 +1,322 @@
 'use client'
-
 import { useState } from 'react'
 
-const ROADMAP = [
+const fases = [
   {
-    fase: 'FASE 1 — NÚCLEO',
-    descripcion: 'Registro, autenticación, proyectos y postulaciones',
-    estado: 'completada',
-    items: [
-      { id: 1, texto: 'Registro y login con Supabase Auth', estado: 'completado' },
-      { id: 2, texto: 'Onboarding fundador y especialista', estado: 'completado' },
-      { id: 3, texto: 'Dashboard fundador y especialista', estado: 'completado' },
-      { id: 4, texto: 'Crear y publicar proyectos con roles', estado: 'completado' },
-      { id: 5, texto: 'Postularse a roles abiertos', estado: 'completado' },
-      { id: 6, texto: 'Aceptar / rechazar postulaciones', estado: 'completado' },
-      { id: 7, texto: 'Emails automáticos (postulación, aceptada, rechazada)', estado: 'completado' },
+    num: '01',
+    titulo: 'Presentación y diseño web',
+    estado: 'completa',
+    valor_total: 3200000,
+    valor_hecho: 3200000,
+    hitos: [
+      { num: '1.1', nombre: 'Arquitectura de información y navegación', done: true, valor: 400000, quien: 'Claude AI + Fundador' },
+      { num: '1.2', nombre: 'Diseño visual y sistema de estilos mobile-first', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '1.3', nombre: 'Página principal (index.html)', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '1.4', nombre: 'Página de proyectos (proyectos.html)', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '1.5', nombre: 'Página proyecto piloto (proyecto-escala.html)', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '1.6', nombre: 'Página Ángel de Impulso (impulso.html)', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '1.7', nombre: 'Página de costos (costos.html)', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '1.8', nombre: 'Página expectativa WhatsApp (coming.html)', done: true, valor: 100000, quien: 'Claude AI' },
     ]
   },
   {
-    fase: 'FASE 2 — WORKSPACE',
-    descripcion: 'Espacio de trabajo colaborativo por proyecto',
-    estado: 'completada',
-    items: [
-      { id: 8, texto: 'Workspace con 7 tabs (Resumen, Hitos, Equipo, Aportes, Economía, Tareas, Chat)', estado: 'completado' },
-      { id: 9, texto: 'Chat en tiempo real con Supabase Realtime', estado: 'completado' },
-      { id: 10, texto: 'Tareas por rol con plantillas predefinidas (7 roles)', estado: 'completado' },
-      { id: 11, texto: 'Principio de mínima información — cada rol ve solo sus tareas', estado: 'completado' },
-      { id: 12, texto: 'Gerente ve sus tareas + toggle ver todo el equipo', estado: 'completado' },
-      { id: 13, texto: 'Historial de asignaciones en tabla historial_tareas', estado: 'completado' },
-      { id: 14, texto: 'Emails automáticos de tareas (asignada, completada, verificada)', estado: 'completado' },
-      { id: 15, texto: 'Badges en tiempo real en tabs Tareas y Chat', estado: 'completado', nota: 'Timing ocasional — no crítico' },
+    num: '02',
+    titulo: 'Backend y base de datos',
+    estado: 'progreso',
+    valor_total: 12000000,
+    valor_hecho: 9500000,
+    hitos: [
+      { num: '2.1', nombre: 'Modelo de datos completo — 8 tablas Supabase PostgreSQL', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '2.2', nombre: 'Sistema de autenticación — Supabase Auth + trigger perfiles', done: true, valor: 1500000, quien: 'Supabase + Claude AI' },
+      { num: '2.3', nombre: 'API REST proyectos, usuarios y roles — 3 endpoints', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '2.4', nombre: 'API aportes, hitos y postulaciones — 3 endpoints', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '2.5', nombre: 'Sistema de notificaciones por email con Resend — postulaciones, tareas, invitaciones', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '2.6', nombre: 'Almacenamiento de archivos (Supabase Storage)', done: false, valor: 1000000, quien: 'Desarrollador' },
+      { num: '2.7', nombre: 'Infraestructura y despliegue — GitHub + Vercel + Supabase', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
-    fase: 'FASE 3 — ECONOMÍA Y SCORE',
-    descripcion: 'Aportes, hitos y reputación de especialistas',
-    estado: 'completada',
-    items: [
-      { id: 16, texto: 'Registro de aportes reales por fundador', estado: 'completado' },
-      { id: 17, texto: 'Hitos de proyecto con estado', estado: 'completado' },
-      { id: 18, texto: 'Score automático con función SQL calcular_escala_score', estado: 'completado', nota: '10pts tarea verificada, 15pts aporte, 20pts aceptación' },
-      { id: 19, texto: 'Página /score con ranking de especialistas', estado: 'completado' },
-      { id: 20, texto: 'Métricas del fundador con embudo de conversión', estado: 'completado' },
+    num: '03',
+    titulo: 'Frontend operativo — plataforma real',
+    estado: 'completa',
+    valor_total: 20000000,
+    valor_hecho: 20000000,
+    hitos: [
+      { num: '3.1', nombre: 'Registro y onboarding de usuarios — 3 pasos', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '3.2', nombre: 'Publicación y gestión de proyectos con listado en tiempo real', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
+      { num: '3.3', nombre: 'Detalle de proyecto con 9 roles reales y postulación real', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '3.4', nombre: 'Panel de aportes con trazabilidad completa', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '3.5', nombre: 'Panel fundador — postulaciones recibidas por rol con aceptar/rechazar', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '3.6', nombre: 'Panel postulante — historial de postulaciones enviadas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '3.7', nombre: 'Hitos del proyecto — crear, completar, expediente', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '3.8', nombre: 'Perfil público de usuario con Score, métricas y WhatsApp directo', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '3.9', nombre: 'Panel de administración interno Escala con tabs', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '3.10', nombre: 'Link perfil postulante desde panel fundador', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '3.11', nombre: 'Página de proyecto enriquecida — descripción, hitos completados, roles prioritarios, WhatsApp', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '3.12', nombre: 'API postulaciones incluye nombre del proyecto (join con proyectos)', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '3.13', nombre: 'Postulaciones clickeables — llevan al proyecto o workspace según estado', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
-    fase: 'FASE 4 — DESCUBRIMIENTO',
-    descripcion: 'Encontrar proyectos, especialistas e invitar',
-    estado: 'completada',
-    items: [
-      { id: 21, texto: 'Directorio de especialistas con filtros', estado: 'completado' },
-      { id: 22, texto: 'Búsqueda de proyectos con filtros', estado: 'completado' },
-      { id: 23, texto: 'Invitar especialistas por email', estado: 'completado' },
-      { id: 24, texto: 'Proyecto público compartible sin login (/p/[id])', estado: 'completado' },
-      { id: 25, texto: 'Perfil público por especialista (/perfil/[id])', estado: 'completado' },
+    num: '04',
+    titulo: 'Dashboard contextual multi-rol',
+    estado: 'completa',
+    valor_total: 7500000,
+    valor_hecho: 7500000,
+    hitos: [
+      { num: '4.1', nombre: 'Dashboard con 3 tabs: Especialista / Fundador / Notificaciones', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '4.2', nombre: 'Tab especialista — postulaciones, score, explorar proyectos, aportes, carril', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '4.3', nombre: 'Tab fundador — mis proyectos, postulaciones recibidas, hitos, ingresos', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '4.4', nombre: 'Tab notificaciones — aceptaciones, rechazos, nuevas postulaciones recibidas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '4.5', nombre: 'Nombre del proyecto en cada postulación — fundador y especialista', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '4.6', nombre: 'Botones aceptar/rechazar y ver perfil directo desde dashboard fundador', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
+      { num: '4.7', nombre: 'Perfil público con WhatsApp — link desde panel fundador y notificaciones', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
-    fase: 'FASE 5 — ADMIN',
-    descripcion: 'Panel de control de la plataforma',
-    estado: 'completada',
-    items: [
-      { id: 26, texto: 'Panel /admin-escala con perfiles, proyectos, industrias, países', estado: 'completado' },
-      { id: 27, texto: 'Plantillas de tareas por industria en admin (5 industrias)', estado: 'completado' },
-      { id: 28, texto: 'Países con tareas regulatorias (CO, MX, PE, CL, AR, ES, US)', estado: 'completado' },
+    num: '05',
+    titulo: 'Sistema de calificación y Escala Score',
+    estado: 'completa',
+    valor_total: 8000000,
+    valor_hecho: 8000000,
+    hitos: [
+      { num: '5.1', nombre: 'Algoritmo del Escala Score — 4 dimensiones verificables', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '5.2', nombre: 'Página Mi Score con gráfico circular, métricas y cómo subir', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '5.3', nombre: 'Panel de definición de carril A/B/C por postulación', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '5.4', nombre: 'Track record público — historial verificable en perfil de usuario', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
-    fase: 'FASE 6 — INTELIGENCIA OPERATIVA',
-    descripcion: 'Automatización y personalización avanzada',
-    estado: 'en_progreso',
-    items: [
-      { id: 29, texto: 'Plantillas por industria aplicables al crear proyecto', estado: 'pendiente' },
-      { id: 30, texto: 'Perfiles comerciales por industria configurables desde admin', estado: 'pendiente' },
-      { id: 31, texto: 'Internacionalización — país del proyecto carga tareas regulatorias automáticas', estado: 'pendiente' },
-      { id: 32, texto: 'Asignación inteligente de tareas — filtrar ejecutores por categoría', estado: 'pendiente' },
-      { id: 33, texto: 'Panel admin completamente parametrizable (sin tocar código)', estado: 'pendiente' },
+    num: '06',
+    titulo: 'Ingresos, pagos y distribución',
+    estado: 'progreso',
+    valor_total: 9800000,
+    valor_hecho: 5000000,
+    hitos: [
+      { num: '6.1', nombre: 'Registro de ingresos con preview de distribución automática', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
+      { num: '6.2', nombre: 'Panel Ángel de Impulso — explorar hitos, financiar, historial', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '6.3', nombre: 'Integración Wompi (pagos Colombia)', done: false, valor: 2500000, quien: 'Desarrollador' },
+      { num: '6.4', nombre: 'Facturación electrónica DIAN', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
     ]
   },
   {
-    fase: 'FASE 7 — MONETIZACIÓN Y LEGAL',
-    descripcion: 'Pagos, contratos y dominio propio',
-    estado: 'bloqueada',
-    items: [
-      { id: 34, texto: 'Contratos digitales', estado: 'bloqueado', bloqueador: 'Requiere abogado' },
-      { id: 35, texto: 'Wompi pagos (suscripciones y comisiones)', estado: 'bloqueado', bloqueador: 'Requiere cuenta Wompi activa' },
-      { id: 36, texto: 'Emails a cualquier destinatario', estado: 'bloqueado', bloqueador: 'Requiere dominio escala.co verificado en Resend' },
+    num: '09',
+    titulo: 'Workspace del proyecto — colaboración del equipo',
+    estado: 'completa',
+    valor_total: 10000000,
+    valor_hecho: 10000000,
+    hitos: [
+      { num: '9.1', nombre: 'Workspace con 5 tabs: Resumen, Hitos, Equipo, Mis aportes, Economía', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
+      { num: '9.2', nombre: 'Control de acceso — solo miembros aceptados y fundador', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '9.3', nombre: 'Tab equipo — todos los miembros con rol, ciudad, WhatsApp directo', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '9.4', nombre: 'Tab hitos — kanban pendiente/completado con crear y marcar desde workspace', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '9.5', nombre: 'Tab aportes — registrar aportes directamente en el workspace', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '9.6', nombre: 'Tab economía — deuda diferida, participación, carriles explicados', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '9.7', nombre: 'Links al workspace desde dashboard fundador y especialista', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '9.8', nombre: 'Chat interno del equipo por proyecto — tiempo real con Supabase Realtime', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '9.9', nombre: 'Notificaciones por email — nueva postulacion, aceptada, rechazada con Resend', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
+    num: '10',
+    titulo: 'Descubrimiento — buscar, filtrar, directorio',
+    estado: 'completa',
+    valor_total: 5000000,
+    valor_hecho: 5000000,
+    hitos: [
+      { num: '10.1', nombre: 'Directorio de especialistas con búsqueda por nombre, especialidad y ciudad', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '10.2', nombre: 'Buscar proyectos con filtros por sector, tipo A/B y ciudad', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '10.3', nombre: 'Página de bienvenida para usuarios nuevos sin perfil', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '10.4', nombre: 'Redireccion inteligente según estado del perfil', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
+    num: '11',
+    titulo: 'Herramientas del fundador — reclutamiento y analítica',
+    estado: 'completa',
+    valor_total: 6500000,
+    valor_hecho: 6500000,
+    hitos: [
+      { num: '11.1', nombre: 'Invitar especialistas por email con mensaje personalizado y link del proyecto', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '11.2', nombre: 'Pagina publica del proyecto sin login — compartible por WhatsApp y redes', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '11.3', nombre: 'Panel de metricas — postulaciones por rol, embudo de conversion, tasa de aceptacion', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '11.4', nombre: 'Template de invitacion por email con Resend', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
+    num: '12',
+    titulo: 'Plan de trabajo por rol — tareas, historial y notificaciones',
+    estado: 'completa',
+    valor_total: 7000000,
+    valor_hecho: 7000000,
+    hitos: [
+      { num: '12.1', nombre: 'Plantillas de tareas iniciales por rol — Abogado, Contador, Desarrollador, Gerente, Diseñador, CM, Inversionista', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '12.2', nombre: 'Carga de plantilla por rol con asignación a miembro del equipo', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '12.3', nombre: 'Flujo de estados: pendiente → en progreso → completada → verificada', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '12.4', nombre: 'Verificación de tareas por fundador o gerente de proyecto', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '12.5', nombre: 'Crear tareas nuevas con razón de creación visible para el equipo', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '12.6', nombre: 'Filtros por estado — especialistas ven solo sus tareas por defecto', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '12.7', nombre: 'Gerente ve sus tareas primero con toggle para ver todo el equipo', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '12.8', nombre: 'Historial de asignaciones registrado en base de datos', done: true, valor: 750000, quien: 'Claude AI + Fundador' },
+      { num: '12.9', nombre: 'Emails automáticos: tarea asignada, completada y verificada', done: true, valor: 750000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
+    num: '13',
+    titulo: 'Inteligencia operativa — automatización y personalización',
+    estado: 'progreso',
+    valor_total: 8000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '13.1', nombre: 'Plantillas por industria aplicables al crear proyecto — carga automática de tareas', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '13.2', nombre: 'Perfiles comerciales por industria configurables desde admin sin tocar código', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '13.3', nombre: 'Internacionalización — país del proyecto carga tareas regulatorias automáticas', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '13.4', nombre: 'Asignación inteligente de tareas — filtrar ejecutores por categoría del rol', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '13.5', nombre: 'Panel admin completamente parametrizable — industrias, países, tareas sin deploy', done: false, valor: 1000000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
+    num: '07',
+    titulo: 'Contratos digitales y documentos legales',
+    titulo: 'Contratos digitales y documentos legales',
+    estado: 'pendiente',
+    valor_total: 8000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '7.1', nombre: 'Plantillas legales base (abogado + desarrollador)', done: false, valor: 1400000, quien: 'Abogado + Desarrollador' },
+      { num: '7.2', nombre: 'Motor de generación automática de contratos', done: false, valor: 2000000, quien: 'Desarrollador' },
+      { num: '7.3', nombre: 'Integración de firma digital (DocuSign/HelloSign)', done: false, valor: 2500000, quien: 'Desarrollador' },
+      { num: '7.4', nombre: 'Expediente digital del proyecto exportable a PDF', done: false, valor: 2100000, quien: 'Desarrollador' },
+    ]
+  },
+  {
+    num: '08',
+    titulo: 'Mejoras de plataforma y escala',
+    estado: 'pendiente',
+    valor_total: 6000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '8.1', nombre: 'Notificaciones push y email en tiempo real', done: false, valor: 1500000, quien: 'Desarrollador' },
+      { num: '8.2', nombre: 'Subida de archivos y evidencias de aportes', done: false, valor: 1000000, quien: 'Desarrollador' },
+      { num: '8.3', nombre: 'Búsqueda y filtros avanzados de proyectos y perfiles', done: false, valor: 1500000, quien: 'Desarrollador' },
+      { num: '8.4', nombre: 'App móvil (React Native o PWA)', done: false, valor: 2000000, quien: 'Desarrollador' },
     ]
   },
 ]
 
-const VALOR = {
-  construido: 75,
-  estimado: 85,
-  porcentaje: 88,
-}
+export default function Desarrollo() {
+  const [faseAbierta, setFaseAbierta] = useState(null)
 
-const ESTADO_COLOR = {
-  completada: { bg: 'bg-emerald-50', border: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-700', dot: 'bg-emerald-500' },
-  en_progreso: { bg: 'bg-blue-50', border: 'border-blue-200', badge: 'bg-blue-100 text-blue-700', dot: 'bg-blue-500' },
-  bloqueada: { bg: 'bg-amber-50', border: 'border-amber-200', badge: 'bg-amber-100 text-amber-700', dot: 'bg-amber-400' },
-}
+  const totalPlataforma = fases.reduce((s, f) => s + f.valor_total, 0)
+  const totalHecho = fases.reduce((s, f) => s + f.valor_hecho, 0)
+  const totalPendiente = totalPlataforma - totalHecho
+  const pct = Math.round((totalHecho / totalPlataforma) * 1000) / 10
 
-const ITEM_COLOR = {
-  completado: { icon: '✓', cls: 'text-emerald-600', linecls: 'line-through text-gray-400' },
-  pendiente: { icon: '○', cls: 'text-gray-300', linecls: 'text-gray-700' },
-  bloqueado: { icon: '⊘', cls: 'text-amber-400', linecls: 'text-gray-500' },
-}
+  const fmt = v => '$' + v.toLocaleString('es-CO')
 
-const ESTADO_LABEL = {
-  completada: 'Completada',
-  en_progreso: 'En progreso',
-  bloqueada: 'Bloqueada',
-}
-
-export default function DesarrolloPage() {
-  const [expandido, setExpandido] = useState({ 4: true, 5: true }) // Fases 6 y 7 abiertas por defecto
-
-  const toggle = (i) => setExpandido(prev => ({ ...prev, [i]: !prev[i] }))
-
-  const totalItems = ROADMAP.flatMap(f => f.items).length
-  const completados = ROADMAP.flatMap(f => f.items).filter(i => i.estado === 'completado').length
+  const estadoColor = { completa: '#1D9E75', progreso: '#E8A020', pendiente: '#6B7280' }
+  const estadoLabel = { completa: '✓ Completada', progreso: '⚡ En progreso', pendiente: '⏳ Pendiente' }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">Escala · Roadmap</p>
-              <h1 className="text-2xl font-bold text-gray-900">Plan de desarrollo</h1>
-              <p className="text-sm text-gray-500 mt-1">Actualizado al 29 de junio 2026</p>
-            </div>
-            <div className="text-right">
-              <p className="text-3xl font-bold text-emerald-600">{VALOR.porcentaje}%</p>
-              <p className="text-xs text-gray-400 mt-0.5">completado</p>
-            </div>
-          </div>
+    <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',color:'#fff'}}>
+      <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{fontSize:'1.1rem',fontWeight:'900',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div>
+        <div style={{display:'flex',gap:'1.5rem'}}>
+          <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
+          <a href="/desarrollo" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Desarrollo</a>
+          <a href="/" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Sitio</a>
+        </div>
+      </nav>
 
-          {/* Barra de progreso */}
-          <div className="mt-6">
-            <div className="flex justify-between text-xs text-gray-500 mb-2">
-              <span>{completados} de {totalItems} funciones</span>
-              <span>${VALOR.construido}M de ${VALOR.estimado}M COP construidos</span>
-            </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-700"
-                style={{ width: `${(completados / totalItems) * 100}%` }}
-              />
-            </div>
-          </div>
+      <main style={{maxWidth:'900px',margin:'0 auto',padding:'2rem 1.25rem'}}>
+        <div style={{marginBottom:'2rem'}}>
+          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Seguimiento técnico</div>
+          <div style={{fontSize:'clamp(1.5rem,3vw,2rem)',fontWeight:'900',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>Plan de desarrollo</div>
+          <div style={{fontSize:'0.85rem',color:'#8FA3CC'}}>Lo que ya está construido — pagado por el fundador con IA — reduce la deuda diferida del desarrollador.</div>
+        </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-3 mt-6">
-            {[
-              { label: 'Fases completas', value: ROADMAP.filter(f => f.estado === 'completada').length, color: 'text-emerald-600' },
-              { label: 'En progreso', value: ROADMAP.filter(f => f.estado === 'en_progreso').length, color: 'text-blue-600' },
-              { label: 'Bloqueadas', value: ROADMAP.filter(f => f.estado === 'bloqueada').length, color: 'text-amber-500' },
-            ].map(s => (
-              <div key={s.label} className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
-                <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
-              </div>
-            ))}
+        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'1rem',marginBottom:'2rem'}}>
+          <div style={{background:'rgba(29,158,117,0.1)',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'12px',padding:'1.25rem'}}>
+            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalHecho)}</div>
+            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Valor ya construido — pagado por el fundador con IA</div>
+          </div>
+          <div style={{background:'rgba(232,160,32,0.1)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'12px',padding:'1.25rem'}}>
+            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalPendiente)}</div>
+            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Deuda diferida máxima para el desarrollador</div>
+          </div>
+          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
+            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalPlataforma)}</div>
+            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Valor total estimado de la plataforma</div>
+          </div>
+          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
+            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC',lineHeight:'1',marginBottom:'0.3rem'}}>{pct}%</div>
+            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Porcentaje completado del desarrollo total</div>
           </div>
         </div>
-      </div>
 
-      {/* Fases */}
-      <div className="max-w-3xl mx-auto px-6 mt-6 space-y-3">
-        {ROADMAP.map((fase, i) => {
-          const c = ESTADO_COLOR[fase.estado]
-          const abierto = expandido[i] !== false // por defecto abierto
-          const completadosFase = fase.items.filter(it => it.estado === 'completado').length
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'2rem'}}>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'6px'}}>
+            <span>Progreso total</span><span>{pct}%</span>
+          </div>
+          <div style={{height:'8px',background:'rgba(255,255,255,0.08)',borderRadius:'4px',overflow:'hidden'}}>
+            <div style={{height:'100%',width:pct+'%',background:'linear-gradient(90deg,#1D9E75,#25c795)',borderRadius:'4px'}}></div>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.68rem',color:'#8FA3CC',marginTop:'4px'}}>
+            <span>$0</span><span>{fmt(totalHecho)} completados</span><span>{fmt(totalPlataforma)}</span>
+          </div>
+        </div>
 
-          return (
-            <div key={i} className={`rounded-2xl border ${c.border} ${c.bg} overflow-hidden`}>
-              {/* Header de fase */}
-              <button
-                onClick={() => toggle(i)}
-                className="w-full px-5 py-4 flex items-center justify-between text-left hover:opacity-80 transition-opacity"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-2.5 h-2.5 rounded-full ${c.dot} flex-shrink-0`} />
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-bold text-gray-800">{fase.fase}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${c.badge}`}>
-                        {ESTADO_LABEL[fase.estado]}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{fase.descripcion}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 flex-shrink-0 ml-4">
-                  <span className="text-xs text-gray-400 font-medium">
-                    {completadosFase}/{fase.items.length}
-                  </span>
-                  <span className="text-gray-400 text-sm">{abierto ? '▲' : '▼'}</span>
-                </div>
-              </button>
-
-              {/* Items */}
-              {abierto && (
-                <div className="px-5 pb-4 space-y-2 border-t border-white/60 pt-3">
-                  {fase.items.map(item => {
-                    const ic = ITEM_COLOR[item.estado]
-                    return (
-                      <div key={item.id} className="flex items-start gap-3">
-                        <span className={`mt-0.5 text-sm font-bold flex-shrink-0 ${ic.cls}`}>{ic.icon}</span>
-                        <div className="flex-1 min-w-0">
-                          <span className={`text-sm ${ic.linecls}`}>{item.texto}</span>
-                          {item.nota && (
-                            <p className="text-xs text-gray-400 mt-0.5 italic">{item.nota}</p>
-                          )}
-                          {item.bloqueador && (
-                            <p className="text-xs text-amber-500 mt-0.5 font-medium">⚠ {item.bloqueador}</p>
-                          )}
-                        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
+          {fases.map(fase => {
+            const abierta = faseAbierta === fase.num
+            const pctFase = fase.valor_total > 0 ? Math.round((fase.valor_hecho / fase.valor_total) * 100) : 0
+            return (
+              <div key={fase.num} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',overflow:'hidden'}}>
+                <div onClick={() => setFaseAbierta(abierta ? null : fase.num)} style={{padding:'1.25rem',cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
+                  <div style={{display:'flex',gap:'1rem',alignItems:'center',flex:1}}>
+                    <div style={{fontFamily:'monospace',fontSize:'1.5rem',fontWeight:'700',color:'rgba(255,255,255,0.12)',flexShrink:0}}>{fase.num}</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{fase.titulo}</div>
+                      <div style={{height:'4px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',overflow:'hidden',width:'100%',maxWidth:'200px'}}>
+                        <div style={{height:'100%',width:pctFase+'%',background:estadoColor[fase.estado],borderRadius:'2px'}}></div>
                       </div>
-                    )
-                  })}
+                    </div>
+                  </div>
+                  <div style={{textAlign:'right',flexShrink:0}}>
+                    <div style={{fontSize:'0.75rem',fontWeight:'700',color:estadoColor[fase.estado],marginBottom:'0.2rem'}}>{estadoLabel[fase.estado]}</div>
+                    <div style={{fontFamily:'monospace',fontSize:'0.78rem',color:fase.valor_hecho > 0 ? '#1D9E75' : '#8FA3CC'}}>{fmt(fase.valor_hecho)} / {fmt(fase.valor_total)}</div>
+                  </div>
+                  <div style={{color:'#8FA3CC',fontSize:'0.75rem',flexShrink:0}}>{abierta ? '▲' : '▼'}</div>
                 </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
 
-      {/* Infraestructura */}
-      <div className="max-w-3xl mx-auto px-6 mt-6">
-        <div className="bg-gray-900 rounded-2xl p-5 text-gray-300">
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Infraestructura</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
-            {[
-              ['Stack', 'Next.js 16.2.9 · Supabase · PostgreSQL · Resend'],
-              ['Repositorio', 'satoshigod/escala'],
-              ['Deploy', 'escala-blush-nine.vercel.app'],
-              ['DB', 'avrjgcitrgziiweirzfe.supabase.co'],
-              ['Tablas', '11 tablas activas'],
-              ['Realtime', 'mensajes · tareas'],
-            ].map(([k, v]) => (
-              <div key={k} className="flex gap-2">
-                <span className="text-gray-600 flex-shrink-0">{k}:</span>
-                <span className="text-gray-300">{v}</span>
+                {abierta && (
+                  <div style={{borderTop:'1px solid rgba(255,255,255,0.06)',padding:'0 1.25rem 1.25rem'}}>
+                    {fase.hitos.map(h => (
+                      <div key={h.num} style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
+                        <div style={{display:'flex',gap:'0.75rem',alignItems:'flex-start',flex:1}}>
+                          <div style={{width:'22px',height:'22px',borderRadius:'50%',background: h.done ? '#1D9E75' : 'rgba(255,255,255,0.06)',border: h.done ? 'none' : '1px solid rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.65rem',flexShrink:0,marginTop:'2px',color: h.done ? '#fff' : '#8FA3CC'}}>
+                            {h.done ? '✓' : h.num.split('.')[1]}
+                          </div>
+                          <div>
+                            <div style={{fontSize:'0.82rem',fontWeight: h.done ? '600' : '400',color: h.done ? '#fff' : '#8FA3CC',marginBottom:'0.15rem'}}>{h.nombre}</div>
+                            <div style={{fontSize:'0.68rem',color: h.done ? '#1D9E75' : '#6B7280'}}>{h.quien}</div>
+                          </div>
+                        </div>
+                        <div style={{fontFamily:'monospace',fontSize:'0.78rem',fontWeight:'600',color: h.done ? '#1D9E75' : '#6B7280',flexShrink:0}}>{fmt(h.valor)}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            ))}
-          </div>
+            )
+          })}
         </div>
-      </div>
 
-      {/* Principios */}
-      <div className="max-w-3xl mx-auto px-6 mt-4">
-        <div className="bg-white rounded-2xl border border-gray-200 p-5">
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Principios de arquitectura</p>
-          <div className="space-y-1.5">
-            {[
-              'Fundador paga aportes Claude AI — registrado como aporte real',
-              'Principio de mínima información por rol',
-              'Gerente de Proyecto como admin operativo del equipo',
-              'No commitear equity percentages al desarrollador',
-              'Repositorio único satoshigod/escala',
-              'Shell heredoc corrompe archivos — usar file tool de Claude',
-            ].map((p, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                <span className="text-gray-300 mt-0.5 flex-shrink-0">—</span>
-                <span>{p}</span>
-              </div>
-            ))}
-          </div>
+        <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.5rem',marginTop:'2rem'}}>
+          <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>El argumento para la negociación</div>
+          <div style={{fontSize:'0.82rem',color:'#8FA3CC',lineHeight:'1.6'}}>El fundador ya construyó <strong style={{color:'#1D9E75'}}>{fmt(totalHecho)}</strong> en valor real de plataforma — pagado con IA y tiempo propio. El desarrollador entra a construir los <strong style={{color:'#E8A020'}}>{fmt(totalPendiente)}</strong> restantes. No a repetir lo que ya existe.</div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
