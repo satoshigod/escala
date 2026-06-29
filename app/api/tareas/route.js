@@ -5,6 +5,8 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 )
 
+const BASE_URL = 'https://escala-blush-nine.vercel.app'
+
 const TAREAS_BASE = {
   'Abogado': [
     { nombre: 'Redactar estatutos sociales', descripcion: 'Documento base que define el objeto social, capital, órganos y reglas de la empresa.', categoria: 'Legal' },
@@ -53,22 +55,45 @@ const TAREAS_BASE = {
   ],
 }
 
+async function registrarHistorial(tarea_id, proyecto_id, accion, realizado_por, descripcion) {
+  await supabase.from('historial_tareas').insert([{ tarea_id, proyecto_id, accion, realizado_por, descripcion }])
+}
+
+async function enviarEmail(tipo, destinatario, datos) {
+  try {
+    await fetch(BASE_URL + '/api/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tipo, destinatario, datos })
+    })
+  } catch (e) {
+    console.error('Error email:', e)
+  }
+}
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const proyecto_id = searchParams.get('proyecto_id')
-  const asignado_a = searchParams.get('asignado_a')
+  const tarea_id = searchParams.get('tarea_id')
 
-  if (!proyecto_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
+  if (!proyecto_id && !tarea_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
-  let query = supabase
+  if (tarea_id) {
+    const { data, error } = await supabase
+      .from('historial_tareas')
+      .select('*, realizado_perfil:realizado_por ( nombre )')
+      .eq('tarea_id', tarea_id)
+      .order('created_at', { ascending: false })
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+    return Response.json({ historial: data })
+  }
+
+  const { data, error } = await supabase
     .from('tareas')
     .select('*, asignado_perfil:asignado_a ( nombre, especialidad, rol_principal ), verificado_perfil:verificado_por ( nombre ), creador:creado_por ( nombre )')
     .eq('proyecto_id', proyecto_id)
     .order('created_at', { ascending: true })
 
-  if (asignado_a) query = query.eq('asignado_a', asignado_a)
-
-  const { data, error } = await query
   if (error) return Response.json({ error: error.message }, { status: 500 })
   return Response.json({ tareas: data, plantillas: TAREAS_BASE })
 }
@@ -79,35 +104,69 @@ export async function POST(request) {
 
   if (!proyecto_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
-  // Si es inicialización con plantillas
   if (inicializar && rol_nombre && TAREAS_BASE[rol_nombre]) {
     const tareas = TAREAS_BASE[rol_nombre].map(t => ({
-      proyecto_id,
-      rol_nombre,
+      proyecto_id, rol_nombre,
       asignado_a: asignado_a || null,
-      nombre: t.nombre,
-      descripcion: t.descripcion,
-      categoria: t.categoria,
-      estado: 'pendiente',
-      creado_por: creado_por || null,
+      nombre: t.nombre, descripcion: t.descripcion, categoria: t.categoria,
+      estado: 'pendiente', creado_por: creado_por || null,
       razon_creacion: 'Tarea inicial del rol ' + rol_nombre
     }))
 
-    const { data, error } = await supabase.from('tareas').insert(tareas).select()
+    const { data, error } = await supabase.from('tareas').insert(tareas).select('*, asignado_perfil:asignado_a ( nombre, email )')
     if (error) return Response.json({ error: error.message }, { status: 500 })
+
+    // Registrar historial y notificar
+    const creadorData = creado_por ? await supabase.from('perfiles').select('nombre, email').eq('id', creado_por).single() : null
+    const creadorNombre = creadorData?.data?.nombre || 'El fundador'
+
+    for (const tarea of data) {
+      await registrarHistorial(tarea.id, proyecto_id, 'asignada', creado_por,
+        creadorNombre + ' asignó esta tarea a ' + (tarea.asignado_perfil?.nombre || 'sin asignar') + ' al cargar la plantilla de ' + rol_nombre)
+    }
+
+    // Email al asignado
+    if (asignado_a && data.length > 0) {
+      const asignadoData = await supabase.from('perfiles').select('nombre, email').eq('id', asignado_a).single()
+      if (asignadoData.data?.email) {
+        await enviarEmail('tarea_asignada', asignadoData.data.email, {
+          asignado_nombre: asignadoData.data.nombre,
+          cantidad: data.length,
+          rol_nombre,
+          proyecto_nombre: 'tu proyecto en Escala',
+          workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace/tareas'
+        })
+      }
+    }
+
     return Response.json({ tareas: data }, { status: 201 })
   }
 
-  // Tarea individual nueva
   if (!nombre) return Response.json({ error: 'Falta nombre' }, { status: 400 })
 
   const { data, error } = await supabase
     .from('tareas')
     .insert([{ proyecto_id, rol_nombre, asignado_a, nombre, descripcion, categoria, creado_por, razon_creacion, estado: 'pendiente' }])
-    .select('*, asignado_perfil:asignado_a ( nombre ), creador:creado_por ( nombre )')
+    .select('*, asignado_perfil:asignado_a ( nombre, email ), creador:creado_por ( nombre )')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  const creadorNombre = data.creador?.nombre || 'El fundador'
+  await registrarHistorial(data.id, proyecto_id, 'creada', creado_por,
+    creadorNombre + ' creó y asignó esta tarea a ' + (data.asignado_perfil?.nombre || 'sin asignar') +
+    (razon_creacion ? '. Razón: ' + razon_creacion : ''))
+
+  if (asignado_a && data.asignado_perfil?.email) {
+    await enviarEmail('tarea_asignada', data.asignado_perfil.email, {
+      asignado_nombre: data.asignado_perfil.nombre,
+      cantidad: 1,
+      tarea_nombre: nombre,
+      proyecto_nombre: 'tu proyecto en Escala',
+      workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace/tareas'
+    })
+  }
+
   return Response.json({ tarea: data }, { status: 201 })
 }
 
@@ -117,6 +176,8 @@ export async function PATCH(request) {
 
   if (!id || !estado) return Response.json({ error: 'Faltan campos' }, { status: 400 })
 
+  const tareaAnterior = await supabase.from('tareas').select('*, asignado_perfil:asignado_a ( nombre, email ), proyecto:proyecto_id ( nombre, fundador_id, perfiles:fundador_id ( nombre, email ) )').eq('id', id).single()
+
   const updates = { estado }
   if (estado === 'completada') updates.completado_at = new Date().toISOString()
   if (estado === 'verificada' && verificado_por) {
@@ -125,12 +186,42 @@ export async function PATCH(request) {
   }
 
   const { data, error } = await supabase
-    .from('tareas')
-    .update(updates)
-    .eq('id', id)
-    .select('*, asignado_perfil:asignado_a ( nombre ), verificado_perfil:verificado_por ( nombre ), creador:creado_por ( nombre )')
+    .from('tareas').update(updates).eq('id', id)
+    .select('*, asignado_perfil:asignado_a ( nombre, email ), verificado_perfil:verificado_por ( nombre ), creador:creado_por ( nombre )')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  const accionLabels = { en_progreso: 'iniciada', completada: 'completada', verificada: 'verificada' }
+  const quien = verificado_por || tareaAnterior.data?.asignado_a
+  const quienData = quien ? await supabase.from('perfiles').select('nombre').eq('id', quien).single() : null
+  const quienNombre = quienData?.data?.nombre || 'Un miembro'
+
+  await registrarHistorial(id, tareaAnterior.data?.proyecto_id, estado, quien,
+    quienNombre + ' marcó esta tarea como ' + (accionLabels[estado] || estado))
+
+  // Email al fundador cuando se completa
+  if (estado === 'completada') {
+    const fundadorEmail = tareaAnterior.data?.proyecto?.perfiles?.email
+    const fundadorNombre = tareaAnterior.data?.proyecto?.perfiles?.nombre || 'Fundador'
+    if (fundadorEmail) {
+      await enviarEmail('tarea_completada', fundadorEmail, {
+        fundador_nombre: fundadorNombre,
+        tarea_nombre: data.nombre,
+        completado_por: data.asignado_perfil?.nombre || 'Un miembro',
+        workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
+      })
+    }
+  }
+
+  // Email al asignado cuando se verifica
+  if (estado === 'verificada' && data.asignado_perfil?.email) {
+    await enviarEmail('tarea_verificada', data.asignado_perfil.email, {
+      asignado_nombre: data.asignado_perfil.nombre,
+      tarea_nombre: data.nombre,
+      workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
+    })
+  }
+
   return Response.json({ tarea: data })
 }

@@ -324,10 +324,15 @@ export default function Tareas() {
         ) : (
           <>
             <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',marginBottom:'1.5rem'}}>
-              <button onClick={()=>setFiltroRol('todos')} style={{background:filtroRol==='todos'?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todos</button>
-              {rolesTareas.map(r=><button key={r} onClick={()=>setFiltroRol(r)} style={{background:filtroRol===r?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol===r?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{r}</button>)}
-              <span style={{width:'1px',background:'rgba(255,255,255,0.1)',margin:'0 0.25rem'}}></span>
-              {['todos','pendiente','en_progreso','completada','verificada'].map(e=><button key={e} onClick={()=>setFiltroEstado(e)} style={{background:filtroEstado===e?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado===e?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{e==='todos'?'Todos los estados':estadoConfig[e]?.label}</button>)}
+              <button onClick={()=>setFiltroEstado('todos')} style={{background:filtroEstado==='todos'?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todas</button>
+              {['pendiente','en_progreso','completada','verificada'].map(e=><button key={e} onClick={()=>setFiltroEstado(e)} style={{background:filtroEstado===e?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado===e?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{estadoConfig[e]?.label}</button>)}
+              {(esFundador || verTodas) && (
+                <>
+                  <span style={{width:'1px',background:'rgba(255,255,255,0.1)',margin:'0 0.25rem'}}></span>
+                  <button onClick={()=>setFiltroRol('todos')} style={{background:filtroRol==='todos'?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todos los roles</button>
+                  {rolesTareas.map(r=><button key={r} onClick={()=>setFiltroRol(r)} style={{background:filtroRol===r?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol===r?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{r}</button>)}
+                </>
+              )}
             </div>
 
             <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
