@@ -131,6 +131,19 @@ const fases = [
     ]
   },
   {
+    num: '11',
+    titulo: 'Herramientas del fundador — reclutamiento y analítica',
+    estado: 'completa',
+    valor_total: 6500000,
+    valor_hecho: 6500000,
+    hitos: [
+      { num: '11.1', nombre: 'Invitar especialistas por email con mensaje personalizado y link del proyecto', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '11.2', nombre: 'Pagina publica del proyecto sin login — compartible por WhatsApp y redes', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '11.3', nombre: 'Panel de metricas — postulaciones por rol, embudo de conversion, tasa de aceptacion', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '11.4', nombre: 'Template de invitacion por email con Resend', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
     num: '07',
     titulo: 'Contratos digitales y documentos legales',
     estado: 'pendiente',
