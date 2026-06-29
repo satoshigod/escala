@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [postulacionesRecibidas, setPostulacionesRecibidas] = useState([])
   const [notificaciones, setNotificaciones] = useState([])
   const [tab, setTab] = useState('especialista')
+  const [actualizando, setActualizando] = useState(null)
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
@@ -61,8 +62,8 @@ export default function Dashboard() {
           const d = await r.json()
           if (d.postulaciones) {
             d.postulaciones.forEach(p => {
-              todasPost.push({...p, rol_nombre: rol.nombre})
-              if (p.estado === 'pendiente') notifs.push({ tipo: 'nueva_postulacion', texto: (p.perfiles?.nombre || 'Alguien') + ' se postuló al rol de ' + rol.nombre, postulante_id: p.postulante_id, fecha: p.created_at, color: '#E8A020', icon: '📬' })
+              todasPost.push({...p, rol_nombre: rol.nombre, proyecto_nombre: mios[0].nombre, proyecto_id: mios[0].id})
+              if (p.estado === 'pendiente') notifs.push({ tipo: 'nueva_postulacion', texto: (p.perfiles?.nombre || 'Alguien') + ' se postuló al rol de ' + rol.nombre + ' en ' + mios[0].nombre, postulante_id: p.postulante_id, fecha: p.created_at, color: '#E8A020', icon: '📬' })
             })
           }
         }))
@@ -78,6 +79,17 @@ export default function Dashboard() {
   async function cerrarSesion() {
     await supabase.auth.signOut()
     window.location.href = '/registro'
+  }
+
+  async function cambiarEstado(id, estado) {
+    setActualizando(id)
+    await fetch('/api/postulaciones', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, estado })
+    })
+    setPostulacionesRecibidas(prev => prev.map(p => p.id === id ? {...p, estado} : p))
+    setActualizando(null)
   }
 
   const esFundador = misProyectos.length > 0
@@ -168,7 +180,7 @@ export default function Dashboard() {
                 {misPostulaciones.map(p => (
                   <div key={p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
                     <div>
-                      <div style={{fontSize:'0.875rem',fontWeight:'600',color:'#fff',marginBottom:'0.15rem'}}>{p.roles?.nombre || 'Rol'}</div>
+                      <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.2rem'}}>{p.roles?.nombre || 'Rol'}</div>
                       <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{new Date(p.created_at).toLocaleDateString('es-CO')}</div>
                     </div>
                     <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',background:p.estado==='aceptada'?'rgba(29,158,117,0.15)':p.estado==='rechazada'?'rgba(216,90,48,0.1)':'rgba(232,160,32,0.12)',color:p.estado==='aceptada'?'#1D9E75':p.estado==='rechazada'?'#D85A30':'#E8A020'}}>
@@ -259,15 +271,31 @@ export default function Dashboard() {
                 ) : (
                   <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',marginBottom:'1.5rem'}}>
                     {postulacionesRecibidas.slice(0,5).map(p => (
-                      <div key={p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
-                        <div>
-                          <a href={'/perfil/'+p.postulante_id} style={{fontSize:'0.9rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',display:'block',marginBottom:'0.15rem'}}>{p.perfiles?.nombre || 'Usuario'} →</a>
-                          <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{p.rol_nombre} · {p.perfiles?.ciudad || ''} · {p.perfiles?.especialidad || ''}</div>
-                          <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.1rem'}}>{new Date(p.created_at).toLocaleDateString('es-CO')}</div>
+                      <div key={p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1.1rem'}}>
+                        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'0.75rem',marginBottom:'0.75rem'}}>
+                          <div>
+                            <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#E8A020',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>{p.proyecto_nombre} · {p.rol_nombre}</div>
+                            <a href={'/perfil/'+p.postulante_id} style={{fontSize:'0.9rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',display:'block',marginBottom:'0.15rem'}}>{p.perfiles?.nombre || 'Usuario'} →</a>
+                            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{p.perfiles?.ciudad || ''}{p.perfiles?.especialidad ? ' · ' + p.perfiles.especialidad : ''}</div>
+                            <div style={{fontSize:'0.7rem',color:'#6B7280',marginTop:'0.15rem'}}>{new Date(p.created_at).toLocaleDateString('es-CO')}</div>
+                          </div>
+                          <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',background:p.estado==='aceptada'?'rgba(29,158,117,0.15)':p.estado==='rechazada'?'rgba(216,90,48,0.1)':'rgba(232,160,32,0.12)',color:p.estado==='aceptada'?'#1D9E75':p.estado==='rechazada'?'#D85A30':'#E8A020'}}>
+                            {p.estado==='aceptada'?'✅ Aceptada':p.estado==='rechazada'?'✗ Rechazada':'⏳ Pendiente'}
+                          </span>
                         </div>
-                        <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',background:p.estado==='aceptada'?'rgba(29,158,117,0.15)':p.estado==='rechazada'?'rgba(216,90,48,0.1)':'rgba(232,160,32,0.12)',color:p.estado==='aceptada'?'#1D9E75':p.estado==='rechazada'?'#D85A30':'#E8A020'}}>
-                          {p.estado==='aceptada'?'✅ Aceptada':p.estado==='rechazada'?'✗ Rechazada':'⏳ Pendiente'}
-                        </span>
+                        {p.estado === 'pendiente' && (
+                          <div style={{display:'flex',gap:'0.5rem'}}>
+                            <button onClick={() => cambiarEstado(p.id,'aceptada')} disabled={actualizando===p.id} style={{background:'rgba(29,158,117,0.15)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'6px',padding:'0.4rem 1rem',fontSize:'0.78rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                              {actualizando===p.id ? '...' : '✅ Aceptar'}
+                            </button>
+                            <button onClick={() => cambiarEstado(p.id,'rechazada')} disabled={actualizando===p.id} style={{background:'rgba(216,90,48,0.08)',color:'#D85A30',border:'1px solid rgba(216,90,48,0.25)',borderRadius:'6px',padding:'0.4rem 1rem',fontSize:'0.78rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                              Rechazar
+                            </button>
+                            <a href={'/perfil/'+p.postulante_id} style={{background:'rgba(255,255,255,0.06)',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'6px',padding:'0.4rem 1rem',fontSize:'0.78rem',fontWeight:'600',textDecoration:'none'}}>
+                              Ver perfil
+                            </a>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
