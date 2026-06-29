@@ -69,7 +69,7 @@ export default function Dashboard() {
         <div style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div>
         <div style={{display:'flex',alignItems:'center',gap:'1.5rem'}}>
           <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
-          <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Hitos</a><a href="/aportes" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Aportes</a>
+          <a href="/aportes" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Aportes</a>
           <a href="/postulaciones" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Postulaciones</a>
           <a href="/admin" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Panel fundador</a>
           <button onClick={cerrarSesion} style={{background:'transparent',border:'1px solid rgba(255,255,255,0.15)',color:'#8FA3CC',padding:'0.35rem 0.875rem',borderRadius:'6px',fontSize:'0.8rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
@@ -116,7 +116,7 @@ export default function Dashboard() {
             <div style={{fontSize:'0.78rem',color:'#1D9E75',fontWeight:'600'}}>Ver proyectos →</div>
           </a>
 
-          <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Hitos</a><a href="/aportes" style={{textDecoration:'none',display:'block',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'14px',padding:'1.5rem',transition:'border-color 0.2s'}} onMouseOver={e=>e.currentTarget.style.borderColor='rgba(29,158,117,0.4)'} onMouseOut={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'}>
+          <a href="/aportes" style={{textDecoration:'none',display:'block',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'14px',padding:'1.5rem',transition:'border-color 0.2s'}} onMouseOver={e=>e.currentTarget.style.borderColor='rgba(29,158,117,0.4)'} onMouseOut={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.1)'}>
             <div style={{fontSize:'1.5rem',marginBottom:'0.75rem'}}>📊</div>
             <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.3rem'}}>Mis aportes</div>
             <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1rem',lineHeight:'1.5'}}>{misAportes.length} aporte{misAportes.length!==1?'s':''} registrado{misAportes.length!==1?'s':''} · ${totalAportes.toLocaleString()}</div>
@@ -128,6 +128,13 @@ export default function Dashboard() {
             <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.3rem'}}>Mis postulaciones</div>
             <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1rem',lineHeight:'1.5'}}>{misPostulaciones.length} enviada{misPostulaciones.length!==1?'s':''} · {postAceptadas} aceptada{postAceptadas!==1?'s':''}</div>
             <div style={{fontSize:'0.78rem',color:'#1D9E75',fontWeight:'600'}}>Ver postulaciones →</div>
+          </a>
+
+          <a href="/hitos" style={{textDecoration:'none',display:'block',background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'14px',padding:'1.5rem',transition:'border-color 0.2s'}} onMouseOver={e=>e.currentTarget.style.borderColor='rgba(29,158,117,0.5)'} onMouseOut={e=>e.currentTarget.style.borderColor='rgba(29,158,117,0.2)'}>
+            <div style={{fontSize:'1.5rem',marginBottom:'0.75rem'}}>🎯</div>
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.3rem'}}>Hitos del proyecto</div>
+            <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1rem',lineHeight:'1.5'}}>Registra y marca los hitos del expediente</div>
+            <div style={{fontSize:'0.78rem',color:'#1D9E75',fontWeight:'600'}}>Ver hitos →</div>
           </a>
 
           {misproyectos.length > 0 && (
