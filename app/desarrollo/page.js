@@ -118,6 +118,19 @@ const fases = [
     ]
   },
   {
+    num: '10',
+    titulo: 'Descubrimiento — buscar, filtrar, directorio',
+    estado: 'completa',
+    valor_total: 5000000,
+    valor_hecho: 5000000,
+    hitos: [
+      { num: '10.1', nombre: 'Directorio de especialistas con búsqueda por nombre, especialidad y ciudad', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '10.2', nombre: 'Buscar proyectos con filtros por sector, tipo A/B y ciudad', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '10.3', nombre: 'Página de bienvenida para usuarios nuevos sin perfil', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '10.4', nombre: 'Redireccion inteligente según estado del perfil', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
     num: '07',
     titulo: 'Contratos digitales y documentos legales',
     estado: 'pendiente',
