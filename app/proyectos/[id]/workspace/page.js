@@ -18,6 +18,8 @@ export default function Workspace() {
   const [creandoHito, setCreandoHito] = useState(false)
   const [nuevoAporte, setNuevoAporte] = useState({ descripcion: '', valor: '', tipo: 'horas' })
   const [registrando, setRegistrando] = useState(false)
+  const [badgeTareas, setBadgeTareas] = useState(0)
+  const [badgeChat, setBadgeChat] = useState(0)
 
   useEffect(() => {
     async function cargar() {
@@ -78,10 +80,42 @@ export default function Workspace() {
       setHitos(hitosData.hitos || [])
       setAportes(aportesData.aportes || [])
       setPostulaciones(postEquipo)
+
+      // Cargar badge tareas pendientes
+      const tRes = await fetch('/api/tareas?proyecto_id=' + pid)
+      const tData = await tRes.json()
+      const misPendientes = (tData.tareas || []).filter(t => t.asignado_a === user.id && t.estado === 'pendiente')
+      setBadgeTareas(misPendientes.length)
+
       setCargando(false)
     }
     cargar()
   }, [])
+
+  // Suscripciones realtime
+  useEffect(() => {
+    if (!proyecto || !usuario) return
+    const pid = proyecto.id
+
+    const tareasChannel = supabase
+      .channel('ws-tareas-' + pid)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tareas', filter: 'proyecto_id=eq.' + pid }, payload => {
+        if (payload.new.asignado_a === usuario.id) setBadgeTareas(n => n + 1)
+      })
+      .subscribe()
+
+    const mensajesChannel = supabase
+      .channel('ws-mensajes-' + pid)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes', filter: 'proyecto_id=eq.' + pid }, payload => {
+        if (payload.new.autor_id !== usuario.id) setBadgeChat(n => n + 1)
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(tareasChannel)
+      supabase.removeChannel(mensajesChannel)
+    }
+  }, [proyecto, usuario])
 
   async function completarHito(hito) {
     setActualizando(hito.id)
@@ -148,7 +182,8 @@ export default function Workspace() {
     { id: 'equipo', label: 'Equipo', icon: '👥' },
     { id: 'aportes', label: 'Mis aportes', icon: '📋' },
     { id: 'economia', label: 'Economía', icon: '💰' },
-    { id: 'tareas', label: 'Tareas', icon: '✅' },
+    { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },
+    { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
   ]
 
   if (cargando) return (
@@ -457,6 +492,17 @@ export default function Workspace() {
             <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Tareas asignadas por rol con seguimiento de avance y verificación del fundador.</div>
             <a href={window?.location?.pathname?.replace('/workspace','/workspace/tareas')} style={{background:'#1D9E75',color:'#fff',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
               Ver plan de trabajo completo →
+            </a>
+          </div>
+        )}
+
+        {tab === 'chat' && (
+          <div style={{textAlign:'center',padding:'3rem'}}>
+            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>💬</div>
+            <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Chat del equipo</div>
+            <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Comunicación en tiempo real con todos los miembros del proyecto.</div>
+            <a href={window?.location?.pathname?.replace('/workspace','/workspace/chat')} onClick={()=>setBadgeChat(0)} style={{background:'#1D9E75',color:'#fff',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
+              Abrir chat →
             </a>
           </div>
         )}

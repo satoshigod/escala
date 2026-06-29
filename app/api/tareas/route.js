@@ -221,6 +221,15 @@ export async function PATCH(request) {
       tarea_nombre: data.nombre,
       workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
     })
+
+    // Recalcular score del asignado automáticamente
+    if (data.asignado_a) {
+      try {
+        await supabase.rpc('calcular_escala_score', { perfil_uuid: data.asignado_a })
+      } catch (e) {
+        console.error('Error recalculando score:', e)
+      }
+    }
   }
 
   return Response.json({ tarea: data })
