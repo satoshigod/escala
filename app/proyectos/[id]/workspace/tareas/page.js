@@ -88,6 +88,11 @@ export default function Tareas() {
       const tData = await tRes.json()
       setTareas(tData.tareas || [])
       setPlantillas(tData.plantillas || {})
+
+      // Si no es fundador ni gerente, filtrar solo sus tareas
+      if (!esFund && !esGer) {
+        setFiltroRol('todos')
+      }
       setCargando(false)
     }
     cargar()
@@ -163,6 +168,7 @@ export default function Tareas() {
   const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
   const tareasFiltradas = tareas.filter(t => {
+    if (!esFundador && !esGerente && t.asignado_a !== usuario?.id) return false
     if (filtroRol !== 'todos' && t.rol_nombre !== filtroRol) return false
     if (filtroEstado !== 'todos' && t.estado !== filtroEstado) return false
     return true
@@ -199,8 +205,8 @@ export default function Tareas() {
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'2rem',flexWrap:'wrap',gap:'1rem'}}>
           <div>
             <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Plan de trabajo</div>
-            <div style={{fontSize:'clamp(1.3rem,3vw,1.75rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>Tareas del equipo</div>
-            <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{tareas.length} tareas · {pctCompletadas}% completadas</div>
+            <div style={{fontSize:'clamp(1.3rem,3vw,1.75rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>{esFundador||esGerente ? 'Tareas del equipo' : 'Mis tareas'}</div>
+            <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{esFundador||esGerente ? `${tareas.length} tareas · ${pctCompletadas}% completadas` : `${misTareas.length} tareas asignadas · ${misTareas.filter(t=>t.estado==='completada'||t.estado==='verificada').length} completadas`}</div>
           </div>
           {(esFundador || esGerente) && (
             <div style={{display:'flex',gap:'0.5rem'}}>
