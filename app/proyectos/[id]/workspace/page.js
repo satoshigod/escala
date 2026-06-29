@@ -148,6 +148,7 @@ export default function Workspace() {
     { id: 'equipo', label: 'Equipo', icon: '👥' },
     { id: 'aportes', label: 'Mis aportes', icon: '📋' },
     { id: 'economia', label: 'Economía', icon: '💰' },
+    { id: 'tareas', label: 'Tareas', icon: '✅' },
   ]
 
   if (cargando) return (
@@ -433,37 +434,30 @@ export default function Workspace() {
               </div>
             </div>
 
-            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
               <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Los 3 carriles de compensación</div>
               {[
-                {id:'A',label:'Carril A — Extraordinario',desc:'El aporte fue excepcional. Te conviertes en socio accionista al precio de mercado completo.',color:'#1D9E75',bg:'rgba(29,158,117,0.08)'},
-                {id:'B',label:'Carril B — Normal',desc:'Cumpliste lo esperado. Recibes el 50% del precio pactado más experiencia y red de contactos.',color:'#E8A020',bg:'rgba(232,160,32,0.08)'},
-                {id:'C',label:'Carril C — Sales del proyecto',desc:'El equipo decide que no continúas. Recibes el precio de mercado completo en efectivo.',color:'#D85A30',bg:'rgba(216,90,48,0.08)'},
+                {id:'A',label:'Carril A — Extraordinario',desc:'El aporte fue excepcional. Te conviertes en socio accionista al precio de mercado completo.',color:'#1D9E75'},
+                {id:'B',label:'Carril B — Normal',desc:'Cumpliste lo esperado. Recibes el 50% del precio pactado más experiencia y red de contactos.',color:'#E8A020'},
+                {id:'C',label:'Carril C — Sales del proyecto',desc:'El equipo decide que no continúas. Recibes el precio de mercado completo en efectivo.',color:'#D85A30'},
               ].map(c => (
-                <div key={c.id} style={{background:c.bg,border:`1px solid ${c.color}30`,borderRadius:'10px',padding:'1rem',marginBottom:'0.75rem'}}>
-                  <div style={{fontSize:'0.82rem',fontWeight:'700',color:c.color,marginBottom:'0.25rem'}}>{c.label}</div>
+                <div key={c.id} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'10px',padding:'0.875rem',marginBottom:'0.5rem'}}>
+                  <div style={{fontSize:'0.82rem',fontWeight:'700',color:c.color,marginBottom:'0.2rem'}}>{c.label}</div>
                   <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>{c.desc}</div>
                 </div>
               ))}
-              <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginTop:'0.875rem',padding:'0.875rem',background:'rgba(255,255,255,0.03)',borderRadius:'8px',lineHeight:'1.6'}}>
-                <strong style={{color:'#fff'}}>Regla fundamental:</strong> En ningún escenario pierdes por haber tomado el riesgo. Siempre hay compensación.
-              </div>
             </div>
+          </div>
+        )}
 
-            {esFundador && aportes.length > 0 && (
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
-                <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Aportes del equipo completo</div>
-                {aportes.map(a => (
-                  <div key={a.id} style={{display:'flex',justifyContent:'space-between',padding:'0.5rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',fontSize:'0.78rem'}}>
-                    <div>
-                      <span style={{color:'#fff'}}>{a.descripcion}</span>
-                      <span style={{color:'#6B7280',marginLeft:'0.5rem'}}>· {a.tipo}</span>
-                    </div>
-                    <span style={{fontFamily:'monospace',color:'#1D9E75',fontWeight:'600'}}>${a.valor?.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+        {tab === 'tareas' && (
+          <div style={{textAlign:'center',padding:'3rem'}}>
+            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>✅</div>
+            <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Plan de trabajo del proyecto</div>
+            <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Tareas asignadas por rol con seguimiento de avance y verificación del fundador.</div>
+            <a href={window?.location?.pathname?.replace('/workspace','/workspace/tareas')} style={{background:'#1D9E75',color:'#fff',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
+              Ver plan de trabajo completo →
+            </a>
           </div>
         )}
 
