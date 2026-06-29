@@ -178,15 +178,20 @@ export default function Dashboard() {
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',marginBottom:'1.5rem'}}>
                 {misPostulaciones.map(p => (
-                  <a key={p.id} href={p.roles?.proyecto_id ? '/proyectos/' + p.roles.proyecto_id : '/postulaciones'} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}} onMouseOver={e=>e.currentTarget.style.borderColor='rgba(29,158,117,0.3)'} onMouseOut={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'}>
+                  <a key={p.id} href={p.estado==='aceptada' && p.roles?.proyecto_id ? '/proyectos/' + p.roles.proyecto_id + '/workspace' : p.roles?.proyecto_id ? '/proyectos/' + p.roles.proyecto_id : '/postulaciones'} style={{textDecoration:'none',background: p.estado==='aceptada' ? 'rgba(29,158,117,0.06)' : 'rgba(255,255,255,0.04)',border: p.estado==='aceptada' ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}} onMouseOver={e=>e.currentTarget.style.borderColor='rgba(29,158,117,0.3)'} onMouseOut={e=>e.currentTarget.style.borderColor=p.estado==='aceptada'?'rgba(29,158,117,0.25)':'rgba(255,255,255,0.08)'}>
                     <div>
                       <div style={{fontSize:'0.75rem',fontWeight:'700',color:'#fff',marginBottom:'0.15rem'}}>{p.roles?.proyectos?.nombre || 'Proyecto'}</div>
                       <div style={{fontSize:'0.65rem',fontWeight:'600',color:'#8FA3CC',letterSpacing:'0.04em',textTransform:'uppercase',marginBottom:'0.15rem'}}>{p.roles?.nombre || 'Rol'}</div>
                       <div style={{fontSize:'0.68rem',color:'#6B7280'}}>{new Date(p.created_at).toLocaleDateString('es-CO')}</div>
                     </div>
-                    <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',background:p.estado==='aceptada'?'rgba(29,158,117,0.15)':p.estado==='rechazada'?'rgba(216,90,48,0.1)':'rgba(232,160,32,0.12)',color:p.estado==='aceptada'?'#1D9E75':p.estado==='rechazada'?'#D85A30':'#E8A020'}}>
-                      {p.estado==='aceptada'?'✅ Aceptada':p.estado==='rechazada'?'✗ No seleccionado':'⏳ Pendiente'}
-                    </span>
+                    <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:'0.4rem'}}>
+                      <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',background:p.estado==='aceptada'?'rgba(29,158,117,0.15)':p.estado==='rechazada'?'rgba(216,90,48,0.1)':'rgba(232,160,32,0.12)',color:p.estado==='aceptada'?'#1D9E75':p.estado==='rechazada'?'#D85A30':'#E8A020'}}>
+                        {p.estado==='aceptada'?'✅ Aceptada':p.estado==='rechazada'?'✗ No seleccionado':'⏳ Pendiente'}
+                      </span>
+                      {p.estado==='aceptada' && p.roles?.proyecto_id && (
+                        <span style={{fontSize:'0.68rem',fontWeight:'700',color:'#1D9E75'}}>🏠 Ir al workspace →</span>
+                      )}
+                    </div>
                   </a>
                 ))}
               </div>
@@ -255,6 +260,7 @@ export default function Dashboard() {
                       <div style={{fontSize:'1rem',fontWeight:'800',color:'#fff',marginBottom:'0.25rem'}}>{p.nombre}</div>
                       <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'1rem'}}>{p.sector} · {p.ciudad}</div>
                       <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
+                        <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.72rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.35rem 0.875rem',borderRadius:'6px',textDecoration:'none'}}>🏠 Workspace</a>
                         <a href={'/proyectos/'+p.id} style={{fontSize:'0.72rem',fontWeight:'600',color:'#fff',background:'rgba(255,255,255,0.1)',padding:'0.35rem 0.75rem',borderRadius:'6px',textDecoration:'none'}}>Ver proyecto</a>
                         <a href="/hitos" style={{fontSize:'0.72rem',fontWeight:'600',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.35rem 0.75rem',borderRadius:'6px',textDecoration:'none'}}>Hitos</a>
                         <a href="/ingresos" style={{fontSize:'0.72rem',fontWeight:'600',color:'#1D9E75',background:'rgba(29,158,117,0.1)',padding:'0.35rem 0.75rem',borderRadius:'6px',textDecoration:'none'}}>Ingresos</a>
