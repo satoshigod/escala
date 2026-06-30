@@ -181,6 +181,7 @@ export default function Workspace() {
     { id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null },
     { id: 'equipo', label: 'Equipo', icon: '👥' },
     { id: 'aportes', label: 'Mis aportes', icon: '📋' },
+    { id: 'presupuesto', label: 'Presupuesto', icon: '💸' },
     { id: 'economia', label: 'Economía', icon: '💰' },
     { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },
     { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
@@ -507,7 +508,286 @@ export default function Workspace() {
           </div>
         )}
 
+        {tab === 'presupuesto' && (
+          <PresupuestoTab proyectoId={pid} esFundador={proyecto?.fundador_id === usuario?.id} usuarioId={usuario?.id} />
+        )}
+
       </main>
+    </div>
+  )
+}
+
+// ── Componente Presupuesto ────────────────────────────────────────────────────
+function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
+  const [costos, setCostos] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [mostrarForm, setMostrarForm] = useState(false)
+  const [guardando, setGuardando] = useState(false)
+  const [mensaje, setMensaje] = useState('')
+  const [form, setForm] = useState({ nombre:'', descripcion:'', categoria:'infraestructura', valor:'', periodicidad:'unico' })
+
+  const CATEGORIAS = [
+    { id:'infraestructura', label:'🖥️ Infraestructura', desc:'Dominio, hosting, servidores, SaaS' },
+    { id:'legal', label:'⚖️ Legal', desc:'Notaría, registro, abogado, DIAN' },
+    { id:'diseno', label:'🎨 Diseño', desc:'Logo, identidad visual, UI/UX' },
+    { id:'marketing', label:'📣 Marketing', desc:'Pauta, campaña, fotografía' },
+    { id:'operativo', label:'⚙️ Operativo', desc:'Gastos operativos generales' },
+    { id:'servicio', label:'🤝 Servicio externo', desc:'Freelance, proveedor, consultoría' },
+  ]
+
+  const PERIODICIDAD = [
+    { id:'unico', label:'Pago único' },
+    { id:'mensual', label:'Mensual' },
+    { id:'anual', label:'Anual' },
+  ]
+
+  useEffect(() => {
+    cargarCostos()
+  }, [proyectoId])
+
+  async function cargarCostos() {
+    setCargando(true)
+    const res = await fetch('/api/costos?proyecto_id=' + proyectoId)
+    const data = await res.json()
+    setCostos(data.costos || [])
+    setCargando(false)
+  }
+
+  async function crearCosto() {
+    if (!form.nombre || !form.valor) { setMensaje('Completa nombre y valor'); return }
+    setGuardando(true)
+    const res = await fetch('/api/costos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...form, proyecto_id: proyectoId, creado_por: usuarioId })
+    })
+    const data = await res.json()
+    if (data.error) { setMensaje('Error: ' + data.error); setGuardando(false); return }
+    setCostos(prev => [data.costo, ...prev])
+    setForm({ nombre:'', descripcion:'', categoria:'infraestructura', valor:'', periodicidad:'unico' })
+    setMostrarForm(false)
+    setMensaje('✓ Costo registrado')
+    setTimeout(() => setMensaje(''), 3000)
+    setGuardando(false)
+  }
+
+  async function financiarCosto(costoId) {
+    // Registra el aporte y marca el costo como cubierto en una sola operación
+    // Primero crear el aporte
+    const costo = costos.find(c => c.id === costoId)
+    if (!costo) return
+
+    const aporteRes = await fetch('/api/aportes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        proyecto_id: proyectoId,
+        aportante_id: usuarioId,
+        tipo: 'capital',
+        descripcion: costo.nombre + ' — financiado como Ángel de Impulso',
+        valor: costo.valor,
+        fecha: new Date().toISOString().split('T')[0]
+      })
+    })
+    const aporteData = await aporteRes.json()
+    if (aporteData.error) { setMensaje('Error al registrar aporte: ' + aporteData.error); return }
+
+    // Luego marcar el costo como cubierto
+    const costoRes = await fetch('/api/costos', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: costoId, estado: 'cubierto', cubierto_por: usuarioId, aporte_id: aporteData.aporte?.id })
+    })
+    const costoData = await costoRes.json()
+    if (costoData.error) { setMensaje('Error: ' + costoData.error); return }
+
+    setCostos(prev => prev.map(c => c.id === costoId ? costoData.costo : c))
+    setMensaje('✓ Costo financiado y aporte registrado')
+    setTimeout(() => setMensaje(''), 3000)
+  }
+
+  async function eliminarCosto(costoId) {
+    if (!confirm('¿Eliminar este costo?')) return
+    await fetch('/api/costos?id=' + costoId, { method: 'DELETE' })
+    setCostos(prev => prev.filter(c => c.id !== costoId))
+  }
+
+  const pendientes = costos.filter(c => c.estado === 'pendiente')
+  const cubiertos = costos.filter(c => c.estado === 'cubierto')
+  const totalPendiente = pendientes.reduce((s, c) => s + (c.valor || 0), 0)
+  const totalCubierto = cubiertos.reduce((s, c) => s + (c.valor || 0), 0)
+  const totalGeneral = totalPendiente + totalCubierto
+  const pctCubierto = totalGeneral > 0 ? Math.round((totalCubierto / totalGeneral) * 100) : 0
+
+  const categoriaLabel = Object.fromEntries(CATEGORIAS.map(c => [c.id, c.label]))
+
+  if (cargando) return <div style={{color:'#8FA3CC',padding:'2rem',textAlign:'center'}}>Cargando presupuesto...</div>
+
+  return (
+    <div>
+      {/* Resumen financiero */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:'0.875rem',marginBottom:'1.75rem'}}>
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>${totalGeneral.toLocaleString()}</div>
+          <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Presupuesto total</div>
+        </div>
+        <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>${totalCubierto.toLocaleString()}</div>
+          <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Cubierto</div>
+        </div>
+        <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>${totalPendiente.toLocaleString()}</div>
+          <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Pendiente de financiación</div>
+        </div>
+        <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#AFA9EC'}}>{pctCubierto}%</div>
+          <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Avance del presupuesto</div>
+        </div>
+      </div>
+
+      {/* Barra de progreso */}
+      {totalGeneral > 0 && (
+        <div style={{background:'rgba(255,255,255,0.06)',borderRadius:'4px',height:'6px',marginBottom:'1.75rem',overflow:'hidden'}}>
+          <div style={{width:pctCubierto+'%',height:'100%',background:'#1D9E75',borderRadius:'4px',transition:'width 0.5s ease'}}/>
+        </div>
+      )}
+
+      {/* Mensaje */}
+      {mensaje && (
+        <div style={{background: mensaje.startsWith('✓') ? 'rgba(29,158,117,0.1)' : 'rgba(216,90,48,0.1)', border:'1px solid', borderColor: mensaje.startsWith('✓') ? 'rgba(29,158,117,0.3)' : 'rgba(216,90,48,0.3)', borderRadius:'8px', padding:'0.75rem', color: mensaje.startsWith('✓') ? '#1D9E75' : '#D85A30', fontSize:'0.82rem', marginBottom:'1rem'}}>
+          {mensaje}
+        </div>
+      )}
+
+      {/* Botón agregar (solo fundador) */}
+      {esFundador && (
+        <div style={{marginBottom:'1.25rem'}}>
+          <button onClick={() => setMostrarForm(!mostrarForm)} style={{background: mostrarForm ? 'transparent' : '#E8A020', color: mostrarForm ? '#8FA3CC' : '#fff', border: mostrarForm ? '1px solid rgba(255,255,255,0.1)' : 'none', borderRadius:'8px', padding:'0.6rem 1.25rem', fontSize:'0.82rem', fontWeight:'700', cursor:'pointer', fontFamily:'Inter,sans-serif'}}>
+            {mostrarForm ? 'Cancelar' : '+ Agregar costo al presupuesto'}
+          </button>
+        </div>
+      )}
+
+      {/* Formulario para agregar costo */}
+      {mostrarForm && esFundador && (
+        <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.75rem'}}>
+          <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Nuevo costo al presupuesto</div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1rem'}}>
+            <div>
+              <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.3rem',fontWeight:'600'}}>NOMBRE DEL COSTO *</div>
+              <input value={form.nombre} onChange={e=>setForm(f=>({...f,nombre:e.target.value}))} placeholder="Ej: Dominio escala.app" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 0.875rem',color:'#fff',fontSize:'0.85rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+            </div>
+            <div>
+              <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.3rem',fontWeight:'600'}}>VALOR EN COP *</div>
+              <input value={form.valor} onChange={e=>setForm(f=>({...f,valor:e.target.value}))} placeholder="120000" type="number" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 0.875rem',color:'#fff',fontSize:'0.85rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+            </div>
+          </div>
+
+          <div style={{marginBottom:'1rem'}}>
+            <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.3rem',fontWeight:'600'}}>DESCRIPCIÓN (opcional)</div>
+            <input value={form.descripcion} onChange={e=>setForm(f=>({...f,descripcion:e.target.value}))} placeholder="Ej: Registro anual del dominio en Namecheap" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 0.875rem',color:'#fff',fontSize:'0.85rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1.25rem'}}>
+            <div>
+              <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.5rem',fontWeight:'600'}}>CATEGORÍA</div>
+              <div style={{display:'flex',flexWrap:'wrap',gap:'0.4rem'}}>
+                {CATEGORIAS.map(cat => (
+                  <button key={cat.id} onClick={()=>setForm(f=>({...f,categoria:cat.id}))} style={{background: form.categoria===cat.id ? 'rgba(232,160,32,0.2)' : 'rgba(255,255,255,0.04)', border: form.categoria===cat.id ? '1px solid rgba(232,160,32,0.5)' : '1px solid rgba(255,255,255,0.1)', borderRadius:'6px', padding:'0.35rem 0.65rem', fontSize:'0.72rem', color: form.categoria===cat.id ? '#E8A020' : '#8FA3CC', cursor:'pointer', fontFamily:'Inter,sans-serif'}}>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.5rem',fontWeight:'600'}}>PERIODICIDAD</div>
+              <div style={{display:'flex',gap:'0.4rem'}}>
+                {PERIODICIDAD.map(p => (
+                  <button key={p.id} onClick={()=>setForm(f=>({...f,periodicidad:p.id}))} style={{background: form.periodicidad===p.id ? 'rgba(175,169,236,0.15)' : 'rgba(255,255,255,0.04)', border: form.periodicidad===p.id ? '1px solid rgba(175,169,236,0.4)' : '1px solid rgba(255,255,255,0.1)', borderRadius:'6px', padding:'0.35rem 0.65rem', fontSize:'0.72rem', color: form.periodicidad===p.id ? '#AFA9EC' : '#8FA3CC', cursor:'pointer', fontFamily:'Inter,sans-serif'}}>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <button onClick={crearCosto} disabled={guardando} style={{background:guardando?'#0F6E56':'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.75rem 1.75rem',fontSize:'0.85rem',fontWeight:'700',cursor:guardando?'not-allowed':'pointer',fontFamily:'Inter,sans-serif'}}>
+            {guardando ? 'Guardando...' : 'Agregar al presupuesto'}
+          </button>
+        </div>
+      )}
+
+      {/* Lista de costos pendientes */}
+      {pendientes.length > 0 && (
+        <div style={{marginBottom:'1.75rem'}}>
+          <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem',display:'flex',alignItems:'center',gap:'0.5rem'}}>
+            <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#E8A020',display:'inline-block'}}></span>
+            Pendientes de financiación
+            <span style={{fontSize:'0.68rem',background:'rgba(232,160,32,0.15)',color:'#E8A020',padding:'0.1rem 0.45rem',borderRadius:'10px'}}>{pendientes.length}</span>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:'0.6rem'}}>
+            {pendientes.map(c => (
+              <div key={c.id} style={{background:'rgba(232,160,32,0.05)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.875rem'}}>
+                <div style={{flex:1}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.25rem'}}>
+                    <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.15rem 0.5rem',borderRadius:'10px'}}>{categoriaLabel[c.categoria] || c.categoria}</span>
+                    {c.periodicidad !== 'unico' && <span style={{fontSize:'0.62rem',color:'#8FA3CC'}}>· {c.periodicidad}</span>}
+                  </div>
+                  <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{c.nombre}</div>
+                  {c.descripcion && <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>{c.descripcion}</div>}
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:'0.875rem',flexShrink:0}}>
+                  <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#E8A020'}}>${c.valor.toLocaleString()}</div>
+                  <button onClick={() => financiarCosto(c.id)} style={{background:'rgba(175,169,236,0.15)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.45rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                    🌟 Financiar este costo
+                  </button>
+                  {esFundador && (
+                    <button onClick={() => eliminarCosto(c.id)} style={{background:'none',border:'none',color:'#D85A30',cursor:'pointer',fontSize:'0.85rem',padding:'0.25rem'}}>✕</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Costos cubiertos */}
+      {cubiertos.length > 0 && (
+        <div>
+          <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem',display:'flex',alignItems:'center',gap:'0.5rem'}}>
+            <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#1D9E75',display:'inline-block'}}></span>
+            Cubiertos
+            <span style={{fontSize:'0.68rem',background:'rgba(29,158,117,0.15)',color:'#1D9E75',padding:'0.1rem 0.45rem',borderRadius:'10px'}}>{cubiertos.length}</span>
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+            {cubiertos.map(c => (
+              <div key={c.id} style={{background:'rgba(29,158,117,0.05)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'10px',padding:'0.875rem 1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.5rem'}}>
+                <div>
+                  <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.15rem'}}>✅ {c.nombre}</div>
+                  <div style={{fontSize:'0.72rem',color:'#1D9E75'}}>Financiado por {c.cubierto_perfil?.nombre || 'un miembro del equipo'}</div>
+                </div>
+                <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color:'#1D9E75'}}>${c.valor.toLocaleString()}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {costos.length === 0 && (
+        <div style={{textAlign:'center',padding:'3rem',background:'rgba(255,255,255,0.02)',border:'1px dashed rgba(255,255,255,0.08)',borderRadius:'12px'}}>
+          <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>💸</div>
+          <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>Presupuesto del proyecto</div>
+          <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:esFundador?'1.25rem':0}}>
+            {esFundador ? 'Define los costos que necesita este proyecto para que el equipo, ángeles e inversionistas puedan verlos y financiarlos.' : 'El fundador aún no ha definido el presupuesto de este proyecto.'}
+          </div>
+          {esFundador && (
+            <button onClick={() => setMostrarForm(true)} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7rem 1.5rem',fontSize:'0.85rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+              + Definir primer costo
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }

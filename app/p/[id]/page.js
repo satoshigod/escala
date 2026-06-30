@@ -12,21 +12,31 @@ export default function ProyectoPublico() {
   const [roles, setRoles] = useState([])
   const [hitos, setHitos] = useState([])
   const [cargando, setCargando] = useState(true)
+  const [costos, setCostos] = useState([])
+  const [usuarioActual, setUsuarioActual] = useState(null)
 
   useEffect(() => {
     async function cargar() {
+      const { createClient } = await import('@supabase/supabase-js')
+      const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+      const { data: { user } } = await supabase.auth.getUser()
+      setUsuarioActual(user)
+
       const pid = window.location.pathname.split('/').pop()
-      const [r1, r2, r3] = await Promise.all([
+      const [r1, r2, r3, r4] = await Promise.all([
         fetch('/api/proyectos/' + pid),
         fetch('/api/roles?proyecto_id=' + pid),
-        fetch('/api/hitos?proyecto_id=' + pid)
+        fetch('/api/hitos?proyecto_id=' + pid),
+        fetch('/api/costos?proyecto_id=' + pid)
       ])
       const d1 = await r1.json()
       const d2 = await r2.json()
       const d3 = await r3.json()
+      const d4 = await r4.json()
       setProyecto(d1.proyecto || null)
       setRoles(d2.roles || [])
       setHitos((d3.hitos || []).filter(h => h.completado))
+      setCostos(d4.costos || [])
       setCargando(false)
     }
     cargar()
@@ -106,6 +116,82 @@ export default function ProyectoPublico() {
             ))}
           </div>
         </div>
+
+
+        {/* PRESUPUESTO — visible para todos los visitantes */}
+        {costos.length > 0 && (
+          <div style={{marginBottom:'2rem'}}>
+            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'1rem'}}>Presupuesto del proyecto</div>
+            {(() => {
+              const pendientes = costos.filter(c => c.estado === 'pendiente')
+              const cubiertos = costos.filter(c => c.estado === 'cubierto')
+              const totalP = pendientes.reduce((s,c) => s+(c.valor||0), 0)
+              const totalC = cubiertos.reduce((s,c) => s+(c.valor||0), 0)
+              const totalG = totalP + totalC
+              const pct = totalG > 0 ? Math.round((totalC/totalG)*100) : 0
+              return (
+                <>
+                  <div style={{display:'flex',gap:'0.75rem',marginBottom:'0.875rem',flexWrap:'wrap'}}>
+                    <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'10px',padding:'0.75rem 1rem',flex:1,minWidth:'120px'}}>
+                      <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#1D9E75'}}>${totalC.toLocaleString()}</div>
+                      <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.1rem'}}>Cubierto</div>
+                    </div>
+                    <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'10px',padding:'0.75rem 1rem',flex:1,minWidth:'120px'}}>
+                      <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#E8A020'}}>${totalP.toLocaleString()}</div>
+                      <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.1rem'}}>Necesita financiacion</div>
+                    </div>
+                    <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'10px',padding:'0.75rem 1rem',flex:1,minWidth:'120px'}}>
+                      <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#AFA9EC'}}>{pct}%</div>
+                      <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.1rem'}}>Financiado</div>
+                    </div>
+                  </div>
+                  <div style={{background:'rgba(255,255,255,0.06)',borderRadius:'4px',height:'5px',marginBottom:'1.25rem',overflow:'hidden'}}>
+                    <div style={{width:pct+'%',height:'100%',background:'#1D9E75',borderRadius:'4px'}}/>
+                  </div>
+                  {pendientes.length > 0 && (
+                    <div style={{marginBottom:'1.25rem'}}>
+                      <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',marginBottom:'0.75rem'}}>Oportunidades para Angel de Impulso</div>
+                      <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                        {pendientes.map(c => (
+                          <div key={c.id} style={{background:'rgba(232,160,32,0.05)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'10px',padding:'0.875rem 1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
+                            <div>
+                              <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.15rem'}}>{c.nombre}</div>
+                              {c.descripcion && <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{c.descripcion}</div>}
+                              <div style={{fontSize:'0.68rem',color:'#E8A020',marginTop:'0.15rem'}}>{c.periodicidad === 'unico' ? 'Pago unico' : c.periodicidad}</div>
+                            </div>
+                            <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flexShrink:0}}>
+                              <div style={{fontFamily:'monospace',fontSize:'1.05rem',fontWeight:'700',color:'#E8A020'}}>${c.valor.toLocaleString()}</div>
+                              <a href="/registro" style={{background:'rgba(175,169,236,0.15)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.4rem 0.875rem',fontSize:'0.75rem',fontWeight:'700',textDecoration:'none',whiteSpace:'nowrap'}}>
+                                Financiar este costo
+                              </a>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {cubiertos.length > 0 && (
+                    <div>
+                      <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',marginBottom:'0.75rem'}}>Ya cubiertos</div>
+                      <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
+                        {cubiertos.map(c => (
+                          <div key={c.id} style={{background:'rgba(29,158,117,0.04)',border:'1px solid rgba(29,158,117,0.12)',borderRadius:'8px',padding:'0.75rem 1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.5rem'}}>
+                            <div>
+                              <div style={{fontSize:'0.82rem',color:'#fff'}}>{c.nombre}</div>
+                              <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'0.1rem'}}>Financiado por {c.cubierto_perfil ? c.cubierto_perfil.nombre : 'un miembro del equipo'}</div>
+                            </div>
+                            <div style={{fontFamily:'monospace',fontSize:'0.95rem',fontWeight:'700',color:'#1D9E75'}}>${c.valor.toLocaleString()}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+          </div>
+        )}
+
 
         <div style={{textAlign:'center',padding:'2rem',borderTop:'1px solid rgba(255,255,255,0.08)'}}>
           <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:'1rem'}}>
