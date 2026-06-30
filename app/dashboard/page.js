@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [contadores, setContadores] = useState({})
   const [misImpulsos, setMisImpulsos] = useState([])
   const [cargaEquipo, setCargaEquipo] = useState([])
+  const [proyectosGestionados, setProyectosGestionados] = useState([])
   const [vistaSugerida, setVistaSugerida] = useState('especialista')
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export default function Dashboard() {
       setContadores(data.contadores || {})
       setMisImpulsos(data.misImpulsos || [])
       setCargaEquipo(data.cargaEquipo || [])
+      setProyectosGestionados(data.proyectosGestionados || [])
       setVistaSugerida(data.vistaSugerida || 'especialista')
       setVista(data.vistaSugerida || 'resumen')
       setCargando(false)
@@ -271,7 +273,7 @@ export default function Dashboard() {
 
             <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Tus proyectos gestionados</div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:'0.875rem'}}>
-              {misProyectos.map(p => (
+              {proyectosGestionados.map(p => (
                 <a key={p.id} href={'/proyectos/'+p.id+'/workspace'} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',display:'block'}}>
                   <div style={{fontSize:'0.9rem',fontWeight:'800',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
                   <div style={{fontSize:'0.72rem',color:'#1D9E75',fontWeight:'600'}}>Ir al workspace →</div>

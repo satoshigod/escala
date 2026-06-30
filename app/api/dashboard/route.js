@@ -139,13 +139,22 @@ export async function GET(request) {
     else if (esAngelRol) vistaSugerida = 'angel'
     else if (misProyectos.length > 0) vistaSugerida = 'fundador'
 
-    // Carga de trabajo del equipo (para vista Gerente) — solo si hay proyectos donde el usuario es Gerente
+    // Carga de trabajo del equipo (para vista Gerente) — proyectos donde el usuario tiene rol de Gerente ACEPTADO,
+    // no solo los que fundó. Una postulación aceptada con nombre de rol "Gerente de Proyecto" cuenta.
+    const proyectosComoGerenteIds = [...new Set(
+      misPostulaciones
+        .filter(p => p.estado === 'aceptada' && (p.roles?.nombre || '').toLowerCase().includes('gerente'))
+        .map(p => p.roles?.proyecto_id)
+        .filter(Boolean)
+    )]
+    const proyectosGestionadosIds = [...new Set([...misProyectoIds, ...proyectosComoGerenteIds])]
+
     let cargaEquipo = []
-    if (esGerente && misProyectoIds.length > 0) {
+    if (esGerente && proyectosGestionadosIds.length > 0) {
       const { data: todasTareasEquipo } = await supabase
         .from('tareas')
         .select('asignado_a, estado, proyectos:proyecto_id ( nombre ), perfiles:asignado_a ( nombre )')
-        .in('proyecto_id', misProyectoIds)
+        .in('proyecto_id', proyectosGestionadosIds)
 
       const porPersona = {}
       ;(todasTareasEquipo || []).forEach(t => {
@@ -157,6 +166,8 @@ export async function GET(request) {
       })
       cargaEquipo = Object.values(porPersona).sort((a,b) => b.pendientes - a.pendientes)
     }
+
+    const proyectosGestionados = todosProyectos.filter(p => proyectosGestionadosIds.includes(p.id))
 
     return Response.json({
       perfil,
@@ -173,6 +184,7 @@ export async function GET(request) {
       misImpulsos: misImpulsos || [],
       vistaSugerida,
       cargaEquipo,
+      proyectosGestionados,
       contadores: {
         proyectos: misProyectos.length,
         tareas_pendientes: (tareasAsignadasAMi || []).filter(t => t.estado === 'pendiente').length,
