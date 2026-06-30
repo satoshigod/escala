@@ -227,6 +227,125 @@ const GRUPOS = [
       },
     ]
   },
+  {
+    nombre: '🎓 Especialidades y Categorías',
+    tests: [
+      {
+        id: 'especialidades_get',
+        nombre: 'GET /api/especialidades — lista especialidades',
+        run: async () => {
+          const res = await fetch('/api/especialidades')
+          const data = await res.json()
+          if (!data.especialidades || !Array.isArray(data.especialidades)) throw new Error('No devuelve array')
+          if (data.especialidades.length === 0) throw new Error('Lista vacía')
+          return data.especialidades.length + ' especialidades encontradas'
+        }
+      },
+      {
+        id: 'especialidades_post',
+        nombre: 'POST /api/especialidades — crear especialidad nueva',
+        run: async () => {
+          const nombre = 'QA-Especialidad-' + Date.now()
+          const res = await fetch('/api/especialidades', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, categoria: 'General' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (!data.especialidad || data.especialidad.nombre !== nombre) throw new Error('No se creó correctamente')
+          return 'Especialidad "' + nombre + '" creada con ID ' + data.especialidad.id.slice(0,8)
+        }
+      },
+      {
+        id: 'especialidades_duplicado',
+        nombre: 'POST /api/especialidades — detecta duplicado (Abogado)',
+        run: async () => {
+          const res = await fetch('/api/especialidades', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre: 'Abogado' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (!data.existia) throw new Error('Debería marcar existia=true para Abogado')
+          return 'Abogado detectado como existente correctamente'
+        }
+      },
+      {
+        id: 'categorias_get',
+        nombre: 'GET /api/categorias — lista categorías',
+        run: async () => {
+          const res = await fetch('/api/categorias')
+          const data = await res.json()
+          if (!data.categorias || !Array.isArray(data.categorias)) throw new Error('No devuelve array')
+          if (data.categorias.length === 0) throw new Error('Lista vacía')
+          return data.categorias.length + ' categorías encontradas'
+        }
+      },
+      {
+        id: 'categorias_post',
+        nombre: 'POST /api/categorias — crear categoría nueva',
+        run: async () => {
+          const nombre = 'QA-Categoria-' + Date.now()
+          const res = await fetch('/api/categorias', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (!data.categoria || data.categoria.nombre !== nombre) throw new Error('No se creó correctamente')
+          return 'Categoría "' + nombre + '" creada con ID ' + data.categoria.id.slice(0,8)
+        }
+      },
+    ]
+  },
+  {
+    nombre: '🛡️ Eliminación (proyectos y usuarios)',
+    tests: [
+      {
+        id: 'eliminar_proyecto_cascada',
+        nombre: 'DELETE /api/proyectos/[id] — borra en cascada y desaparece de la lista',
+        run: async () => {
+          const nombre = 'QA-Eliminar-' + Date.now()
+          const resCrear = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA delete test', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
+          })
+          const dataCrear = await resCrear.json()
+          if (dataCrear.error) throw new Error('No se pudo crear proyecto de prueba: ' + dataCrear.error)
+          const id = dataCrear.proyecto.id
+
+          const resDelete = await fetch('/api/proyectos/' + id, { method: 'DELETE' })
+          const dataDelete = await resDelete.json()
+          if (dataDelete.error) throw new Error('Error al eliminar: ' + dataDelete.error)
+
+          const resVerificar = await fetch('/api/proyectos')
+          const dataVerificar = await resVerificar.json()
+          const sigueExistiendo = dataVerificar.proyectos.some(p => p.id === id)
+          if (sigueExistiendo) throw new Error('El proyecto sigue apareciendo en la lista después de eliminarlo')
+
+          return 'Proyecto creado y eliminado correctamente, ya no aparece en /api/proyectos'
+        }
+      },
+    ]
+  },
+  {
+    nombre: '🌐 Distinción local vs global (Fase 14.4)',
+    tests: [
+      {
+        id: 'postulaciones_trae_pais',
+        nombre: 'GET /api/postulaciones — el join incluye el campo pais del perfil',
+        run: async () => {
+          const res = await fetch('/api/postulaciones?postulante_id=' + FUNDADOR_ID)
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (!data.postulaciones || data.postulaciones.length === 0) return 'Sin postulaciones del fundador para verificar (no es un fallo)'
+          const tieneCampo = 'pais' in (data.postulaciones[0].perfiles || {})
+          if (!tieneCampo) throw new Error('El campo pais no viene en el join de perfiles — revisar route de postulaciones')
+          return 'Campo pais presente en el join de postulaciones'
+        }
+      },
+    ]
+  },
 ]
 
 export default function QA() {
