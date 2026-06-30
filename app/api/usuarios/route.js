@@ -5,24 +5,35 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 )
 
-// GET — obtener perfil de usuario
+// GET — obtener perfil de usuario con métricas calculadas
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
 
   if (!id) return Response.json({ error: 'Falta el id' }, { status: 400 })
 
-  const { data, error } = await supabase
-    .from('perfiles')
-    .select(`
-      *,
-      proyectos ( id, nombre, estado, tipo )
-    `)
-    .eq('id', id)
-    .single()
+  const [perfilRes, aportesRes, postulacionesRes] = await Promise.all([
+    supabase.from('perfiles').select('*, proyectos ( id, nombre, estado, tipo )').eq('id', id).single(),
+    supabase.from('aportes').select('tipo, valor, validado').eq('aportante_id', id),
+    supabase.from('postulaciones').select('estado, roles ( nombre, proyecto_id )').eq('postulante_id', id)
+  ])
 
-  if (error) return Response.json({ error: error.message }, { status: 500 })
-  return Response.json({ usuario: data })
+  if (perfilRes.error) return Response.json({ error: perfilRes.error.message }, { status: 500 })
+
+  const aportes = aportesRes.data || []
+  const postulaciones = postulacionesRes.data || []
+
+  const horasAportadas = aportes.filter(a => a.tipo === 'horas').reduce((s, a) => s + (a.valor || 0), 0)
+  const valorGenerado = aportes.filter(a => a.validado).reduce((s, a) => s + (a.valor || 0), 0)
+  const participacionesActivas = postulaciones.filter(p => p.estado === 'aceptada').length
+  const empresasParticipa = [...new Set(postulaciones.filter(p => p.estado === 'aceptada').map(p => p.roles?.proyecto_id).filter(Boolean))].length
+
+  return Response.json({
+    usuario: {
+      ...perfilRes.data,
+      metricas: { horasAportadas, valorGenerado, participacionesActivas, empresasParticipa }
+    }
+  })
 }
 
 // PATCH — actualizar perfil

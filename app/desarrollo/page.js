@@ -232,6 +232,21 @@ const fases = [
     ]
   },
   {
+    num: '16',
+    titulo: 'Completar el documento de rediseño — todo lo faltante',
+    estado: 'completa',
+    valor_total: 6000000,
+    valor_hecho: 6000000,
+    hitos: [
+      { num: '16.1', nombre: 'Roles Mentor y Empresa — onboarding con 7 roles, vistas diferenciadas en dashboard', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
+      { num: '16.2', nombre: 'Métricas visuales — gráficos SVG nativos: aportes por mes, donut por tipo, tareas por estado, hitos', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '16.3', nombre: 'Perfil — horas aportadas, valor generado, participaciones activas visibles en perfil público', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
+      { num: '16.4', nombre: 'Dashboard — mensajes sin leer con badge real, proyectos finalizados en sidebar', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
+      { num: '16.5', nombre: 'API usuarios extendida — metricas calculadas (horasAportadas, valorGenerado, participacionesActivas, empresasParticipa)', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
+      { num: '16.6', nombre: 'Endpoint dashboard — mensajesNoLeidos y proyectosFinalizados calculados en servidor', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
     num: '07',
     titulo: 'Contratos digitales y documentos legales',
     estado: 'pendiente',

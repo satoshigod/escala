@@ -171,7 +171,7 @@ export default function PerfilPublico() {
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'1rem',marginBottom:'1.5rem'}}>
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>{aceptadas}</div>
-            <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Postulaciones aceptadas</div>
+            <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Participaciones activas</div>
           </div>
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>{tasaExito}%</div>
@@ -185,6 +185,18 @@ export default function PerfilPublico() {
             <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>{total}</div>
             <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Total postulaciones</div>
           </div>
+          {perfil.metricas?.horasAportadas > 0 && (
+            <div style={{background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+              <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>${perfil.metricas.horasAportadas.toLocaleString()}</div>
+              <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Valor en horas aportadas</div>
+            </div>
+          )}
+          {perfil.metricas?.valorGenerado > 0 && (
+            <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.15)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+              <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>${perfil.metricas.valorGenerado.toLocaleString()}</div>
+              <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Valor generado validado</div>
+            </div>
+          )}
         </div>
 
         {/* CONTACTO — solo visible para fundadores */}

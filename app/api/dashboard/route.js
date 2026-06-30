@@ -112,7 +112,11 @@ export async function GET(request) {
 
     bandeja.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
 
-    // Notificaciones (formato compatible con el dashboard actual, para no romper el frontend existente)
+    // Mensajes recientes en mis proyectos (de otros autores = no leídos por mí)
+    const mensajesNoLeidos = mensajesRecientes.filter(m => m.autor_id !== userId).length
+
+    const proyectosFinalizados = todosProyectos.filter(p => p.fundador_id === userId && p.estado === 'finalizado')
+
     const notificaciones = []
     misPostulaciones.forEach(p => {
       if (p.estado === 'aceptada') notificaciones.push({ tipo: 'aceptado', texto: 'Te aceptaron en el rol de ' + (p.roles?.nombre || 'un rol'), fecha: p.updated_at || p.created_at, color: '#1D9E75', icon: '✅' })
@@ -137,6 +141,8 @@ export async function GET(request) {
     let vistaSugerida = 'especialista'
     if (esGerente) vistaSugerida = 'gerente'
     else if (esAngelRol) vistaSugerida = 'angel'
+    else if (perfil?.rol_principal === 'mentor') vistaSugerida = 'mentor'
+    else if (perfil?.rol_principal === 'empresa') vistaSugerida = 'empresa'
     else if (misProyectos.length > 0) vistaSugerida = 'fundador'
 
     // Carga de trabajo del equipo (para vista Gerente) — proyectos donde el usuario tiene rol de Gerente ACEPTADO,
@@ -185,6 +191,8 @@ export async function GET(request) {
       vistaSugerida,
       cargaEquipo,
       proyectosGestionados,
+      mensajesNoLeidos,
+      proyectosFinalizados,
       contadores: {
         proyectos: misProyectos.length,
         tareas_pendientes: (tareasAsignadasAMi || []).filter(t => t.estado === 'pendiente').length,

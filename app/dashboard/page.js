@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [misImpulsos, setMisImpulsos] = useState([])
   const [cargaEquipo, setCargaEquipo] = useState([])
   const [proyectosGestionados, setProyectosGestionados] = useState([])
+  const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0)
+  const [proyectosFinalizados, setProyectosFinalizados] = useState([])
   const [vistaSugerida, setVistaSugerida] = useState('especialista')
 
   useEffect(() => {
@@ -50,6 +52,8 @@ export default function Dashboard() {
       setMisImpulsos(data.misImpulsos || [])
       setCargaEquipo(data.cargaEquipo || [])
       setProyectosGestionados(data.proyectosGestionados || [])
+      setMensajesNoLeidos(data.mensajesNoLeidos || 0)
+      setProyectosFinalizados(data.proyectosFinalizados || [])
       setVistaSugerida(data.vistaSugerida || 'especialista')
       setVista(data.vistaSugerida || 'resumen')
       setCargando(false)
@@ -162,7 +166,7 @@ export default function Dashboard() {
           <a href="/score" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mi Score</a>
           <button onClick={() => setVista(vista==='notificaciones'?'resumen':'notificaciones')} style={{background:'transparent',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'1.05rem',position:'relative',padding:0}}>
             🔔
-            {notificaciones.length > 0 && <span style={{position:'absolute',top:'-4px',right:'-6px',background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 4px',borderRadius:'8px',minWidth:'14px',textAlign:'center'}}>{notificaciones.length}</span>}
+            {(notificaciones.length + mensajesNoLeidos) > 0 && <span style={{position:'absolute',top:'-4px',right:'-6px',background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 4px',borderRadius:'8px',minWidth:'14px',textAlign:'center'}}>{notificaciones.length + mensajesNoLeidos}</span>}
           </button>
           <button onClick={cerrarSesion} style={{background:'transparent',border:'1px solid rgba(255,255,255,0.15)',color:'#8FA3CC',padding:'0.3rem 0.75rem',borderRadius:'6px',fontSize:'0.8rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
@@ -178,10 +182,10 @@ export default function Dashboard() {
               </div>
               <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{perfil?.especialidad || perfil?.rol_principal || 'Miembro de Escala'} · {perfil?.ciudad || ''}</div>
             </div>
-            {(vistaSugerida === 'gerente' || vistaSugerida === 'angel') && (
+            {(vistaSugerida === 'gerente' || vistaSugerida === 'angel' || vistaSugerida === 'mentor' || vistaSugerida === 'empresa') && (
               <div style={{display:'flex',gap:'0.3rem',background:'rgba(255,255,255,0.04)',borderRadius:'9px',padding:'3px',border:'1px solid rgba(255,255,255,0.08)'}}>
                 {[
-                  { id: vistaSugerida, label: vistaSugerida === 'gerente' ? '👥 Gerente' : '🌟 Ángel' },
+                  { id: vistaSugerida, label: vistaSugerida === 'gerente' ? '👥 Gerente' : vistaSugerida === 'angel' ? '🌟 Ángel' : vistaSugerida === 'mentor' ? '🧭 Mentor' : '🏢 Empresa' },
                   { id: 'resumen', label: '📋 General' },
                 ].map(v => (
                   <button key={v.id} onClick={() => setVista(v.id)} style={{background: vista===v.id ? 'rgba(255,255,255,0.1)' : 'transparent',border:'none',borderRadius:'7px',padding:'0.45rem 0.875rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontSize:'0.76rem',fontWeight: vista===v.id?'700':'400',color: vista===v.id?'#fff':'#8FA3CC'}}>
@@ -279,6 +283,84 @@ export default function Dashboard() {
                   <div style={{fontSize:'0.72rem',color:'#1D9E75',fontWeight:'600'}}>Ir al workspace →</div>
                 </a>
               ))}
+            </div>
+          </div>
+        ) : vista === 'mentor' ? (
+          <div>
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Mentor</div>
+            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+              <div style={{fontSize:'0.82rem',color:'#C8D4E8',lineHeight:'1.7',marginBottom:'1rem'}}>
+                Como Mentor en Escala, compartes experiencia estratégica — comercial, financiera, tecnológica o de red — sin ejecutar tareas operativas. Tu rol es orientar al fundador en decisiones clave.
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem'}}>
+                <a href="/buscar" style={{textDecoration:'none',background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'10px',padding:'1rem',display:'block'}}>
+                  <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#AFA9EC',marginBottom:'0.25rem'}}>Explorar proyectos</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Encuentra fundadores que necesiten tu experiencia</div>
+                </a>
+                <a href="/directorio" style={{textDecoration:'none',background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'10px',padding:'1rem',display:'block'}}>
+                  <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#AFA9EC',marginBottom:'0.25rem'}}>Red de Escala</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Conoce a los especialistas y fundadores activos</div>
+                </a>
+              </div>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem',marginBottom:'1.5rem'}}>
+              <div style={{background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{misPostulaciones.length}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Proyectos que acompañas</div>
+              </div>
+              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{perfil?.escala_score || 0}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Escala Score</div>
+              </div>
+            </div>
+            {bandeja.length > 0 && (
+              <div>
+                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem'}}>Pendientes</div>
+                <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
+                  {bandeja.slice(0,4).map((item,i) => (
+                    <a key={i} href={item.href} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem',background:'rgba(83,74,183,0.06)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'9px',padding:'0.7rem 1rem',textDecoration:'none'}}>
+                      <div style={{fontSize:'0.8rem',color:'#fff'}}>{item.texto}</div>
+                      <div style={{fontSize:'0.72rem',color:'#AFA9EC',flexShrink:0}}>→</div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : vista === 'empresa' ? (
+          <div>
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Empresa</div>
+            <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+              <div style={{fontSize:'0.82rem',color:'#C8D4E8',lineHeight:'1.7',marginBottom:'1rem'}}>
+                Como Empresa en Escala puedes actuar en múltiples roles: fundar proyectos, ejecutar servicios, financiar hitos como Ángel de Impulso, o aportar mentoría estratégica.
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:'0.6rem'}}>
+                {[
+                  { icon:'🚀', label:'Fundar proyecto', href:'/proyectos' },
+                  { icon:'🔧', label:'Ser ejecutora', href:'/buscar' },
+                  { icon:'🌟', label:'Financiar hito', href:'/buscar' },
+                  { icon:'🧭', label:'Ser mentora', href:'/directorio' },
+                ].map((a,i) => (
+                  <a key={i} href={a.href} style={{textDecoration:'none',background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.15)',borderRadius:'10px',padding:'0.875rem',display:'block',textAlign:'center'}}>
+                    <div style={{fontSize:'1.3rem',marginBottom:'0.35rem'}}>{a.icon}</div>
+                    <div style={{fontSize:'0.74rem',fontWeight:'600',color:'#E8A020'}}>{a.label}</div>
+                  </a>
+                ))}
+              </div>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem'}}>
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff'}}>{misProyectos.length}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Proyectos fundados</div>
+              </div>
+              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{misPostulaciones.filter(p=>p.estado==='aceptada').length}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Roles activos</div>
+              </div>
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff'}}>${totalAportes.toLocaleString()}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Aportes totales</div>
+              </div>
             </div>
           </div>
         ) : vista === 'angel' ? (
@@ -473,6 +555,18 @@ export default function Dashboard() {
               <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1rem'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>{recibidasPendientes}</div>
                 <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones por revisar</div>
+              </div>
+            )}
+            {mensajesNoLeidos > 0 && (
+              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem',cursor:'pointer'}} onClick={() => misProyectos.length > 0 && (window.location.href='/proyectos/'+misProyectos[0].id+'/workspace/chat')}>
+                <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>{mensajesNoLeidos}</div>
+                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Mensajes sin leer →</div>
+              </div>
+            )}
+            {proyectosFinalizados.length > 0 && (
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1rem'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>{proyectosFinalizados.length}</div>
+                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Proyectos finalizados</div>
               </div>
             )}
 
