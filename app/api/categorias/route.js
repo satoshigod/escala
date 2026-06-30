@@ -9,7 +9,7 @@ const supabase = createClient(
 export async function GET() {
   const { data, error } = await supabase
     .from('categorias')
-    .select('id, nombre')
+    .select('id, nombre, creado_por, created_at, perfiles:creado_por ( nombre )')
     .order('nombre')
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
@@ -20,7 +20,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { nombre } = body
+    const { nombre, creado_por } = body
 
     if (!nombre || !nombre.trim()) {
       return Response.json({ error: 'Falta nombre de la categoría' }, { status: 400 })
@@ -44,7 +44,7 @@ export async function POST(request) {
 
     const { data: nuevaCat, error: errorInsert } = await supabase
       .from('categorias')
-      .insert([{ nombre: nombreLimpio }])
+      .insert([{ nombre: nombreLimpio, creado_por: creado_por || null }])
       .select()
       .single()
 

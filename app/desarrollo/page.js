@@ -192,8 +192,8 @@ const fases = [
     num: '14',
     titulo: 'Cobertura completa del documento consolidado',
     estado: 'progreso',
-    valor_total: 15000000,
-    valor_hecho: 15000000,
+    valor_total: 15500000,
+    valor_hecho: 15500000,
     hitos: [
       { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio en /comercial con convenios estratégicos', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
       { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos (en /comercial)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
@@ -205,7 +205,8 @@ const fases = [
       { num: '14.6', nombre: 'Categorías como entidad dinámica — tabla propia, API y selector con opción crear nueva, igual que países', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '14.7', nombre: 'Dashboard único de admin (tab Resumen) — usuarios, proyectos, score promedio y enlaces a técnico/comercial/QA en un vistazo', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '14.8', nombre: 'Alerta visible de países pendientes de configurar — badge en tab y panel dedicado, no solo email', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
-      { num: '14.9', nombre: 'Auditoría creado_por en países regulatorios — columna + join + visible en admin (pendiente extender a industrias/categorías/especialidades)', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
+      { num: '14.9', nombre: 'Auditoría creado_por extendida a países, categorías y especialidades — quién creó cada una, visible en admin', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
+      { num: '14.10', nombre: 'Panel Resumen incluye contadores de Categorías y Roles/Especialidades, no solo países', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {

@@ -56,7 +56,7 @@ export default function Onboarding() {
     try {
       const res = await fetch('/api/especialidades', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, categoria: 'General' })
+        body: JSON.stringify({ nombre, categoria: 'General', creado_por: usuario?.id })
       })
       const data = await res.json()
       if (data.error) { alert('Error: ' + data.error) }

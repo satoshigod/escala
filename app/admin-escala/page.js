@@ -309,6 +309,14 @@ export default function AdminEscala() {
                 </div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Países pendientes de configurar</div>
               </div>
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>{(categoriasDB||[]).length}</div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Categorías de tareas</div>
+              </div>
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>{especialidades.length}</div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Roles / especialidades</div>
+              </div>
             </div>
 
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:'1rem'}}>
@@ -755,6 +763,7 @@ export default function AdminEscala() {
                   <div>
                     <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{esp.nombre}</div>
                     {esp.categoria && <span style={{fontSize:'0.62rem',padding:'1px 6px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{esp.categoria}</span>}
+                    {esp.perfiles?.nombre && <div style={{fontSize:'0.62rem',color:'#6B7280',marginTop:'0.25rem'}}>creado por {esp.perfiles.nombre}</div>}
                   </div>
                   <div style={{display:'flex',gap:'0.5rem'}}>
                     <button onClick={() => { setEspecialidadEditando({...esp}); setMostrarNuevaEspecialidad(false) }} style={st.btnAmber}>✏️</button>
