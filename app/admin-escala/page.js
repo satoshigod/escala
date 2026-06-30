@@ -232,6 +232,7 @@ export default function AdminEscala() {
   async function crearNuevaCategoria(nombre, destino) {
     const limpio = nombre.trim()
     if (!limpio) { alert('Escribe el nombre de la categoría'); return }
+    alert('DEBUG: usuario actual es ' + JSON.stringify(usuario?.id || 'NULL/UNDEFINED'))
     setCreandoCategoria(true)
     try {
       const res = await fetch('/api/categorias', {
