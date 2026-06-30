@@ -334,7 +334,7 @@ export default function Tareas() {
               </div>
               <div>
                 <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Asignar a</label>
-                <select value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
+                <select key={'asignar-' + nuevaTarea.categoria} value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Sin asignar</option>
                   {miembrosParaCategoria(nuevaTarea.categoria, esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria)).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}{e.perfiles?.pais ? ' (' + e.perfiles.pais + ')' : ''}</option>)}
                 </select>
