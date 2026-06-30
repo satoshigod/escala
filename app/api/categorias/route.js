@@ -27,6 +27,7 @@ export async function POST(request) {
     }
 
     const nombreLimpio = nombre.trim()
+    const creadoPorLimpio = (creado_por && typeof creado_por === 'string' && creado_por.length > 0) ? creado_por : null
 
     const { data: existente, error: errorBusqueda } = await supabase
       .from('categorias')
@@ -42,17 +43,19 @@ export async function POST(request) {
       return Response.json({ categoria: existente, existia: true })
     }
 
+    const payloadInsert = { nombre: nombreLimpio, creado_por: creadoPorLimpio }
+
     const { data: nuevaCat, error: errorInsert } = await supabase
       .from('categorias')
-      .insert([{ nombre: nombreLimpio, creado_por: creado_por || null }])
-      .select()
+      .insert(payloadInsert)
+      .select('id, nombre, creado_por, created_at')
       .single()
 
     if (errorInsert) {
-      return Response.json({ error: 'Error creando categoría: ' + errorInsert.message }, { status: 500 })
+      return Response.json({ error: 'Error creando categoría: ' + errorInsert.message, debug_payload: payloadInsert }, { status: 500 })
     }
 
-    return Response.json({ categoria: nuevaCat, existia: false }, { status: 201 })
+    return Response.json({ categoria: nuevaCat, existia: false, debug_payload_enviado: payloadInsert, debug_creado_por_recibido_del_body: creado_por }, { status: 201 })
 
   } catch (e) {
     return Response.json({ error: 'Error inesperado: ' + e.message }, { status: 500 })
