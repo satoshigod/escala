@@ -11,6 +11,16 @@ export default function Buscar() {
   const [sector, setSector] = useState('')
   const [tipo, setTipo] = useState('')
   const [ciudad, setCiudad] = useState('')
+  const [pais, setPais] = useState('')
+  const [industria, setIndustria] = useState('')
+  const [especialidadBuscada, setEspecialidadBuscada] = useState('')
+  const [ordenarPor, setOrdenarPor] = useState('recientes')
+  const [paisesDB, setPaisesDB] = useState([])
+  const [industriasDB, setIndustriasDB] = useState([])
+  const [especialidadesDB, setEspecialidadesDB] = useState([])
+  const [mostrarFiltrosAvanzados, setMostrarFiltrosAvanzados] = useState(false)
+
+  const BANDERAS = { 'Colombia':'🇨🇴','México':'🇲🇽','Perú':'🇵🇪','Chile':'🇨🇱','Argentina':'🇦🇷','España':'🇪🇸','Estados Unidos':'🇺🇸' }
 
   const sectores = ['Tecnología','Salud','Educación','Agro','Comercio','Servicios','Construcción','Alimentos','Moda','Otro']
 
@@ -19,10 +29,23 @@ export default function Buscar() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/registro'; return }
       setUsuario(user)
-      const res = await fetch('/api/proyectos')
+      const [res, paisRes, indRes, espRes] = await Promise.all([
+        fetch('/api/proyectos'),
+        fetch('/api/paises'),
+        fetch('/api/industrias').catch(() => ({ json: () => ({ industrias: [] }) })),
+        fetch('/api/especialidades'),
+      ])
       const data = await res.json()
       setProyectos(data.proyectos || [])
       setFiltrados(data.proyectos || [])
+      try {
+        const paisData = await paisRes.json()
+        setPaisesDB(paisData.paises || [])
+      } catch(e) {}
+      try {
+        const espData = await espRes.json()
+        setEspecialidadesDB(espData.especialidades || [])
+      } catch(e) {}
       setCargando(false)
     }
     cargar()
@@ -37,8 +60,27 @@ export default function Buscar() {
     if (sector) r = r.filter(p => p.sector === sector)
     if (tipo) r = r.filter(p => p.tipo === tipo)
     if (ciudad) r = r.filter(p => p.ciudad?.toLowerCase().includes(ciudad.toLowerCase()))
+    if (pais) r = r.filter(p => p.pais === pais)
+    if (industria) r = r.filter(p => p.industria === industria)
+    if (especialidadBuscada) {
+      r = r.filter(p => p.roles?.some(rol => rol.estado === 'abierto' && rol.nombre?.toLowerCase().includes(especialidadBuscada.toLowerCase())))
+    }
+
+    r = [...r].sort((a, b) => {
+      if (ordenarPor === 'recientes') return new Date(b.created_at) - new Date(a.created_at)
+      if (ordenarPor === 'antiguos') return new Date(a.created_at) - new Date(b.created_at)
+      if (ordenarPor === 'mas_roles') return (b.roles?.filter(rl=>rl.estado==='abierto').length||0) - (a.roles?.filter(rl=>rl.estado==='abierto').length||0)
+      if (ordenarPor === 'alfabetico') return (a.nombre||'').localeCompare(b.nombre||'')
+      return 0
+    })
+
     setFiltrados(r)
-  }, [busqueda, sector, tipo, ciudad, proyectos])
+  }, [busqueda, sector, tipo, ciudad, pais, industria, especialidadBuscada, ordenarPor, proyectos])
+
+  const filtrosActivos = !!(busqueda||sector||tipo||ciudad||pais||industria||especialidadBuscada)
+  function limpiarTodo() {
+    setBusqueda('');setSector('');setTipo('');setCiudad('');setPais('');setIndustria('');setEspecialidadBuscada('')
+  }
 
   if (cargando) return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>Buscando...</div>
@@ -81,8 +123,36 @@ export default function Buscar() {
             </select>
             <input value={ciudad} onChange={e => setCiudad(e.target.value)} placeholder="Ciudad..." style={{background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}/>
           </div>
-          {(busqueda||sector||tipo||ciudad) && (
-            <button onClick={() => {setBusqueda('');setSector('');setTipo('');setCiudad('')}} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>✕ Limpiar filtros</button>
+
+          <button onClick={() => setMostrarFiltrosAvanzados(v => !v)} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#1D9E75',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+            {mostrarFiltrosAvanzados ? '▲ Ocultar filtros avanzados' : '▼ Filtros avanzados (país, industria, rol, orden)'}
+          </button>
+
+          {mostrarFiltrosAvanzados && (
+            <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'0.75rem',marginTop:'0.75rem',paddingTop:'0.75rem',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+              <select value={pais} onChange={e => setPais(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="">Todos los países</option>
+                {paisesDB.map(p => <option key={p.nombre} value={p.nombre}>{BANDERAS[p.nombre]||'🌐'} {p.nombre}</option>)}
+              </select>
+              <select value={industria} onChange={e => setIndustria(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="">Todas las industrias</option>
+                {industriasDB.map(i => <option key={i.nombre||i} value={i.nombre||i}>{i.nombre||i}</option>)}
+              </select>
+              <select value={especialidadBuscada} onChange={e => setEspecialidadBuscada(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="">Buscan cualquier rol</option>
+                {especialidadesDB.map(e => <option key={e.nombre} value={e.nombre}>Buscan: {e.nombre}</option>)}
+              </select>
+              <select value={ordenarPor} onChange={e => setOrdenarPor(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="recientes">Más recientes</option>
+                <option value="antiguos">Más antiguos</option>
+                <option value="mas_roles">Más roles abiertos</option>
+                <option value="alfabetico">Alfabético</option>
+              </select>
+            </div>
+          )}
+
+          {filtrosActivos && (
+            <button onClick={limpiarTodo} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>✕ Limpiar filtros</button>
           )}
         </div>
 
@@ -100,7 +170,7 @@ export default function Buscar() {
                 <div style={{background:'#0A1530',padding:'1.25rem',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
                   <div style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'0.4rem'}}>Tipo {p.tipo} — {p.tipo==='A'?'Empresa nueva':'Transformación'}</div>
                   <div style={{fontSize:'1rem',fontWeight:'800',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
-                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{p.sector} · {p.ciudad}</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{p.sector} · {p.ciudad}{p.pais ? ' · ' + (BANDERAS[p.pais]||'🌐') + ' ' + p.pais : ''}{p.industria ? ' · ' + p.industria : ''}</div>
                 </div>
                 <div style={{padding:'1.25rem'}}>
                   <div style={{fontSize:'0.82rem',color:'#8FA3CC',lineHeight:'1.6',marginBottom:'1rem',overflow:'hidden',display:'-webkit-box',WebkitLineClamp:3,WebkitBoxOrient:'vertical'}}>{p.descripcion}</div>

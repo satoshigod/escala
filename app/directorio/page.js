@@ -13,6 +13,15 @@ export default function Directorio() {
   const [busqueda, setBusqueda] = useState('')
   const [rolFiltro, setRolFiltro] = useState('todos')
   const [ciudadFiltro, setCiudadFiltro] = useState('')
+  const [paisFiltro, setPaisFiltro] = useState('')
+  const [especialidadFiltro, setEspecialidadFiltro] = useState('')
+  const [scoreMinimo, setScoreMinimo] = useState('')
+  const [ordenarPor, setOrdenarPor] = useState('score')
+  const [paisesDB, setPaisesDB] = useState([])
+  const [especialidadesDB, setEspecialidadesDB] = useState([])
+  const [mostrarFiltrosAvanzados, setMostrarFiltrosAvanzados] = useState(false)
+
+  const BANDERAS = { 'Colombia':'🇨🇴','México':'🇲🇽','Perú':'🇵🇪','Chile':'🇨🇱','Argentina':'🇦🇷','España':'🇪🇸','Estados Unidos':'🇺🇸' }
 
   useEffect(() => {
     async function cargar() {
@@ -30,6 +39,15 @@ export default function Directorio() {
         setPerfiles(data || [])
         setFiltrados(data || [])
       }
+
+      try {
+        const [paisRes, espRes] = await Promise.all([fetch('/api/paises'), fetch('/api/especialidades')])
+        const paisData = await paisRes.json()
+        const espData = await espRes.json()
+        setPaisesDB(paisData.paises || [])
+        setEspecialidadesDB(espData.especialidades || [])
+      } catch(e) {}
+
       setCargando(false)
     }
     cargar()
@@ -47,8 +65,24 @@ export default function Directorio() {
     }
     if (rolFiltro !== 'todos') resultado = resultado.filter(p => p.rol_principal === rolFiltro)
     if (ciudadFiltro) resultado = resultado.filter(p => p.ciudad?.toLowerCase().includes(ciudadFiltro.toLowerCase()))
+    if (paisFiltro) resultado = resultado.filter(p => p.pais === paisFiltro)
+    if (especialidadFiltro) resultado = resultado.filter(p => p.especialidad === especialidadFiltro)
+    if (scoreMinimo) resultado = resultado.filter(p => (p.escala_score||0) >= parseInt(scoreMinimo))
+
+    resultado = [...resultado].sort((a,b) => {
+      if (ordenarPor === 'score') return (b.escala_score||0) - (a.escala_score||0)
+      if (ordenarPor === 'alfabetico') return (a.nombre||'').localeCompare(b.nombre||'')
+      if (ordenarPor === 'recientes') return new Date(b.created_at||0) - new Date(a.created_at||0)
+      return 0
+    })
+
     setFiltrados(resultado)
-  }, [busqueda, rolFiltro, ciudadFiltro, perfiles])
+  }, [busqueda, rolFiltro, ciudadFiltro, paisFiltro, especialidadFiltro, scoreMinimo, ordenarPor, perfiles])
+
+  const filtrosActivos = !!(busqueda||rolFiltro!=='todos'||ciudadFiltro||paisFiltro||especialidadFiltro||scoreMinimo)
+  function limpiarTodo() {
+    setBusqueda('');setRolFiltro('todos');setCiudadFiltro('');setPaisFiltro('');setEspecialidadFiltro('');setScoreMinimo('')
+  }
 
   const ciudades = [...new Set(perfiles.map(p => p.ciudad).filter(Boolean))]
   const scoreColor = s => s >= 70 ? '#1D9E75' : s >= 40 ? '#E8A020' : '#8FA3CC'
@@ -99,6 +133,38 @@ export default function Directorio() {
               {roles.map(r => <option key={r} value={r}>{rolLabel[r]}</option>)}
             </select>
           </div>
+
+          <button onClick={() => setMostrarFiltrosAvanzados(v => !v)} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#1D9E75',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+            {mostrarFiltrosAvanzados ? '▲ Ocultar filtros avanzados' : '▼ Filtros avanzados (país, especialidad, score)'}
+          </button>
+
+          {mostrarFiltrosAvanzados && (
+            <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'0.75rem',marginTop:'0.75rem',paddingTop:'0.75rem',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+              <select value={paisFiltro} onChange={e => setPaisFiltro(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="">Todos los países</option>
+                {paisesDB.map(p => <option key={p.nombre} value={p.nombre}>{BANDERAS[p.nombre]||'🌐'} {p.nombre}</option>)}
+              </select>
+              <select value={especialidadFiltro} onChange={e => setEspecialidadFiltro(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="">Cualquier especialidad</option>
+                {especialidadesDB.map(e => <option key={e.nombre} value={e.nombre}>{e.nombre}</option>)}
+              </select>
+              <select value={scoreMinimo} onChange={e => setScoreMinimo(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="">Cualquier score</option>
+                <option value="20">Score 20+</option>
+                <option value="50">Score 50+</option>
+                <option value="80">Score 80+</option>
+              </select>
+              <select value={ordenarPor} onChange={e => setOrdenarPor(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                <option value="score">Mayor score</option>
+                <option value="alfabetico">Alfabético</option>
+                <option value="recientes">Más recientes</option>
+              </select>
+            </div>
+          )}
+
+          {filtrosActivos && (
+            <button onClick={limpiarTodo} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>✕ Limpiar filtros</button>
+          )}
         </div>
 
         {filtrados.length === 0 ? (
@@ -118,7 +184,7 @@ export default function Directorio() {
                   <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:scoreColor(p.escala_score||0)}}>{p.escala_score||0}</div>
                 </div>
                 <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
-                <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'0.5rem'}}>{p.ciudad||''}{p.especialidad?' · '+p.especialidad:''}</div>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'0.5rem'}}>{p.ciudad||''}{p.pais?' · '+(BANDERAS[p.pais]||'🌐')+' '+p.pais:''}{p.especialidad?' · '+p.especialidad:''}</div>
                 {p.rol_principal && (
                   <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'10px',background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.2)',display:'inline-block',marginBottom:'0.75rem'}}>
                     {rolLabel[p.rol_principal]||p.rol_principal}
