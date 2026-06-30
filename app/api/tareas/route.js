@@ -55,6 +55,117 @@ const TAREAS_BASE = {
   ],
 }
 
+// Tareas regulatorias por país — cargadas automáticamente según el país del proyecto
+const TAREAS_PAIS = {
+  'Colombia': [
+    { nombre: 'Constituir SAS ante notaría', descripcion: 'Escritura pública o documento privado para constituir la Sociedad por Acciones Simplificada.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Registro en Cámara de Comercio', descripcion: 'Inscripción del acta de constitución y obtención del certificado de existencia y representación legal.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Obtener NIT en la DIAN', descripcion: 'Registro único tributario y número de identificación tributaria para la empresa.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Configurar facturación electrónica DIAN', descripcion: 'Habilitación del sistema de facturación electrónica obligatoria para todas las empresas colombianas.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Abrir cuenta bancaria empresarial', descripcion: 'Cuenta corriente a nombre de la empresa para manejo de recursos del proyecto.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Definir régimen tributario (simple o común)', descripcion: 'Análisis y elección del régimen más conveniente según proyección de ingresos.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+  ],
+  'México': [
+    { nombre: 'Constituir SA de CV o SAPI ante notario', descripcion: 'Escritura constitutiva ante notario público con capital mínimo y socios fundadores.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Registro en el SAT — obtener RFC', descripcion: 'Alta en el Servicio de Administración Tributaria y obtención del Registro Federal de Contribuyentes.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Alta en IMSS e INFONAVIT', descripcion: 'Registro patronal en seguridad social e instituto de vivienda para contratar empleados.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Configurar facturación CFDI', descripcion: 'Alta en sistema de Comprobantes Fiscales Digitales por Internet para facturar electrónicamente.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Abrir cuenta bancaria empresarial', descripcion: 'Cuenta a nombre de la empresa para manejo de recursos y pagos a proveedores.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Definir régimen fiscal (RIF, general, etc.)', descripcion: 'Elección del régimen más adecuado según modelo de negocio e ingresos proyectados.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+  ],
+  'Perú': [
+    { nombre: 'Constituir SAC o SRL en SUNARP', descripcion: 'Inscripción de la sociedad en los Registros Públicos con estatutos y acta de constitución.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Obtener RUC en SUNAT', descripcion: 'Registro Único de Contribuyentes para identificación tributaria de la empresa.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Definir régimen tributario SUNAT', descripcion: 'Elección entre Régimen General, MYPE Tributario o RER según proyección de ventas.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Configurar comprobantes electrónicos', descripcion: 'Alta en sistema de emisión de comprobantes electrónicos de SUNAT.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Abrir cuenta bancaria empresarial', descripcion: 'Cuenta corriente en soles a nombre de la empresa para operaciones del proyecto.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+  ],
+  'Chile': [
+    { nombre: 'Constituir SpA o SRL en Registro de Empresas', descripcion: 'Constitución online a través del portal del Ministerio de Economía de Chile (gratuito).', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Obtener RUT empresa', descripcion: 'Registro Único Tributario para identificación de la empresa ante el SII.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Inicio de actividades en el SII', descripcion: 'Declaración formal de inicio de actividades comerciales ante el Servicio de Impuestos Internos.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Configurar facturación electrónica SII', descripcion: 'Alta en sistema de facturación electrónica del SII para emitir boletas y facturas válidas.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Abrir cuenta bancaria empresarial', descripcion: 'Cuenta corriente a nombre de la empresa para manejo de recursos del proyecto.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+  ],
+  'Argentina': [
+    { nombre: 'Constituir SAS o SRL ante IGJ', descripcion: 'Inscripción de la sociedad en la Inspección General de Justicia con estatuto y acta fundacional.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Obtener CUIT en AFIP', descripcion: 'Clave Única de Identificación Tributaria para la empresa ante la Administración Federal de Ingresos Públicos.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Elegir régimen: monotributo o responsable inscripto', descripcion: 'Análisis del régimen más conveniente según facturación proyectada.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Configurar facturación electrónica AFIP', descripcion: 'Alta en el sistema de factura electrónica obligatorio de AFIP.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Abrir cuenta bancaria empresarial', descripcion: 'Cuenta corriente a nombre de la empresa para manejo de fondos del proyecto.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+  ],
+  'España': [
+    { nombre: 'Constituir SL en el Registro Mercantil', descripcion: 'Escritura pública ante notario e inscripción en el Registro Mercantil con capital mínimo de 3.000 €.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Obtener NIF empresa en Hacienda', descripcion: 'Número de Identificación Fiscal provisional y definitivo de la sociedad.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Alta en IAE (Impuesto de Actividades Económicas)', descripcion: 'Declaración censal de inicio de actividad económica ante la Agencia Tributaria.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Configurar facturación electrónica AEAT', descripcion: 'Sistema de facturación electrónica obligatorio para empresas españolas.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Abrir cuenta bancaria empresarial', descripcion: 'Cuenta corriente en euros a nombre de la sociedad para operaciones del proyecto.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+  ],
+  'Estados Unidos': [
+    { nombre: 'Constituir LLC o C-Corp en el estado elegido', descripcion: 'Registro de la entidad legal ante la secretaría de estado (Delaware es el más común para startups).', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Obtener EIN en el IRS', descripcion: 'Employer Identification Number para identificación fiscal federal de la empresa.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Redactar Operating Agreement o Shareholders Agreement', descripcion: 'Documento que regula derechos, obligaciones y distribución de equity entre los fundadores.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Registrar en el estado y cumplir compliance estatal', descripcion: 'Annual report, registered agent y cumplimiento de obligaciones estatales según el estado de registro.', categoria: 'Legal', rol_nombre: 'Abogado' },
+    { nombre: 'Abrir cuenta bancaria empresarial', descripcion: 'Cuenta bancaria en USD a nombre de la LLC o C-Corp para operaciones del proyecto.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+    { nombre: 'Definir estructura fiscal (pass-through vs corporate tax)', descripcion: 'Análisis con contador de la estructura más conveniente según origen de socios e inversores.', categoria: 'Finanzas', rol_nombre: 'Contador' },
+  ],
+}
+
+// Tareas comerciales por industria — se cargan al crear el proyecto
+const TAREAS_INDUSTRIA = {
+  'Restaurante': [
+    { nombre: 'Diseñar carta digital', descripcion: 'Menú digital actualizable con fotos, precios y descripción de platos.', categoria: 'Marketing', rol_nombre: 'Diseñador' },
+    { nombre: 'Fotografía gastronómica', descripcion: 'Sesión fotográfica profesional de los platos principales para carta y redes.', categoria: 'Marketing', rol_nombre: 'Diseñador' },
+    { nombre: 'Registro en Google Maps y Google Business', descripcion: 'Perfil completo en Google con horarios, fotos, menú y gestión de reseñas.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+    { nombre: 'Configurar plataformas de delivery', descripcion: 'Alta en Rappi, PedidosYa, iFood u otras según la ciudad del proyecto.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+    { nombre: 'Sistema de reservas online', descripcion: 'Configurar herramienta de reservas integrada con el sitio web o redes sociales.', categoria: 'Gestión', rol_nombre: 'Gerente de Proyecto' },
+    { nombre: 'Estrategia de fidelización de clientes', descripcion: 'Programa de puntos, descuentos por visitas repetidas o membresías.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+  ],
+  'Retail': [
+    { nombre: 'Crear catálogo de productos digital', descripcion: 'Catálogo completo con fotos, precios, SKUs y descripciones de todos los productos.', categoria: 'Marketing', rol_nombre: 'Diseñador' },
+    { nombre: 'Configurar sistema de inventario', descripcion: 'Software de control de inventario para gestión de stock en tiempo real.', categoria: 'Gestión', rol_nombre: 'Gerente de Proyecto' },
+    { nombre: 'Instalar POS (punto de venta)', descripcion: 'Sistema de cobro integrado con inventario para ventas presenciales.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Publicar en marketplaces', descripcion: 'Alta en Mercado Libre, Amazon, Linio u otros marketplaces relevantes según el país.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+    { nombre: 'Configurar CRM para clientes', descripcion: 'Sistema de gestión de clientes para seguimiento de compras y comunicación.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Negociación y registro de proveedores', descripcion: 'Formalizar relación con proveedores principales con contratos y condiciones claras.', categoria: 'Legal', rol_nombre: 'Abogado' },
+  ],
+  'Servicios Profesionales': [
+    { nombre: 'Crear identidad de marca profesional', descripcion: 'Logo, colores, tipografías y sistema visual que transmita confianza y especialización.', categoria: 'Diseño', rol_nombre: 'Diseñador' },
+    { nombre: 'Desarrollar página web con portfolio', descripcion: 'Sitio web con servicios, casos de éxito, equipo y formulario de contacto.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Implementar CRM para gestión de clientes', descripcion: 'Sistema para seguimiento de prospectos, propuestas y clientes activos.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Configurar agenda y reservas online', descripcion: 'Herramienta para que prospectos agenden citas directamente desde la web.', categoria: 'Gestión', rol_nombre: 'Gerente de Proyecto' },
+    { nombre: 'Estrategia de generación de leads', descripcion: 'Plan para atraer prospectos calificados a través de contenido, SEO y redes sociales.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+    { nombre: 'Documentar casos de éxito y testimonios', descripcion: 'Recopilar y publicar casos de clientes satisfechos para generar credibilidad.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+  ],
+  'Tecnología': [
+    { nombre: 'Configurar repositorio y estructura de proyecto', descripcion: 'Repositorio en GitHub con ramas, gitflow, CI/CD y documentación inicial.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Diseñar arquitectura técnica del producto', descripcion: 'Diagrama de arquitectura, stack tecnológico, APIs y decisiones técnicas documentadas.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Deploy inicial en producción', descripcion: 'Primera versión funcional desplegada con dominio, SSL y monitoreo básico.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Diseño UX/UI del producto', descripcion: 'Wireframes, prototipos y diseño final de las pantallas principales del producto.', categoria: 'Diseño', rol_nombre: 'Diseñador' },
+    { nombre: 'Configurar métricas y analytics', descripcion: 'Instrumentación del producto para medir retención, conversión y comportamiento de usuarios.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Estrategia de lanzamiento de producto', descripcion: 'Plan de go-to-market, beta users, comunicación y adquisición de primeros clientes.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+  ],
+  'Comercio Electrónico': [
+    { nombre: 'Configurar tienda online (Shopify, WooCommerce, etc.)', descripcion: 'Plataforma de e-commerce configurada con productos, métodos de pago y envíos.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Integrar pasarela de pagos', descripcion: 'Wompi, PayU, Stripe u otra pasarela según el país para aceptar pagos online.', categoria: 'Técnico', rol_nombre: 'Desarrollador Full-Stack' },
+    { nombre: 'Configurar logística y envíos', descripcion: 'Acuerdo con operadores logísticos y configuración de costos y tiempos de envío.', categoria: 'Gestión', rol_nombre: 'Gerente de Proyecto' },
+    { nombre: 'Fotografía y descripción de productos', descripcion: 'Contenido visual y textual optimizado para conversión en la tienda online.', categoria: 'Diseño', rol_nombre: 'Diseñador' },
+    { nombre: 'Estrategia SEO y campañas de adquisición', descripcion: 'Posicionamiento orgánico y campañas pagadas en Meta y Google para atraer compradores.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+    { nombre: 'Configurar email marketing y recuperación de carritos', descripcion: 'Flujos automáticos de email para recuperar carritos abandonados y fidelizar compradores.', categoria: 'Marketing', rol_nombre: 'Community Manager' },
+  ],
+}
+
+// Categorías por rol — para asignación inteligente
+const CATEGORIA_POR_ROL = {
+  'Abogado': ['Legal'],
+  'Contador': ['Finanzas'],
+  'Desarrollador Full-Stack': ['Técnico'],
+  'Gerente de Proyecto': ['Gestión', 'Legal', 'Finanzas', 'Técnico', 'Diseño', 'Marketing', 'Inversión'],
+  'Diseñador': ['Diseño'],
+  'Community Manager': ['Marketing'],
+  'Inversionista inicial': ['Inversión'],
+}
+
 async function registrarHistorial(tarea_id, proyecto_id, accion, realizado_por, descripcion) {
   await supabase.from('historial_tareas').insert([{ tarea_id, proyecto_id, accion, realizado_por, descripcion }])
 }
@@ -75,6 +186,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const proyecto_id = searchParams.get('proyecto_id')
   const tarea_id = searchParams.get('tarea_id')
+  const categoria = searchParams.get('categoria') // Para asignación inteligente
 
   if (!proyecto_id && !tarea_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
@@ -95,14 +207,73 @@ export async function GET(request) {
     .order('created_at', { ascending: true })
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
-  return Response.json({ tareas: data, plantillas: TAREAS_BASE })
+
+  // Si se pide filtro por categoría — devolver ejecutores compatibles del equipo del proyecto
+  if (categoria) {
+    const rolesCompatibles = Object.entries(CATEGORIA_POR_ROL)
+      .filter(([, cats]) => cats.includes(categoria))
+      .map(([rol]) => rol)
+    return Response.json({ tareas: data, plantillas: TAREAS_BASE, rolesCompatibles })
+  }
+
+  return Response.json({ tareas: data, plantillas: TAREAS_BASE, tareas_pais: TAREAS_PAIS, tareas_industria: TAREAS_INDUSTRIA, categoria_por_rol: CATEGORIA_POR_ROL })
 }
 
 export async function POST(request) {
   const body = await request.json()
-  const { proyecto_id, rol_nombre, asignado_a, nombre, descripcion, categoria, creado_por, razon_creacion, inicializar } = body
+  const { proyecto_id, rol_nombre, asignado_a, nombre, descripcion, categoria, creado_por, razon_creacion, inicializar, inicializar_pais, pais, inicializar_industria, industria } = body
 
   if (!proyecto_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
+
+  // INICIALIZAR TAREAS REGULATORIAS POR PAÍS
+  if (inicializar_pais && pais && TAREAS_PAIS[pais]) {
+    const tareasPais = TAREAS_PAIS[pais].map(t => ({
+      proyecto_id,
+      rol_nombre: t.rol_nombre,
+      asignado_a: null,
+      nombre: t.nombre,
+      descripcion: t.descripcion,
+      categoria: t.categoria,
+      estado: 'pendiente',
+      creado_por: creado_por || null,
+      razon_creacion: 'Tarea regulatoria inicial — ' + pais
+    }))
+
+    const { data, error } = await supabase.from('tareas').insert(tareasPais).select()
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+
+    for (const tarea of data) {
+      await registrarHistorial(tarea.id, proyecto_id, 'creada', creado_por,
+        'Tarea regulatoria cargada automáticamente para ' + pais)
+    }
+
+    return Response.json({ tareas: data, tipo: 'pais', pais }, { status: 201 })
+  }
+
+  // INICIALIZAR TAREAS COMERCIALES POR INDUSTRIA
+  if (inicializar_industria && industria && TAREAS_INDUSTRIA[industria]) {
+    const tareasInd = TAREAS_INDUSTRIA[industria].map(t => ({
+      proyecto_id,
+      rol_nombre: t.rol_nombre,
+      asignado_a: null,
+      nombre: t.nombre,
+      descripcion: t.descripcion,
+      categoria: t.categoria,
+      estado: 'pendiente',
+      creado_por: creado_por || null,
+      razon_creacion: 'Tarea inicial de industria — ' + industria
+    }))
+
+    const { data, error } = await supabase.from('tareas').insert(tareasInd).select()
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+
+    for (const tarea of data) {
+      await registrarHistorial(tarea.id, proyecto_id, 'creada', creado_por,
+        'Tarea comercial cargada automáticamente para industria ' + industria)
+    }
+
+    return Response.json({ tareas: data, tipo: 'industria', industria }, { status: 201 })
+  }
 
   if (inicializar && rol_nombre && TAREAS_BASE[rol_nombre]) {
     const tareas = TAREAS_BASE[rol_nombre].map(t => ({

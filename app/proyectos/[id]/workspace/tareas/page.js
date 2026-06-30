@@ -167,7 +167,23 @@ export default function Tareas() {
 
   const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
-  const [verTodas, setVerTodas] = useState(esFundador)
+  const [verTodas, setVerTodas] = useState(false)
+
+  // Asignación inteligente — filtra miembros del equipo según categoría de la tarea
+  function miembrosParaCategoria(categoria) {
+    const CATEGORIA_ROL = {
+      'Legal': ['Abogado'],
+      'Finanzas': ['Contador'],
+      'Técnico': ['Desarrollador Full-Stack'],
+      'Diseño': ['Diseñador'],
+      'Marketing': ['Community Manager'],
+      'Inversión': ['Inversionista inicial'],
+      'Gestión': ['Gerente de Proyecto'],
+    }
+    const rolesCompatibles = CATEGORIA_ROL[categoria] || null
+    if (!rolesCompatibles) return equipo // si no hay restricción, todos
+    return equipo.filter(e => rolesCompatibles.some(r => e.rol_nombre?.toLowerCase().includes(r.toLowerCase())))
+  }
   const tareasFiltradas = tareas.filter(t => {
     if (!esFundador && !verTodas && t.asignado_a !== usuario?.id) return false
     if (filtroRol !== 'todos' && t.rol_nombre !== filtroRol) return false
@@ -297,8 +313,13 @@ export default function Tareas() {
                 <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Asignar a</label>
                 <select value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Sin asignar</option>
-                  {equipo.map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre}</option>)}
+                  {miembrosParaCategoria(nuevaTarea.categoria).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}</option>)}
                 </select>
+                {nuevaTarea.categoria && miembrosParaCategoria(nuevaTarea.categoria).length < equipo.length && (
+                  <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.3rem'}}>
+                    ✓ Mostrando solo ejecutores compatibles con {nuevaTarea.categoria}
+                  </div>
+                )}
               </div>
             </div>
             <div style={{display:'flex',gap:'0.75rem'}}>

@@ -4,6 +4,13 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const sectores = ['Tecnología','Salud','Educación','Agro','Comercio','Servicios','Construcción','Alimentos','Moda','Otro']
+const INDUSTRIAS_LIST = ['Restaurante','Retail','Servicios Profesionales','Tecnología','Comercio Electrónico']
+const PAISES_LIST = [
+  { nombre: 'Colombia', bandera: '🇨🇴' }, { nombre: 'México', bandera: '🇲🇽' },
+  { nombre: 'Perú', bandera: '🇵🇪' }, { nombre: 'Chile', bandera: '🇨🇱' },
+  { nombre: 'Argentina', bandera: '🇦🇷' }, { nombre: 'España', bandera: '🇪🇸' },
+  { nombre: 'Estados Unidos', bandera: '🇺🇸' },
+]
 
 export default function Proyectos() {
   const [usuario, setUsuario] = useState(null)
@@ -13,7 +20,7 @@ export default function Proyectos() {
   const [enviando, setEnviando] = useState(false)
   const [mensaje, setMensaje] = useState('')
   const [form, setForm] = useState({
-    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: ''
+    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: ''
   })
 
   useEffect(() => {
@@ -51,9 +58,29 @@ export default function Proyectos() {
     if (data.error) {
       setMensaje('Error: ' + data.error)
     } else {
+      const pid = data.proyecto.id
+
+      // Cargar tareas regulatorias por país automáticamente
+      if (form.pais) {
+        await fetch('/api/tareas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ proyecto_id: pid, inicializar_pais: true, pais: form.pais, creado_por: usuario.id })
+        })
+      }
+
+      // Cargar tareas comerciales por industria automáticamente
+      if (form.industria) {
+        await fetch('/api/tareas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ proyecto_id: pid, inicializar_industria: true, industria: form.industria, creado_por: usuario.id })
+        })
+      }
+
       setProyectos(p => [data.proyecto, ...p])
       setVista('lista')
-      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '' })
+      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '' })
     }
     setEnviando(false)
   }
@@ -188,6 +215,25 @@ export default function Proyectos() {
               <div>
                 <label style={s.label}>Ciudad</label>
                 <input style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá..." />
+              </div>
+            </div>
+
+            <div style={s.row}>
+              <div>
+                <label style={s.label}>País del proyecto</label>
+                <select style={s.select} value={form.pais} onChange={e => actualizar('pais', e.target.value)}>
+                  <option value="">Selecciona país...</option>
+                  {PAISES_LIST.map(p => <option key={p.nombre} value={p.nombre}>{p.bandera} {p.nombre}</option>)}
+                </select>
+                {form.pais && <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'-0.75rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas regulatorias de {form.pais} al crear</div>}
+              </div>
+              <div>
+                <label style={s.label}>Industria (opcional)</label>
+                <select style={s.select} value={form.industria} onChange={e => actualizar('industria', e.target.value)}>
+                  <option value="">Selecciona industria...</option>
+                  {INDUSTRIAS_LIST.map(i => <option key={i} value={i}>{i}</option>)}
+                </select>
+                {form.industria && <div style={{fontSize:'0.7rem',color:'#E8A020',marginTop:'-0.75rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas comerciales de {form.industria} al crear</div>}
               </div>
             </div>
 
