@@ -30,6 +30,7 @@ export async function POST(request) {
     }
 
     const nombreLimpio = nombre.trim()
+    const creadoPorLimpio = (creado_por && typeof creado_por === 'string' && creado_por.length > 0) ? creado_por : null
 
     // Verificar si ya existe — usamos maybeSingle, NO single, porque single lanza error si no hay filas
     const { data: existente, error: errorBusqueda } = await supabase
@@ -47,10 +48,12 @@ export async function POST(request) {
     }
 
     // Crear el país sin tareas — el admin las configurará después. creado_por queda registrado para auditoría
+    const payloadInsert = { nombre: nombreLimpio, bandera: bandera || '🌐', tareas: [], creado_por: creadoPorLimpio }
+
     const { data: nuevoPais, error: errorInsert } = await supabase
       .from('paises_regulatorios')
-      .insert([{ nombre: nombreLimpio, bandera: bandera || '🌐', tareas: [], creado_por: creado_por || null }])
-      .select()
+      .insert(payloadInsert)
+      .select('id, nombre, bandera, tareas, creado_por, created_at')
       .single()
 
     if (errorInsert) {

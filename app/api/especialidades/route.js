@@ -27,6 +27,7 @@ export async function POST(request) {
     }
 
     const nombreLimpio = nombre.trim()
+    const creadoPorLimpio = (creado_por && typeof creado_por === 'string' && creado_por.length > 0) ? creado_por : null
 
     const { data: existente, error: errorBusqueda } = await supabase
       .from('especialidades')
@@ -42,10 +43,12 @@ export async function POST(request) {
       return Response.json({ especialidad: existente, existia: true })
     }
 
+    const payloadInsert = { nombre: nombreLimpio, categoria: categoria || 'General', creado_por: creadoPorLimpio }
+
     const { data: nuevaEsp, error: errorInsert } = await supabase
       .from('especialidades')
-      .insert([{ nombre: nombreLimpio, categoria: categoria || 'General', creado_por: creado_por || null }])
-      .select()
+      .insert(payloadInsert)
+      .select('id, nombre, categoria, creado_por, created_at')
       .single()
 
     if (errorInsert) {
