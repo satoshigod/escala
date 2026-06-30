@@ -23,8 +23,12 @@ export default function Aportes() {
     tipo: 'horas',
     descripcion: '',
     valor: '',
-    fecha: new Date().toISOString().split('T')[0]
+    fecha: new Date().toISOString().split('T')[0],
+    evidencia_url: ''
   })
+  const [archivoEvidencia, setArchivoEvidencia] = useState(null)
+  const [subiendoArchivo, setSubiendoArchivo] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState(null)
 
   useEffect(() => {
     async function cargar() {
@@ -54,6 +58,46 @@ export default function Aportes() {
     setAportes(data.aportes || [])
   }
 
+  async function subirEvidencia(file) {
+    setSubiendoArchivo(true)
+    setMensaje('')
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('carpeta', 'aportes')
+
+      const res = await fetch('/api/upload', { method: 'POST', body: formData })
+      const data = await res.json()
+
+      if (data.error) {
+        setMensaje('Error subiendo evidencia: ' + data.error)
+        setArchivoEvidencia(null)
+      } else {
+        setForm(f => ({ ...f, evidencia_url: data.url }))
+      }
+    } catch (e) {
+      setMensaje('Error de conexión al subir evidencia: ' + e.message)
+    }
+    setSubiendoArchivo(false)
+  }
+
+  function manejarSeleccionArchivo(file) {
+    if (!file) return
+    setArchivoEvidencia(file)
+    if (file.type.startsWith('image/')) {
+      setPreviewUrl(URL.createObjectURL(file))
+    } else {
+      setPreviewUrl(null)
+    }
+    subirEvidencia(file)
+  }
+
+  function quitarEvidencia() {
+    setArchivoEvidencia(null)
+    setPreviewUrl(null)
+    setForm(f => ({ ...f, evidencia_url: '' }))
+  }
+
   async function registrar() {
     if (!form.descripcion || !form.valor || !form.proyecto_id) {
       setMensaje('Completa todos los campos')
@@ -74,7 +118,9 @@ export default function Aportes() {
     } else {
       setAportes(a => [data.aporte, ...a])
       setVista('lista')
-      setForm(f => ({ ...f, descripcion: '', valor: '' }))
+      setForm(f => ({ ...f, descripcion: '', valor: '', evidencia_url: '' }))
+      setArchivoEvidencia(null)
+      setPreviewUrl(null)
     }
     setEnviando(false)
   }
@@ -173,12 +219,37 @@ export default function Aportes() {
               </div>
             </div>
 
+            <div style={{marginBottom:'1.5rem'}}>
+              <label style={{display:'block',fontSize:'0.72rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.4rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Evidencia (opcional)</label>
+              {!archivoEvidencia ? (
+                <label style={{display:'block',border:'1px dashed rgba(255,255,255,0.2)',borderRadius:'8px',padding:'1.5rem',textAlign:'center',cursor:'pointer',background:'rgba(255,255,255,0.02)'}}>
+                  <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" onChange={e => manejarSeleccionArchivo(e.target.files[0])} style={{display:'none'}} />
+                  <div style={{fontSize:'1.5rem',marginBottom:'0.5rem'}}>📎</div>
+                  <div style={{color:'#8FA3CC',fontSize:'0.82rem'}}>Clic para subir foto, captura o PDF de respaldo</div>
+                  <div style={{color:'#6B7280',fontSize:'0.7rem',marginTop:'0.3rem'}}>Máximo 10MB · JPG, PNG, WEBP, GIF o PDF</div>
+                </label>
+              ) : (
+                <div style={{display:'flex',alignItems:'center',gap:'1rem',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'0.75rem 1rem'}}>
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="preview" style={{width:'48px',height:'48px',objectFit:'cover',borderRadius:'6px',flexShrink:0}} />
+                  ) : (
+                    <div style={{width:'48px',height:'48px',background:'rgba(232,160,32,0.15)',borderRadius:'6px',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.25rem',flexShrink:0}}>📄</div>
+                  )}
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{archivoEvidencia.name}</div>
+                    <div style={{color: subiendoArchivo ? '#E8A020' : '#1D9E75',fontSize:'0.7rem'}}>{subiendoArchivo ? 'Subiendo...' : '✓ Evidencia adjuntada'}</div>
+                  </div>
+                  <button onClick={quitarEvidencia} style={{background:'rgba(216,90,48,0.1)',color:'#D85A30',border:'1px solid rgba(216,90,48,0.25)',borderRadius:'6px',padding:'0.4rem 0.75rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif',flexShrink:0}}>Quitar</button>
+                </div>
+              )}
+            </div>
+
             {mensaje && <div style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.3)',borderRadius:'8px',padding:'0.875rem',color:'#D85A30',fontSize:'0.82rem',marginBottom:'1rem'}}>{mensaje}</div>}
 
             <div style={{display:'flex',gap:'0.75rem'}}>
               <button onClick={() => {setVista('lista');setMensaje('')}} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.875rem 1.5rem',fontSize:'0.875rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
-              <button onClick={registrar} disabled={enviando} style={{flex:1,background:enviando?'#0F6E56':'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.875rem',fontSize:'0.95rem',fontWeight:'700',cursor:enviando?'not-allowed':'pointer',fontFamily:'Inter,sans-serif'}}>
-                {enviando ? 'Registrando...' : 'Registrar aporte →'}
+              <button onClick={registrar} disabled={enviando || subiendoArchivo} style={{flex:1,background:(enviando||subiendoArchivo)?'#0F6E56':'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.875rem',fontSize:'0.95rem',fontWeight:'700',cursor:(enviando||subiendoArchivo)?'not-allowed':'pointer',fontFamily:'Inter,sans-serif'}}>
+                {enviando ? 'Registrando...' : subiendoArchivo ? 'Esperando evidencia...' : 'Registrar aporte →'}
               </button>
             </div>
           </div>
@@ -200,6 +271,11 @@ export default function Aportes() {
                   <div>
                     <div style={{fontSize:'0.875rem',fontWeight:'600',color:'#fff',marginBottom:'0.2rem'}}>{a.descripcion}</div>
                     <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{a.fecha} · {a.tipo} · {a.validado ? '✅ Validado' : '⏳ Pendiente validación'}</div>
+                    {a.evidencia_url && (
+                      <a href={a.evidencia_url} target="_blank" rel="noopener noreferrer" style={{display:'inline-flex',alignItems:'center',gap:'0.3rem',marginTop:'0.4rem',color:'#1D9E75',fontSize:'0.72rem',textDecoration:'none'}}>
+                        📎 Ver evidencia →
+                      </a>
+                    )}
                   </div>
                 </div>
                 <div style={{textAlign:'right'}}>
