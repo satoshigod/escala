@@ -49,25 +49,33 @@ export default function Dashboard() {
       })
 
       if (mios.length > 0) {
-        const aRes = await fetch('/api/aportes?proyecto_id=' + mios[0].id)
-        const aData = await aRes.json()
-        setMisAportes((aData.aportes || []).filter(a => a.aportante_id === user.id))
-
-        const rolesRes = await fetch('/api/roles?proyecto_id=' + mios[0].id)
-        const rolesData = await rolesRes.json()
-        const roles = rolesData.roles || []
-        const todasPost = []
-        await Promise.all(roles.map(async rol => {
-          const r = await fetch('/api/postulaciones?rol_id=' + rol.id)
-          const d = await r.json()
-          if (d.postulaciones) {
-            d.postulaciones.forEach(p => {
-              todasPost.push({...p, rol_nombre: rol.nombre, proyecto_nombre: mios[0].nombre, proyecto_id: mios[0].id})
-              if (p.estado === 'pendiente') notifs.push({ tipo: 'nueva_postulacion', texto: (p.perfiles?.nombre || 'Alguien') + ' se postuló al rol de ' + rol.nombre + ' en ' + mios[0].nombre, postulante_id: p.postulante_id, fecha: p.created_at, color: '#E8A020', icon: '📬' })
-            })
-          }
+        // Aportes — sumamos de todos los proyectos del fundador, no solo el primero
+        const todosAportes = []
+        await Promise.all(mios.map(async proy => {
+          const aRes = await fetch('/api/aportes?proyecto_id=' + proy.id)
+          const aData = await aRes.json()
+          todosAportes.push(...(aData.aportes || []))
         }))
-        setPostulacionesRecibidas(todasPost)
+        setMisAportes(todosAportes.filter(a => a.aportante_id === user.id))
+
+        // Postulaciones recibidas — recorremos TODOS los proyectos del fundador
+        const todasPost = []
+        await Promise.all(mios.map(async proy => {
+          const rolesRes = await fetch('/api/roles?proyecto_id=' + proy.id)
+          const rolesData = await rolesRes.json()
+          const roles = rolesData.roles || []
+          await Promise.all(roles.map(async rol => {
+            const r = await fetch('/api/postulaciones?rol_id=' + rol.id)
+            const d = await r.json()
+            if (d.postulaciones) {
+              d.postulaciones.forEach(p => {
+                todasPost.push({...p, rol_nombre: rol.nombre, proyecto_nombre: proy.nombre, proyecto_id: proy.id})
+                if (p.estado === 'pendiente') notifs.push({ tipo: 'nueva_postulacion', texto: (p.perfiles?.nombre || 'Alguien') + ' se postuló al rol de ' + rol.nombre + ' en ' + proy.nombre, postulante_id: p.postulante_id, fecha: p.created_at, color: '#E8A020', icon: '📬' })
+              })
+            }
+          }))
+        }))
+        setPostulacionesRecibidas(todasPost.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)))
       }
 
       setNotificaciones(notifs.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)))
