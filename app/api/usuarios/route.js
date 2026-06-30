@@ -28,13 +28,13 @@ export async function GET(request) {
 // PATCH — actualizar perfil
 export async function PATCH(request) {
   const body = await request.json()
-  const { id, nombre, ciudad, whatsapp, rol_principal, especialidad, lo_que_aporto, lo_que_busco } = body
+  const { id, nombre, ciudad, pais, whatsapp, rol_principal, especialidad, lo_que_aporto, lo_que_busco } = body
 
   if (!id) return Response.json({ error: 'Falta el id' }, { status: 400 })
 
   const { data, error } = await supabase
     .from('perfiles')
-    .update({ nombre, ciudad, whatsapp, rol_principal, especialidad, lo_que_aporto, lo_que_busco })
+    .update({ nombre, ciudad, pais: pais || null, whatsapp, rol_principal, especialidad, lo_que_aporto, lo_que_busco })
     .eq('id', id)
     .select()
     .single()

@@ -17,6 +17,7 @@ export default function Onboarding() {
   const [form, setForm] = useState({
     nombre: '',
     ciudad: '',
+    pais: '',
     whatsapp: '',
     rol_principal: '',
     especialidad: '',
@@ -100,6 +101,22 @@ export default function Onboarding() {
 
             <label style={s.label}>Ciudad</label>
             <input style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
+
+            <label style={s.label}>País de jurisdicción</label>
+            <select style={{...s.input, background:'#1a2a4a'}} value={form.pais} onChange={e => actualizar('pais', e.target.value)}>
+              <option value="">Selecciona tu país...</option>
+              <option value="Colombia">🇨🇴 Colombia</option>
+              <option value="México">🇲🇽 México</option>
+              <option value="Perú">🇵🇪 Perú</option>
+              <option value="Chile">🇨🇱 Chile</option>
+              <option value="Argentina">🇦🇷 Argentina</option>
+              <option value="España">🇪🇸 España</option>
+              <option value="Estados Unidos">🇺🇸 Estados Unidos</option>
+              <option value="Otro">🌐 Otro</option>
+            </select>
+            {form.pais && ['Abogado','Contador','abogado','contador'].some(r => form.especialidad?.toLowerCase().includes(r.toLowerCase())) && (
+              <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'-0.75rem',marginBottom:'1rem'}}>✓ Tu jurisdicción será {form.pais} — te asignarán proyectos de ese país primero</div>
+            )}
 
             <label style={s.label}>WhatsApp</label>
             <input style={s.input} value={form.whatsapp} onChange={e => actualizar('whatsapp', e.target.value)} placeholder="+57 300 123 4567" />
