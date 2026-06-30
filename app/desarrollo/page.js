@@ -193,11 +193,11 @@ const fases = [
     titulo: 'Cobertura completa del documento consolidado',
     estado: 'progreso',
     valor_total: 12500000,
-    valor_hecho: 6500000,
+    valor_hecho: 12500000,
     hitos: [
-      { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio con convenios estratégicos', done: false, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '14.3', nombre: 'Estrategia de adquisición por tipo de usuario — Fundadores, Ejecutores, Gerentes, Ángeles, Mentores, Empresas', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio en /comercial con convenios estratégicos', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
+      { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos (en /comercial)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '14.3', nombre: 'Estrategia de adquisición por tipo de usuario — Fundadores, Ejecutores, Gerentes, Ángeles, Mentores, Empresas (en /comercial)', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '14.4', nombre: 'Distinción especialistas locales vs globales — filtro regulatorio estricto vs apertura internacional', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '14.4b', nombre: 'Fix crítico: React no refrescaba opciones del selector Asignar — agregada key única por categoría', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
       { num: '14.4c', nombre: 'Selector dinámico de especialidades en onboarding — igual que países, con opción de crear nueva', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
@@ -253,6 +253,7 @@ export default function Desarrollo() {
         <div style={{display:'flex',gap:'1.5rem'}}>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
           <a href="/desarrollo" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Desarrollo</a>
+          <a href="/comercial" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Comercial</a>
           <a href="/" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Sitio</a>
         </div>
       </nav>
