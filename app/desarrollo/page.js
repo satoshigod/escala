@@ -217,6 +217,21 @@ const fases = [
     ]
   },
   {
+    num: '15',
+    titulo: 'Rediseño del Dashboard — centro de operaciones',
+    estado: 'progreso',
+    valor_total: 8000000,
+    valor_hecho: 2500000,
+    hitos: [
+      { num: '15.1', nombre: 'D1 — Endpoint agregador /api/dashboard, reemplaza 13+ llamadas N+1 por consultas paralelas en servidor', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '15.2', nombre: 'D2 — Bandeja de trabajo unificada: tareas, hitos y postulaciones pendientes en una sola lista accionable', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '15.3', nombre: 'D3 — Rediseño visual completo de las 4 zonas (header, bandeja, proyectos, sidebar)', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '15.4', nombre: 'D4 — Vistas diferenciadas por rol: Gerente de Proyecto y Ángel de Impulso', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '15.5', nombre: 'D5 — Campos de perfil: idiomas, disponibilidad, reconocimientos', done: false, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '15.6', nombre: 'D6 — Calendario integrado de tareas e hitos', done: false, valor: 1000000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
     num: '07',
     titulo: 'Contratos digitales y documentos legales',
     estado: 'pendiente',

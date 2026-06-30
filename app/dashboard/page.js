@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [cargando, setCargando] = useState(true)
   const [toastNuevo, setToastNuevo] = useState(null)
   const [conectadoRealtime, setConectadoRealtime] = useState(false)
+  const [bandeja, setBandeja] = useState([])
+  const [contadores, setContadores] = useState({})
 
   useEffect(() => {
     async function cargar() {
@@ -23,64 +25,25 @@ export default function Dashboard() {
       if (!user) { window.location.href = '/registro'; return }
       setUsuario(user)
 
-      const [pRes, proyRes, postRes] = await Promise.all([
-        fetch('/api/usuarios?id=' + user.id),
-        fetch('/api/proyectos'),
-        fetch('/api/postulaciones?postulante_id=' + user.id)
-      ])
+      // Una sola llamada — el servidor hace todas las consultas en paralelo internamente
+      const res = await fetch('/api/dashboard?user_id=' + user.id)
+      const data = await res.json()
 
-      const pData = await pRes.json()
-      const proyData = await proyRes.json()
-      const postData = await postRes.json()
-
-      const perfilData = pData.usuario
-      const todos = proyData.proyectos || []
-      const mios = todos.filter(p => p.fundador_id === user.id)
-      const postulaciones = postData.postulaciones || []
-
-      setPerfil(perfilData)
-      setTodosProyectos(todos)
-      setMisProyectos(mios)
-      setMisPostulaciones(postulaciones)
-
-      // Notificaciones
-      const notifs = []
-      postulaciones.forEach(p => {
-        if (p.estado === 'aceptada') notifs.push({ tipo: 'aceptado', texto: 'Te aceptaron en el rol de ' + (p.roles?.nombre || 'un rol'), proyecto: p.roles?.proyecto_id, fecha: p.updated_at || p.created_at, color: '#1D9E75', icon: '✅' })
-        if (p.estado === 'rechazada') notifs.push({ tipo: 'rechazado', texto: 'No quedaste seleccionado para ' + (p.roles?.nombre || 'un rol'), fecha: p.updated_at || p.created_at, color: '#D85A30', icon: '✗' })
-      })
-
-      if (mios.length > 0) {
-        // Aportes — sumamos de todos los proyectos del fundador, no solo el primero
-        const todosAportes = []
-        await Promise.all(mios.map(async proy => {
-          const aRes = await fetch('/api/aportes?proyecto_id=' + proy.id)
-          const aData = await aRes.json()
-          todosAportes.push(...(aData.aportes || []))
-        }))
-        setMisAportes(todosAportes.filter(a => a.aportante_id === user.id))
-
-        // Postulaciones recibidas — recorremos TODOS los proyectos del fundador
-        const todasPost = []
-        await Promise.all(mios.map(async proy => {
-          const rolesRes = await fetch('/api/roles?proyecto_id=' + proy.id)
-          const rolesData = await rolesRes.json()
-          const roles = rolesData.roles || []
-          await Promise.all(roles.map(async rol => {
-            const r = await fetch('/api/postulaciones?rol_id=' + rol.id)
-            const d = await r.json()
-            if (d.postulaciones) {
-              d.postulaciones.forEach(p => {
-                todasPost.push({...p, rol_nombre: rol.nombre, proyecto_nombre: proy.nombre, proyecto_id: proy.id})
-                if (p.estado === 'pendiente') notifs.push({ tipo: 'nueva_postulacion', texto: (p.perfiles?.nombre || 'Alguien') + ' se postuló al rol de ' + rol.nombre + ' en ' + proy.nombre, postulante_id: p.postulante_id, fecha: p.created_at, color: '#E8A020', icon: '📬' })
-              })
-            }
-          }))
-        }))
-        setPostulacionesRecibidas(todasPost.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)))
+      if (data.error) {
+        console.error('Error cargando dashboard:', data.error)
+        setCargando(false)
+        return
       }
 
-      setNotificaciones(notifs.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)))
+      setPerfil(data.perfil)
+      setTodosProyectos(data.todosProyectos || [])
+      setMisProyectos(data.misProyectos || [])
+      setMisPostulaciones(data.misPostulaciones || [])
+      setMisAportes(data.misAportes || [])
+      setPostulacionesRecibidas(data.postulacionesRecibidas || [])
+      setNotificaciones(data.notificaciones || [])
+      setBandeja(data.bandeja || [])
+      setContadores(data.contadores || {})
       setCargando(false)
     }
     cargar()
@@ -201,6 +164,25 @@ export default function Dashboard() {
           </div>
           <div style={{fontSize:'0.85rem',color:'#8FA3CC'}}>{perfil?.especialidad || perfil?.rol_principal || 'Miembro de Escala'} · {perfil?.ciudad || ''}</div>
         </div>
+
+        {/* BANDEJA DE TRABAJO — lista unificada de lo que requiere atención */}
+        {bandeja.length > 0 && (
+          <div style={{marginBottom:'2rem'}}>
+            <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem',display:'flex',alignItems:'center',gap:'0.5rem'}}>
+              <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#AFA9EC',display:'inline-block'}}></span>
+              Bandeja de trabajo
+              <span style={{fontSize:'0.68rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.15)',padding:'0.15rem 0.5rem',borderRadius:'10px'}}>{bandeja.length}</span>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+              {bandeja.slice(0,6).map((item,i) => (
+                <a key={i} href={item.href} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'1rem',background:'rgba(83,74,183,0.06)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'10px',padding:'0.875rem 1.125rem',textDecoration:'none',transition:'background 0.15s'}}>
+                  <div style={{fontSize:'0.85rem',color:'#fff'}}>{item.texto}</div>
+                  <div style={{fontSize:'0.75rem',color:'#AFA9EC',flexShrink:0}}>→</div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* TABS */}
         <div style={{display:'flex',gap:'0',marginBottom:'2rem',background:'rgba(255,255,255,0.04)',borderRadius:'12px',padding:'4px',border:'1px solid rgba(255,255,255,0.08)'}}>
