@@ -18,6 +18,9 @@ export default function Dashboard() {
   const [conectadoRealtime, setConectadoRealtime] = useState(false)
   const [bandeja, setBandeja] = useState([])
   const [contadores, setContadores] = useState({})
+  const [misImpulsos, setMisImpulsos] = useState([])
+  const [cargaEquipo, setCargaEquipo] = useState([])
+  const [vistaSugerida, setVistaSugerida] = useState('especialista')
 
   useEffect(() => {
     async function cargar() {
@@ -43,6 +46,10 @@ export default function Dashboard() {
       setNotificaciones(data.notificaciones || [])
       setBandeja(data.bandeja || [])
       setContadores(data.contadores || {})
+      setMisImpulsos(data.misImpulsos || [])
+      setCargaEquipo(data.cargaEquipo || [])
+      setVistaSugerida(data.vistaSugerida || 'especialista')
+      setVista(data.vistaSugerida || 'resumen')
       setCargando(false)
     }
     cargar()
@@ -162,11 +169,28 @@ export default function Dashboard() {
       <main style={{maxWidth:'1180px',margin:'0 auto',padding:'1.75rem 1.25rem'}}>
 
         <div style={{marginBottom:'1.5rem'}}>
-          <div style={{fontSize:'clamp(1.3rem,3vw,1.8rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.25rem'}}>
-            Hola, {perfil?.nombre?.split(' ')[0] || 'bienvenido'} 👋
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
+            <div>
+              <div style={{fontSize:'clamp(1.3rem,3vw,1.8rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.25rem'}}>
+                Hola, {perfil?.nombre?.split(' ')[0] || 'bienvenido'} 👋
+              </div>
+              <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{perfil?.especialidad || perfil?.rol_principal || 'Miembro de Escala'} · {perfil?.ciudad || ''}</div>
+            </div>
+            {(vistaSugerida === 'gerente' || vistaSugerida === 'angel') && (
+              <div style={{display:'flex',gap:'0.3rem',background:'rgba(255,255,255,0.04)',borderRadius:'9px',padding:'3px',border:'1px solid rgba(255,255,255,0.08)'}}>
+                {[
+                  { id: vistaSugerida, label: vistaSugerida === 'gerente' ? '👥 Gerente' : '🌟 Ángel' },
+                  { id: 'resumen', label: '📋 General' },
+                ].map(v => (
+                  <button key={v.id} onClick={() => setVista(v.id)} style={{background: vista===v.id ? 'rgba(255,255,255,0.1)' : 'transparent',border:'none',borderRadius:'7px',padding:'0.45rem 0.875rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontSize:'0.76rem',fontWeight: vista===v.id?'700':'400',color: vista===v.id?'#fff':'#8FA3CC'}}>
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{perfil?.especialidad || perfil?.rol_principal || 'Miembro de Escala'} · {perfil?.ciudad || ''}</div>
         </div>
+
 
         {vista === 'notificaciones' ? (
           <div>
@@ -194,6 +218,105 @@ export default function Dashboard() {
                         <a href={'/perfil/'+n.postulante_id} style={{display:'inline-block',marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>Ver perfil del postulante →</a>
                       )}
                     </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : vista === 'gerente' ? (
+          <div>
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Gerente de Proyecto</div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem',marginBottom:'1.75rem'}}>
+              <div style={{background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{cargaEquipo.length}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Personas en el equipo</div>
+              </div>
+              <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{cargaEquipo.reduce((s,p)=>s+p.pendientes,0)}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Tareas pendientes del equipo</div>
+              </div>
+              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{cargaEquipo.reduce((s,p)=>s+p.completadas,0)}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Tareas completadas</div>
+              </div>
+            </div>
+
+            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Carga de trabajo por persona</div>
+            {cargaEquipo.length === 0 ? (
+              <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center',color:'#8FA3CC',fontSize:'0.82rem'}}>
+                Sin tareas asignadas en tu equipo todavía.
+              </div>
+            ) : (
+              <div style={{display:'flex',flexDirection:'column',gap:'0.5rem',marginBottom:'1.75rem'}}>
+                {cargaEquipo.map((p,i) => (
+                  <div key={i} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1rem 1.25rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
+                    <div>
+                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff'}}>{p.nombre}</div>
+                      <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{p.proyecto}</div>
+                    </div>
+                    <div style={{display:'flex',gap:'0.75rem'}}>
+                      <div style={{textAlign:'center'}}>
+                        <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color: p.pendientes > 3 ? '#D85A30' : '#E8A020'}}>{p.pendientes}</div>
+                        <div style={{fontSize:'0.62rem',color:'#8FA3CC'}}>pendientes</div>
+                      </div>
+                      <div style={{textAlign:'center'}}>
+                        <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color:'#1D9E75'}}>{p.completadas}</div>
+                        <div style={{fontSize:'0.62rem',color:'#8FA3CC'}}>completadas</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Tus proyectos gestionados</div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:'0.875rem'}}>
+              {misProyectos.map(p => (
+                <a key={p.id} href={'/proyectos/'+p.id+'/workspace'} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',display:'block'}}>
+                  <div style={{fontSize:'0.9rem',fontWeight:'800',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
+                  <div style={{fontSize:'0.72rem',color:'#1D9E75',fontWeight:'600'}}>Ir al workspace →</div>
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : vista === 'angel' ? (
+          <div>
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Ángel de Impulso</div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem',marginBottom:'1.75rem'}}>
+              <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{misImpulsos.length}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Hitos financiados</div>
+              </div>
+              <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{misImpulsos.filter(i=>!i.hitos?.completado).length}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Hitos pendientes</div>
+              </div>
+              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>${misImpulsos.reduce((s,i)=>s+(i.monto||0),0).toLocaleString()}</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Total invertido</div>
+              </div>
+            </div>
+
+            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Tus impulsos</div>
+            {misImpulsos.length === 0 ? (
+              <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(175,169,236,0.2)',borderRadius:'12px',padding:'2.5rem',textAlign:'center'}}>
+                <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>🌟</div>
+                <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Aún no has financiado ningún hito</div>
+                <div style={{color:'#8FA3CC',fontSize:'0.82rem',marginBottom:'1.25rem'}}>Explora proyectos y financia hitos puntuales sin invertir en toda la empresa.</div>
+                <a href="/buscar" style={{background:'#AFA9EC',color:'#0D1B3E',padding:'0.65rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'800',display:'inline-block'}}>Explorar proyectos →</a>
+              </div>
+            ) : (
+              <div style={{display:'flex',flexDirection:'column',gap:'0.6rem'}}>
+                {misImpulsos.map(i => (
+                  <div key={i.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
+                    <div>
+                      <div style={{fontSize:'0.62rem',fontWeight:'700',color:'#AFA9EC',letterSpacing:'0.05em',textTransform:'uppercase',marginBottom:'0.25rem'}}>{i.proyectos?.nombre || 'Proyecto'}</div>
+                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff'}}>{i.hitos?.nombre || i.descripcion || 'Hito'}</div>
+                      <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.15rem'}}>${(i.monto||0).toLocaleString()}</div>
+                    </div>
+                    <span style={{fontSize:'0.7rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',background: i.hitos?.completado ? 'rgba(29,158,117,0.15)' : 'rgba(232,160,32,0.12)',color: i.hitos?.completado ? '#1D9E75' : '#E8A020'}}>
+                      {i.hitos?.completado ? '✅ Completado' : '⏳ En progreso'}
+                    </span>
                   </div>
                 ))}
               </div>

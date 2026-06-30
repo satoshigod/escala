@@ -123,6 +123,41 @@ export async function GET(request) {
     })
     notificaciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
 
+    // PASO 5 — datos específicos por rol: impulsos para Ángel de Impulso
+    const { data: misImpulsos } = await supabase
+      .from('impulsos')
+      .select('*, hitos:hito_id ( nombre, completado ), proyectos:proyecto_id ( nombre )')
+      .eq('angel_id', userId)
+
+    // Detección de qué vista mostrar — cruza rol_principal con especialidad de texto libre
+    const especialidadLower = (perfil?.especialidad || '').toLowerCase()
+    const esGerente = especialidadLower.includes('gerente') || especialidadLower.includes('project manager')
+    const esAngelRol = perfil?.rol_principal === 'angel' || (misImpulsos && misImpulsos.length > 0)
+
+    let vistaSugerida = 'especialista'
+    if (esGerente) vistaSugerida = 'gerente'
+    else if (esAngelRol) vistaSugerida = 'angel'
+    else if (misProyectos.length > 0) vistaSugerida = 'fundador'
+
+    // Carga de trabajo del equipo (para vista Gerente) — solo si hay proyectos donde el usuario es Gerente
+    let cargaEquipo = []
+    if (esGerente && misProyectoIds.length > 0) {
+      const { data: todasTareasEquipo } = await supabase
+        .from('tareas')
+        .select('asignado_a, estado, proyectos:proyecto_id ( nombre ), perfiles:asignado_a ( nombre )')
+        .in('proyecto_id', misProyectoIds)
+
+      const porPersona = {}
+      ;(todasTareasEquipo || []).forEach(t => {
+        if (!t.asignado_a) return
+        const nombre = t.perfiles?.nombre || 'Sin asignar'
+        if (!porPersona[nombre]) porPersona[nombre] = { nombre, pendientes: 0, completadas: 0, proyecto: t.proyectos?.nombre || '' }
+        if (t.estado === 'completada') porPersona[nombre].completadas++
+        else porPersona[nombre].pendientes++
+      })
+      cargaEquipo = Object.values(porPersona).sort((a,b) => b.pendientes - a.pendientes)
+    }
+
     return Response.json({
       perfil,
       misProyectos,
@@ -135,6 +170,9 @@ export async function GET(request) {
       mensajesRecientes,
       bandeja,
       notificaciones,
+      misImpulsos: misImpulsos || [],
+      vistaSugerida,
+      cargaEquipo,
       contadores: {
         proyectos: misProyectos.length,
         tareas_pendientes: (tareasAsignadasAMi || []).filter(t => t.estado === 'pendiente').length,
