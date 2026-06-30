@@ -329,7 +329,7 @@ export default function Tareas() {
                 <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Categoría</label>
                 <select value={nuevaTarea.categoria} onChange={e=>setNuevaTarea(n=>({...n,categoria:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">General</option>
-                  {['Legal','Finanzas','Técnico','Gestión','Diseño','Marketing','Inversión'].map(c=><option key={c} value={c}>{c}</option>)}
+                  {['Legal','Finanzas','Técnico','Gestión','Diseño','Marketing','Inversión','Operaciones'].map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>

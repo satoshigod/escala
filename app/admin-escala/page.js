@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const ROLES = ['Abogado','Contador','Desarrollador Full-Stack','Gerente de Proyecto','Diseñador','Community Manager','Inversionista inicial']
-const CATEGORIAS = ['Legal','Finanzas','Técnico','Gestión','Diseño','Marketing','Inversión']
+const CATEGORIAS_BASE = ['Legal','Finanzas','Técnico','Gestión','Diseño','Marketing','Inversión','Operaciones']
 const BANDERAS = { 'Colombia':'🇨🇴','México':'🇲🇽','Perú':'🇵🇪','Chile':'🇨🇱','Argentina':'🇦🇷','España':'🇪🇸','Estados Unidos':'🇺🇸' }
 
 export default function AdminEscala() {
@@ -196,6 +196,11 @@ export default function AdminEscala() {
     setEspecialidades(prev => prev.filter(e => e.id !== id))
   }
 
+  function categoriasDisponibles() {
+    const existentes = especialidades.map(e => e.categoria).filter(Boolean)
+    return [...new Set([...CATEGORIAS_BASE, ...existentes])].sort()
+  }
+
   const tabs = [
     { id: 'perfiles', label: '👥 Perfiles y Score' },
     { id: 'proyectos', label: '🚀 Proyectos' },
@@ -344,7 +349,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
                     </select>
                   </div>
                   <div>
@@ -386,7 +391,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
                     </select>
                   </div>
                   <div>
@@ -463,7 +468,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
                     </select>
                   </div>
                   <div>
@@ -511,7 +516,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
                     </select>
                   </div>
                   <div>
@@ -580,10 +585,10 @@ export default function AdminEscala() {
                   </div>
                   <div>
                     <label style={st.label}>Categoría asociada</label>
-                    <select style={st.select} value={nuevaEspecialidad.categoria} onChange={e => setNuevaEspecialidad(n => ({...n,categoria:e.target.value}))}>
-                      <option value="">Categoría...</option>
-                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <input list="lista-categorias-nueva" style={st.input} value={nuevaEspecialidad.categoria} onChange={e => setNuevaEspecialidad(n => ({...n,categoria:e.target.value}))} placeholder="Ej: Operaciones, Legal..." />
+                    <datalist id="lista-categorias-nueva">
+                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
+                    </datalist>
                   </div>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem'}}>
@@ -603,10 +608,10 @@ export default function AdminEscala() {
                   </div>
                   <div>
                     <label style={st.label}>Categoría asociada</label>
-                    <select style={st.select} value={especialidadEditando.categoria || ''} onChange={e => setEspecialidadEditando(n=>({...n,categoria:e.target.value}))}>
-                      <option value="">Categoría...</option>
-                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <input list="lista-categorias-editar" style={st.input} value={especialidadEditando.categoria || ''} onChange={e => setEspecialidadEditando(n=>({...n,categoria:e.target.value}))} placeholder="Ej: Operaciones, Legal..." />
+                    <datalist id="lista-categorias-editar">
+                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
+                    </datalist>
                   </div>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem'}}>
