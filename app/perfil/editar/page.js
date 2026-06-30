@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
+import { supabase } from '../../../lib/supabase'
 
 const IDIOMAS_DISPONIBLES = ['Español', 'Inglés', 'Portugués', 'Francés', 'Alemán', 'Italiano', 'Mandarín', 'Otro']
 const DISPONIBILIDAD_OPCIONES = [
