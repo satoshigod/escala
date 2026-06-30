@@ -169,8 +169,14 @@ export default function Tareas() {
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
   const [verTodas, setVerTodas] = useState(false)
 
+  // Roles que requieren coincidencia de jurisdicción — la categoría legal/fiscal depende de la ley local
+  const ROLES_REGULATORIOS = ['Abogado', 'Contador']
+  // Categorías que, aunque coincidan con un rol regulatorio, no dependen de legislación local (propiedad intelectual, contratos internacionales, etc.) — quedan fuera de la restricción geográfica
+  const ESPECIALIZACION_GLOBAL_KEYWORDS = ['internacional', 'propiedad intelectual', 'marcas', 'comercio exterior', 'compliance', 'protección de datos']
+
   // Asignación inteligente — filtra miembros del equipo según categoría de la tarea
-  function miembrosParaCategoria(categoria) {
+  // y aplica restricción geográfica solo cuando el rol es regulatorio Y la tarea no es de especialización global
+  function miembrosParaCategoria(categoria, esTareaRegulatoria) {
     const CATEGORIA_ROL = {
       'Legal': ['Abogado'],
       'Finanzas': ['Contador'],
@@ -181,8 +187,25 @@ export default function Tareas() {
       'Gestión': ['Gerente de Proyecto'],
     }
     const rolesCompatibles = CATEGORIA_ROL[categoria] || null
-    if (!rolesCompatibles) return equipo // si no hay restricción, todos
-    return equipo.filter(e => rolesCompatibles.some(r => e.rol_nombre?.toLowerCase().includes(r.toLowerCase())))
+    if (!rolesCompatibles) return equipo // sin restricción de categoría, todos disponibles
+
+    let candidatos = equipo.filter(e => rolesCompatibles.some(r => e.rol_nombre?.toLowerCase().includes(r.toLowerCase())))
+
+    // Restricción geográfica: solo aplica a roles regulatorios cuando la tarea está marcada como tal
+    const esRolRegulatorio = rolesCompatibles.some(r => ROLES_REGULATORIOS.includes(r))
+    if (esRolRegulatorio && esTareaRegulatoria && proyecto?.pais) {
+      candidatos = candidatos.filter(e => e.perfiles?.pais === proyecto.pais)
+    }
+
+    return candidatos
+  }
+
+  // Determina si una tarea es de naturaleza regulatoria local (categoría + nombre sugieren ley local)
+  function esTareaRegulatoria(nombreTarea, categoria) {
+    if (categoria !== 'Legal' && categoria !== 'Finanzas') return false
+    const nombreLower = (nombreTarea || '').toLowerCase()
+    const esGlobalPorPalabraClave = ESPECIALIZACION_GLOBAL_KEYWORDS.some(kw => nombreLower.includes(kw))
+    return !esGlobalPorPalabraClave
   }
   const tareasFiltradas = tareas.filter(t => {
     if (!esFundador && !verTodas && t.asignado_a !== usuario?.id) return false
@@ -313,9 +336,19 @@ export default function Tareas() {
                 <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Asignar a</label>
                 <select value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Sin asignar</option>
-                  {miembrosParaCategoria(nuevaTarea.categoria).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}</option>)}
+                  {miembrosParaCategoria(nuevaTarea.categoria, esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria)).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}{e.perfiles?.pais ? ' (' + e.perfiles.pais + ')' : ''}</option>)}
                 </select>
-                {nuevaTarea.categoria && miembrosParaCategoria(nuevaTarea.categoria).length < equipo.length && (
+                {nuevaTarea.categoria && esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria) && proyecto?.pais && (
+                  <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.3rem'}}>
+                    ✓ Filtrando por jurisdicción {proyecto.pais} — tarea regulatoria local
+                  </div>
+                )}
+                {nuevaTarea.categoria && !esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria) && (nuevaTarea.categoria==='Legal'||nuevaTarea.categoria==='Finanzas') && (
+                  <div style={{fontSize:'0.68rem',color:'#E8A020',marginTop:'0.3rem'}}>
+                    🌐 Especialización global — cualquier país disponible
+                  </div>
+                )}
+                {nuevaTarea.categoria && nuevaTarea.categoria!=='Legal' && nuevaTarea.categoria!=='Finanzas' && miembrosParaCategoria(nuevaTarea.categoria, false).length < equipo.length && (
                   <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.3rem'}}>
                     ✓ Mostrando solo ejecutores compatibles con {nuevaTarea.categoria}
                   </div>

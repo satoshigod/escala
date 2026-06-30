@@ -12,7 +12,7 @@ export async function GET(request) {
   const postulante_id = searchParams.get('postulante_id')
   let query = supabase
     .from('postulaciones')
-    .select('*, perfiles ( nombre, ciudad, rol_principal, escala_score, especialidad, whatsapp ), roles ( nombre, proyecto_id, proyectos ( nombre, sector, ciudad ) )')
+    .select('*, perfiles ( nombre, ciudad, pais, rol_principal, escala_score, especialidad, whatsapp ), roles ( nombre, proyecto_id, proyectos ( nombre, sector, ciudad ) )')
   if (rol_id) query = query.eq('rol_id', rol_id)
   if (postulante_id) query = query.eq('postulante_id', postulante_id)
   const { data, error } = await query.order('created_at', { ascending: false })
