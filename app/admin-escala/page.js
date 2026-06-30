@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const ROLES = ['Abogado','Contador','Desarrollador Full-Stack','Gerente de Proyecto','Diseñador','Community Manager','Inversionista inicial']
-const CATEGORIAS_BASE = ['Legal','Finanzas','Técnico','Gestión','Diseño','Marketing','Inversión','Operaciones']
 const BANDERAS = { 'Colombia':'🇨🇴','México':'🇲🇽','Perú':'🇵🇪','Chile':'🇨🇱','Argentina':'🇦🇷','España':'🇪🇸','Estados Unidos':'🇺🇸' }
 
 export default function AdminEscala() {
@@ -36,18 +35,25 @@ export default function AdminEscala() {
   const [nuevaEspecialidad, setNuevaEspecialidad] = useState({ nombre: '', categoria: '' })
   const [guardandoEsp, setGuardandoEsp] = useState(false)
 
+  const [categoriasDB, setCategoriasDB] = useState([])
+  const [mostrarNuevaCategoriaNueva, setMostrarNuevaCategoriaNueva] = useState(false)
+  const [mostrarNuevaCategoriaEditar, setMostrarNuevaCategoriaEditar] = useState(false)
+  const [nuevaCategoriaTexto, setNuevaCategoriaTexto] = useState('')
+  const [creandoCategoria, setCreandoCategoria] = useState(false)
+
   useEffect(() => { cargarTodo() }, [])
 
   async function cargarTodo() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { window.location.href = '/registro'; return }
     setUsuario(user)
-    const [perfsRes, proyRes, indRes, paisRes, espRes] = await Promise.all([
+    const [perfsRes, proyRes, indRes, paisRes, espRes, catRes] = await Promise.all([
       supabase.from('perfiles').select('*').order('escala_score', { ascending: false }),
       fetch('/api/proyectos'),
       supabase.from('industrias').select('*').order('nombre'),
       supabase.from('paises_regulatorios').select('*').order('nombre'),
       supabase.from('especialidades').select('*').order('nombre'),
+      supabase.from('categorias').select('*').order('nombre'),
     ])
     const pData = await proyRes.json()
     setPerfiles(perfsRes.data || [])
@@ -55,6 +61,7 @@ export default function AdminEscala() {
     setIndustrias(indRes.data || [])
     setPaises(paisRes.data || [])
     setEspecialidades(espRes.data || [])
+    setCategoriasDB(catRes.data || [])
     setCargando(false)
   }
 
@@ -196,9 +203,32 @@ export default function AdminEscala() {
     setEspecialidades(prev => prev.filter(e => e.id !== id))
   }
 
-  function categoriasDisponibles() {
-    const existentes = especialidades.map(e => e.categoria).filter(Boolean)
-    return [...new Set([...CATEGORIAS_BASE, ...existentes])].sort()
+  async function crearNuevaCategoria(nombre, destino) {
+    const limpio = nombre.trim()
+    if (!limpio) { alert('Escribe el nombre de la categoría'); return }
+    setCreandoCategoria(true)
+    try {
+      const res = await fetch('/api/categorias', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: limpio })
+      })
+      const data = await res.json()
+      if (data.error) { alert('Error: ' + data.error) }
+      else {
+        setCategoriasDB(prev => [...prev.filter(c => c.nombre !== data.categoria.nombre), data.categoria].sort((a,b) => a.nombre.localeCompare(b.nombre)))
+        if (destino === 'nueva') {
+          setNuevaEspecialidad(n => ({...n, categoria: data.categoria.nombre}))
+          setMostrarNuevaCategoriaNueva(false)
+        } else {
+          setEspecialidadEditando(n => ({...n, categoria: data.categoria.nombre}))
+          setMostrarNuevaCategoriaEditar(false)
+        }
+        setNuevaCategoriaTexto('')
+      }
+    } catch(e) {
+      alert('Error de conexión: ' + e.message)
+    }
+    setCreandoCategoria(false)
   }
 
   const tabs = [
@@ -349,7 +379,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
+                      {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
@@ -391,7 +421,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
+                      {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
@@ -468,7 +498,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
+                      {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
@@ -516,7 +546,7 @@ export default function AdminEscala() {
                     <label style={st.label}>Categoría</label>
                     <select style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
-                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
+                      {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
@@ -585,10 +615,17 @@ export default function AdminEscala() {
                   </div>
                   <div>
                     <label style={st.label}>Categoría asociada</label>
-                    <input list="lista-categorias-nueva" style={st.input} value={nuevaEspecialidad.categoria} onChange={e => setNuevaEspecialidad(n => ({...n,categoria:e.target.value}))} placeholder="Ej: Operaciones, Legal..." />
-                    <datalist id="lista-categorias-nueva">
-                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
-                    </datalist>
+                    <select style={st.select} value={nuevaEspecialidad.categoria} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaCategoriaNueva(true)}else{setNuevaEspecialidad(n=>({...n,categoria:e.target.value}));setMostrarNuevaCategoriaNueva(false)} }}>
+                      <option value="">Selecciona categoría...</option>
+                      {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
+                      <option value="__nueva__">+ Mi categoría no está en la lista</option>
+                    </select>
+                    {mostrarNuevaCategoriaNueva && (
+                      <div style={{display:'flex',gap:'0.5rem',marginTop:'0.5rem'}}>
+                        <input type="text" value={nuevaCategoriaTexto} onChange={e=>setNuevaCategoriaTexto(e.target.value)} placeholder="Ej: Operaciones, Logística..." style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.5rem 0.875rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}} onKeyDown={(e)=>{if(e.key==='Enter'){e.preventDefault();crearNuevaCategoria(nuevaCategoriaTexto,'nueva')}}} />
+                        <button type="button" onClick={()=>crearNuevaCategoria(nuevaCategoriaTexto,'nueva')} disabled={creandoCategoria} style={st.btnGreen}>{creandoCategoria?'...':'Crear'}</button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem'}}>
@@ -608,10 +645,17 @@ export default function AdminEscala() {
                   </div>
                   <div>
                     <label style={st.label}>Categoría asociada</label>
-                    <input list="lista-categorias-editar" style={st.input} value={especialidadEditando.categoria || ''} onChange={e => setEspecialidadEditando(n=>({...n,categoria:e.target.value}))} placeholder="Ej: Operaciones, Legal..." />
-                    <datalist id="lista-categorias-editar">
-                      {categoriasDisponibles().map(c => <option key={c} value={c} />)}
-                    </datalist>
+                    <select style={st.select} value={especialidadEditando.categoria || ''} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaCategoriaEditar(true)}else{setEspecialidadEditando(n=>({...n,categoria:e.target.value}));setMostrarNuevaCategoriaEditar(false)} }}>
+                      <option value="">Selecciona categoría...</option>
+                      {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
+                      <option value="__nueva__">+ Mi categoría no está en la lista</option>
+                    </select>
+                    {mostrarNuevaCategoriaEditar && (
+                      <div style={{display:'flex',gap:'0.5rem',marginTop:'0.5rem'}}>
+                        <input type="text" value={nuevaCategoriaTexto} onChange={e=>setNuevaCategoriaTexto(e.target.value)} placeholder="Ej: Operaciones, Logística..." style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.5rem 0.875rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}} onKeyDown={(e)=>{if(e.key==='Enter'){e.preventDefault();crearNuevaCategoria(nuevaCategoriaTexto,'editar')}}} />
+                        <button type="button" onClick={()=>crearNuevaCategoria(nuevaCategoriaTexto,'editar')} disabled={creandoCategoria} style={st.btnGreen}>{creandoCategoria?'...':'Crear'}</button>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem'}}>

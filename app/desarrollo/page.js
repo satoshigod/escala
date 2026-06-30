@@ -192,8 +192,8 @@ const fases = [
     num: '14',
     titulo: 'Cobertura completa del documento consolidado',
     estado: 'progreso',
-    valor_total: 11000000,
-    valor_hecho: 5000000,
+    valor_total: 12500000,
+    valor_hecho: 6500000,
     hitos: [
       { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio con convenios estratégicos', done: false, valor: 2500000, quien: 'Claude AI + Fundador' },
       { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
@@ -202,6 +202,7 @@ const fases = [
       { num: '14.4b', nombre: 'Fix crítico: React no refrescaba opciones del selector Asignar — agregada key única por categoría', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
       { num: '14.4c', nombre: 'Selector dinámico de especialidades en onboarding — igual que países, con opción de crear nueva', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '14.5', nombre: 'Crear nuevos perfiles profesionales (especialidades) desde admin sin tocar código — CRUD completo en tab Especialidades', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '14.6', nombre: 'Categorías como entidad dinámica — tabla propia, API y selector con opción crear nueva, igual que países', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
