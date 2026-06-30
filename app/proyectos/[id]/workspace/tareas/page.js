@@ -355,6 +355,19 @@ export default function Tareas() {
                 )}
               </div>
             </div>
+
+            {nuevaTarea.categoria && (
+              <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'8px',padding:'0.875rem 1rem',marginBottom:'1rem',fontSize:'0.72rem'}}>
+                <div style={{fontWeight:'700',marginBottom:'0.4rem',color:'#E8A020'}}>🔍 Panel de diagnóstico temporal</div>
+                <div style={{color:'#C8D4E8',marginBottom:'0.3rem'}}>Equipo completo cargado ({equipo.length} personas):</div>
+                {equipo.map((e,i) => (
+                  <div key={i} style={{color:'#8FA3CC',marginBottom:'0.15rem'}}>• {e.perfiles?.nombre || '?'} → rol_nombre exacto: "{e.rol_nombre}" {e.perfiles?.pais ? '(' + e.perfiles.pais + ')' : ''}</div>
+                ))}
+                <div style={{color:'#1D9E75',marginTop:'0.5rem',fontWeight:'600'}}>Categoría seleccionada: "{nuevaTarea.categoria}"</div>
+                <div style={{color:'#1D9E75'}}>Pasan el filtro: {miembrosParaCategoria(nuevaTarea.categoria, false).map(e=>e.perfiles?.nombre + ' (' + e.rol_nombre + ')').join(', ') || 'ninguno'}</div>
+              </div>
+            )}
+
             <div style={{display:'flex',gap:'0.75rem'}}>
               <button onClick={()=>setMostrarNueva(false)} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
               <button onClick={crearTarea} disabled={!nuevaTarea.nombre||creando} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.5rem',fontSize:'0.82rem',fontWeight:'700',cursor:nuevaTarea.nombre?'pointer':'not-allowed',fontFamily:'Inter,sans-serif'}}>
