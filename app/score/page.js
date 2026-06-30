@@ -12,6 +12,7 @@ export default function Score() {
   const [califs, setCalifs] = useState({})
   const [enviando, setEnviando] = useState(false)
   const [mensaje, setMensaje] = useState('')
+  const [verExplicacion, setVerExplicacion] = useState(false)
 
   useEffect(() => {
     async function cargar() {
@@ -108,6 +109,19 @@ export default function Score() {
           <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>
             {perfil?.nombre} · {perfil?.ciudad} · {perfil?.rol_principal}
           </div>
+
+          <button onClick={() => setVerExplicacion(v => !v)} style={{marginTop:'1rem',background:'none',border:'none',color:'#1D9E75',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+            {verExplicacion ? '▲ Ocultar' : '¿Cómo sube este número? ▼'}
+          </button>
+
+          {verExplicacion && (
+            <div style={{marginTop:'1rem',textAlign:'left',background:'rgba(255,255,255,0.03)',borderRadius:'10px',padding:'1.25rem',fontSize:'0.78rem',color:'#C8D4E8',lineHeight:'1.7'}}>
+              <div style={{marginBottom:'0.5rem'}}><strong style={{color:'#1D9E75'}}>+20 pts</strong> — cuando te aceptan en un rol</div>
+              <div style={{marginBottom:'0.5rem'}}><strong style={{color:'#1D9E75'}}>+15 pts</strong> — por cada aporte que el fundador valida</div>
+              <div style={{marginBottom:'0.5rem'}}><strong style={{color:'#1D9E75'}}>+10 pts</strong> — por cada tarea que verifican como completada</div>
+              <div style={{color:'#8FA3CC',marginTop:'0.75rem'}}>No es lo que dices saber hacer en tu perfil — es lo que realmente hiciste y otros confirmaron.</div>
+            </div>
+          )}
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:'1rem',marginBottom:'2rem'}}>

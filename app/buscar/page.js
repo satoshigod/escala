@@ -168,7 +168,7 @@ export default function Buscar() {
             {filtrados.map(p => (
               <a key={p.id} href={'/proyectos/'+p.id} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',overflow:'hidden',display:'block',transition:'border-color 0.2s'}} onMouseOver={e=>e.currentTarget.style.borderColor='rgba(29,158,117,0.4)'} onMouseOut={e=>e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'}>
                 <div style={{background:'#0A1530',padding:'1.25rem',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>
-                  <div style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'0.4rem'}}>Tipo {p.tipo} — {p.tipo==='A'?'Empresa nueva':'Transformación'}</div>
+                  <div title={p.tipo==='A' ? 'Tipo A: idea de negocio que busca equipo y capital desde cero' : 'Tipo B: empresa existente que busca talento externo para resolver una brecha específica'} style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'0.4rem',cursor:'help'}}>Tipo {p.tipo} — {p.tipo==='A'?'Empresa nueva':'Transformación'} ⓘ</div>
                   <div style={{fontSize:'1rem',fontWeight:'800',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
                   <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{p.sector} · {p.ciudad}{p.pais ? ' · ' + (BANDERAS[p.pais]||'🌐') + ' ' + p.pais : ''}{p.industria ? ' · ' + p.industria : ''}</div>
                 </div>

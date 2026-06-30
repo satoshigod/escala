@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const roles = [
-  { id: 'ideador', icon: '💡', label: 'Ideador', desc: 'Tengo una idea de negocio' },
-  { id: 'capitalista', icon: '💰', label: 'Capitalista', desc: 'Tengo capital para invertir' },
-  { id: 'especialista', icon: '🔧', label: 'Especialista', desc: 'Tengo conocimiento profesional' },
-  { id: 'ejecutor', icon: '⚙️', label: 'Ejecutor', desc: 'Sé construir y operar empresas' },
-  { id: 'angel', icon: '🌟', label: 'Ángel de Impulso', desc: 'Quiero financiar un hito' },
+  { id: 'ideador', icon: '💡', label: 'Ideador', desc: 'Tengo una idea de negocio', ejemplo: 'Publicas tu proyecto y armas equipo sin necesidad de tener dinero para contratar' },
+  { id: 'capitalista', icon: '💰', label: 'Capitalista', desc: 'Tengo capital para invertir', ejemplo: 'Aportas dinero a un proyecto y tu inversión queda registrada como participación' },
+  { id: 'especialista', icon: '🔧', label: 'Especialista', desc: 'Tengo conocimiento profesional', ejemplo: 'Abogado, contador, diseñador, programador — tu tiempo se convierte en participación futura' },
+  { id: 'ejecutor', icon: '⚙️', label: 'Ejecutor', desc: 'Sé construir y operar empresas', ejemplo: 'Coordinas al equipo, ejecutas el día a día y haces que el proyecto avance' },
+  { id: 'angel', icon: '🌟', label: 'Ángel de Impulso', desc: 'Quiero financiar un hito', ejemplo: 'Pagas algo puntual (un registro de marca, un MVP) sin financiar toda la empresa' },
 ]
 
 export default function Onboarding() {
@@ -191,6 +191,11 @@ export default function Onboarding() {
                   <div style={s.rolIcon}>{r.icon}</div>
                   <div style={s.rolLabel}>{r.label}</div>
                   <div style={s.rolDesc}>{r.desc}</div>
+                  {form.rol_principal === r.id && (
+                    <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'0.5rem',lineHeight:'1.4',paddingTop:'0.5rem',borderTop:'1px solid rgba(29,158,117,0.2)'}}>
+                      {r.ejemplo}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

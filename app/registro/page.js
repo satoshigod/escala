@@ -64,6 +64,8 @@ export default function Registro() {
         <div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div>
         <div style={s.sub}>Plataforma de empresas colaborativas</div>
 
+        <a href="/que-es-escala" style={{display:'block',fontSize:'0.78rem',color:'#1D9E75',textDecoration:'none',marginBottom:'1.5rem',marginTop:'-1rem'}}>¿Primera vez? Entiende cómo funciona en 2 minutos →</a>
+
         <div style={s.tabs}>
           <button style={s.tab(modo === 'registro')} onClick={() => { setModo('registro'); setMensaje('') }}>Crear cuenta</button>
           <button style={s.tab(modo === 'login')} onClick={() => { setModo('login'); setMensaje('') }}>Iniciar sesión</button>
