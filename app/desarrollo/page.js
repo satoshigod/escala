@@ -165,8 +165,8 @@ const fases = [
     num: '13',
     titulo: 'Inteligencia operativa — automatización y personalización',
     estado: 'completa',
-    valor_total: 12500000,
-    valor_hecho: 12500000,
+    valor_total: 15000000,
+    valor_hecho: 15000000,
     hitos: [
       { num: '13.1', nombre: 'Selector de industria al crear proyecto con carga automática de tareas comerciales', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '13.2', nombre: 'Selector de país al crear proyecto con carga automática de tareas regulatorias', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
@@ -177,6 +177,8 @@ const fases = [
       { num: '13.7', nombre: 'Columnas industria y pais en tabla proyectos (migración SQL)', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
       { num: '13.8', nombre: 'Perfiles comerciales por industria configurables desde admin sin tocar código', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '13.9', nombre: 'Panel admin completamente parametrizable — industrias, países, tareas sin deploy (CRUD completo)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '13.10', nombre: 'Selectores de país dinámicos — leen de DB, permiten crear país nuevo con alerta al admin', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '13.11', nombre: 'API /api/paises — crear país desde cliente, alerta email al admin con link a configurar tareas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
     ]
   },
   {

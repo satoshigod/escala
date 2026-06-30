@@ -19,6 +19,10 @@ export default function Proyectos() {
   const [cargando, setCargando] = useState(true)
   const [enviando, setEnviando] = useState(false)
   const [mensaje, setMensaje] = useState('')
+  const [paisesDB, setPaisesDB] = useState([])
+  const [nuevoPaisNombre, setNuevoPaisNombre] = useState('')
+  const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
+  const [creandoPais, setCreandoPais] = useState(false)
   const [form, setForm] = useState({
     nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: ''
   })
@@ -28,9 +32,14 @@ export default function Proyectos() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/registro'; return }
       setUsuario(user)
-      const res = await fetch('/api/proyectos')
-      const data = await res.json()
+      const [pRes, paisRes] = await Promise.all([
+        fetch('/api/proyectos'),
+        fetch('/api/paises')
+      ])
+      const data = await pRes.json()
+      const pData = await paisRes.json()
       setProyectos(data.proyectos || [])
+      setPaisesDB(pData.paises || [])
       setCargando(false)
     }
     cargar()
@@ -38,6 +47,24 @@ export default function Proyectos() {
 
   function actualizar(campo, valor) {
     setForm(f => ({ ...f, [campo]: valor }))
+  }
+
+  async function crearNuevoPais() {
+    if (!nuevoPaisNombre.trim()) return
+    setCreandoPais(true)
+    const res = await fetch('/api/paises', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: nuevoPaisNombre.trim(), bandera: '🌐', tipo_origen: 'fundador' })
+    })
+    const data = await res.json()
+    if (!data.error) {
+      setPaisesDB(prev => [...prev.filter(p => p.nombre !== data.pais.nombre), data.pais].sort((a,b) => a.nombre.localeCompare(b.nombre)))
+      actualizar('pais', data.pais.nombre)
+      setNuevoPaisNombre('')
+      setMostrarNuevoPais(false)
+    }
+    setCreandoPais(false)
   }
 
   async function publicar() {
@@ -221,11 +248,18 @@ export default function Proyectos() {
             <div style={s.row}>
               <div>
                 <label style={s.label}>País del proyecto</label>
-                <select style={s.select} value={form.pais} onChange={e => actualizar('pais', e.target.value)}>
+                <select style={s.select} value={form.pais} onChange={e => { if(e.target.value==='__nuevo__'){setMostrarNuevoPais(true)}else{actualizar('pais',e.target.value);setMostrarNuevoPais(false)} }}>
                   <option value="">Selecciona país...</option>
-                  {PAISES_LIST.map(p => <option key={p.nombre} value={p.nombre}>{p.bandera} {p.nombre}</option>)}
+                  {paisesDB.map(p => <option key={p.nombre} value={p.nombre}>{p.bandera||'🌐'} {p.nombre}</option>)}
+                  <option value="__nuevo__">+ Mi país no está en la lista</option>
                 </select>
-                {form.pais && <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'-0.75rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas regulatorias de {form.pais} al crear</div>}
+                {mostrarNuevoPais && (
+                  <div style={{display:'flex',gap:'0.5rem',marginTop:'-0.75rem',marginBottom:'0.75rem'}}>
+                    <input value={nuevoPaisNombre} onChange={e=>setNuevoPaisNombre(e.target.value)} placeholder="Nombre del país (ej: Brasil)" style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.5rem 0.875rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}} onKeyDown={e=>e.key==='Enter'&&crearNuevoPais()} />
+                    <button onClick={crearNuevoPais} disabled={creandoPais||!nuevoPaisNombre.trim()} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{creandoPais?'...':'Agregar'}</button>
+                  </div>
+                )}
+                {form.pais && form.pais!=='__nuevo__' && <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'-0.5rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas regulatorias de {form.pais} al crear</div>}
               </div>
               <div>
                 <label style={s.label}>Industria (opcional)</label>

@@ -26,6 +26,10 @@ export default function Onboarding() {
   })
   const [cargando, setCargando] = useState(false)
   const [mensaje, setMensaje] = useState('')
+  const [paisesDB, setPaisesDB] = useState([])
+  const [nuevoPaisNombre, setNuevoPaisNombre] = useState('')
+  const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
+  const [creandoPais, setCreandoPais] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -33,10 +37,29 @@ export default function Onboarding() {
       setUsuario(data.user)
       setForm(f => ({ ...f, nombre: data.user.user_metadata?.nombre || '' }))
     })
+    fetch('/api/paises').then(r => r.json()).then(d => setPaisesDB(d.paises || []))
   }, [])
 
   function actualizar(campo, valor) {
     setForm(f => ({ ...f, [campo]: valor }))
+  }
+
+  async function crearNuevoPais() {
+    if (!nuevoPaisNombre.trim()) return
+    setCreandoPais(true)
+    const res = await fetch('/api/paises', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: nuevoPaisNombre.trim(), bandera: '🌐', tipo_origen: 'especialista' })
+    })
+    const data = await res.json()
+    if (!data.error) {
+      setPaisesDB(prev => [...prev.filter(p => p.nombre !== data.pais.nombre), data.pais].sort((a,b) => a.nombre.localeCompare(b.nombre)))
+      actualizar('pais', data.pais.nombre)
+      setNuevoPaisNombre('')
+      setMostrarNuevoPais(false)
+    }
+    setCreandoPais(false)
   }
 
   async function guardar() {
@@ -103,19 +126,19 @@ export default function Onboarding() {
             <input style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
 
             <label style={s.label}>País de jurisdicción</label>
-            <select style={{...s.input, background:'#1a2a4a'}} value={form.pais} onChange={e => actualizar('pais', e.target.value)}>
+            <select style={{...s.input, background:'#1a2a4a'}} value={form.pais} onChange={e => { if(e.target.value==='__nuevo__'){setMostrarNuevoPais(true)}else{actualizar('pais',e.target.value);setMostrarNuevoPais(false)} }}>
               <option value="">Selecciona tu país...</option>
-              <option value="Colombia">🇨🇴 Colombia</option>
-              <option value="México">🇲🇽 México</option>
-              <option value="Perú">🇵🇪 Perú</option>
-              <option value="Chile">🇨🇱 Chile</option>
-              <option value="Argentina">🇦🇷 Argentina</option>
-              <option value="España">🇪🇸 España</option>
-              <option value="Estados Unidos">🇺🇸 Estados Unidos</option>
-              <option value="Otro">🌐 Otro</option>
+              {paisesDB.map(p => <option key={p.nombre} value={p.nombre}>{p.bandera||'🌐'} {p.nombre}</option>)}
+              <option value="__nuevo__">+ Mi país no está en la lista</option>
             </select>
-            {form.pais && ['Abogado','Contador','abogado','contador'].some(r => form.especialidad?.toLowerCase().includes(r.toLowerCase())) && (
-              <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'-0.75rem',marginBottom:'1rem'}}>✓ Tu jurisdicción será {form.pais} — te asignarán proyectos de ese país primero</div>
+            {mostrarNuevoPais && (
+              <div style={{display:'flex',gap:'0.5rem',marginBottom:'1rem'}}>
+                <input value={nuevoPaisNombre} onChange={e=>setNuevoPaisNombre(e.target.value)} placeholder="Nombre de tu país (ej: Uruguay)" style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.5rem 0.875rem',color:'#fff',fontSize:'0.85rem',outline:'none',fontFamily:'Inter,sans-serif'}} onKeyDown={e=>e.key==='Enter'&&crearNuevoPais()} />
+                <button onClick={crearNuevoPais} disabled={creandoPais||!nuevoPaisNombre.trim()} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{creandoPais?'...':'Agregar'}</button>
+              </div>
+            )}
+            {form.pais && form.pais!=='__nuevo__' && ['abogado','contador'].some(r => form.especialidad?.toLowerCase().includes(r)) && (
+              <div style={{fontSize:'0.7rem',color:'#1D9E75',marginBottom:'1rem'}}>✓ Tu jurisdicción será {form.pais} — te asignarán proyectos de ese país primero</div>
             )}
 
             <label style={s.label}>WhatsApp</label>
