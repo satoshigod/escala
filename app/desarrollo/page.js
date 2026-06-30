@@ -192,13 +192,15 @@ const fases = [
     num: '14',
     titulo: 'Cobertura completa del documento consolidado',
     estado: 'progreso',
-    valor_total: 9500000,
-    valor_hecho: 2000000,
+    valor_total: 11000000,
+    valor_hecho: 3500000,
     hitos: [
       { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio con convenios estratégicos', done: false, valor: 2500000, quien: 'Claude AI + Fundador' },
       { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '14.3', nombre: 'Estrategia de adquisición por tipo de usuario — Fundadores, Ejecutores, Gerentes, Ángeles, Mentores, Empresas', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '14.4', nombre: 'Distinción especialistas locales vs globales — filtro regulatorio estricto vs apertura internacional', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '14.4b', nombre: 'Fix crítico: React no refrescaba opciones del selector Asignar — agregada key única por categoría', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '14.4c', nombre: 'Selector dinámico de especialidades en onboarding — igual que países, con opción de crear nueva', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '14.5', nombre: 'Crear nuevos perfiles profesionales (roles) desde admin sin tocar código', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
