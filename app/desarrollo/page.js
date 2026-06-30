@@ -192,8 +192,8 @@ const fases = [
     num: '14',
     titulo: 'Cobertura completa del documento consolidado',
     estado: 'progreso',
-    valor_total: 18200000,
-    valor_hecho: 18200000,
+    valor_total: 18700000,
+    valor_hecho: 18700000,
     hitos: [
       { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio en /comercial con convenios estratégicos', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
       { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos (en /comercial)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
@@ -212,6 +212,7 @@ const fases = [
       { num: '14.13', nombre: 'UX — tooltips de Tipo A/B en resultados de búsqueda', done: true, valor: 300000, quien: 'Claude AI + Fundador' },
       { num: '14.14', nombre: 'UX — página /que-es-escala con manual funcional visible antes del registro', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '14.15', nombre: 'Resumen distingue categorías/especialidades base del sistema vs creadas orgánicamente por usuarios', done: true, valor: 300000, quien: 'Claude AI + Fundador' },
+      { num: '14.16', nombre: 'Fix UX: guardar especialidad crea automáticamente la categoría pendiente si el usuario escribió texto sin darle clic a Crear', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {

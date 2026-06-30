@@ -184,16 +184,42 @@ export default function AdminEscala() {
 
   async function guardarEspecialidad() {
     setGuardandoEsp(true)
+
+    // Si el usuario escribió una categoría nueva pero no le dio clic a "Crear", la creamos automáticamente aquí
+    let categoriaFinal = especialidadEditando ? especialidadEditando.categoria : nuevaEspecialidad.categoria
+    const hayTextoPendienteNueva = mostrarNuevaCategoriaNueva && nuevaCategoriaTexto.trim() && !especialidadEditando
+    const hayTextoPendienteEditar = mostrarNuevaCategoriaEditar && nuevaCategoriaTexto.trim() && especialidadEditando
+
+    if (hayTextoPendienteNueva || hayTextoPendienteEditar) {
+      try {
+        const res = await fetch('/api/categorias', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre: nuevaCategoriaTexto.trim() })
+        })
+        const data = await res.json()
+        if (!data.error) {
+          categoriaFinal = data.categoria.nombre
+          setCategoriasDB(prev => [...prev.filter(c => c.nombre !== data.categoria.nombre), data.categoria].sort((a,b) => a.nombre.localeCompare(b.nombre)))
+        }
+      } catch (e) {
+        console.error('No se pudo crear la categoría pendiente automáticamente:', e.message)
+      }
+    }
+
     if (especialidadEditando) {
-      await supabase.from('especialidades').update({ nombre: especialidadEditando.nombre, categoria: especialidadEditando.categoria }).eq('id', especialidadEditando.id)
-      setEspecialidades(prev => prev.map(e => e.id === especialidadEditando.id ? especialidadEditando : e))
+      const payload = { ...especialidadEditando, categoria: categoriaFinal }
+      await supabase.from('especialidades').update({ nombre: payload.nombre, categoria: payload.categoria }).eq('id', payload.id)
+      setEspecialidades(prev => prev.map(e => e.id === payload.id ? payload : e))
       setEspecialidadEditando(null)
     } else {
-      const { data } = await supabase.from('especialidades').insert([{ nombre: nuevaEspecialidad.nombre, categoria: nuevaEspecialidad.categoria || 'General' }]).select().single()
+      const { data } = await supabase.from('especialidades').insert([{ nombre: nuevaEspecialidad.nombre, categoria: categoriaFinal || 'General' }]).select().single()
       if (data) setEspecialidades(prev => [...prev, data].sort((a,b) => a.nombre.localeCompare(b.nombre)))
       setNuevaEspecialidad({ nombre: '', categoria: '' })
       setMostrarNuevaEspecialidad(false)
     }
+    setNuevaCategoriaTexto('')
+    setMostrarNuevaCategoriaNueva(false)
+    setMostrarNuevaCategoriaEditar(false)
     setGuardandoEsp(false)
   }
 
@@ -723,6 +749,9 @@ export default function AdminEscala() {
                         <input type="text" value={nuevaCategoriaTexto} onChange={e=>setNuevaCategoriaTexto(e.target.value)} placeholder="Ej: Operaciones, Logística..." style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.5rem 0.875rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}} onKeyDown={(e)=>{if(e.key==='Enter'){e.preventDefault();crearNuevaCategoria(nuevaCategoriaTexto,'nueva')}}} />
                         <button type="button" onClick={()=>crearNuevaCategoria(nuevaCategoriaTexto,'nueva')} disabled={creandoCategoria} style={st.btnGreen}>{creandoCategoria?'...':'Crear'}</button>
                       </div>
+                    )}
+                    {mostrarNuevaCategoriaNueva && nuevaCategoriaTexto.trim() && (
+                      <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.4rem'}}>✓ Se creará automáticamente al guardar, aunque no le des clic a "Crear"</div>
                     )}
                   </div>
                 </div>
