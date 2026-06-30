@@ -194,7 +194,7 @@ export default function AdminEscala() {
       try {
         const res = await fetch('/api/categorias', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nombre: nuevaCategoriaTexto.trim() })
+          body: JSON.stringify({ nombre: nuevaCategoriaTexto.trim(), creado_por: usuario?.id })
         })
         const data = await res.json()
         if (!data.error) {
@@ -212,7 +212,7 @@ export default function AdminEscala() {
       setEspecialidades(prev => prev.map(e => e.id === payload.id ? payload : e))
       setEspecialidadEditando(null)
     } else {
-      const { data } = await supabase.from('especialidades').insert([{ nombre: nuevaEspecialidad.nombre, categoria: categoriaFinal || 'General' }]).select().single()
+      const { data } = await supabase.from('especialidades').insert([{ nombre: nuevaEspecialidad.nombre, categoria: categoriaFinal || 'General', creado_por: usuario?.id || null }]).select().single()
       if (data) setEspecialidades(prev => [...prev, data].sort((a,b) => a.nombre.localeCompare(b.nombre)))
       setNuevaEspecialidad({ nombre: '', categoria: '' })
       setMostrarNuevaEspecialidad(false)
@@ -236,7 +236,7 @@ export default function AdminEscala() {
     try {
       const res = await fetch('/api/categorias', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: limpio })
+        body: JSON.stringify({ nombre: limpio, creado_por: usuario?.id })
       })
       const data = await res.json()
       if (data.error) { alert('Error: ' + data.error) }
