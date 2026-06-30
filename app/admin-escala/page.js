@@ -30,23 +30,31 @@ export default function AdminEscala() {
   const [nuevaTareaPais, setNuevaTareaPais] = useState({ nombre: '', categoria: '', rol_nombre: '' })
   const [guardandoPais, setGuardandoPais] = useState(false)
 
+  const [especialidades, setEspecialidades] = useState([])
+  const [especialidadEditando, setEspecialidadEditando] = useState(null)
+  const [mostrarNuevaEspecialidad, setMostrarNuevaEspecialidad] = useState(false)
+  const [nuevaEspecialidad, setNuevaEspecialidad] = useState({ nombre: '', categoria: '' })
+  const [guardandoEsp, setGuardandoEsp] = useState(false)
+
   useEffect(() => { cargarTodo() }, [])
 
   async function cargarTodo() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { window.location.href = '/registro'; return }
     setUsuario(user)
-    const [perfsRes, proyRes, indRes, paisRes] = await Promise.all([
+    const [perfsRes, proyRes, indRes, paisRes, espRes] = await Promise.all([
       supabase.from('perfiles').select('*').order('escala_score', { ascending: false }),
       fetch('/api/proyectos'),
       supabase.from('industrias').select('*').order('nombre'),
       supabase.from('paises_regulatorios').select('*').order('nombre'),
+      supabase.from('especialidades').select('*').order('nombre'),
     ])
     const pData = await proyRes.json()
     setPerfiles(perfsRes.data || [])
     setProyectos(pData.proyectos || [])
     setIndustrias(indRes.data || [])
     setPaises(paisRes.data || [])
+    setEspecialidades(espRes.data || [])
     setCargando(false)
   }
 
@@ -167,11 +175,33 @@ export default function AdminEscala() {
     setPaises(prev => prev.filter(p => p.id !== id))
   }
 
+  async function guardarEspecialidad() {
+    setGuardandoEsp(true)
+    if (especialidadEditando) {
+      await supabase.from('especialidades').update({ nombre: especialidadEditando.nombre, categoria: especialidadEditando.categoria }).eq('id', especialidadEditando.id)
+      setEspecialidades(prev => prev.map(e => e.id === especialidadEditando.id ? especialidadEditando : e))
+      setEspecialidadEditando(null)
+    } else {
+      const { data } = await supabase.from('especialidades').insert([{ nombre: nuevaEspecialidad.nombre, categoria: nuevaEspecialidad.categoria || 'General' }]).select().single()
+      if (data) setEspecialidades(prev => [...prev, data].sort((a,b) => a.nombre.localeCompare(b.nombre)))
+      setNuevaEspecialidad({ nombre: '', categoria: '' })
+      setMostrarNuevaEspecialidad(false)
+    }
+    setGuardandoEsp(false)
+  }
+
+  async function eliminarEspecialidad(id) {
+    if (!confirm('¿Eliminar esta especialidad? Los usuarios que ya la tengan asignada no se verán afectados, pero dejará de aparecer como opción en el registro.')) return
+    await supabase.from('especialidades').delete().eq('id', id)
+    setEspecialidades(prev => prev.filter(e => e.id !== id))
+  }
+
   const tabs = [
     { id: 'perfiles', label: '👥 Perfiles y Score' },
     { id: 'proyectos', label: '🚀 Proyectos' },
     { id: 'industrias', label: '🏭 Industrias' },
     { id: 'paises', label: '🌎 Países' },
+    { id: 'especialidades', label: '🎓 Especialidades' },
   ]
 
   const st = {
@@ -523,6 +553,79 @@ export default function AdminEscala() {
                         <span style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{t.nombre}</span>
                       </div>
                     ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tab === 'especialidades' && (
+          <div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem'}}>
+              <div>
+                <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff'}}>Perfiles profesionales</div>
+                <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginTop:'0.2rem'}}>{especialidades.length} especialidades · Aparecen como opciones en el registro de especialistas</div>
+              </div>
+              <button onClick={() => { setMostrarNuevaEspecialidad(true); setEspecialidadEditando(null) }} style={st.btnGreen}>+ Nueva especialidad</button>
+            </div>
+
+            {mostrarNuevaEspecialidad && (
+              <div style={st.formBox}>
+                <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nueva especialidad</div>
+                <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
+                  <div>
+                    <label style={st.label}>Nombre</label>
+                    <input style={st.input} value={nuevaEspecialidad.nombre} onChange={e => setNuevaEspecialidad(n => ({...n,nombre:e.target.value}))} placeholder="Ej: Especialista en marcas, UX Researcher..." />
+                  </div>
+                  <div>
+                    <label style={st.label}>Categoría asociada</label>
+                    <select style={st.select} value={nuevaEspecialidad.categoria} onChange={e => setNuevaEspecialidad(n => ({...n,categoria:e.target.value}))}>
+                      <option value="">Categoría...</option>
+                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{display:'flex',gap:'0.75rem'}}>
+                  <button onClick={() => { setMostrarNuevaEspecialidad(false); setNuevaEspecialidad({nombre:'',categoria:''}) }} style={st.btnSec}>Cancelar</button>
+                  <button onClick={guardarEspecialidad} disabled={!nuevaEspecialidad.nombre||guardandoEsp} style={st.btnGreen}>{guardandoEsp?'Guardando...':'Guardar especialidad →'}</button>
+                </div>
+              </div>
+            )}
+
+            {especialidadEditando && (
+              <div style={st.formBox}>
+                <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Editando: {especialidadEditando.nombre}</div>
+                <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
+                  <div>
+                    <label style={st.label}>Nombre</label>
+                    <input style={st.input} value={especialidadEditando.nombre} onChange={e => setEspecialidadEditando(n=>({...n,nombre:e.target.value}))} />
+                  </div>
+                  <div>
+                    <label style={st.label}>Categoría asociada</label>
+                    <select style={st.select} value={especialidadEditando.categoria || ''} onChange={e => setEspecialidadEditando(n=>({...n,categoria:e.target.value}))}>
+                      <option value="">Categoría...</option>
+                      {CATEGORIAS.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{display:'flex',gap:'0.75rem'}}>
+                  <button onClick={() => setEspecialidadEditando(null)} style={st.btnSec}>Cancelar</button>
+                  <button onClick={guardarEspecialidad} disabled={guardandoEsp} style={st.btnGreen}>{guardandoEsp?'Guardando...':'Guardar cambios →'}</button>
+                </div>
+              </div>
+            )}
+
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:'0.75rem'}}>
+              {especialidades.map(esp => (
+                <div key={esp.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1rem 1.25rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <div>
+                    <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{esp.nombre}</div>
+                    {esp.categoria && <span style={{fontSize:'0.62rem',padding:'1px 6px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{esp.categoria}</span>}
+                  </div>
+                  <div style={{display:'flex',gap:'0.5rem'}}>
+                    <button onClick={() => { setEspecialidadEditando({...esp}); setMostrarNuevaEspecialidad(false) }} style={st.btnAmber}>✏️</button>
+                    <button onClick={() => eliminarEspecialidad(esp.id)} style={st.btnRed}>🗑</button>
                   </div>
                 </div>
               ))}
