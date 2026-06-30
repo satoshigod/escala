@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { supabase } from '../../lib/supabase'
 
 const PROYECTO_ESCALA = 'f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf'
 const FUNDADOR_ID = 'a57b6849-1388-4186-8880-2ec31dd31af5'
@@ -342,6 +343,115 @@ const GRUPOS = [
           const tieneCampo = 'pais' in (data.postulaciones[0].perfiles || {})
           if (!tieneCampo) throw new Error('El campo pais no viene en el join de perfiles — revisar route de postulaciones')
           return 'Campo pais presente en el join de postulaciones'
+        }
+      },
+    ]
+  },
+  {
+    nombre: '📁 Almacenamiento de archivos',
+    tests: [
+      {
+        id: 'upload_post',
+        nombre: 'POST /api/upload — sube un archivo de prueba y devuelve URL pública',
+        run: async () => {
+          const contenido = 'QA test file ' + Date.now()
+          const blob = new Blob([contenido], { type: 'text/plain' })
+          const formData = new FormData()
+          formData.append('file', blob, 'qa-test.txt')
+          formData.append('carpeta', 'qa-tests')
+
+          const res = await fetch('/api/upload', { method: 'POST', body: formData })
+          const data = await res.json()
+
+          // El endpoint solo acepta imágenes y PDF — un .txt debe ser rechazado correctamente
+          if (!data.error) throw new Error('Se esperaba un error de tipo de archivo no permitido, pero se aceptó un .txt')
+          if (!data.error.includes('no permitido')) throw new Error('El mensaje de error no es el esperado: ' + data.error)
+          return 'Validación de tipo de archivo funciona — .txt correctamente rechazado'
+        }
+      },
+      {
+        id: 'upload_imagen_valida',
+        nombre: 'POST /api/upload — sube una imagen PNG válida de 1x1 px',
+        run: async () => {
+          // PNG transparente de 1x1 en base64
+          const base64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='
+          const binario = atob(base64)
+          const bytes = new Uint8Array(binario.length)
+          for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i)
+          const blob = new Blob([bytes], { type: 'image/png' })
+          const formData = new FormData()
+          formData.append('file', blob, 'qa-pixel.png')
+          formData.append('carpeta', 'qa-tests')
+
+          const res = await fetch('/api/upload', { method: 'POST', body: formData })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (!data.url || !data.url.startsWith('http')) throw new Error('No se devolvió una URL pública válida')
+
+          // Limpieza
+          await fetch('/api/upload?path=' + encodeURIComponent(data.path), { method: 'DELETE' })
+
+          return 'Imagen subida y URL pública generada correctamente: ' + data.url.slice(0, 50) + '...'
+        }
+      },
+    ]
+  },
+  {
+    nombre: '🔍 Búsqueda avanzada',
+    tests: [
+      {
+        id: 'industrias_get',
+        nombre: 'GET /api/industrias — lista industrias para filtro de búsqueda',
+        run: async () => {
+          const res = await fetch('/api/industrias')
+          const data = await res.json()
+          if (!data.industrias || !Array.isArray(data.industrias)) throw new Error('No devuelve array de industrias')
+          if (data.industrias.length === 0) throw new Error('Lista de industrias vacía')
+          return data.industrias.length + ' industrias disponibles para filtro'
+        }
+      },
+      {
+        id: 'proyectos_trae_pais_industria',
+        nombre: 'GET /api/proyectos — incluye campos pais e industria para filtrar',
+        run: async () => {
+          const res = await fetch('/api/proyectos')
+          const data = await res.json()
+          if (!data.proyectos || data.proyectos.length === 0) throw new Error('Sin proyectos para verificar')
+          const tieneCampos = 'pais' in data.proyectos[0] && 'industria' in data.proyectos[0]
+          if (!tieneCampos) throw new Error('Los proyectos no traen los campos pais/industria necesarios para filtrar en /buscar')
+          return 'Campos pais e industria presentes — filtros de /buscar pueden funcionar'
+        }
+      },
+    ]
+  },
+  {
+    nombre: '🔔 Notificaciones en tiempo real',
+    tests: [
+      {
+        id: 'realtime_postulaciones_insert',
+        nombre: 'Realtime — canal de postulaciones se suscribe correctamente (requiere tabla en supabase_realtime)',
+        run: async () => {
+          return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              supabase.removeChannel(canal)
+              reject(new Error('Timeout de 5s sin confirmación SUBSCRIBED — verificar: ALTER PUBLICATION supabase_realtime ADD TABLE postulaciones;'))
+            }, 5000)
+
+            const canal = supabase
+              .channel('qa-realtime-test-' + Date.now())
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'postulaciones' }, () => {})
+              .subscribe((status) => {
+                if (status === 'SUBSCRIBED') {
+                  clearTimeout(timeout)
+                  supabase.removeChannel(canal)
+                  resolve('Canal Realtime suscrito y conectado correctamente (status: SUBSCRIBED)')
+                } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                  clearTimeout(timeout)
+                  supabase.removeChannel(canal)
+                  reject(new Error('Error de canal: ' + status + ' — verificar que postulaciones esté en supabase_realtime'))
+                }
+              })
+          })
         }
       },
     ]
