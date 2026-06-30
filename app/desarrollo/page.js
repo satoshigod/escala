@@ -192,8 +192,8 @@ const fases = [
     num: '14',
     titulo: 'Cobertura completa del documento consolidado',
     estado: 'progreso',
-    valor_total: 15500000,
-    valor_hecho: 15500000,
+    valor_total: 18200000,
+    valor_hecho: 18200000,
     hitos: [
       { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio en /comercial con convenios estratégicos', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
       { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos (en /comercial)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
@@ -207,6 +207,11 @@ const fases = [
       { num: '14.8', nombre: 'Alerta visible de países pendientes de configurar — badge en tab y panel dedicado, no solo email', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
       { num: '14.9', nombre: 'Auditoría creado_por extendida a países, categorías y especialidades — quién creó cada una, visible en admin', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
       { num: '14.10', nombre: 'Panel Resumen incluye contadores de Categorías y Roles/Especialidades, no solo países', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '14.11', nombre: 'UX — explicación contextual de cada rol en onboarding (ejemplo concreto al seleccionar)', done: true, valor: 600000, quien: 'Claude AI + Fundador' },
+      { num: '14.12', nombre: 'UX — explainer expandible de cómo sube el Escala Score en /score', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '14.13', nombre: 'UX — tooltips de Tipo A/B en resultados de búsqueda', done: true, valor: 300000, quien: 'Claude AI + Fundador' },
+      { num: '14.14', nombre: 'UX — página /que-es-escala con manual funcional visible antes del registro', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '14.15', nombre: 'Resumen distingue categorías/especialidades base del sistema vs creadas orgánicamente por usuarios', done: true, valor: 300000, quien: 'Claude AI + Fundador' },
     ]
   },
   {

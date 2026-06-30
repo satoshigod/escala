@@ -312,10 +312,16 @@ export default function AdminEscala() {
               <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>{(categoriasDB||[]).length}</div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Categorías de tareas</div>
+                {(categoriasDB||[]).filter(c => c.creado_por).length > 0 && (
+                  <div style={{fontSize:'0.65rem',color:'#1D9E75',marginTop:'0.4rem'}}>+{(categoriasDB||[]).filter(c => c.creado_por).length} creadas por usuarios</div>
+                )}
               </div>
               <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>{especialidades.length}</div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Roles / especialidades</div>
+                {especialidades.filter(e => e.creado_por).length > 0 && (
+                  <div style={{fontSize:'0.65rem',color:'#1D9E75',marginTop:'0.4rem'}}>+{especialidades.filter(e => e.creado_por).length} creadas por usuarios</div>
+                )}
               </div>
             </div>
 
