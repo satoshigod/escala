@@ -165,8 +165,8 @@ const fases = [
     num: '13',
     titulo: 'Inteligencia operativa — automatización y personalización',
     estado: 'completa',
-    valor_total: 16000000,
-    valor_hecho: 16000000,
+    valor_total: 20500000,
+    valor_hecho: 20500000,
     hitos: [
       { num: '13.1', nombre: 'Selector de industria al crear proyecto con carga automática de tareas comerciales', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '13.2', nombre: 'Selector de país al crear proyecto con carga automática de tareas regulatorias', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
@@ -181,6 +181,11 @@ const fases = [
       { num: '13.11', nombre: 'API /api/paises — crear país desde cliente, alerta email al admin con link a configurar tareas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '13.12', nombre: 'Fix crítico: .single() de Supabase bloqueaba creación de países nuevos sin tareas previas', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
       { num: '13.13', nombre: 'Fix botón crear país — type=button explícito para evitar conflicto de eventos en React', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '13.14', nombre: 'Fix crítico: campo estado faltaba en insert de proyectos — todos quedaban invisibles', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '13.15', nombre: 'Eliminar proyectos desde admin — borra en cascada roles, tareas, postulaciones, hitos, aportes', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '13.16', nombre: 'Eliminar usuarios desde admin — borra perfil, postulaciones y cuenta de Supabase Auth', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '13.17', nombre: 'Doble confirmación de seguridad al eliminar — requiere escribir el nombre exacto', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '13.18', nombre: 'QA completo del flujo de país — 4 funcionalidades verificadas end-to-end', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {
