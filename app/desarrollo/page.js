@@ -164,9 +164,9 @@ const fases = [
   {
     num: '13',
     titulo: 'Inteligencia operativa — automatización y personalización',
-    estado: 'progreso',
+    estado: 'completa',
     valor_total: 12500000,
-    valor_hecho: 9000000,
+    valor_hecho: 12500000,
     hitos: [
       { num: '13.1', nombre: 'Selector de industria al crear proyecto con carga automática de tareas comerciales', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '13.2', nombre: 'Selector de país al crear proyecto con carga automática de tareas regulatorias', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
@@ -175,8 +175,8 @@ const fases = [
       { num: '13.5', nombre: 'Asignación inteligente de tareas — filtrar ejecutores por categoría del rol', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '13.6', nombre: 'Campo país de jurisdicción en onboarding y perfil del especialista', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '13.7', nombre: 'Columnas industria y pais en tabla proyectos (migración SQL)', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '13.8', nombre: 'Perfiles comerciales por industria configurables desde admin sin tocar código', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '13.9', nombre: 'Panel admin completamente parametrizable — industrias, países, tareas sin deploy', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '13.8', nombre: 'Perfiles comerciales por industria configurables desde admin sin tocar código', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '13.9', nombre: 'Panel admin completamente parametrizable — industrias, países, tareas sin deploy (CRUD completo)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   },
   {

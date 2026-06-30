@@ -225,15 +225,24 @@ export async function POST(request) {
 
   if (!proyecto_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
-  // INICIALIZAR TAREAS REGULATORIAS POR PAÍS
-  if (inicializar_pais && pais && TAREAS_PAIS[pais]) {
-    const tareasPais = TAREAS_PAIS[pais].map(t => ({
+  // INICIALIZAR TAREAS REGULATORIAS POR PAÍS — lee de la DB
+  if (inicializar_pais && pais) {
+    const { data: paisData } = await supabase
+      .from('paises_regulatorios')
+      .select('tareas')
+      .eq('nombre', pais)
+      .single()
+
+    const tareasSource = paisData?.tareas || TAREAS_PAIS[pais] || []
+    if (tareasSource.length === 0) return Response.json({ tareas: [], tipo: 'pais', pais }, { status: 201 })
+
+    const tareasPais = tareasSource.map(t => ({
       proyecto_id,
-      rol_nombre: t.rol_nombre,
+      rol_nombre: t.rol_nombre || '',
       asignado_a: null,
       nombre: t.nombre,
-      descripcion: t.descripcion,
-      categoria: t.categoria,
+      descripcion: t.descripcion || '',
+      categoria: t.categoria || 'Legal',
       estado: 'pendiente',
       creado_por: creado_por || null,
       razon_creacion: 'Tarea regulatoria inicial — ' + pais
@@ -250,15 +259,24 @@ export async function POST(request) {
     return Response.json({ tareas: data, tipo: 'pais', pais }, { status: 201 })
   }
 
-  // INICIALIZAR TAREAS COMERCIALES POR INDUSTRIA
-  if (inicializar_industria && industria && TAREAS_INDUSTRIA[industria]) {
-    const tareasInd = TAREAS_INDUSTRIA[industria].map(t => ({
+  // INICIALIZAR TAREAS COMERCIALES POR INDUSTRIA — lee de la DB
+  if (inicializar_industria && industria) {
+    const { data: indData } = await supabase
+      .from('industrias')
+      .select('tareas')
+      .eq('nombre', industria)
+      .single()
+
+    const tareasSource = indData?.tareas || TAREAS_INDUSTRIA[industria] || []
+    if (tareasSource.length === 0) return Response.json({ tareas: [], tipo: 'industria', industria }, { status: 201 })
+
+    const tareasInd = tareasSource.map(t => ({
       proyecto_id,
-      rol_nombre: t.rol_nombre,
+      rol_nombre: t.rol_nombre || '',
       asignado_a: null,
       nombre: t.nombre,
-      descripcion: t.descripcion,
-      categoria: t.categoria,
+      descripcion: t.descripcion || '',
+      categoria: t.categoria || 'General',
       estado: 'pendiente',
       creado_por: creado_por || null,
       razon_creacion: 'Tarea inicial de industria — ' + industria
