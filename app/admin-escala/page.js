@@ -68,7 +68,17 @@ export default function AdminEscala() {
   }
 
   async function eliminarProyecto(id, nombre) {
-    if (!confirm('¿Eliminar el proyecto "' + nombre + '"?\\n\\nEsto borrará también sus roles, tareas, postulaciones, hitos, aportes y mensajes. Esta acción no se puede deshacer.')) return
+    const primeraConfirmacion = confirm('¿Eliminar el proyecto "' + nombre + '"?\n\nEsto borrará también sus roles, tareas, postulaciones, hitos, aportes y mensajes. Esta acción no se puede deshacer.')
+    if (!primeraConfirmacion) return
+
+    const textoEsperado = nombre.trim()
+    const textoEscrito = prompt('Para confirmar, escribe exactamente el nombre del proyecto:\n\n"' + textoEsperado + '"')
+    if (textoEscrito === null) return
+    if (textoEscrito.trim() !== textoEsperado) {
+      alert('El nombre no coincide. Eliminación cancelada por seguridad.')
+      return
+    }
+
     setEliminandoId(id)
     try {
       const res = await fetch('/api/proyectos/' + id, { method: 'DELETE' })
@@ -80,7 +90,17 @@ export default function AdminEscala() {
   }
 
   async function eliminarUsuario(id, nombre) {
-    if (!confirm('¿Eliminar al usuario "' + nombre + '"?\\n\\nEsto borrará su perfil, postulaciones, mensajes y aportes. Sus tareas asignadas quedarán sin asignar. Esta acción no se puede deshacer.')) return
+    const primeraConfirmacion = confirm('¿Eliminar al usuario "' + nombre + '"?\n\nEsto borrará su perfil, postulaciones, mensajes y aportes. Sus tareas asignadas quedarán sin asignar. Esta acción no se puede deshacer.')
+    if (!primeraConfirmacion) return
+
+    const textoEsperado = (nombre || 'usuario').trim()
+    const textoEscrito = prompt('Para confirmar, escribe exactamente el nombre del usuario:\n\n"' + textoEsperado + '"')
+    if (textoEscrito === null) return
+    if (textoEscrito.trim() !== textoEsperado) {
+      alert('El nombre no coincide. Eliminación cancelada por seguridad.')
+      return
+    }
+
     setEliminandoId(id)
     try {
       const res = await fetch('/api/usuarios?id=' + id, { method: 'DELETE' })
