@@ -22,16 +22,16 @@ const fases = [
   {
     num: '02',
     titulo: 'Backend y base de datos',
-    estado: 'progreso',
+    estado: 'completa',
     valor_total: 12000000,
-    valor_hecho: 9500000,
+    valor_hecho: 12000000,
     hitos: [
       { num: '2.1', nombre: 'Modelo de datos completo — 8 tablas Supabase PostgreSQL', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '2.2', nombre: 'Sistema de autenticación — Supabase Auth + trigger perfiles', done: true, valor: 1500000, quien: 'Supabase + Claude AI' },
       { num: '2.3', nombre: 'API REST proyectos, usuarios y roles — 3 endpoints', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
       { num: '2.4', nombre: 'API aportes, hitos y postulaciones — 3 endpoints', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '2.5', nombre: 'Sistema de notificaciones por email con Resend — postulaciones, tareas, invitaciones', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '2.6', nombre: 'Almacenamiento de archivos (Supabase Storage)', done: false, valor: 1000000, quien: 'Desarrollador' },
+      { num: '2.6', nombre: 'Almacenamiento de archivos (Supabase Storage) — API /api/upload con validación de tipo y tamaño', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '2.7', nombre: 'Infraestructura y despliegue — GitHub + Vercel + Supabase', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
     ]
   },
@@ -223,11 +223,11 @@ const fases = [
     titulo: 'Mejoras de plataforma y escala',
     estado: 'pendiente',
     valor_total: 6000000,
-    valor_hecho: 0,
+    valor_hecho: 4000000,
     hitos: [
-      { num: '8.1', nombre: 'Notificaciones push y email en tiempo real', done: false, valor: 1500000, quien: 'Desarrollador' },
-      { num: '8.2', nombre: 'Subida de archivos y evidencias de aportes', done: false, valor: 1000000, quien: 'Desarrollador' },
-      { num: '8.3', nombre: 'Búsqueda y filtros avanzados de proyectos y perfiles', done: false, valor: 1500000, quien: 'Desarrollador' },
+      { num: '8.1', nombre: 'Notificaciones en tiempo real — toast + indicador de conexión vía Supabase Realtime en dashboard', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '8.2', nombre: 'Subida de archivos y evidencias de aportes — UI completa con preview en /aportes', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '8.3', nombre: 'Búsqueda y filtros avanzados — país, industria, especialidad, score mínimo, ordenamiento en /buscar y /directorio', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '8.4', nombre: 'App móvil (React Native o PWA)', done: false, valor: 2000000, quien: 'Desarrollador' },
     ]
   },

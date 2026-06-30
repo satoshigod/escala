@@ -14,6 +14,8 @@ export default function Dashboard() {
   const [tab, setTab] = useState('especialista')
   const [actualizando, setActualizando] = useState(null)
   const [cargando, setCargando] = useState(true)
+  const [toastNuevo, setToastNuevo] = useState(null)
+  const [conectadoRealtime, setConectadoRealtime] = useState(false)
 
   useEffect(() => {
     async function cargar() {
@@ -84,6 +86,46 @@ export default function Dashboard() {
     cargar()
   }, [])
 
+  // Realtime — escucha nuevas postulaciones a roles de mis proyectos mientras el dashboard está abierto
+  useEffect(() => {
+    if (!usuario || misProyectos.length === 0) return
+
+    const misProyectoIds = misProyectos.map(p => p.id)
+
+    const canal = supabase
+      .channel('dashboard-realtime-' + usuario.id)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'postulaciones' },
+        async (payload) => {
+          // Solo nos interesa si la postulación es a un rol de uno de mis proyectos
+          const { data: rolData } = await supabase.from('roles').select('nombre, proyecto_id').eq('id', payload.new.rol_id).single()
+          if (!rolData || !misProyectoIds.includes(rolData.proyecto_id)) return
+
+          const { data: perfilData } = await supabase.from('perfiles').select('nombre').eq('id', payload.new.postulante_id).single()
+          const proyectoNombre = misProyectos.find(p => p.id === rolData.proyecto_id)?.nombre || 'tu proyecto'
+          const nombrePostulante = perfilData?.nombre || 'Alguien'
+
+          const nuevaNotif = {
+            tipo: 'nueva_postulacion',
+            texto: nombrePostulante + ' se postuló al rol de ' + rolData.nombre + ' en ' + proyectoNombre,
+            postulante_id: payload.new.postulante_id,
+            fecha: payload.new.created_at,
+            color: '#E8A020',
+            icon: '📬'
+          }
+
+          setNotificaciones(prev => [nuevaNotif, ...prev])
+          setToastNuevo(nuevaNotif)
+          setTimeout(() => setToastNuevo(null), 6000)
+        }
+      )
+      .subscribe((status) => {
+        setConectadoRealtime(status === 'SUBSCRIBED')
+      })
+
+    return () => { supabase.removeChannel(canal) }
+  }, [usuario, misProyectos])
+
   async function cerrarSesion() {
     await supabase.auth.signOut()
     window.location.href = '/registro'
@@ -120,9 +162,30 @@ export default function Dashboard() {
 
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif'}}>
+      {toastNuevo && (
+        <div onClick={() => { setTab('notificaciones'); setToastNuevo(null) }} style={{
+          position:'fixed', top:'20px', right:'20px', zIndex:1000,
+          background:'#15234a', border:'1px solid rgba(232,160,32,0.4)', borderRadius:'12px',
+          padding:'1rem 1.25rem', maxWidth:'340px', boxShadow:'0 8px 30px rgba(0,0,0,0.4)',
+          cursor:'pointer', display:'flex', gap:'0.75rem', alignItems:'flex-start',
+          animation:'slideIn 0.3s ease-out'
+        }}>
+          <div style={{fontSize:'1.4rem',flexShrink:0}}>{toastNuevo.icon}</div>
+          <div style={{flex:1}}>
+            <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#E8A020',textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:'0.25rem'}}>Nueva notificación</div>
+            <div style={{fontSize:'0.82rem',color:'#fff',lineHeight:'1.4'}}>{toastNuevo.texto}</div>
+          </div>
+          <button onClick={(e) => { e.stopPropagation(); setToastNuevo(null) }} style={{background:'none',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'1rem',flexShrink:0,padding:0}}>✕</button>
+        </div>
+      )}
+      <style>{`@keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`}</style>
+
       <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div>
         <div style={{display:'flex',alignItems:'center',gap:'1.25rem'}}>
+          {conectadoRealtime && (
+            <div title="Notificaciones en tiempo real activas" style={{width:'7px',height:'7px',borderRadius:'50%',background:'#1D9E75',boxShadow:'0 0 6px rgba(29,158,117,0.6)'}}></div>
+          )}
           <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
           <a href="/score" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mi Score</a>
           <button onClick={cerrarSesion} style={{background:'transparent',border:'1px solid rgba(255,255,255,0.15)',color:'#8FA3CC',padding:'0.3rem 0.75rem',borderRadius:'6px',fontSize:'0.8rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
