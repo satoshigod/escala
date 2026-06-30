@@ -361,13 +361,25 @@ export async function POST(request) {
 
 export async function PATCH(request) {
   const body = await request.json()
-  const { id, estado, verificado_por } = body
+  const { id, estado, verificado_por, fecha_limite } = body
 
-  if (!id || !estado) return Response.json({ error: 'Faltan campos' }, { status: 400 })
+  if (!id) return Response.json({ error: 'Falta el id' }, { status: 400 })
+
+  // Si solo se actualiza fecha_limite sin cambiar estado
+  if (fecha_limite !== undefined && !estado) {
+    const { data, error } = await supabase
+      .from('tareas').update({ fecha_limite: fecha_limite || null }).eq('id', id)
+      .select().single()
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+    return Response.json({ tarea: data })
+  }
+
+  if (!estado) return Response.json({ error: 'Faltan campos' }, { status: 400 })
 
   const tareaAnterior = await supabase.from('tareas').select('*, asignado_perfil:asignado_a ( nombre, email ), proyecto:proyecto_id ( nombre, fundador_id, perfiles:fundador_id ( nombre, email ) )').eq('id', id).single()
 
   const updates = { estado }
+  if (fecha_limite !== undefined) updates.fecha_limite = fecha_limite || null
   if (estado === 'completada') updates.completado_at = new Date().toISOString()
   if (estado === 'verificada' && verificado_por) {
     updates.verificado_at = new Date().toISOString()

@@ -75,7 +75,7 @@ export async function GET(request) {
       .select('*, proyectos:proyecto_id ( nombre )')
       .eq('asignado_a', userId)
       .neq('estado', 'completada')
-      .order('created_at', { ascending: false })
+      .order('fecha_limite', { ascending: true, nullsFirst: false })
 
     // PASO 4 — construir la bandeja de trabajo unificada (lo que el usuario debe atender YA)
     const bandeja = []
