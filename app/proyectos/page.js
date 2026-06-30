@@ -57,7 +57,7 @@ export default function Proyectos() {
       const res = await fetch('/api/paises', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, bandera: '🌐', tipo_origen: 'fundador' })
+        body: JSON.stringify({ nombre, bandera: '🌐', tipo_origen: 'fundador', creado_por: usuario?.id, creado_por_nombre: usuario?.user_metadata?.nombre || usuario?.email })
       })
       const data = await res.json()
       if (data.error) {

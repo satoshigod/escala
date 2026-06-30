@@ -12,7 +12,7 @@ const ADMIN_EMAIL = 'ivancorrea@plazablack.com'
 export async function GET() {
   const { data, error } = await supabase
     .from('paises_regulatorios')
-    .select('id, nombre, bandera, tareas')
+    .select('id, nombre, bandera, tareas, creado_por, created_at, perfiles:creado_por ( nombre )')
     .order('nombre')
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
@@ -23,7 +23,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { nombre, bandera, creado_por_nombre, tipo_origen } = body
+    const { nombre, bandera, creado_por_nombre, tipo_origen, creado_por } = body
 
     if (!nombre || !nombre.trim()) {
       return Response.json({ error: 'Falta nombre del país' }, { status: 400 })
@@ -46,10 +46,10 @@ export async function POST(request) {
       return Response.json({ pais: existente, existia: true })
     }
 
-    // Crear el país sin tareas — el admin las configurará después
+    // Crear el país sin tareas — el admin las configurará después. creado_por queda registrado para auditoría
     const { data: nuevoPais, error: errorInsert } = await supabase
       .from('paises_regulatorios')
-      .insert([{ nombre: nombreLimpio, bandera: bandera || '🌐', tareas: [] }])
+      .insert([{ nombre: nombreLimpio, bandera: bandera || '🌐', tareas: [], creado_por: creado_por || null }])
       .select()
       .single()
 

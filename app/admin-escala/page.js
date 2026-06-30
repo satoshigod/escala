@@ -12,7 +12,7 @@ export default function AdminEscala() {
   const [industrias, setIndustrias] = useState([])
   const [paises, setPaises] = useState([])
   const [cargando, setCargando] = useState(true)
-  const [tab, setTab] = useState('perfiles')
+  const [tab, setTab] = useState('resumen')
   const [recalculando, setRecalculando] = useState(null)
   const [scores, setScores] = useState({})
   const [eliminandoId, setEliminandoId] = useState(null)
@@ -232,6 +232,7 @@ export default function AdminEscala() {
   }
 
   const tabs = [
+    { id: 'resumen', label: '📊 Resumen' },
     { id: 'perfiles', label: '👥 Perfiles y Score' },
     { id: 'proyectos', label: '🚀 Proyectos' },
     { id: 'industrias', label: '🏭 Industrias' },
@@ -265,14 +266,73 @@ export default function AdminEscala() {
       </nav>
 
       <div style={{background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'0 1.5rem',display:'flex',gap:'0',overflowX:'auto'}}>
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{background:'none',border:'none',borderBottom:tab===t.id?'2px solid #1D9E75':'2px solid transparent',color:tab===t.id?'#fff':'#8FA3CC',padding:'0.875rem 1.25rem',fontSize:'0.82rem',fontWeight:tab===t.id?'700':'400',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
-            {t.label}
-          </button>
-        ))}
+        {tabs.map(t => {
+          const pendientesPaises = t.id === 'paises' ? paises.filter(p => !p.tareas || p.tareas.length === 0).length : 0
+          return (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{background:'none',border:'none',borderBottom:tab===t.id?'2px solid #1D9E75':'2px solid transparent',color:tab===t.id?'#fff':'#8FA3CC',padding:'0.875rem 1.25rem',fontSize:'0.82rem',fontWeight:tab===t.id?'700':'400',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.4rem'}}>
+              {t.label}
+              {pendientesPaises > 0 && (
+                <span style={{background:'#E8A020',color:'#0B1628',fontSize:'0.65rem',fontWeight:'800',borderRadius:'10px',padding:'1px 6px',minWidth:'16px',textAlign:'center'}}>{pendientesPaises}</span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       <main style={{maxWidth:'1100px',margin:'0 auto',padding:'2rem 1.25rem'}}>
+
+        {tab === 'resumen' && (
+          <div>
+            <div style={{marginBottom:'1.5rem'}}>
+              <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff'}}>Estado general de la plataforma</div>
+              <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Un vistazo a lo técnico, lo comercial y la operación diaria</div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>{perfiles.length}</div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Usuarios registrados</div>
+              </div>
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#1D9E75'}}>{proyectos.length}</div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Proyectos activos</div>
+              </div>
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>
+                  {perfiles.length > 0 ? Math.round(perfiles.reduce((s,p)=>s+(p.escala_score||0),0)/perfiles.length) : 0}
+                </div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Score promedio de la red</div>
+              </div>
+              <div style={{background: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? 'rgba(232,160,32,0.1)' : 'rgba(255,255,255,0.04)', border: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? '1px solid rgba(232,160,32,0.3)' : '1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? '#E8A020' : '#fff'}}>
+                  {paises.filter(p=>!p.tareas||p.tareas.length===0).length}
+                </div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Países pendientes de configurar</div>
+              </div>
+            </div>
+
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:'1rem'}}>
+              <a href="/desarrollo" style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',display:'block'}}>
+                <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#1D9E75',textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:'0.5rem'}}>Técnico</div>
+                <div style={{fontSize:'1.5rem',fontWeight:'800',color:'#fff',marginBottom:'0.3rem'}}>89.1%</div>
+                <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>$121.2M de $136M construidos</div>
+                <div style={{fontSize:'0.75rem',color:'#1D9E75',marginTop:'0.75rem',fontWeight:'600'}}>Ver roadmap completo →</div>
+              </a>
+              <a href="/comercial" style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',display:'block'}}>
+                <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#E8A020',textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:'0.5rem'}}>Comercial</div>
+                <div style={{fontSize:'1.5rem',fontWeight:'800',color:'#fff',marginBottom:'0.3rem'}}>0%</div>
+                <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>$0 de $7.7M ejecutados</div>
+                <div style={{fontSize:'0.75rem',color:'#E8A020',marginTop:'0.75rem',fontWeight:'600'}}>Ver plan comercial →</div>
+              </a>
+              <a href="/qa" style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',display:'block'}}>
+                <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#AFA9EC',textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:'0.5rem'}}>Salud técnica</div>
+                <div style={{fontSize:'1.5rem',fontWeight:'800',color:'#fff',marginBottom:'0.3rem'}}>27 tests</div>
+                <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>Suite automática de QA</div>
+                <div style={{fontSize:'0.75rem',color:'#AFA9EC',marginTop:'0.75rem',fontWeight:'600'}}>Correr pruebas →</div>
+              </a>
+            </div>
+          </div>
+        )}
 
         {tab === 'perfiles' && (
           <div>
@@ -469,6 +529,27 @@ export default function AdminEscala() {
               <button onClick={() => { setMostrarNuevoPais(true); setPaisEditando(null) }} style={st.btnGreen}>+ Nuevo país</button>
             </div>
 
+            {paises.filter(p => !p.tareas || p.tareas.length === 0).length > 0 && (
+              <div style={{background:'rgba(232,160,32,0.1)',border:'1px solid rgba(232,160,32,0.3)',borderRadius:'12px',padding:'1.25rem',marginBottom:'1.5rem'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.75rem'}}>
+                  <span style={{fontSize:'1.1rem'}}>⚠️</span>
+                  <span style={{fontSize:'0.9rem',fontWeight:'700',color:'#E8A020'}}>
+                    {paises.filter(p => !p.tareas || p.tareas.length === 0).length} país{paises.filter(p => !p.tareas || p.tareas.length === 0).length !== 1 ? 'es' : ''} pendiente{paises.filter(p => !p.tareas || p.tareas.length === 0).length !== 1 ? 's' : ''} de configurar
+                  </span>
+                </div>
+                <div style={{fontSize:'0.78rem',color:'#C8D4E8',marginBottom:'0.75rem'}}>
+                  Estos países fueron creados por usuarios pero todavía no tienen tareas regulatorias. Si el email de alerta no llegó o se perdió, aquí queda visible de todas formas.
+                </div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem'}}>
+                  {paises.filter(p => !p.tareas || p.tareas.length === 0).map(p => (
+                    <button key={p.id} onClick={() => { setPaisEditando({...p}); setMostrarNuevoPais(false) }} style={{background:'rgba(232,160,32,0.15)',border:'1px solid rgba(232,160,32,0.3)',borderRadius:'8px',padding:'0.4rem 0.875rem',fontSize:'0.78rem',color:'#E8A020',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+                      {p.bandera || '🌐'} {p.nombre} →
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {mostrarNuevoPais && (
               <div style={st.formBox}>
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nuevo país</div>
@@ -573,7 +654,10 @@ export default function AdminEscala() {
                       <span style={{fontSize:'1.5rem'}}>{p.bandera}</span>
                       <div>
                         <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff'}}>{p.nombre}</div>
-                        <div style={{fontSize:'0.68rem',color:'#8FA3CC'}}>{p.tareas?.length||0} tareas regulatorias</div>
+                        <div style={{fontSize:'0.68rem',color:'#8FA3CC'}}>
+                          {p.tareas?.length||0} tareas regulatorias
+                          {p.perfiles?.nombre && <span> · creado por {p.perfiles.nombre}</span>}
+                        </div>
                       </div>
                     </div>
                     <div style={{display:'flex',gap:'0.5rem'}}>

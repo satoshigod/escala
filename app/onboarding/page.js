@@ -78,7 +78,7 @@ export default function Onboarding() {
     const res = await fetch('/api/paises', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nombre: nuevoPaisNombre.trim(), bandera: '🌐', tipo_origen: 'especialista' })
+      body: JSON.stringify({ nombre: nuevoPaisNombre.trim(), bandera: '🌐', tipo_origen: 'especialista', creado_por: usuario?.id, creado_por_nombre: usuario?.user_metadata?.nombre || usuario?.email })
     })
     const data = await res.json()
     if (!data.error) {
