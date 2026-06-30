@@ -16,37 +16,32 @@ export default function AdminEscala() {
   const [tab, setTab] = useState('perfiles')
   const [recalculando, setRecalculando] = useState(null)
   const [scores, setScores] = useState({})
+  const [eliminandoId, setEliminandoId] = useState(null)
 
-  // Estados para CRUD industrias
   const [industriaEditando, setIndustriaEditando] = useState(null)
   const [mostrarNuevaIndustria, setMostrarNuevaIndustria] = useState(false)
   const [nuevaIndustria, setNuevaIndustria] = useState({ nombre: '', tareas: [] })
   const [nuevaTareaInd, setNuevaTareaInd] = useState({ nombre: '', categoria: '', rol_nombre: '' })
   const [guardandoInd, setGuardandoInd] = useState(false)
 
-  // Estados para CRUD países
   const [paisEditando, setPaisEditando] = useState(null)
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [nuevoPais, setNuevoPais] = useState({ nombre: '', bandera: '', tareas: [] })
   const [nuevaTareaPais, setNuevaTareaPais] = useState({ nombre: '', categoria: '', rol_nombre: '' })
   const [guardandoPais, setGuardandoPais] = useState(false)
 
-  useEffect(() => {
-    cargarTodo()
-  }, [])
+  useEffect(() => { cargarTodo() }, [])
 
   async function cargarTodo() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { window.location.href = '/registro'; return }
     setUsuario(user)
-
     const [perfsRes, proyRes, indRes, paisRes] = await Promise.all([
       supabase.from('perfiles').select('*').order('escala_score', { ascending: false }),
       fetch('/api/proyectos'),
       supabase.from('industrias').select('*').order('nombre'),
       supabase.from('paises_regulatorios').select('*').order('nombre'),
     ])
-
     const pData = await proyRes.json()
     setPerfiles(perfsRes.data || [])
     setProyectos(pData.proyectos || [])
@@ -72,7 +67,33 @@ export default function AdminEscala() {
     setRecalculando(null)
   }
 
-  // ── INDUSTRIAS CRUD ──
+  async function eliminarProyecto(id, nombre) {
+    if (!confirm('¿Eliminar el proyecto "' + nombre + '"?\\n\\nEsto borrará también sus roles, tareas, postulaciones, hitos, aportes y mensajes. Esta acción no se puede deshacer.')) return
+    setEliminandoId(id)
+    try {
+      const res = await fetch('/api/proyectos/' + id, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.error) { alert('Error eliminando proyecto: ' + data.error) }
+      else { setProyectos(prev => prev.filter(p => p.id !== id)) }
+    } catch (e) { alert('Error de conexión: ' + e.message) }
+    setEliminandoId(null)
+  }
+
+  async function eliminarUsuario(id, nombre) {
+    if (!confirm('¿Eliminar al usuario "' + nombre + '"?\\n\\nEsto borrará su perfil, postulaciones, mensajes y aportes. Sus tareas asignadas quedarán sin asignar. Esta acción no se puede deshacer.')) return
+    setEliminandoId(id)
+    try {
+      const res = await fetch('/api/usuarios?id=' + id, { method: 'DELETE' })
+      const data = await res.json()
+      if (data.error) { alert('Error eliminando usuario: ' + data.error) }
+      else {
+        setPerfiles(prev => prev.filter(p => p.id !== id))
+        if (data.advertencia) alert(data.advertencia)
+      }
+    } catch (e) { alert('Error de conexión: ' + e.message) }
+    setEliminandoId(null)
+  }
+
   async function guardarIndustria() {
     setGuardandoInd(true)
     if (industriaEditando) {
@@ -94,7 +115,7 @@ export default function AdminEscala() {
     setIndustrias(prev => prev.filter(i => i.id !== id))
   }
 
-  function agregarTareaAIndustria(target, setTarget, nuevaTarea, setNuevaTarea) {
+  function agregarTareaA(target, setTarget, nuevaTarea, setNuevaTarea) {
     if (!nuevaTarea.nombre) return
     const tarea = { nombre: nuevaTarea.nombre, categoria: nuevaTarea.categoria || 'General', rol_nombre: nuevaTarea.rol_nombre || '' }
     setTarget(prev => ({ ...prev, tareas: [...(prev.tareas || []), tarea] }))
@@ -105,7 +126,6 @@ export default function AdminEscala() {
     setTarget(prev => ({ ...prev, tareas: prev.tareas.filter((_, i) => i !== idx) }))
   }
 
-  // ── PAÍSES CRUD ──
   async function guardarPais() {
     setGuardandoPais(true)
     if (paisEditando) {
@@ -169,7 +189,6 @@ export default function AdminEscala() {
 
       <main style={{maxWidth:'1100px',margin:'0 auto',padding:'2rem 1.25rem'}}>
 
-        {/* ── PERFILES ── */}
         {tab === 'perfiles' && (
           <div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem',flexWrap:'wrap',gap:'1rem'}}>
@@ -195,7 +214,7 @@ export default function AdminEscala() {
                       </div>
                     </div>
                   </div>
-                  <div style={{display:'flex',gap:'1rem',alignItems:'center'}}>
+                  <div style={{display:'flex',gap:'0.75rem',alignItems:'center'}}>
                     <div style={{textAlign:'center'}}>
                       <div style={{fontFamily:'monospace',fontSize:'1.25rem',fontWeight:'700',color:(scores[p.id]||p.escala_score||0)>=50?'#1D9E75':(scores[p.id]||p.escala_score||0)>=20?'#E8A020':'#8FA3CC'}}>
                         {scores[p.id] ?? p.escala_score ?? 0}
@@ -206,6 +225,9 @@ export default function AdminEscala() {
                       {recalculando===p.id ? '...' : '🔄'}
                     </button>
                     <a href={'/perfil/'+p.id} style={{fontSize:'0.72rem',color:'#8FA3CC',textDecoration:'none'}}>Ver →</a>
+                    <button onClick={() => eliminarUsuario(p.id, p.nombre)} disabled={eliminandoId===p.id} style={st.btnRed}>
+                      {eliminandoId===p.id ? '...' : '🗑 Eliminar'}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -213,7 +235,6 @@ export default function AdminEscala() {
           </div>
         )}
 
-        {/* ── PROYECTOS ── */}
         {tab === 'proyectos' && (
           <div>
             <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'1.5rem'}}>{proyectos.length} proyectos en la plataforma</div>
@@ -223,13 +244,16 @@ export default function AdminEscala() {
                   <div>
                     <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
                     <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>
-                      {p.sector}{p.pais ? ' · ' + (BANDERAS[p.pais]||'') + ' ' + p.pais : ''}{p.industria ? ' · ' + p.industria : ''}{p.ciudad ? ' · ' + p.ciudad : ''} · Tipo {p.tipo}
+                      {p.sector}{p.pais ? ' · ' + (BANDERAS[p.pais]||'🌐') + ' ' + p.pais : ''}{p.industria ? ' · ' + p.industria : ''}{p.ciudad ? ' · ' + p.ciudad : ''} · Tipo {p.tipo}
                     </div>
                   </div>
                   <div style={{display:'flex',gap:'0.75rem',alignItems:'center'}}>
                     <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(29,158,117,0.15)',color:'#1D9E75'}}>{p.estado}</span>
                     <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.72rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>Workspace →</a>
                     <a href={'/p/'+p.id} target="_blank" style={{fontSize:'0.72rem',color:'#8FA3CC',textDecoration:'none'}}>Público →</a>
+                    <button onClick={() => eliminarProyecto(p.id, p.nombre)} disabled={eliminandoId===p.id} style={st.btnRed}>
+                      {eliminandoId===p.id ? '...' : '🗑 Eliminar'}
+                    </button>
                   </div>
                 </div>
               ))}
@@ -237,7 +261,6 @@ export default function AdminEscala() {
           </div>
         )}
 
-        {/* ── INDUSTRIAS ── */}
         {tab === 'industrias' && (
           <div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem'}}>
@@ -248,7 +271,6 @@ export default function AdminEscala() {
               <button onClick={() => { setMostrarNuevaIndustria(true); setIndustriaEditando(null) }} style={st.btnGreen}>+ Nueva industria</button>
             </div>
 
-            {/* Formulario nueva industria */}
             {mostrarNuevaIndustria && (
               <div style={st.formBox}>
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nueva industria</div>
@@ -282,7 +304,7 @@ export default function AdminEscala() {
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
                   </div>
-                  <button onClick={() => agregarTareaAIndustria(nuevaIndustria, setNuevaIndustria, nuevaTareaInd, setNuevaTareaInd)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
+                  <button type="button" onClick={() => agregarTareaA(nuevaIndustria, setNuevaIndustria, nuevaTareaInd, setNuevaTareaInd)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem',marginTop:'1.25rem'}}>
                   <button onClick={() => { setMostrarNuevaIndustria(false); setNuevaIndustria({nombre:'',tareas:[]}) }} style={st.btnSec}>Cancelar</button>
@@ -291,7 +313,6 @@ export default function AdminEscala() {
               </div>
             )}
 
-            {/* Formulario editar industria */}
             {industriaEditando && (
               <div style={st.formBox}>
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Editando: {industriaEditando.nombre}</div>
@@ -325,7 +346,7 @@ export default function AdminEscala() {
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
                   </div>
-                  <button onClick={() => agregarTareaAIndustria(industriaEditando, setIndustriaEditando, nuevaTareaInd, setNuevaTareaInd)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
+                  <button type="button" onClick={() => agregarTareaA(industriaEditando, setIndustriaEditando, nuevaTareaInd, setNuevaTareaInd)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem',marginTop:'1.25rem'}}>
                   <button onClick={() => setIndustriaEditando(null)} style={st.btnSec}>Cancelar</button>
@@ -334,7 +355,6 @@ export default function AdminEscala() {
               </div>
             )}
 
-            {/* Lista industrias */}
             {industrias.map(ind => (
               <div key={ind.id} style={st.card}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.875rem'}}>
@@ -354,7 +374,6 @@ export default function AdminEscala() {
           </div>
         )}
 
-        {/* ── PAÍSES ── */}
         {tab === 'paises' && (
           <div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem'}}>
@@ -365,7 +384,6 @@ export default function AdminEscala() {
               <button onClick={() => { setMostrarNuevoPais(true); setPaisEditando(null) }} style={st.btnGreen}>+ Nuevo país</button>
             </div>
 
-            {/* Formulario nuevo país */}
             {mostrarNuevoPais && (
               <div style={st.formBox}>
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nuevo país</div>
@@ -405,7 +423,7 @@ export default function AdminEscala() {
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
                   </div>
-                  <button onClick={() => agregarTareaAIndustria(nuevoPais, setNuevoPais, nuevaTareaPais, setNuevaTareaPais)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
+                  <button type="button" onClick={() => agregarTareaA(nuevoPais, setNuevoPais, nuevaTareaPais, setNuevaTareaPais)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem',marginTop:'1.25rem'}}>
                   <button onClick={() => { setMostrarNuevoPais(false); setNuevoPais({nombre:'',bandera:'',tareas:[]}) }} style={st.btnSec}>Cancelar</button>
@@ -414,7 +432,6 @@ export default function AdminEscala() {
               </div>
             )}
 
-            {/* Formulario editar país */}
             {paisEditando && (
               <div style={st.formBox}>
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Editando: {paisEditando.bandera} {paisEditando.nombre}</div>
@@ -454,7 +471,7 @@ export default function AdminEscala() {
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
                   </div>
-                  <button onClick={() => agregarTareaAIndustria(paisEditando, setPaisEditando, nuevaTareaPais, setNuevaTareaPais)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
+                  <button type="button" onClick={() => agregarTareaA(paisEditando, setPaisEditando, nuevaTareaPais, setNuevaTareaPais)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
                 </div>
                 <div style={{display:'flex',gap:'0.75rem',marginTop:'1.25rem'}}>
                   <button onClick={() => setPaisEditando(null)} style={st.btnSec}>Cancelar</button>
@@ -463,7 +480,6 @@ export default function AdminEscala() {
               </div>
             )}
 
-            {/* Lista países */}
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(320px,1fr))',gap:'1rem'}}>
               {paises.map(p => (
                 <div key={p.id} style={st.card}>
