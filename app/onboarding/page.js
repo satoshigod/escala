@@ -30,6 +30,10 @@ export default function Onboarding() {
   const [nuevoPaisNombre, setNuevoPaisNombre] = useState('')
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [creandoPais, setCreandoPais] = useState(false)
+  const [especialidadesDB, setEspecialidadesDB] = useState([])
+  const [nuevaEspecialidadNombre, setNuevaEspecialidadNombre] = useState('')
+  const [mostrarNuevaEspecialidad, setMostrarNuevaEspecialidad] = useState(false)
+  const [creandoEspecialidad, setCreandoEspecialidad] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -38,10 +42,34 @@ export default function Onboarding() {
       setForm(f => ({ ...f, nombre: data.user.user_metadata?.nombre || '' }))
     })
     fetch('/api/paises').then(r => r.json()).then(d => setPaisesDB(d.paises || []))
+    fetch('/api/especialidades').then(r => r.json()).then(d => setEspecialidadesDB(d.especialidades || []))
   }, [])
 
   function actualizar(campo, valor) {
     setForm(f => ({ ...f, [campo]: valor }))
+  }
+
+  async function crearNuevaEspecialidad() {
+    const nombre = nuevaEspecialidadNombre.trim()
+    if (!nombre) { alert('Escribe el nombre de la especialidad'); return }
+    setCreandoEspecialidad(true)
+    try {
+      const res = await fetch('/api/especialidades', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, categoria: 'General' })
+      })
+      const data = await res.json()
+      if (data.error) { alert('Error: ' + data.error) }
+      else {
+        setEspecialidadesDB(prev => [...prev.filter(e => e.nombre !== data.especialidad.nombre), data.especialidad].sort((a,b) => a.nombre.localeCompare(b.nombre)))
+        actualizar('especialidad', data.especialidad.nombre)
+        setNuevaEspecialidadNombre('')
+        setMostrarNuevaEspecialidad(false)
+      }
+    } catch(e) {
+      alert('Error de conexión: ' + e.message)
+    }
+    setCreandoEspecialidad(false)
   }
 
   async function crearNuevoPais() {
@@ -168,7 +196,17 @@ export default function Onboarding() {
             </div>
 
             <label style={s.label}>Tu especialidad o profesión</label>
-            <input style={s.input} value={form.especialidad} onChange={e => actualizar('especialidad', e.target.value)} placeholder="Ej: Abogado, Programador, Diseñador..." />
+            <select style={{...s.input, background:'#1a2a4a'}} value={form.especialidad} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaEspecialidad(true)}else{actualizar('especialidad',e.target.value);setMostrarNuevaEspecialidad(false)} }}>
+              <option value="">Selecciona tu especialidad...</option>
+              {especialidadesDB.map(esp => <option key={esp.nombre} value={esp.nombre}>{esp.nombre}</option>)}
+              <option value="__nueva__">+ Mi especialidad no está en la lista</option>
+            </select>
+            {mostrarNuevaEspecialidad && (
+              <div style={{display:'flex',gap:'0.5rem',marginBottom:'1rem'}}>
+                <input type="text" value={nuevaEspecialidadNombre} onChange={e=>setNuevaEspecialidadNombre(e.target.value)} placeholder="Ej: Especialista en marcas" style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.5rem 0.875rem',color:'#fff',fontSize:'0.85rem',outline:'none',fontFamily:'Inter,sans-serif'}} onKeyDown={(e)=>{ if(e.key==='Enter'){ e.preventDefault(); crearNuevaEspecialidad(); } }} />
+                <button type="button" onClick={(e)=>{e.preventDefault();crearNuevaEspecialidad();}} disabled={creandoEspecialidad} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{creandoEspecialidad?'...':'Agregar'}</button>
+              </div>
+            )}
 
             <button style={s.btnSec} onClick={() => setPaso(1)}>← Volver</button>
             <button style={s.btn} onClick={() => form.rol_principal ? setPaso(3) : setMensaje('Selecciona tu perfil')}>
