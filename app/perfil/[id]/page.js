@@ -109,10 +109,44 @@ export default function PerfilPublico() {
             )}
 
             {perfil.lo_que_busco && (
-              <div>
+              <div style={{marginBottom: (perfil.idiomas?.length || perfil.disponibilidad || perfil.reconocimientos?.length) ? '0.875rem' : 0}}>
                 <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Lo que busca</div>
                 <div style={{fontSize:'0.875rem',color:'#C8D4E8',lineHeight:'1.6'}}>{perfil.lo_que_busco}</div>
               </div>
+            )}
+
+            {(perfil.idiomas?.length > 0 || perfil.disponibilidad) && (
+              <div style={{display:'flex',gap:'1.5rem',flexWrap:'wrap',marginBottom: perfil.reconocimientos?.length > 0 ? '0.875rem' : 0}}>
+                {perfil.idiomas?.length > 0 && (
+                  <div>
+                    <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Idiomas</div>
+                    <div style={{fontSize:'0.82rem',color:'#C8D4E8'}}>{perfil.idiomas.join(' · ')}</div>
+                  </div>
+                )}
+                {perfil.disponibilidad && (
+                  <div>
+                    <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Disponibilidad</div>
+                    <div style={{fontSize:'0.82rem',color:'#C8D4E8'}}>
+                      {{tiempo_completo:'Tiempo completo',medio_tiempo:'Medio tiempo',pocas_horas:'Pocas horas',fines_semana:'Fines de semana'}[perfil.disponibilidad] || perfil.disponibilidad}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {perfil.reconocimientos?.length > 0 && (
+              <div>
+                <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.4rem'}}>Reconocimientos</div>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'0.4rem'}}>
+                  {perfil.reconocimientos.map((r,i) => (
+                    <span key={i} style={{fontSize:'0.75rem',color:'#E8A020',background:'rgba(232,160,32,0.1)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'20px',padding:'0.25rem 0.75rem'}}>🏆 {r}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {esPropioPerfil && (
+              <a href="/perfil/editar" style={{display:'inline-block',marginTop:'1.25rem',fontSize:'0.78rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>✏️ Editar mi perfil →</a>
             )}
           </div>
 

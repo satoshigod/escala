@@ -221,13 +221,13 @@ const fases = [
     titulo: 'Rediseño del Dashboard — centro de operaciones',
     estado: 'progreso',
     valor_total: 8000000,
-    valor_hecho: 6000000,
+    valor_hecho: 7000000,
     hitos: [
       { num: '15.1', nombre: 'D1 — Endpoint agregador /api/dashboard, reemplaza 13+ llamadas N+1 por consultas paralelas en servidor', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '15.2', nombre: 'D2 — Bandeja de trabajo unificada: tareas, hitos y postulaciones pendientes en una sola lista accionable', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '15.3', nombre: 'D3 — Rediseño visual completo: header compacto, bandeja+acciones lado a lado, proyectos como tarjetas, sidebar de indicadores', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '15.4', nombre: 'D4 — Vistas diferenciadas: Gerente (carga de equipo por persona) y Ángel de Impulso (hitos financiados, retorno)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '15.5', nombre: 'D5 — Campos de perfil: idiomas, disponibilidad, reconocimientos', done: false, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '15.5', nombre: 'D5 — Página /perfil/editar nueva + campos idiomas, disponibilidad, reconocimientos visibles en perfil público', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '15.6', nombre: 'D6 — Calendario integrado de tareas e hitos', done: false, valor: 1000000, quien: 'Claude AI + Fundador' },
     ]
   },

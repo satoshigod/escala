@@ -479,6 +479,7 @@ export default function Dashboard() {
             <div style={{borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'0.875rem',marginTop:'0.25rem'}}>
               <div style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',marginBottom:'0.6rem'}}>Más accesos</div>
               <div style={{display:'flex',flexDirection:'column',gap:'0.3rem'}}>
+                <a href="/perfil/editar" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>✏️ Editar mi perfil</a>
                 <a href="/metricas" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📊 Métricas</a>
                 <a href="/carril" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>🛤️ Mi carril</a>
                 <a href="/postulaciones" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📋 Postulaciones</a>
