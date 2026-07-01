@@ -117,15 +117,28 @@ export async function GET(request) {
 
     const proyectosFinalizados = todosProyectos.filter(p => p.fundador_id === userId && p.estado === 'finalizado')
 
-    const notificaciones = []
-    misPostulaciones.forEach(p => {
-      if (p.estado === 'aceptada') notificaciones.push({ tipo: 'aceptado', texto: 'Te aceptaron en el rol de ' + (p.roles?.nombre || 'un rol'), fecha: p.updated_at || p.created_at, color: '#1D9E75', icon: '✅' })
-      if (p.estado === 'rechazada') notificaciones.push({ tipo: 'rechazado', texto: 'No quedaste seleccionado para ' + (p.roles?.nombre || 'un rol'), fecha: p.updated_at || p.created_at, color: '#D85A30', icon: '✗' })
-    })
-    postulacionesRecibidas.filter(p => p.estado === 'pendiente').forEach(p => {
-      notificaciones.push({ tipo: 'nueva_postulacion', texto: (p.perfiles?.nombre || 'Alguien') + ' se postuló al rol de ' + p.rol_nombre + ' en ' + p.proyecto_nombre, postulante_id: p.postulante_id, fecha: p.created_at, color: '#E8A020', icon: '📬' })
-    })
-    notificaciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+    // Notificaciones — ahora vienen de la tabla persistente (Fase 17), no se derivan en caliente.
+    // Esto cubre TODOS los tipos de evento (tareas, hitos, aportes, postulaciones, proyectos, etc.),
+    // no solo postulaciones como antes. Los ítems de "acción pendiente" (ej. postulación sin responder)
+    // se siguen viendo en la bandeja de trabajo (bandeja), que no cambia.
+    const { data: notifData } = await supabase
+      .from('notificaciones')
+      .select('*')
+      .eq('destinatario_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(30)
+
+    const notificaciones = (notifData || []).map(n => ({
+      id: n.id,
+      tipo: n.tipo,
+      texto: n.mensaje,
+      fecha: n.created_at,
+      color: n.color || '#8FA3CC',
+      icon: n.icon || '🔔',
+      link: n.link || null,
+      leido: n.leido,
+      postulante_id: n.datos?.postulante_id || null,
+    }))
 
     // PASO 5 — datos específicos por rol: impulsos para Ángel de Impulso
     const { data: misImpulsos } = await supabase
@@ -199,6 +212,7 @@ export async function GET(request) {
         postulaciones_pendientes: postulacionesRecibidas.filter(p => p.estado === 'pendiente').length,
         hitos_pendientes: misHitos.length,
         roles_cubiertos: postulacionesRecibidas.filter(p => p.estado === 'aceptada').length,
+        notificaciones_no_leidas: notificaciones.filter(n => !n.leido).length,
       }
     })
 

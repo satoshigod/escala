@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { notificar } from '../../../lib/notificaciones/notificar'
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
@@ -33,33 +34,27 @@ export async function POST(request) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Email al fundador
+  // Notificación al fundador
   try {
+    const fundador_id = data.roles?.proyectos?.fundador_id
     const fundador_email = data.roles?.proyectos?.perfiles?.email
     const fundador_nombre = data.roles?.proyectos?.perfiles?.nombre || 'Fundador'
     const postulante_nombre = data.perfiles?.nombre || 'Alguien'
     const rol_nombre = data.roles?.nombre || 'un rol'
     const proyecto_nombre = data.roles?.proyectos?.nombre || 'tu proyecto'
 
-    if (fundador_email) {
-      await fetch(BASE_URL + '/api/email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tipo: 'nueva_postulacion',
-          destinatario: fundador_email,
-          datos: {
-            fundador_nombre,
-            postulante_nombre,
-            rol_nombre,
-            proyecto_nombre,
-            perfil_url: BASE_URL + '/perfil/' + postulante_id
-          }
-        })
+    if (fundador_id || fundador_email) {
+      await notificar('nueva_postulacion', { id: fundador_id, email: fundador_email }, {
+        fundador_nombre,
+        postulante_nombre,
+        rol_nombre,
+        proyecto_nombre,
+        postulante_id,
+        perfil_url: BASE_URL + '/perfil/' + postulante_id,
       })
     }
   } catch (e) {
-    console.error('Error enviando email:', e)
+    console.error('Error notificando nueva postulacion:', e)
   }
 
   return Response.json({ postulacion: data }, { status: 201 })
@@ -79,7 +74,7 @@ export async function PATCH(request) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Email al postulante
+  // Notificación al postulante
   try {
     const postulante_email = data.perfiles?.email
     const postulante_nombre = data.perfiles?.nombre || 'Usuario'
@@ -87,25 +82,22 @@ export async function PATCH(request) {
     const proyecto_nombre = data.roles?.proyectos?.nombre || 'el proyecto'
     const proyecto_id = data.roles?.proyecto_id
 
-    if (postulante_email && (estado === 'aceptada' || estado === 'rechazada')) {
-      await fetch(BASE_URL + '/api/email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tipo: estado === 'aceptada' ? 'postulacion_aceptada' : 'postulacion_rechazada',
-          destinatario: postulante_email,
-          datos: {
-            postulante_nombre,
-            rol_nombre,
-            proyecto_nombre,
-            workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace',
-            proyectos_url: BASE_URL + '/proyectos'
-          }
-        })
-      })
+    if (data.postulante_id && (estado === 'aceptada' || estado === 'rechazada')) {
+      await notificar(
+        estado === 'aceptada' ? 'postulacion_aceptada' : 'postulacion_rechazada',
+        { id: data.postulante_id, email: postulante_email },
+        {
+          postulante_nombre,
+          rol_nombre,
+          proyecto_nombre,
+          proyecto_id,
+          workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace',
+          proyectos_url: BASE_URL + '/proyectos',
+        }
+      )
     }
   } catch (e) {
-    console.error('Error enviando email:', e)
+    console.error('Error notificando cambio de postulacion:', e)
   }
 
   return Response.json({ postulacion: data })

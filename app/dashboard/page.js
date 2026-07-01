@@ -2,6 +2,14 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
+const COLOR_RGB = {
+  '#1D9E75': '29,158,117',
+  '#E8A020': '232,160,32',
+  '#D85A30': '216,90,48',
+  '#534AB7': '83,74,183',
+  '#8FA3CC': '143,163,204',
+}
+
 export default function Dashboard() {
   const [usuario, setUsuario] = useState(null)
   const [perfil, setPerfil] = useState(null)
@@ -22,6 +30,7 @@ export default function Dashboard() {
   const [cargaEquipo, setCargaEquipo] = useState([])
   const [proyectosGestionados, setProyectosGestionados] = useState([])
   const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0)
+  const [pushActivo, setPushActivo] = useState(false)
   const [proyectosFinalizados, setProyectosFinalizados] = useState([])
   const [vistaSugerida, setVistaSugerida] = useState('especialista')
 
@@ -61,30 +70,27 @@ export default function Dashboard() {
     cargar()
   }, [])
 
-  // Realtime — escucha nuevas postulaciones a roles de mis proyectos mientras el dashboard está abierto
+  // Realtime — escucha nuevas notificaciones de cualquier tipo (tareas, hitos, aportes,
+  // postulaciones, proyectos, etc.) mientras el dashboard está abierto
   useEffect(() => {
-    if (!usuario || misProyectos.length === 0) return
-    const misProyectoIds = misProyectos.map(p => p.id)
+    if (!usuario) return
 
     const canal = supabase
-      .channel('dashboard-realtime-' + usuario.id)
+      .channel('notificaciones-realtime-' + usuario.id)
       .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'postulaciones' },
-        async (payload) => {
-          const { data: rolData } = await supabase.from('roles').select('nombre, proyecto_id').eq('id', payload.new.rol_id).single()
-          if (!rolData || !misProyectoIds.includes(rolData.proyecto_id)) return
-
-          const { data: perfilData } = await supabase.from('perfiles').select('nombre').eq('id', payload.new.postulante_id).single()
-          const proyectoNombre = misProyectos.find(p => p.id === rolData.proyecto_id)?.nombre || 'tu proyecto'
-          const nombrePostulante = perfilData?.nombre || 'Alguien'
-
+        { event: 'INSERT', schema: 'public', table: 'notificaciones', filter: 'destinatario_id=eq.' + usuario.id },
+        (payload) => {
+          const n = payload.new
           const nuevaNotif = {
-            tipo: 'nueva_postulacion',
-            texto: nombrePostulante + ' se postuló al rol de ' + rolData.nombre + ' en ' + proyectoNombre,
-            postulante_id: payload.new.postulante_id,
-            fecha: payload.new.created_at,
-            color: '#E8A020',
-            icon: '📬'
+            id: n.id,
+            tipo: n.tipo,
+            texto: n.mensaje,
+            postulante_id: n.datos?.postulante_id || null,
+            fecha: n.created_at,
+            color: n.color || '#8FA3CC',
+            icon: n.icon || '🔔',
+            link: n.link || null,
+            leido: false,
           }
 
           setNotificaciones(prev => [nuevaNotif, ...prev])
@@ -95,7 +101,65 @@ export default function Dashboard() {
       .subscribe((status) => { setConectadoRealtime(status === 'SUBSCRIBED') })
 
     return () => { supabase.removeChannel(canal) }
-  }, [usuario, misProyectos])
+  }, [usuario])
+
+  // Push — revisa si este navegador ya tiene una suscripción activa, para reflejarlo en el botón
+  useEffect(() => {
+    if (!usuario || typeof window === 'undefined' || !('serviceWorker' in navigator)) return
+    navigator.serviceWorker.register('/sw.js').then(reg =>
+      reg.pushManager.getSubscription().then(sub => setPushActivo(!!sub))
+    ).catch(() => {})
+  }, [usuario])
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4)
+    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+    const rawData = atob(base64)
+    return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)))
+  }
+
+  async function activarPush() {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js')
+      const permiso = await Notification.requestPermission()
+      if (permiso !== 'granted') return
+
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
+      })
+
+      await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario_id: usuario.id, subscription: sub.toJSON() })
+      })
+      setPushActivo(true)
+    } catch (e) {
+      console.error('Error activando push:', e)
+    }
+  }
+
+  async function marcarLeida(n) {
+    if (n.id && !n.leido) {
+      setNotificaciones(prev => prev.map(x => x.id === n.id ? { ...x, leido: true } : x))
+      fetch('/api/notificaciones', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: n.id })
+      }).catch(() => {})
+    }
+    if (n.link) window.location.href = n.link
+  }
+
+  async function marcarTodasLeidas() {
+    setNotificaciones(prev => prev.map(x => ({ ...x, leido: true })))
+    await fetch('/api/notificaciones', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario_id: usuario.id, marcar_todas: true })
+    }).catch(() => {})
+  }
 
   async function cerrarSesion() {
     await supabase.auth.signOut()
@@ -166,7 +230,7 @@ export default function Dashboard() {
           <a href="/score" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mi Score</a>
           <button onClick={() => setVista(vista==='notificaciones'?'resumen':'notificaciones')} style={{background:'transparent',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'1.05rem',position:'relative',padding:0}}>
             🔔
-            {(notificaciones.length + mensajesNoLeidos) > 0 && <span style={{position:'absolute',top:'-4px',right:'-6px',background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 4px',borderRadius:'8px',minWidth:'14px',textAlign:'center'}}>{notificaciones.length + mensajesNoLeidos}</span>}
+            {(notificaciones.filter(n=>!n.leido).length + mensajesNoLeidos) > 0 && <span style={{position:'absolute',top:'-4px',right:'-6px',background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 4px',borderRadius:'8px',minWidth:'14px',textAlign:'center'}}>{notificaciones.filter(n=>!n.leido).length + mensajesNoLeidos}</span>}
           </button>
           <button onClick={cerrarSesion} style={{background:'transparent',border:'1px solid rgba(255,255,255,0.15)',color:'#8FA3CC',padding:'0.3rem 0.75rem',borderRadius:'6px',fontSize:'0.8rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
@@ -200,9 +264,17 @@ export default function Dashboard() {
 
         {vista === 'notificaciones' ? (
           <div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.25rem'}}>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.25rem',flexWrap:'wrap',gap:'0.5rem'}}>
               <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff'}}>Notificaciones</div>
-              <button onClick={() => setVista('resumen')} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer'}}>← Volver al resumen</button>
+              <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
+                {!pushActivo && (
+                  <button onClick={activarPush} style={{background:'none',border:'1px solid rgba(29,158,117,0.35)',color:'#1D9E75',fontSize:'0.74rem',cursor:'pointer',padding:'0.3rem 0.7rem',borderRadius:'6px',fontFamily:'Inter,sans-serif'}}>🔔 Activar notificaciones push</button>
+                )}
+                {notificaciones.some(n=>!n.leido) && (
+                  <button onClick={marcarTodasLeidas} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer'}}>Marcar todas como leídas</button>
+                )}
+                <button onClick={() => setVista('resumen')} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer'}}>← Volver al resumen</button>
+              </div>
             </div>
             {notificaciones.length === 0 ? (
               <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
@@ -213,17 +285,20 @@ export default function Dashboard() {
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
                 {notificaciones.map((n, i) => (
-                  <div key={i} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem',display:'flex',gap:'1rem',alignItems:'flex-start'}}>
-                    <div style={{width:'36px',height:'36px',borderRadius:'50%',background:`rgba(${n.color==='#1D9E75'?'29,158,117':n.color==='#E8A020'?'232,160,32':'216,90,48'},0.15)`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1rem',flexShrink:0}}>
+                  <div key={n.id || i} onClick={() => marcarLeida(n)} style={{background: n.leido===false ? 'rgba(29,158,117,0.05)' : 'rgba(255,255,255,0.04)',border: n.leido===false ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem',display:'flex',gap:'1rem',alignItems:'flex-start',cursor: (n.id || n.link) ? 'pointer' : 'default'}}>
+                    <div style={{width:'36px',height:'36px',borderRadius:'50%',background:`rgba(${COLOR_RGB[n.color] || '143,163,204'},0.15)`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1rem',flexShrink:0}}>
                       {n.icon}
                     </div>
                     <div style={{flex:1}}>
                       <div style={{fontSize:'0.875rem',color:'#fff',marginBottom:'0.25rem',lineHeight:'1.5'}}>{n.texto}</div>
                       <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{new Date(n.fecha).toLocaleDateString('es-CO', {day:'numeric',month:'long',year:'numeric'})}</div>
-                      {n.tipo === 'nueva_postulacion' && n.postulante_id && (
-                        <a href={'/perfil/'+n.postulante_id} style={{display:'inline-block',marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>Ver perfil del postulante →</a>
-                      )}
+                      {n.tipo === 'nueva_postulacion' && n.postulante_id ? (
+                        <a href={'/perfil/'+n.postulante_id} onClick={(e)=>e.stopPropagation()} style={{display:'inline-block',marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>Ver perfil del postulante →</a>
+                      ) : n.link ? (
+                        <span style={{display:'inline-block',marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',fontWeight:'600'}}>Ver →</span>
+                      ) : null}
                     </div>
+                    {n.leido===false && <div title="Sin leer" style={{width:'8px',height:'8px',borderRadius:'50%',background:'#1D9E75',flexShrink:0,marginTop:'0.3rem'}}></div>}
                   </div>
                 ))}
               </div>

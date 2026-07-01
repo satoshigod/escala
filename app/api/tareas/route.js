@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { notificar } from '../../../lib/notificaciones/notificar'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -170,18 +171,6 @@ async function registrarHistorial(tarea_id, proyecto_id, accion, realizado_por, 
   await supabase.from('historial_tareas').insert([{ tarea_id, proyecto_id, accion, realizado_por, descripcion }])
 }
 
-async function enviarEmail(tipo, destinatario, datos) {
-  try {
-    await fetch(BASE_URL + '/api/email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tipo, destinatario, datos })
-    })
-  } catch (e) {
-    console.error('Error email:', e)
-  }
-}
-
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const proyecto_id = searchParams.get('proyecto_id')
@@ -314,14 +303,15 @@ export async function POST(request) {
         creadorNombre + ' asignó esta tarea a ' + (tarea.asignado_perfil?.nombre || 'sin asignar') + ' al cargar la plantilla de ' + rol_nombre)
     }
 
-    // Email al asignado
+    // Notificación al asignado
     if (asignado_a && data.length > 0) {
       const asignadoData = await supabase.from('perfiles').select('nombre, email').eq('id', asignado_a).single()
-      if (asignadoData.data?.email) {
-        await enviarEmail('tarea_asignada', asignadoData.data.email, {
+      if (asignadoData.data) {
+        await notificar('tarea_asignada', { id: asignado_a, email: asignadoData.data.email }, {
           asignado_nombre: asignadoData.data.nombre,
           cantidad: data.length,
           rol_nombre,
+          proyecto_id,
           proyecto_nombre: 'tu proyecto en Escala',
           workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace/tareas'
         })
@@ -346,11 +336,12 @@ export async function POST(request) {
     creadorNombre + ' creó y asignó esta tarea a ' + (data.asignado_perfil?.nombre || 'sin asignar') +
     (razon_creacion ? '. Razón: ' + razon_creacion : ''))
 
-  if (asignado_a && data.asignado_perfil?.email) {
-    await enviarEmail('tarea_asignada', data.asignado_perfil.email, {
+  if (asignado_a && data.asignado_perfil) {
+    await notificar('tarea_asignada', { id: asignado_a, email: data.asignado_perfil.email }, {
       asignado_nombre: data.asignado_perfil.nombre,
       cantidad: 1,
       tarea_nombre: nombre,
+      proyecto_id,
       proyecto_nombre: 'tu proyecto en Escala',
       workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace/tareas'
     })
@@ -401,25 +392,28 @@ export async function PATCH(request) {
   await registrarHistorial(id, tareaAnterior.data?.proyecto_id, estado, quien,
     quienNombre + ' marcó esta tarea como ' + (accionLabels[estado] || estado))
 
-  // Email al fundador cuando se completa
+  // Notificación al fundador cuando se completa
   if (estado === 'completada') {
+    const fundadorId = tareaAnterior.data?.proyecto?.fundador_id
     const fundadorEmail = tareaAnterior.data?.proyecto?.perfiles?.email
     const fundadorNombre = tareaAnterior.data?.proyecto?.perfiles?.nombre || 'Fundador'
-    if (fundadorEmail) {
-      await enviarEmail('tarea_completada', fundadorEmail, {
+    if (fundadorId || fundadorEmail) {
+      await notificar('tarea_completada', { id: fundadorId, email: fundadorEmail }, {
         fundador_nombre: fundadorNombre,
         tarea_nombre: data.nombre,
+        proyecto_id: tareaAnterior.data?.proyecto_id,
         completado_por: data.asignado_perfil?.nombre || 'Un miembro',
         workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
       })
     }
   }
 
-  // Email al asignado cuando se verifica
-  if (estado === 'verificada' && data.asignado_perfil?.email) {
-    await enviarEmail('tarea_verificada', data.asignado_perfil.email, {
-      asignado_nombre: data.asignado_perfil.nombre,
+  // Notificación al asignado cuando se verifica
+  if (estado === 'verificada' && data.asignado_a) {
+    await notificar('tarea_verificada', { id: data.asignado_a, email: data.asignado_perfil?.email }, {
+      asignado_nombre: data.asignado_perfil?.nombre,
       tarea_nombre: data.nombre,
+      proyecto_id: tareaAnterior.data?.proyecto_id,
       workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
     })
 

@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+import { notificar } from '../../../lib/notificaciones/notificar'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
+
+const BASE_URL = 'https://escala-blush-nine.vercel.app'
 
 // GET — aportes de un proyecto
 export async function GET(request) {
@@ -34,10 +37,29 @@ export async function POST(request) {
   const { data, error } = await supabase
     .from('aportes')
     .insert([{ proyecto_id, aportante_id, rol_id, tipo, descripcion, valor, fecha, evidencia_url }])
-    .select()
+    .select('*, perfiles:aportante_id ( nombre ), proyectos:proyecto_id ( nombre, fundador_id, fundador:fundador_id ( nombre, email ) )')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // Notificar al fundador para que verifique el aporte
+  try {
+    const fundadorId = data.proyectos?.fundador_id
+    if (fundadorId) {
+      await notificar('aporte_pendiente_verificacion', { id: fundadorId, email: data.proyectos?.fundador?.email }, {
+        fundador_nombre: data.proyectos?.fundador?.nombre || 'Fundador',
+        aportante_nombre: data.perfiles?.nombre || 'Alguien',
+        tipo,
+        descripcion,
+        proyecto_id,
+        proyecto_nombre: data.proyectos?.nombre || 'tu proyecto',
+        workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace/aportes',
+      })
+    }
+  } catch (e) {
+    console.error('Error notificando aporte pendiente:', e.message)
+  }
+
   return Response.json({ aporte: data }, { status: 201 })
 }
 
@@ -52,9 +74,25 @@ export async function PATCH(request) {
     .from('aportes')
     .update({ validado, validado_por })
     .eq('id', id)
-    .select()
+    .select('*, perfiles:aportante_id ( nombre, email ), proyectos:proyecto_id ( nombre )')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // Notificar al aportante cuando su aporte queda verificado
+  if (validado === true && data.aportante_id) {
+    try {
+      await notificar('aporte_verificado', { id: data.aportante_id, email: data.perfiles?.email }, {
+        aportante_nombre: data.perfiles?.nombre || 'Usuario',
+        descripcion: data.descripcion,
+        proyecto_id: data.proyecto_id,
+        proyecto_nombre: data.proyectos?.nombre || 'el proyecto',
+        workspace_url: BASE_URL + '/proyectos/' + data.proyecto_id + '/workspace/aportes',
+      })
+    } catch (e) {
+      console.error('Error notificando aporte verificado:', e.message)
+    }
+  }
+
   return Response.json({ aporte: data })
 }

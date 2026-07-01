@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+import { notificar } from '../../../lib/notificaciones/notificar'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
+
+const BASE_URL = 'https://escala-blush-nine.vercel.app'
 
 // GET — listar proyectos activos
 export async function GET(request) {
@@ -46,5 +49,23 @@ export async function POST(request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // Notificar al fundador — solo si quedó publicado (no en borrador)
+  if (data.estado !== 'borrador') {
+    try {
+      const { data: fundador } = await supabase.from('perfiles').select('nombre, email').eq('id', fundador_id).single()
+      if (fundador?.email) {
+        await notificar('proyecto_publicado', { id: fundador_id, email: fundador.email }, {
+          fundador_nombre: fundador.nombre,
+          proyecto_nombre: data.nombre,
+          proyecto_id: data.id,
+          proyecto_url: BASE_URL + '/proyectos/' + data.id,
+        })
+      }
+    } catch (e) {
+      console.error('Error notificando proyecto publicado:', e.message)
+    }
+  }
+
   return Response.json({ proyecto: data }, { status: 201 })
 }

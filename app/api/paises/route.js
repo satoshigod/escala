@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { EVENTOS, COLOR_POR_PRIORIDAD } from '../../../lib/notificaciones/eventos'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -79,6 +80,29 @@ export async function POST(request) {
       })
     } catch (e) {
       console.error('Error enviando alerta nuevo país (no crítico):', e.message)
+    }
+
+    // Notificación in-app a los administradores (adicional al email de arriba, no lo reemplaza)
+    try {
+      const { data: admins } = await supabase.from('perfiles').select('id').eq('es_admin', true)
+      if (admins && admins.length > 0) {
+        const evento = EVENTOS.nuevo_pais
+        const datosEvento = { pais_nombre: nombreLimpio, creado_por: creado_por_nombre || 'Usuario de Escala' }
+        await supabase.from('notificaciones').insert(admins.map(a => ({
+          destinatario_id: a.id,
+          tipo: 'nuevo_pais',
+          modulo: evento.modulo,
+          prioridad: evento.prioridad,
+          titulo: evento.titulo,
+          mensaje: evento.mensaje(datosEvento),
+          link: evento.link(),
+          icon: evento.icon,
+          color: COLOR_POR_PRIORIDAD[evento.prioridad],
+          datos: datosEvento,
+        })))
+      }
+    } catch (e) {
+      console.error('Error notificando in-app a admins (no crítico):', e.message)
     }
 
     return Response.json({ pais: nuevoPais, existia: false }, { status: 201 })
