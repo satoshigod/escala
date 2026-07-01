@@ -752,12 +752,33 @@ function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
               return 'operativo'
             }
             return GRUPOS.map(grupo => {
-              const items = pendientes.filter(c => mapCategoria(c.categoria) === grupo.id)
+              const ORDEN_LEGAL = ['Registro DIAN / RUT','Apertura cuenta bancaria empresarial','Registro Cámara de Comercio','Constitución SAS ante notaría','Certificado de existencia y representación','Estatutos y pacto de socios','Términos y condiciones + Política de privacidad','Contratos tipo para especialistas','Registro de marca en SIC']
+              const ORDEN_CONTABLE = ['Configuración tributaria DIAN','Facturación electrónica DIAN','Contabilidad mensual']
+              const ORDEN_INFRA = ['Dominio web','Hosting / servidor web','Correo corporativo','Certificado SSL']
+              const ORDEN_DISENO = ['Diseño de logo e identidad visual']
+              const ORDEN_MARKETING = ['Fotografía institucional','Primera campaña digital']
+              const ORDENES = { legal: ORDEN_LEGAL, contable: ORDEN_CONTABLE, infraestructura: ORDEN_INFRA, diseno: ORDEN_DISENO, marketing: ORDEN_MARKETING }
+              const ordenar = (items, gid) => {
+                const orden = ORDENES[gid]
+                if (!orden) return items
+                return [...items].sort((a,b) => {
+                  const ia = orden.indexOf(a.nombre)
+                  const ib = orden.indexOf(b.nombre)
+                  if (ia === -1 && ib === -1) return 0
+                  if (ia === -1) return 1
+                  if (ib === -1) return -1
+                  return ia - ib
+                })
+              }
+              const itemsRaw = pendientes.filter(c => mapCategoria(c.categoria) === grupo.id)
+              const items = ordenar(itemsRaw, grupo.id)
               if (items.length === 0) return null
               return (
-                <div key={grupo.id} style={{marginBottom:'1.25rem'}}>
-                  <div style={{fontSize:'0.72rem',fontWeight:'700',color:grupo.color,letterSpacing:'0.05em',textTransform:'uppercase',marginBottom:'0.5rem',paddingLeft:'0.25rem',borderLeft:'2px solid '+grupo.color,paddingLeft:'0.6rem'}}>
-                    {grupo.label}
+                <div key={grupo.id} style={{marginBottom:'1.75rem'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'0.75rem',marginBottom:'0.75rem',paddingBottom:'0.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+                    <div style={{width:'3px',height:'18px',borderRadius:'2px',background:grupo.color,flexShrink:0}}/>
+                    <div style={{fontSize:'0.8rem',fontWeight:'800',color:grupo.color,letterSpacing:'0.06em',textTransform:'uppercase'}}>{grupo.label}</div>
+                    <div style={{fontSize:'0.68rem',color:'#8FA3CC',background:'rgba(255,255,255,0.05)',padding:'0.1rem 0.45rem',borderRadius:'10px'}}>{items.length}</div>
                   </div>
                   <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
                     {items.map(c => (
