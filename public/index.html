@@ -547,7 +547,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
     <li><a href="proyectos.html" class="hi">Proyectos ↗</a></li>
     <li><a href="impulso.html" class="ha">Ángel ✦</a></li>
   </ul>
-  <a href="#registro" class="nav-cta">Registrarme</a>
+  <a href="/registro" class="nav-cta">Registrarme</a>
   <button class="hamburger" id="hbg" onclick="toggleMenu()" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
@@ -566,7 +566,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <a href="proyectos.html" class="mg" onclick="closeMenu()">Proyectos ✦</a>
   <a href="impulso.html" class="ma" onclick="closeMenu()">Ángel de Impulso ✦</a>
   <a href="costos.html" onclick="closeMenu()">Costos →</a>
-  <a href="#registro" class="mc" onclick="closeMenu()">Registrarme gratis →</a>
+  <a href="/registro" class="mc" onclick="closeMenu()">Registrarme gratis →</a>
 </div>
 
 <!-- HERO -->
@@ -662,7 +662,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <div class="porque-end">
     <div class="porque-end-t">El problema de los 40 años. La esposa invisible. El profesional atrapado. La idea sin equipo.<br><span>Todos tenían valor. Nunca tuvieron la infraestructura para convertirlo en patrimonio.</span></div>
     <div class="porque-end-s">Escala es esa infraestructura. No para un tipo de persona. Para todos los que siempre pudieron dar más y nunca encontraron cómo.</div>
-    <a href="#registro" class="btn-p">Quiero ser parte de Escala →</a>
+    <a href="/registro" class="btn-p">Quiero ser parte de Escala →</a>
   </div>
 </div>
 </section>
@@ -986,7 +986,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <div class="motor-end">
     <div class="motor-end-t">"No todos los proyectos pueden pagar hoy. Muchos pueden crear mucho valor mañana.<br>Escala permite que cada equipo acuerde cómo compartir ese valor desde el primer día."</div>
     <div class="motor-end-s">Cada colaborador también define sus preferencias. Uno acepta solo equity. Otro prefiere pago diferido. Escala encuentra las afinidades automáticamente.</div>
-    <a href="#registro" class="btn-p">Definir mis preferencias →</a>
+    <a href="/registro" class="btn-p">Definir mis preferencias →</a>
   </div>
 </div>
 </section>
@@ -1104,39 +1104,17 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <div class="reg-head">
     <span style="display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);padding:0.35rem 1rem;border-radius:20px;margin-bottom:1.25rem;">Registro gratuito</span>
     <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-0.035em;color:#fff;line-height:1.05;margin-bottom:1rem;">Tu próximo paso no<br>requiere renunciar a nada</h2>
-    <p style="font-size:0.95rem;color:var(--dm);line-height:1.7;max-width:460px;margin-inline:auto;">Cuéntanos quién eres y qué tienes. Al hacer clic abrimos WhatsApp con tu información lista — te respondemos en menos de 48 horas.</p>
+    <p style="font-size:0.95rem;color:var(--dm);line-height:1.7;max-width:460px;margin-inline:auto;">Crea tu cuenta en menos de 2 minutos. Elige tu perfil, define lo que aportas y empieza a construir o a unirte a proyectos reales.</p>
   </div>
-  <div class="reg-form">
-    <div class="fg">
-      <div class="fl"><label>Nombre completo *</label><input id="f-nombre" type="text" placeholder="Tu nombre completo"></div>
-      <div class="fl"><label>Correo electrónico *</label><input id="f-correo" type="email" placeholder="tu@correo.com"></div>
+  <div class="reg-form" style="text-align:center;padding:2rem 0;">
+    <a href="/registro" class="sub-btn" style="display:inline-block;text-decoration:none;font-size:1rem;padding:1rem 2.5rem;">
+      <span>🚀</span> <span>Crear mi cuenta en Escala →</span>
+    </a>
+    <p style="text-align:center;font-size:0.72rem;color:var(--dm);margin-top:0.875rem;line-height:1.5;opacity:0.8;">Gratuito · Sin compromisos · Tu tiempo y conocimiento se convierten en participación real.</p>
+    <div style="margin-top:2rem;display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
+      <a href="/buscar" style="font-size:0.82rem;color:var(--green);text-decoration:none;font-weight:600;">Ver proyectos activos →</a>
+      <a href="/que-es-escala" style="font-size:0.82rem;color:var(--dm);text-decoration:none;">¿Cómo funciona?</a>
     </div>
-    <div class="fg">
-      <div class="fl"><label>WhatsApp *</label><input id="f-tel" type="tel" placeholder="+57 300 123 4567"></div>
-      <div class="fl"><label>Ciudad *</label><input id="f-ciudad" type="text" placeholder="Medellín, Bogotá, Cali..."></div>
-    </div>
-    <div style="margin-bottom:1rem;">
-      <label style="display:block;font-size:0.72rem;font-weight:600;color:var(--dm);margin-bottom:0.6rem;letter-spacing:0.04em;text-transform:uppercase;">¿Con qué perfil llegas? *</label>
-      <div class="rl-grid">
-        <label id="rl-1" class="rl" onclick="selRol(this,'Ideador — Tengo una idea de negocio')"><input type="radio" name="rol"><div><div class="rl-t">💡 Ideador</div><div class="rl-s">Tengo una idea de negocio</div></div></label>
-        <label id="rl-2" class="rl" onclick="selRol(this,'Capitalista — Tengo capital para invertir')"><input type="radio" name="rol"><div><div class="rl-t">💰 Capitalista</div><div class="rl-s">Tengo capital para invertir</div></div></label>
-        <label id="rl-3" class="rl" onclick="selRol(this,'Especialista — Tengo conocimiento profesional')"><input type="radio" name="rol"><div><div class="rl-t">🔧 Especialista</div><div class="rl-s">Tengo conocimiento profesional</div></div></label>
-        <label id="rl-4" class="rl" onclick="selRol(this,'Ejecutor — Se construir y operar empresas')"><input type="radio" name="rol"><div><div class="rl-t">⚙️ Ejecutor</div><div class="rl-s">Sé construir y operar empresas</div></div></label>
-        <label id="rl-5" class="rl" onclick="selRol(this,'Angel de Impulso — Quiero financiar un hito')"><input type="radio" name="rol"><div><div class="rl-t">🌟 Ángel de Impulso</div><div class="rl-s">Quiero financiar un hito</div></div></label>
-      </div>
-    </div>
-    <div style="margin-bottom:1rem;">
-      <div class="fl"><label>¿Qué tienes para aportar? *</label><textarea id="f-aporte" rows="3" placeholder="¿Qué conocimiento, tiempo, capital o experiencia puedes aportar?"></textarea></div>
-    </div>
-    <div style="margin-bottom:1.5rem;">
-      <div class="fl"><label>¿Cómo nos encontraste? (opcional)</label>
-        <select id="f-fuente"><option value="">Selecciona una opción</option><option>Recomendación de un amigo</option><option>LinkedIn</option><option>Instagram</option><option>TikTok</option><option>Google</option><option>Evento presencial</option><option>WhatsApp</option><option>Otro</option></select>
-      </div>
-    </div>
-    <button onclick="enviarWA()" id="wa-btn" class="sub-btn">
-      <span id="wa-icon">📲</span><span id="wa-text">Registrarme por WhatsApp</span>
-    </button>
-    <p style="text-align:center;font-size:0.72rem;color:var(--dm);margin-top:0.875rem;line-height:1.5;opacity:0.8;">Al hacer clic se abre WhatsApp con tu registro listo para enviar.<br>Gratuito · Sin compromisos · Te respondemos en menos de 48 horas.</p>
   </div>
 </div>
 </div>
@@ -1152,7 +1130,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
     <a href="proyecto-escala.html">Proyecto piloto</a>
     <a href="#vision">Visión</a>
     <a href="#proteccion">Protección</a>
-    <a href="#registro">Registrarme</a>
+    <a href="/registro">Registrarme</a>
   </div>
   <p style="margin-top:0.75rem;opacity:0.35;font-size:0.72rem;">Colombia · 2025 · escala.co</p>
 </footer>
