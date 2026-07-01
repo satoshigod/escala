@@ -15,7 +15,7 @@ export default function Registro() {
     setCargando(true)
     setMensaje('')
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { nombre } }
@@ -23,6 +23,10 @@ export default function Registro() {
 
     if (error) {
       setMensaje('Error: ' + error.message)
+    } else if (!data.session) {
+      // Con "Confirm email" activado en Supabase, signUp no crea sesión hasta que el usuario
+      // confirme por correo — antes de este cambio siempre había sesión inmediata.
+      setMensaje('¡Cuenta creada! Revisa tu correo (' + email + ') y haz clic en el enlace de confirmación para poder ingresar.')
     } else {
       window.location.href = '/onboarding'
     }
@@ -55,6 +59,7 @@ export default function Registro() {
     input: { width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', marginBottom: '1rem', fontFamily: 'Inter, sans-serif' },
     btn: { width: '100%', background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.9rem', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter, sans-serif', transition: 'background 0.2s' },
     error: { background: 'rgba(216,90,48,0.1)', border: '1px solid rgba(216,90,48,0.3)', borderRadius: '8px', padding: '0.875rem', color: '#D85A30', fontSize: '0.82rem', marginTop: '1rem' },
+    info: { background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: '8px', padding: '0.875rem', color: '#1D9E75', fontSize: '0.82rem', marginTop: '1rem' },
     volver: { display: 'block', textAlign: 'center', color: '#8FA3CC', fontSize: '0.8rem', marginTop: '1.25rem', textDecoration: 'none' },
   }
 
@@ -102,7 +107,7 @@ export default function Registro() {
           </>
         )}
 
-        {mensaje && <div style={s.error}>{mensaje}</div>}
+        {mensaje && <div style={mensaje.startsWith('Error:') ? s.error : s.info}>{mensaje}</div>}
         <a href="/" style={s.volver}>← Volver al inicio</a>
       </div>
     </main>
