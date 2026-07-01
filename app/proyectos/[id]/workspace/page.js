@@ -577,37 +577,41 @@ function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
   }
 
   async function financiarCosto(costoId) {
-    // Registra el aporte y marca el costo como cubierto en una sola operación
-    // Primero crear el aporte
     const costo = costos.find(c => c.id === costoId)
     if (!costo) return
 
-    const aporteRes = await fetch('/api/aportes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        proyecto_id: proyectoId,
-        aportante_id: usuarioId,
-        tipo: 'capital',
-        descripcion: costo.nombre + ' — financiado como Ángel de Impulso',
-        valor: costo.valor,
-        fecha: new Date().toISOString().split('T')[0]
-      })
-    })
-    const aporteData = await aporteRes.json()
-    if (aporteData.error) { setMensaje('Error al registrar aporte: ' + aporteData.error); return }
+    let aporteId = null
 
-    // Luego marcar el costo como cubierto
+    // Solo crear aporte si el valor es mayor a 0
+    if (costo.valor > 0) {
+      const aporteRes = await fetch('/api/aportes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proyecto_id: proyectoId,
+          aportante_id: usuarioId,
+          tipo: 'capital',
+          descripcion: costo.nombre + ' — financiado como Ángel de Impulso',
+          valor: costo.valor,
+          fecha: new Date().toISOString().split('T')[0]
+        })
+      })
+      const aporteData = await aporteRes.json()
+      if (aporteData.error) { setMensaje('Error al registrar aporte: ' + aporteData.error); return }
+      aporteId = aporteData.aporte?.id
+    }
+
+    // Marcar el costo como cubierto (con o sin aporte asociado)
     const costoRes = await fetch('/api/costos', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: costoId, estado: 'cubierto', cubierto_por: usuarioId, aporte_id: aporteData.aporte?.id })
+      body: JSON.stringify({ id: costoId, estado: 'cubierto', cubierto_por: usuarioId, aporte_id: aporteId })
     })
     const costoData = await costoRes.json()
     if (costoData.error) { setMensaje('Error: ' + costoData.error); return }
 
     setCostos(prev => prev.map(c => c.id === costoId ? costoData.costo : c))
-    setMensaje('✓ Costo financiado y aporte registrado')
+    setMensaje(costo.valor > 0 ? '✓ Costo financiado y aporte registrado' : '✓ Costo marcado como cubierto')
     setTimeout(() => setMensaje(''), 3000)
   }
 
