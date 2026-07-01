@@ -514,7 +514,7 @@ export default function Workspace() {
         )}
 
         {tab === 'presupuesto' && (
-          <PresupuestoTab proyectoId={pid} esFundador={proyecto?.fundador_id === usuario?.id} usuarioId={usuario?.id} />
+          <PresupuestoTab proyectoId={proyecto?.id} esFundador={proyecto?.fundador_id === usuario?.id} usuarioId={usuario?.id} />
         )}
 
       </main>
