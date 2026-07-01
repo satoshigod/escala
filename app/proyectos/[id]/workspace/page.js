@@ -723,7 +723,7 @@ function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
         </div>
       )}
 
-      {/* Lista de costos pendientes */}
+      {/* Lista de costos pendientes — agrupados por categoría */}
       {pendientes.length > 0 && (
         <div style={{marginBottom:'1.75rem'}}>
           <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem',display:'flex',alignItems:'center',gap:'0.5rem'}}>
@@ -731,29 +731,60 @@ function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
             Pendientes de financiación
             <span style={{fontSize:'0.68rem',background:'rgba(232,160,32,0.15)',color:'#E8A020',padding:'0.1rem 0.45rem',borderRadius:'10px'}}>{pendientes.length}</span>
           </div>
-          <div style={{display:'flex',flexDirection:'column',gap:'0.6rem'}}>
-            {pendientes.map(c => (
-              <div key={c.id} style={{background:'rgba(232,160,32,0.05)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.875rem'}}>
-                <div style={{flex:1}}>
-                  <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.25rem'}}>
-                    <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.15rem 0.5rem',borderRadius:'10px'}}>{categoriaLabel[c.categoria] || c.categoria}</span>
-                    {c.periodicidad !== 'unico' && <span style={{fontSize:'0.62rem',color:'#8FA3CC'}}>· {c.periodicidad}</span>}
+          {(() => {
+            const GRUPOS = [
+              { id:'legal',          label:'⚖️ Legal y constitución',    color:'#AFA9EC' },
+              { id:'contable',       label:'📊 Contabilidad y tributario', color:'#1D9E75' },
+              { id:'infraestructura',label:'🖥️ Infraestructura digital',  color:'#5A9FE8' },
+              { id:'diseno',         label:'🎨 Diseño e identidad',        color:'#E8A020' },
+              { id:'marketing',      label:'📣 Marketing y comunicación',  color:'#D85A30' },
+              { id:'operativo',      label:'⚙️ Operativo',                color:'#8FA3CC' },
+              { id:'servicio',       label:'🤝 Servicios externos',        color:'#C8D4E8' },
+            ]
+            // Mapear categorías de la BD a grupos
+            const mapCategoria = c => {
+              if (c === 'legal') return 'legal'
+              if (c === 'contable' || c === 'operativo') return 'contable'
+              if (c === 'infraestructura') return 'infraestructura'
+              if (c === 'diseno') return 'diseno'
+              if (c === 'marketing') return 'marketing'
+              if (c === 'servicio') return 'servicio'
+              return 'operativo'
+            }
+            return GRUPOS.map(grupo => {
+              const items = pendientes.filter(c => mapCategoria(c.categoria) === grupo.id)
+              if (items.length === 0) return null
+              return (
+                <div key={grupo.id} style={{marginBottom:'1.25rem'}}>
+                  <div style={{fontSize:'0.72rem',fontWeight:'700',color:grupo.color,letterSpacing:'0.05em',textTransform:'uppercase',marginBottom:'0.5rem',paddingLeft:'0.25rem',borderLeft:'2px solid '+grupo.color,paddingLeft:'0.6rem'}}>
+                    {grupo.label}
                   </div>
-                  <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{c.nombre}</div>
-                  {c.descripcion && <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>{c.descripcion}</div>}
+                  <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                    {items.map(c => (
+                      <div key={c.id} style={{background:'rgba(232,160,32,0.05)',border:'1px solid rgba(232,160,32,0.15)',borderRadius:'10px',padding:'0.875rem 1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.875rem'}}>
+                        <div style={{flex:1}}>
+                          <div style={{display:'flex',alignItems:'center',gap:'0.4rem',marginBottom:'0.2rem'}}>
+                            <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff'}}>{c.nombre}</div>
+                            {c.periodicidad !== 'unico' && <span style={{fontSize:'0.6rem',color:'#8FA3CC',background:'rgba(255,255,255,0.06)',padding:'0.1rem 0.4rem',borderRadius:'8px'}}>{c.periodicidad}</span>}
+                          </div>
+                          {c.descripcion && <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{c.descripcion}</div>}
+                        </div>
+                        <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flexShrink:0}}>
+                          <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color:'#E8A020'}}>${c.valor.toLocaleString()}</div>
+                          <button onClick={() => financiarCosto(c.id)} style={{background:'rgba(175,169,236,0.15)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.4rem 0.875rem',fontSize:'0.75rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                            🌟 Financiar
+                          </button>
+                          {esFundador && (
+                            <button onClick={() => eliminarCosto(c.id)} style={{background:'none',border:'none',color:'#D85A30',cursor:'pointer',fontSize:'0.82rem',padding:'0.2rem'}}>✕</button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div style={{display:'flex',alignItems:'center',gap:'0.875rem',flexShrink:0}}>
-                  <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#E8A020'}}>${c.valor.toLocaleString()}</div>
-                  <button onClick={() => financiarCosto(c.id)} style={{background:'rgba(175,169,236,0.15)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.45rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
-                    🌟 Financiar este costo
-                  </button>
-                  {esFundador && (
-                    <button onClick={() => eliminarCosto(c.id)} style={{background:'none',border:'none',color:'#D85A30',cursor:'pointer',fontSize:'0.85rem',padding:'0.25rem'}}>✕</button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+              )
+            })
+          })()}
         </div>
       )}
 
