@@ -239,7 +239,12 @@ export default function Workspace() {
             <div style={{marginBottom:'2rem'}}>
               <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Workspace del proyecto</div>
               <div style={{fontSize:'clamp(1.3rem,3vw,1.75rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>{proyecto?.nombre}</div>
-              <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{proyecto?.sector} · {proyecto?.ciudad} · {proyecto?.estado}</div>
+              <div style={{fontSize:'0.82rem',color:'#8FA3CC',display:'flex',alignItems:'center',gap:'0.5rem',flexWrap:'wrap'}}>
+                {proyecto?.pais && <span style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',background:'rgba(175,169,236,0.1)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'20px',padding:'0.15rem 0.6rem'}}>
+                  {proyecto.pais === 'Colombia' ? '🇨🇴' : proyecto.pais === 'México' ? '🇲🇽' : proyecto.pais === 'Argentina' ? '🇦🇷' : proyecto.pais === 'Perú' ? '🇵🇪' : proyecto.pais === 'Chile' ? '🇨🇱' : '🌎'} {proyecto.pais}
+                </span>}
+                <span>{proyecto?.sector} · {proyecto?.ciudad} · {proyecto?.estado}</span>
+              </div>
             </div>
 
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
@@ -782,12 +787,54 @@ function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
             {esFundador ? 'Define los costos que necesita este proyecto para que el equipo, ángeles e inversionistas puedan verlos y financiarlos.' : 'El fundador aún no ha definido el presupuesto de este proyecto.'}
           </div>
           {esFundador && (
-            <button onClick={() => setMostrarForm(true)} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7rem 1.5rem',fontSize:'0.85rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-              + Definir primer costo
-            </button>
+            <div style={{display:'flex',gap:'0.75rem',justifyContent:'center',flexWrap:'wrap'}}>
+              <BtnCargarPredefinidos proyectoId={proyectoId} usuarioId={usuarioId} onCargado={cargarCostos} />
+              <button onClick={() => setMostrarForm(true)} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.7rem 1.5rem',fontSize:'0.85rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                + Agregar costo manualmente
+              </button>
+            </div>
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+// ── Botón para cargar costos predefinidos del país ────────────────────────────
+function BtnCargarPredefinidos({ proyectoId, usuarioId, onCargado }) {
+  const [cargando, setCargando] = useState(false)
+  const [mensaje, setMensaje] = useState('')
+  const [pais, setPais] = useState('')
+
+  useEffect(() => {
+    // Obtener el país del proyecto
+    fetch('/api/proyectos/' + proyectoId)
+      .then(r => r.json())
+      .then(d => { if (d.proyecto?.pais) setPais(d.proyecto.pais) })
+  }, [proyectoId])
+
+  async function cargar() {
+    if (!pais) { setMensaje('Este proyecto no tiene país asignado'); return }
+    setCargando(true)
+    const res = await fetch('/api/costos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inicializar_pais: true, proyecto_id: proyectoId, pais, creado_por: usuarioId })
+    })
+    const data = await res.json()
+    if (data.error) { setMensaje('Error: ' + data.error) }
+    else if (data.cargados === 0) { setMensaje(data.mensaje || 'Ya estaban cargados') }
+    else { setMensaje('✓ ' + data.cargados + ' costos de ' + pais + ' cargados'); onCargado() }
+    setCargando(false)
+    setTimeout(() => setMensaje(''), 4000)
+  }
+
+  return (
+    <div>
+      <button onClick={cargar} disabled={cargando || !pais} style={{background: pais ? '#E8A020' : 'rgba(255,255,255,0.1)', color:'#fff', border:'none', borderRadius:'8px', padding:'0.7rem 1.5rem', fontSize:'0.85rem', fontWeight:'700', cursor: pais ? 'pointer' : 'not-allowed', fontFamily:'Inter,sans-serif'}}>
+        {cargando ? 'Cargando...' : pais ? ('🇨🇴 Cargar costos predefinidos de ' + pais) : 'Sin país asignado'}
+      </button>
+      {mensaje && <div style={{fontSize:'0.75rem',color: mensaje.startsWith('✓') ? '#1D9E75' : '#E8A020',marginTop:'0.4rem'}}>{mensaje}</div>}
     </div>
   )
 }

@@ -22,12 +22,62 @@ export async function GET(request) {
   return Response.json({ costos: data || [] })
 }
 
-// POST — crear costo
+// POST — crear costo individual O inicializar costos predefinidos por país
 export async function POST(request) {
   const body = await request.json()
-  const { proyecto_id, nombre, descripcion, categoria, valor, periodicidad, creado_por } = body
 
-  if (!proyecto_id || !nombre || !valor) return Response.json({ error: 'Faltan campos obligatorios' }, { status: 400 })
+  // Inicialización masiva de costos predefinidos por país
+  if (body.inicializar_pais) {
+    const { proyecto_id, pais, creado_por } = body
+    if (!proyecto_id || !pais) return Response.json({ error: 'Faltan proyecto_id o pais' }, { status: 400 })
+
+    // Verificar si ya tiene costos para no duplicar
+    const { data: existentes } = await supabase
+      .from('costos_proyecto')
+      .select('id')
+      .eq('proyecto_id', proyecto_id)
+      .limit(1)
+
+    if (existentes && existentes.length > 0) {
+      return Response.json({ ok: true, mensaje: 'Ya tiene costos inicializados', cargados: 0 })
+    }
+
+    // Obtener predefinidos del país
+    const { data: predefinidos, error: errorPred } = await supabase
+      .from('costos_predefinidos')
+      .select('*')
+      .eq('pais', pais)
+      .order('orden', { ascending: true })
+
+    if (errorPred) return Response.json({ error: errorPred.message }, { status: 500 })
+    if (!predefinidos || predefinidos.length === 0) {
+      return Response.json({ ok: true, mensaje: 'No hay costos predefinidos para ' + pais, cargados: 0 })
+    }
+
+    // Insertar todos los costos predefinidos
+    const costosAInsertar = predefinidos.map(p => ({
+      proyecto_id,
+      nombre: p.nombre,
+      descripcion: p.descripcion,
+      categoria: p.categoria,
+      valor: p.valor,
+      periodicidad: p.periodicidad,
+      estado: 'pendiente',
+      creado_por: creado_por || null
+    }))
+
+    const { data: insertados, error: errorIns } = await supabase
+      .from('costos_proyecto')
+      .insert(costosAInsertar)
+      .select()
+
+    if (errorIns) return Response.json({ error: errorIns.message }, { status: 500 })
+    return Response.json({ ok: true, cargados: insertados.length, costos: insertados })
+  }
+
+  // Creación individual de costo
+  const { proyecto_id, nombre, descripcion, categoria, valor, periodicidad, creado_por } = body
+  if (!proyecto_id || !nombre || valor === undefined) return Response.json({ error: 'Faltan campos obligatorios' }, { status: 400 })
 
   const { data, error } = await supabase
     .from('costos_proyecto')

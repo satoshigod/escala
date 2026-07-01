@@ -101,6 +101,12 @@ export default function Proyectos() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ proyecto_id: pid, inicializar_pais: true, pais: form.pais, creado_por: usuario.id })
         })
+        // Cargar costos predefinidos por país automáticamente
+        await fetch('/api/costos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ inicializar_pais: true, proyecto_id: pid, pais: form.pais, creado_por: usuario.id })
+        })
       }
 
       // Cargar tareas comerciales por industria automáticamente
