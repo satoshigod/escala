@@ -59,8 +59,8 @@ export default function Invitar() {
           proyecto_nombre: proyecto?.nombre || 'Escala',
           rol_nombre: rol?.nombre || 'un rol',
           mensaje_personal: form.mensaje,
-          proyecto_url: 'https://escala-blush-nine.vercel.app/proyectos/' + proyectoSel,
-          registro_url: 'https://escala-blush-nine.vercel.app/registro'
+          proyecto_url: 'https://escala.network/proyectos/' + proyectoSel,
+          registro_url: 'https://escala.network/registro'
         }
       })
     })
@@ -155,9 +155,9 @@ export default function Invitar() {
           {proyectoSel && (
             <div style={{display:'flex',gap:'0.75rem',alignItems:'center',flexWrap:'wrap'}}>
               <code style={{fontSize:'0.78rem',color:'#1D9E75',background:'rgba(29,158,117,0.08)',padding:'0.4rem 0.75rem',borderRadius:'6px',flex:1,wordBreak:'break-all'}}>
-                {'escala-blush-nine.vercel.app/p/' + proyectoSel}
+                {'escala.network/p/' + proyectoSel}
               </code>
-              <button onClick={() => navigator.clipboard.writeText('https://escala-blush-nine.vercel.app/p/' + proyectoSel)} style={{background:'rgba(255,255,255,0.08)',color:'#fff',border:'none',borderRadius:'6px',padding:'0.4rem 0.875rem',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+              <button onClick={() => navigator.clipboard.writeText('https://escala.network/p/' + proyectoSel)} style={{background:'rgba(255,255,255,0.08)',color:'#fff',border:'none',borderRadius:'6px',padding:'0.4rem 0.875rem',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                 Copiar link
               </button>
             </div>

@@ -6,7 +6,7 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 )
 
-const BASE_URL = 'https://escala-blush-nine.vercel.app'
+const BASE_URL = 'https://escala.network'
 
 // GET — listar proyectos activos
 export async function GET(request) {

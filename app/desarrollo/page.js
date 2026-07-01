@@ -276,8 +276,8 @@ const fases = [
     num: '17',
     titulo: 'Sistema de Notificaciones Multicanal',
     estado: 'progreso',
-    valor_total: 22100000,
-    valor_hecho: 10100000,
+    valor_total: 23700000,
+    valor_hecho: 11700000,
     hitos: [
       { num: '17.1', nombre: 'Infraestructura base — tablas notificaciones, push_subscriptions y preferencias_notificacion con RLS y Realtime activado', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '17.2', nombre: 'Motor central de despacho notificar() — email + in-app + push en un solo punto de entrada, con reglas de prioridad (CRÍTICA no se puede desactivar)', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
@@ -291,7 +291,9 @@ const fases = [
       { num: '17.10', nombre: 'Notificaciones basadas en tiempo (hito por vencer, proyecto sin actividad, tarea vencida) — requiere Vercel Cron Jobs', done: false, valor: 1200000, quien: 'Desarrollador' },
       { num: '17.11', nombre: 'Migrar invitaciones (/invitar) al motor notificar() con detección de usuario ya registrado para sumar in-app', done: false, valor: 500000, quien: 'Desarrollador' },
       { num: '17.12', nombre: 'Resto del catálogo del documento (~217 eventos) — contratos, facturación, marketplace, votaciones, inversionistas, suscripciones, moderación, soporte, comunidad, logros, liquidación, IA, integraciones, API pública. Se cablean a medida que cada módulo se construye; estimado solo del trabajo de notificación, no de construir el módulo en sí', done: false, valor: 6000000, quien: 'Desarrollador' },
-      { num: '17.13', nombre: 'Correos de autenticación (registro, confirmación, recuperación de contraseña) migrados de Supabase genérico a Resend con dominio propio — incluye activar confirmación de correo obligatoria', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
+      { num: '17.13', nombre: 'Correos de autenticación (registro, recuperación de contraseña) conectados a Resend con dominio propio vía SMTP — infraestructura de envío, independiente de si se exige confirmar o no', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
+      { num: '17.14', nombre: 'Migración de dominio — los 9 archivos que generaban links (correos, invitaciones, compartir proyecto) apuntan a escala.network en vez del subdominio de Vercel', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '17.15', nombre: 'Verificación de correo no-bloqueante — sistema propio independiente de Supabase Auth: banner en el dashboard con reenvío, nunca impide registrarse ni usar la plataforma', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
     ]
   },
 ]

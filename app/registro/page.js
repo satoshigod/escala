@@ -23,10 +23,16 @@ export default function Registro() {
 
     if (error) {
       setMensaje('Error: ' + error.message)
-    } else if (!data.session) {
-      // Con "Confirm email" activado en Supabase, signUp no crea sesión hasta que el usuario
-      // confirme por correo — antes de este cambio siempre había sesión inmediata.
-      setMensaje('¡Cuenta creada! Revisa tu correo (' + email + ') y haz clic en el enlace de confirmación para poder ingresar.')
+    } else if (data.session && data.user) {
+      // Dispara el correo de verificación en paralelo — no bloquea el flujo de registro.
+      // "Confirm email" de Supabase está apagado a propósito: la verificación es un aviso
+      // no-bloqueante en el dashboard (ver correo_verificado), no un requisito para entrar.
+      fetch('/api/verificar-correo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: data.user.id, email, nombre })
+      }).catch(() => {})
+      window.location.href = '/onboarding'
     } else {
       window.location.href = '/onboarding'
     }

@@ -1,4 +1,4 @@
-const BASE_URL = 'https://escala-blush-nine.vercel.app'
+const BASE_URL = 'https://escala.network'
 
 async function sendEmail(to, subject, html) {
   const res = await fetch('https://api.resend.com/emails', {

@@ -31,6 +31,9 @@ export default function Dashboard() {
   const [proyectosGestionados, setProyectosGestionados] = useState([])
   const [mensajesNoLeidos, setMensajesNoLeidos] = useState(0)
   const [pushActivo, setPushActivo] = useState(false)
+  const [bannerCorreoVisible, setBannerCorreoVisible] = useState(true)
+  const [reenviando, setReenviando] = useState(false)
+  const [reenviado, setReenviado] = useState(false)
   const [proyectosFinalizados, setProyectosFinalizados] = useState([])
   const [vistaSugerida, setVistaSugerida] = useState('especialista')
 
@@ -161,6 +164,19 @@ export default function Dashboard() {
     }).catch(() => {})
   }
 
+  async function reenviarVerificacion() {
+    if (!perfil) return
+    setReenviando(true)
+    await fetch('/api/verificar-correo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: perfil.id, email: perfil.email, nombre: perfil.nombre })
+    }).catch(() => {})
+    setReenviando(false)
+    setReenviado(true)
+    setTimeout(() => setReenviado(false), 5000)
+  }
+
   async function cerrarSesion() {
     await supabase.auth.signOut()
     window.location.href = '/registro'
@@ -237,6 +253,24 @@ export default function Dashboard() {
       </nav>
 
       <main style={{maxWidth:'1180px',margin:'0 auto',padding:'1.75rem 1.25rem'}}>
+
+        {perfil && perfil.correo_verificado === false && bannerCorreoVisible && (
+          <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'10px',padding:'0.875rem 1.25rem',marginBottom:'1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
+            <div style={{display:'flex',alignItems:'center',gap:'0.75rem'}}>
+              <span style={{fontSize:'1.1rem',flexShrink:0}}>✉️</span>
+              <div>
+                <div style={{color:'#fff',fontSize:'0.82rem',fontWeight:'700'}}>Confirma tu correo</div>
+                <div style={{color:'#C8D4E8',fontSize:'0.76rem'}}>Te enviamos un enlace a {perfil.email}. Revisa spam si no lo ves.</div>
+              </div>
+            </div>
+            <div style={{display:'flex',alignItems:'center',gap:'0.75rem'}}>
+              <button onClick={reenviarVerificacion} disabled={reenviando} style={{background:'rgba(232,160,32,0.15)',border:'1px solid rgba(232,160,32,0.4)',color:'#E8A020',fontSize:'0.76rem',fontWeight:'600',padding:'0.35rem 0.75rem',borderRadius:'6px',cursor: reenviando ? 'default' : 'pointer',fontFamily:'Inter,sans-serif'}}>
+                {reenviando ? 'Enviando...' : reenviado ? '✓ Enviado' : 'Reenviar'}
+              </button>
+              <button onClick={() => setBannerCorreoVisible(false)} title="Ocultar por ahora" style={{background:'none',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'0.9rem',padding:0}}>✕</button>
+            </div>
+          </div>
+        )}
 
         <div style={{marginBottom:'1.5rem'}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
