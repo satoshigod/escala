@@ -36,7 +36,7 @@ export async function POST(request) {
 
   const { data, error } = await supabase
     .from('aportes')
-    .insert([{ proyecto_id, aportante_id, rol_id, tipo, descripcion, valor, fecha, evidencia_url }])
+    .insert([{ proyecto_id, aportante_id, rol_id, tipo, descripcion, valor, fecha: fecha || new Date().toISOString().split('T')[0], evidencia_url }])
     .select('*, perfiles:aportante_id ( nombre ), proyectos:proyecto_id ( nombre, fundador_id, fundador:fundador_id ( nombre, email ) )')
     .single()
 

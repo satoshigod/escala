@@ -276,8 +276,8 @@ const fases = [
     num: '17',
     titulo: 'Sistema de Notificaciones Multicanal',
     estado: 'progreso',
-    valor_total: 24400000,
-    valor_hecho: 12400000,
+    valor_total: 24700000,
+    valor_hecho: 12700000,
     hitos: [
       { num: '17.1', nombre: 'Infraestructura base — tablas notificaciones, push_subscriptions y preferencias_notificacion con RLS y Realtime activado', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '17.2', nombre: 'Motor central de despacho notificar() — email + in-app + push en un solo punto de entrada, con reglas de prioridad (CRÍTICA no se puede desactivar)', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
@@ -295,6 +295,7 @@ const fases = [
       { num: '17.14', nombre: 'Migración de dominio — los 9 archivos que generaban links (correos, invitaciones, compartir proyecto) apuntan a escala.network en vez del subdominio de Vercel', done: true, valor: 400000, quien: 'Claude AI' },
       { num: '17.15', nombre: 'Verificación de correo no-bloqueante — sistema propio independiente de Supabase Auth: banner en el dashboard con reenvío, nunca impide registrarse ni usar la plataforma', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
       { num: '17.16', nombre: 'Panel de pruebas integrado a /qa — 13 tests nuevos que disparan los 12 eventos reales de notificación contra tu propio usuario, con limpieza automática de datos de prueba', done: true, valor: 700000, quien: 'Claude AI' },
+      { num: '17.17', nombre: 'Fix: POST /api/aportes insertaba NULL en fecha en vez de usar el default de la base de datos, violando el constraint — encontrado por el panel de QA, no era exclusivo de las pruebas', done: true, valor: 300000, quien: 'Claude AI' },
     ]
   },
 ]

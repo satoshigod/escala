@@ -610,7 +610,7 @@ const GRUPOS = [
           if (!window._qaNotifProyectoId) throw new Error('Corre primero el test de Setup')
           const res = await fetch('/api/aportes', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, aportante_id: FUNDADOR_ID, tipo: 'horas', descripcion: 'QA test', valor: 100000 })
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, aportante_id: FUNDADOR_ID, tipo: 'horas', descripcion: 'QA test', valor: 100000, fecha: new Date().toISOString().split('T')[0] })
           })
           const data = await res.json()
           if (data.error) throw new Error(data.error)
