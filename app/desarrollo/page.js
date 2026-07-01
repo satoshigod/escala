@@ -299,6 +299,23 @@ const fases = [
       { num: '17.18', nombre: 'escala.network sirve la presentación (index.html) directo en la raíz sin cambiar la URL — antes redirigía visiblemente a /index.html', done: true, valor: 250000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '18',
+    titulo: 'Rediseño de la landing page — arquitectura de información',
+    estado: 'completa',
+    valor_total: 5950000,
+    valor_hecho: 5950000,
+    hitos: [
+      { num: '18.1', nombre: 'Auditoría UX y estrategia de contenido de la landing — comité de expertos simulado (producto, UX, VC, CRO, storytelling), 20 preguntas + 8 perspectivas de usuario', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '18.2', nombre: 'index.html reconstruido — de 3.840 a ~1.030 palabras (73% más corto), 6 secciones con un solo objetivo por página en vez de 16 secciones compitiendo entre sí', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '18.3', nombre: '7 páginas nuevas — perfiles.html, casos.html, compensacion.html, proteccion.html, inversionistas.html, por-que-existe.html y faq.html, con el contenido que sobraba en el home movido a su propio lugar', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: '18.4', nombre: 'Fix de honestidad — los 8 casos de ejemplo (VetApp, Ekivibe, etc.) quedan etiquetados como "ejemplo ilustrativo", ya no se leen como casos de éxito verificados con datos inventados', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '18.5', nombre: 'Fix de naming — "Tipo A/B" de proyectos ya no choca con "Carril A/B/C" de compensación, se renombraron a Creación/Transformación', done: true, valor: 150000, quien: 'Claude AI' },
+      { num: '18.6', nombre: 'FAQ nueva — 8 preguntas reales (legal, incumplimiento, diferencia con freelance, etc.) sin inventar cifras de negocio que Escala no tiene todavía', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '18.7', nombre: 'Deep-linking entre páginas — el selector de perfiles del home salta directo a la pestaña correcta en perfiles.html en vez de abrir la página en la pestaña por defecto', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '18.8', nombre: 'Fix: carriles de compensación y tipos de proyecto quedaron sin ninguna mención en el home tras la reestructuración inicial — se agregaron versiones resumidas con link a compensacion.html', done: true, valor: 300000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
