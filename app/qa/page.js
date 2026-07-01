@@ -456,6 +456,229 @@ const GRUPOS = [
       },
     ]
   },
+  {
+    nombre: '🔔 Notificaciones (Fase 17)',
+    tests: [
+      {
+        id: 'notif_setup',
+        nombre: 'Setup — crear proyecto y 2 roles de prueba (dispara proyecto_publicado)',
+        run: async () => {
+          const nombre = 'QA-Notif-Proyecto-' + Date.now()
+          const resP = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA notificaciones', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
+          })
+          const dataP = await resP.json()
+          if (dataP.error) throw new Error(dataP.error)
+          window._qaNotifProyectoId = dataP.proyecto.id
+
+          const resR1 = await fetch('/api/roles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol A', tipo_aporte: 'tiempo', modalidad: 'equity' })
+          })
+          const dataR1 = await resR1.json()
+          if (dataR1.error) throw new Error(dataR1.error)
+          window._qaNotifRolAId = dataR1.rol.id
+
+          const resR2 = await fetch('/api/roles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol B', tipo_aporte: 'tiempo', modalidad: 'equity' })
+          })
+          const dataR2 = await resR2.json()
+          if (dataR2.error) throw new Error(dataR2.error)
+          window._qaNotifRolBId = dataR2.rol.id
+
+          return 'Proyecto y 2 roles creados — proyecto_publicado disparado, revisa correo/campanita'
+        }
+      },
+      {
+        id: 'notif_nueva_postulacion',
+        nombre: 'nueva_postulacion — postularse al Rol A',
+        run: async () => {
+          if (!window._qaNotifRolAId) throw new Error('Corre primero el test de Setup')
+          const res = await fetch('/api/postulaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol_id: window._qaNotifRolAId, postulante_id: FUNDADOR_ID, mensaje: 'QA test' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          window._qaNotifPostulacionAId = data.postulacion.id
+          return 'Postulación creada — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_postulacion_aceptada',
+        nombre: 'postulacion_aceptada — aceptar esa postulación',
+        run: async () => {
+          if (!window._qaNotifPostulacionAId) throw new Error('Corre primero nueva_postulacion')
+          const res = await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaNotifPostulacionAId, estado: 'aceptada' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'Postulación aceptada — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_postulacion_rechazada',
+        nombre: 'postulacion_rechazada — postularse al Rol B y rechazar',
+        run: async () => {
+          if (!window._qaNotifRolBId) throw new Error('Corre primero el test de Setup')
+          const resPost = await fetch('/api/postulaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol_id: window._qaNotifRolBId, postulante_id: FUNDADOR_ID, mensaje: 'QA test' })
+          })
+          const dataPost = await resPost.json()
+          if (dataPost.error) throw new Error(dataPost.error)
+          const res = await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: dataPost.postulacion.id, estado: 'rechazada' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'Postulación rechazada — revisa correo/campanita'
+        }
+      },
+      {
+        id: 'notif_tarea_asignada',
+        nombre: 'tarea_asignada — crear tarea asignada a ti',
+        run: async () => {
+          if (!window._qaNotifProyectoId) throw new Error('Corre primero el test de Setup')
+          const res = await fetch('/api/tareas', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Tarea', descripcion: 'Test', asignado_a: FUNDADOR_ID, creado_por: FUNDADOR_ID })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          window._qaNotifTareaId = data.tarea.id
+          return 'Tarea asignada — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_tarea_completada',
+        nombre: 'tarea_completada — marcarla completada',
+        run: async () => {
+          if (!window._qaNotifTareaId) throw new Error('Corre primero tarea_asignada')
+          const res = await fetch('/api/tareas', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaNotifTareaId, estado: 'completada' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'Tarea completada — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_tarea_verificada',
+        nombre: 'tarea_verificada — verificarla',
+        run: async () => {
+          if (!window._qaNotifTareaId) throw new Error('Corre primero tarea_asignada')
+          const res = await fetch('/api/tareas', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaNotifTareaId, estado: 'verificada', verificado_por: FUNDADOR_ID })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'Tarea verificada — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_hito_completado',
+        nombre: 'hito_completado — crear hito y completarlo',
+        run: async () => {
+          if (!window._qaNotifProyectoId) throw new Error('Corre primero el test de Setup')
+          const resH = await fetch('/api/hitos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Hito', descripcion: 'Test' })
+          })
+          const dataH = await resH.json()
+          if (dataH.error) throw new Error(dataH.error)
+          const res = await fetch('/api/hitos', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: dataH.hito.id, completado: true })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'Hito completado — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_aporte_pendiente',
+        nombre: 'aporte_pendiente_verificacion — registrar aporte',
+        run: async () => {
+          if (!window._qaNotifProyectoId) throw new Error('Corre primero el test de Setup')
+          const res = await fetch('/api/aportes', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, aportante_id: FUNDADOR_ID, tipo: 'horas', descripcion: 'QA test', valor: 100000 })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          window._qaNotifAporteId = data.aporte.id
+          return 'Aporte registrado — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_aporte_verificado',
+        nombre: 'aporte_verificado — validarlo',
+        run: async () => {
+          if (!window._qaNotifAporteId) throw new Error('Corre primero aporte_pendiente_verificacion')
+          const res = await fetch('/api/aportes', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaNotifAporteId, validado: true, validado_por: FUNDADOR_ID })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'Aporte verificado — revisa correo/campanita/push'
+        }
+      },
+      {
+        id: 'notif_nuevo_pais',
+        nombre: 'nuevo_pais — crear país nuevo (alerta a admin)',
+        run: async () => {
+          const nombre = 'QA-Pais-Notif-' + Date.now()
+          const res = await fetch('/api/paises', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, bandera: '🧪', creado_por_nombre: 'QA', tipo_origen: 'qa', creado_por: FUNDADOR_ID })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'País "' + nombre + '" creado — revisa correo de admin y campanita'
+        }
+      },
+      {
+        id: 'notif_verificar_correo',
+        nombre: 'verificar_correo — reenviar correo de verificación',
+        run: async () => {
+          const resU = await fetch('/api/usuarios?id=' + FUNDADOR_ID)
+          const dataU = await resU.json()
+          if (dataU.error) throw new Error(dataU.error)
+          const res = await fetch('/api/verificar-correo', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: FUNDADOR_ID, email: dataU.usuario.email, nombre: dataU.usuario.nombre })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return 'Correo de verificación reenviado — revisa tu bandeja'
+        }
+      },
+      {
+        id: 'notif_cleanup',
+        nombre: 'Limpieza — eliminar proyecto y datos de prueba de notificaciones',
+        run: async () => {
+          if (!window._qaNotifProyectoId) return 'Nada que limpiar'
+          await fetch('/api/proyectos/' + window._qaNotifProyectoId, { method: 'DELETE' })
+          window._qaNotifProyectoId = null
+          window._qaNotifRolAId = null
+          window._qaNotifRolBId = null
+          window._qaNotifPostulacionAId = null
+          window._qaNotifTareaId = null
+          window._qaNotifAporteId = null
+          return 'Proyecto y datos de prueba eliminados — las notificaciones ya enviadas quedan en tu historial igual'
+        }
+      },
+    ]
+  },
 ]
 
 export default function QA() {
