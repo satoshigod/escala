@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
-const roles = ['todos', 'especialista', 'ejecutor', 'ideador', 'capitalista', 'angel']
-const rolLabel = { todos: 'Todos', especialista: 'Especialista', ejecutor: 'Ejecutor', ideador: 'Ideador', capitalista: 'Capitalista', angel: 'Angel' }
+const roles = ['todos', 'especialista', 'ejecutor', 'ideador', 'capitalista', 'angel', 'mentor', 'empresa']
+const rolLabel = { todos: 'Todos', especialista: 'Especialista', ejecutor: 'Ejecutor', ideador: 'Ideador', capitalista: 'Capitalista', angel: 'Ángel de Impulso', mentor: 'Mentor', empresa: 'Empresa' }
 
 export default function Directorio() {
   const [usuario, setUsuario] = useState(null)

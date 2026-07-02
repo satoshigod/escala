@@ -211,6 +211,8 @@ export default function Dashboard() {
     { icon: '📈', label: 'Registrar ingreso', href: '/ingresos' },
     { icon: '🎯', label: 'Crear hito', href: '/hitos' },
     { icon: '✉️', label: 'Invitar especialista', href: '/invitar' },
+    { icon: '🌟', label: 'Ángel de Impulso', href: '/angel' },
+    ...(perfil?.es_admin ? [{ icon: '🛠️', label: 'Admin Escala', href: '/admin-escala' }] : []),
   ]
 
   return (

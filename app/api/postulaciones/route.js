@@ -25,19 +25,21 @@ export async function GET(request) {
 
 export async function POST(request) {
   const body = await request.json()
-  const { rol_id, postulante_id, mensaje } = body
+  const { rol_id, postulante_id, mensaje, origen } = body
   if (!rol_id || !postulante_id) return Response.json({ error: 'Faltan campos' }, { status: 400 })
 
   const { data, error } = await supabase
     .from('postulaciones')
-    .insert([{ rol_id, postulante_id, mensaje }])
+    .insert([{ rol_id, postulante_id, mensaje, origen: origen || 'postulante' }])
     .select('*, perfiles ( nombre, email ), roles ( nombre, proyecto_id, proyectos ( nombre, fundador_id, perfiles ( nombre, email ) ) )')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Notificación al fundador
-  try {
+  // Notificación al fundador — solo si fue el postulante quien aplicó. Si fue el fundador
+  // quien creó la oferta (invitación), no tiene sentido notificarlo de su propia acción;
+  // el correo de invitación ya se envía por separado desde /invitar.
+  if (origen !== 'fundador') try {
     const fundador_id = data.roles?.proyectos?.fundador_id
     const fundador_email = data.roles?.proyectos?.perfiles?.email
     const fundador_nombre = data.roles?.proyectos?.perfiles?.nombre || 'Fundador'

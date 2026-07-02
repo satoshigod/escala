@@ -885,6 +885,112 @@ const GRUPOS = [
       },
     ]
   },
+  {
+    nombre: '✉️ Ofertas e Invitaciones (Fase 21)',
+    tests: [
+      {
+        id: 'ofertas_setup',
+        nombre: 'Setup — proyecto + rol para probar ofertas',
+        run: async () => {
+          const nombre = 'QA-Ofertas-' + Date.now()
+          const resP = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA ofertas', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
+          })
+          const dataP = await resP.json()
+          if (dataP.error) throw new Error(dataP.error)
+          window._qaOfertasProyectoId = dataP.proyecto.id
+
+          const resR = await fetch('/api/roles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaOfertasProyectoId, nombre: 'QA Rol Oferta', tipo_aporte: 'tiempo', modalidad: 'equity' })
+          })
+          const dataR = await resR.json()
+          if (dataR.error) throw new Error(dataR.error)
+          window._qaOfertasRolId = dataR.rol.id
+          return 'Proyecto y rol listos'
+        }
+      },
+      {
+        id: 'ofertas_buscar_email',
+        nombre: 'Buscar usuario por email (/api/usuarios?email=)',
+        run: async () => {
+          const res = await fetch('/api/usuarios?id=' + FUNDADOR_ID)
+          const data = await res.json()
+          const email = data.usuario?.email
+          if (!email) throw new Error('El perfil del fundador no tiene email')
+          const res2 = await fetch('/api/usuarios?email=' + encodeURIComponent(email))
+          const data2 = await res2.json()
+          if (data2.error) throw new Error(data2.error)
+          if (data2.usuario?.id !== FUNDADOR_ID) throw new Error('La búsqueda por email no encontró al usuario correcto')
+          return 'Búsqueda por email funciona: ' + email + ' → ' + data2.usuario.id.substring(0,8) + '...'
+        }
+      },
+      {
+        id: 'ofertas_crear',
+        nombre: 'Crear oferta (postulación con origen=fundador)',
+        run: async () => {
+          if (!window._qaOfertasRolId) throw new Error('Corre primero el Setup')
+          const res = await fetch('/api/postulaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol_id: window._qaOfertasRolId, postulante_id: FUNDADOR_ID, mensaje: 'QA oferta directa', origen: 'fundador' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (data.postulacion.origen !== 'fundador') throw new Error('El origen no se guardó: ' + data.postulacion.origen)
+          window._qaOfertasPostulacionId = data.postulacion.id
+          return 'Oferta creada con origen=fundador'
+        }
+      },
+      {
+        id: 'ofertas_separacion',
+        nombre: 'Verificar separación — la oferta aparece con origen distinto a las postulaciones propias',
+        run: async () => {
+          if (!window._qaOfertasPostulacionId) throw new Error('Corre primero crear oferta')
+          const res = await fetch('/api/postulaciones?postulante_id=' + FUNDADOR_ID)
+          const data = await res.json()
+          const laOferta = (data.postulaciones || []).find(p => p.id === window._qaOfertasPostulacionId)
+          if (!laOferta) throw new Error('La oferta no aparece en las postulaciones del usuario')
+          if (laOferta.origen !== 'fundador') throw new Error('La oferta perdió su origen al consultarla')
+          const propias = (data.postulaciones || []).filter(p => p.origen !== 'fundador')
+          return 'Separación correcta: ' + (data.postulaciones||[]).filter(p=>p.origen==='fundador').length + ' oferta(s), ' + propias.length + ' postulación(es) propia(s)'
+        }
+      },
+      {
+        id: 'ofertas_default_origen',
+        nombre: 'Postulación normal sin origen → default "postulante"',
+        run: async () => {
+          if (!window._qaOfertasRolId) throw new Error('Corre primero el Setup')
+          const resR = await fetch('/api/roles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaOfertasProyectoId, nombre: 'QA Rol Normal', tipo_aporte: 'tiempo', modalidad: 'equity' })
+          })
+          const dataR = await resR.json()
+          if (dataR.error) throw new Error(dataR.error)
+          const res = await fetch('/api/postulaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol_id: dataR.rol.id, postulante_id: FUNDADOR_ID, mensaje: 'QA normal' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (data.postulacion.origen !== 'postulante') throw new Error('El default no es postulante: ' + data.postulacion.origen)
+          return 'Default correcto: origen=postulante cuando no se envía'
+        }
+      },
+      {
+        id: 'ofertas_cleanup',
+        nombre: 'Limpieza — eliminar el proyecto de prueba',
+        run: async () => {
+          if (!window._qaOfertasProyectoId) return 'Nada que limpiar'
+          await fetch('/api/proyectos/' + window._qaOfertasProyectoId, { method: 'DELETE' })
+          window._qaOfertasProyectoId = null
+          window._qaOfertasRolId = null
+          window._qaOfertasPostulacionId = null
+          return 'Proyecto de prueba eliminado'
+        }
+      },
+    ]
+  },
 ]
 
 const MANUAL = [
@@ -895,6 +1001,8 @@ const MANUAL = [
   { id: 'm5', nombre: 'Botón "Iniciar sesión" en la landing', texto: 'Entra a escala.network sin sesión iniciada. Debe verse "Iniciar sesión" junto a "Registrarme" en el nav de arriba.' },
   { id: 'm6', nombre: '"Iniciar sesión" abre la pestaña correcta', texto: 'Haz clic en "Iniciar sesión" desde la landing. Debe abrir /registro ya en la pestaña de login, no en la de crear cuenta.' },
   { id: 'm7', nombre: '"Salir" del dashboard lleva a login, no a crear cuenta', texto: 'Desde el dashboard, haz clic en "Salir". Debe cerrarte la sesión y llevarte a /registro con la pestaña de Iniciar sesión activa, no la de Crear cuenta.' },
+  { id: 'm8', nombre: 'Registro nuevo pasa por /bienvenida con opción de saltar', texto: 'Crea una cuenta de prueba nueva. Después del registro debe aparecer la pantalla de bienvenida con los 4 roles y dos opciones: "Completar mi perfil" y "Saltar por ahora y explorar". El salto debe llevarte al dashboard sin obligarte a llenar el onboarding.' },
+  { id: 'm9', nombre: 'Invitar a alguien ya registrado crea oferta visible', texto: 'Desde /invitar, invita a un correo que YA tenga cuenta en Escala, eligiendo un rol específico. Esa persona debe ver la oferta en /postulaciones bajo "Ofertas recibidas", con los botones Aceptar/Declinar — separada de sus postulaciones propias.' },
 ]
 
 export default function QA() {

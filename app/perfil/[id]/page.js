@@ -36,7 +36,9 @@ export default function PerfilPublico() {
     capitalista: '💰 Capitalista',
     especialista: '🔧 Especialista',
     ejecutor: '⚙️ Ejecutor',
-    angel: '🌟 Ángel de Impulso'
+    angel: '🌟 Ángel de Impulso',
+    mentor: '🧭 Mentor',
+    empresa: '🏢 Empresa'
   }
 
   const aceptadas = postulaciones.filter(p => p.estado === 'aceptada').length

@@ -48,6 +48,31 @@ export default function Invitar() {
     const proyecto = proyectos.find(p => p.id === proyectoSel)
     const rol = roles.find(r => r.id === form.rol_id)
 
+    // Si el correo pertenece a alguien ya registrado en Escala y la invitación
+    // trae un rol específico, se crea una oferta real en la plataforma —
+    // le aparece en "Ofertas recibidas" y puede aceptarla o declinarla.
+    let ofertaCreada = false
+    if (form.rol_id) {
+      try {
+        const uRes = await fetch('/api/usuarios?email=' + encodeURIComponent(form.email.trim().toLowerCase()))
+        const uData = await uRes.json()
+        if (uData.usuario?.id) {
+          const oRes = await fetch('/api/postulaciones', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              rol_id: form.rol_id,
+              postulante_id: uData.usuario.id,
+              mensaje: form.mensaje || ('Invitación directa de ' + (proyecto?.nombre || 'un proyecto')),
+              origen: 'fundador',
+            })
+          })
+          const oData = await oRes.json()
+          if (!oData.error) ofertaCreada = true
+        }
+      } catch (e) { /* si falla la búsqueda, el correo igual sale */ }
+    }
+
     const res = await fetch('/api/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -67,7 +92,12 @@ export default function Invitar() {
     const data = await res.json()
 
     if (data.ok) {
-      setResultado({ ok: true, msg: 'Invitación enviada a ' + form.email })
+      setResultado({ ok: true, msg: ofertaCreada
+        ? '✓ ' + form.nombre + ' ya está en Escala — le llegó la oferta a su bandeja y también el correo.'
+        : 'Invitación enviada a ' + form.email })
+      setForm(f => ({ ...f, email: '', nombre: '', mensaje: '' }))
+    } else if (ofertaCreada) {
+      setResultado({ ok: true, msg: '✓ La oferta quedó en la bandeja de ' + form.nombre + ' en Escala, pero el correo no salió. Puede verla al entrar a la plataforma.' })
       setForm(f => ({ ...f, email: '', nombre: '', mensaje: '' }))
     } else {
       setResultado({ ok: false, msg: 'Error al enviar. Intenta de nuevo.' })

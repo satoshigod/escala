@@ -46,6 +46,11 @@ export default function AdminEscala() {
   async function cargarTodo() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { window.location.href = '/registro?modo=login'; return }
+
+    // Panel de super-admin: solo perfiles con es_admin pueden entrar
+    const { data: miPerfil } = await supabase.from('perfiles').select('es_admin').eq('id', user.id).single()
+    if (!miPerfil?.es_admin) { window.location.href = '/dashboard'; return }
+
     setUsuario(user)
     const [perfsRes, proyRes, indRes, paisRes, espRes, catRes] = await Promise.all([
       supabase.from('perfiles').select('*').order('escala_score', { ascending: false }),

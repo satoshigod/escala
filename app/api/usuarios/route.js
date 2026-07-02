@@ -5,10 +5,17 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 )
 
-// GET — obtener perfil de usuario con métricas calculadas
+// GET — obtener perfil de usuario con métricas calculadas (por id), o buscar id por email
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
+  const email = searchParams.get('email')
+
+  if (email && !id) {
+    const { data, error } = await supabase.from('perfiles').select('id, nombre, email').eq('email', email).maybeSingle()
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+    return Response.json({ usuario: data || null })
+  }
 
   if (!id) return Response.json({ error: 'Falta el id' }, { status: 400 })
 

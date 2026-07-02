@@ -24,9 +24,10 @@ const PREGUNTAS = [
 ]
 
 const ROLES = [
-  { icon: '💡', nombre: 'Fundador', desc: 'Tiene una idea o empresa existente y busca equipo. No necesariamente aporta capital.' },
-  { icon: '🔧', nombre: 'Ejecutor / Especialista', desc: 'Aporta tiempo, conocimiento o experiencia — abogados, contadores, diseñadores, programadores.' },
-  { icon: '⚙️', nombre: 'Gerente de Proyecto', desc: 'Administrador operativo: asigna tareas, verifica entregables, mantiene el proyecto organizado.' },
+  { icon: '💡', nombre: 'Ideador / Fundador', desc: 'Tiene una idea o empresa existente y busca equipo. No necesariamente aporta capital.' },
+  { icon: '💰', nombre: 'Capitalista', desc: 'Aporta capital a proyectos con potencial a cambio de participación accionaria.' },
+  { icon: '🔧', nombre: 'Especialista', desc: 'Aporta conocimiento o servicios profesionales — abogados, contadores, diseñadores, programadores.' },
+  { icon: '⚙️', nombre: 'Ejecutor / Gerente de Proyecto', desc: 'Administrador operativo: asigna tareas, verifica entregables, mantiene el proyecto organizado.' },
   { icon: '🌟', nombre: 'Ángel de Impulso', desc: 'Financia un hito puntual (registro de marca, hosting, MVP) sin financiar toda la empresa.' },
   { icon: '🧭', nombre: 'Mentor', desc: 'Aporta experiencia estratégica — comercial, financiera, tecnológica — sin ejecutar tareas operativas.' },
   { icon: '🏢', nombre: 'Empresa', desc: 'Puede actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora.' },
@@ -59,7 +60,7 @@ export default function QueEsEscala() {
         </div>
 
         <div style={{marginBottom:'2rem'}}>
-          <div style={{fontSize:'1.1rem',fontWeight:'800',marginBottom:'1.25rem',textAlign:'center'}}>Los 6 roles dentro de Escala</div>
+          <div style={{fontSize:'1.1rem',fontWeight:'800',marginBottom:'1.25rem',textAlign:'center'}}>Los 7 roles dentro de Escala</div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:'0.875rem'}}>
             {ROLES.map((r, i) => (
               <div key={i} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>

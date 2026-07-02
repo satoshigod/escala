@@ -356,6 +356,23 @@ const fases = [
       { num: '20.15', nombre: 'Fix: "Iniciar sesión" en la página pública de proyecto (/p/[id]) abría la pestaña de Crear cuenta — mismo bug ya corregido en la landing, pero en un archivo distinto que no se había tocado', done: true, valor: 150000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '21',
+    titulo: 'Sistema de Ofertas + conexión de páginas huérfanas + roles unificados',
+    estado: 'completa',
+    valor_total: 5900000,
+    valor_hecho: 5900000,
+    hitos: [
+      { num: '21.1', nombre: 'Sistema de Ofertas — campo origen en postulaciones (postulante/fundador) distingue "yo apliqué" de "me invitaron". Migración + API + default retrocompatible', done: true, valor: 900000, quien: 'Claude AI' },
+      { num: '21.2', nombre: '/postulaciones reescrita en dos secciones: "Ofertas recibidas" (con Aceptar/Declinar — aquí sí decides tú) y "Mis postulaciones" (solo consulta — el fundador decide). Resuelve el error de diseño donde el usuario podía aceptarse a sí mismo', done: true, valor: 1400000, quien: 'Claude AI' },
+      { num: '21.3', nombre: '/invitar ahora detecta si el correo invitado ya está registrado en Escala — si sí y hay rol específico, crea la oferta real en su bandeja además del correo. Nueva búsqueda por email en /api/usuarios', done: true, valor: 1100000, quien: 'Claude AI' },
+      { num: '21.4', nombre: '/bienvenida conectada al flujo real de registro — pantalla intermedia con "Saltar por ahora y explorar", resuelve el onboarding forzoso de 3 pasos detectado en la auditoría', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '21.5', nombre: 'Seguridad: /admin-escala no verificaba es_admin — cualquier usuario logueado con la URL podía borrar proyectos, usuarios, países e industrias. Protegida antes de conectarla al dashboard (visible solo para admins)', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '21.6', nombre: '/angel conectada al dashboard (acceso rápido) — dejó de ser huérfana', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '21.7', nombre: 'Roles unificados a los 7 canónicos en las 4 definiciones que no coincidían: que-es-escala (6→7), filtro del directorio (mentores y empresas eran invisibles al filtrar), etiquetas del perfil público (5→7)', done: true, valor: 700000, quien: 'Claude AI' },
+      { num: '21.8', nombre: 'QA: 6 tests automáticos del sistema de ofertas (origen, separación, default, búsqueda por email) + 2 verificaciones manuales nuevas (flujo bienvenida, oferta visible al invitado)', done: true, valor: 400000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
