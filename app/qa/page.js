@@ -887,9 +887,19 @@ const GRUPOS = [
   },
 ]
 
+const MANUAL = [
+  { id: 'm1', nombre: 'Login — Enter en el campo de contraseña', texto: 'Escribe tu contraseña en /registro (pestaña Iniciar sesión) y da Enter. Debe iniciar sesión sin que hagas clic en el botón.' },
+  { id: 'm2', nombre: 'Registro — Enter en el campo de contraseña', texto: 'Lo mismo pero en la pestaña Crear cuenta, con datos de prueba. Debe crear la cuenta sin clic en el botón.' },
+  { id: 'm3', nombre: 'Logo clickeable — página interna', texto: 'Desde cualquier página logueada (ej. /proyectos, /carril, /hitos), haz clic en el logo "Escala" arriba a la izquierda. Debe llevarte a /dashboard.' },
+  { id: 'm4', nombre: 'Logo clickeable — página pre-sesión', texto: 'Desde /registro o /onboarding, haz clic en el logo. Debe llevarte a la portada pública (/), no a /dashboard.' },
+  { id: 'm5', nombre: 'Botón "Iniciar sesión" en la landing', texto: 'Entra a escala.network sin sesión iniciada. Debe verse "Iniciar sesión" junto a "Registrarme" en el nav de arriba.' },
+  { id: 'm6', nombre: '"Iniciar sesión" abre la pestaña correcta', texto: 'Haz clic en "Iniciar sesión" desde la landing. Debe abrir /registro ya en la pestaña de login, no en la de crear cuenta.' },
+]
+
 export default function QA() {
   const [resultados, setResultados] = useState({})
   const [corriendoTodo, setCorriendoTodo] = useState(false)
+  const [manualChecks, setManualChecks] = useState({})
 
   async function correrTest(test) {
     setResultados(prev => ({ ...prev, [test.id]: { estado: 'corriendo' } }))
@@ -969,6 +979,27 @@ export default function QA() {
             </div>
           </div>
         ))}
+
+        <div style={{marginTop:'2rem',background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'12px',padding:'1.5rem'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.4rem'}}>
+            <span style={{fontSize:'1rem'}}>✋</span>
+            <div style={{fontSize:'0.95rem',fontWeight:'800',color:'#fff'}}>Verificación manual — no automatizable</div>
+          </div>
+          <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1.25rem',lineHeight:'1.6'}}>
+            Esto NO se prueba solo. Son interacciones de navegador (teclado, clics, navegación) sin ninguna respuesta de API que un fetch pueda revisar — un test automático aquí daría un falso ✓ verde. Márcalos tú mismo después de probarlos a mano.
+          </div>
+          <div style={{display:'flex',flexDirection:'column',gap:'0.625rem'}}>
+            {MANUAL.map(item => (
+              <label key={item.id} style={{display:'flex',gap:'0.75rem',alignItems:'flex-start',cursor:'pointer',padding:'0.75rem',borderRadius:'8px',background: manualChecks[item.id] ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.03)',border: manualChecks[item.id] ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(255,255,255,0.06)'}}>
+                <input type="checkbox" checked={!!manualChecks[item.id]} onChange={() => setManualChecks(prev => ({ ...prev, [item.id]: !prev[item.id] }))} style={{marginTop:'0.2rem',flexShrink:0,width:'16px',height:'16px',accentColor:'#1D9E75'}} />
+                <div>
+                  <div style={{fontSize:'0.82rem',fontWeight:'700',color: manualChecks[item.id] ? '#1D9E75' : '#fff'}}>{item.nombre}</div>
+                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginTop:'0.15rem',lineHeight:'1.5'}}>{item.texto}</div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
 
         <div style={{marginTop:'2rem',padding:'1.25rem',background:'rgba(255,255,255,0.04)',borderRadius:'12px',fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6'}}>
           <strong style={{color:'#fff'}}>Nota:</strong> esta página crea y elimina datos de prueba automáticamente para no ensuciar la base de datos real. Los proyectos y países de prueba llevan el prefijo "QA-" y se limpian solos cuando es posible.
