@@ -549,7 +549,7 @@ export default function Dashboard() {
               <div>
                 <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem'}}>Acciones rápidas</div>
                 <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
-                  {acciones.slice(0,5).map((a,i) => (
+                  {acciones.slice(0,8).map((a,i) => (
                     <a key={i} href={a.href} style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'9px',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#fff'}}>
                       <span>{a.icon}</span>{a.label}
                     </a>
