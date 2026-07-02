@@ -16,6 +16,7 @@ export default function Dashboard() {
   const [misProyectos, setMisProyectos] = useState([])
   const [misPostulaciones, setMisPostulaciones] = useState([])
   const [misAportes, setMisAportes] = useState([])
+  const [totalIngresos, setTotalIngresos] = useState(0)
   const [todosProyectos, setTodosProyectos] = useState([])
   const [postulacionesRecibidas, setPostulacionesRecibidas] = useState([])
   const [notificaciones, setNotificaciones] = useState([])
@@ -65,6 +66,15 @@ export default function Dashboard() {
       setCargaEquipo(data.cargaEquipo || [])
       setProyectosGestionados(data.proyectosGestionados || [])
       setMensajesNoLeidos(data.mensajesNoLeidos || 0)
+
+      // Cargar total de ingresos del primer proyecto del fundador
+      const primerProyecto = (data.misProyectos || [])[0]
+      if (primerProyecto) {
+        fetch('/api/ingresos?proyecto_id=' + primerProyecto.id)
+          .then(r => r.json())
+          .then(d => setTotalIngresos(d.total || 0))
+          .catch(() => {})
+      }
       setProyectosFinalizados(data.proyectosFinalizados || [])
       setVistaSugerida(data.vistaSugerida || 'especialista')
       setVista(data.vistaSugerida || 'resumen')
@@ -646,27 +656,33 @@ export default function Dashboard() {
 
           {/* ZONA 4 — SIDEBAR: indicadores compactos */}
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
-            <div style={{background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'12px',padding:'1rem'}}>
+            <a href="/postulaciones" style={{textDecoration:'none',background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
               <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#AFA9EC'}}>{misPostulaciones.length}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones enviadas</div>
-            </div>
-            <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem'}}>
+              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones enviadas →</div>
+            </a>
+            <a href="/postulaciones" style={{textDecoration:'none',background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
               <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>{postAceptadas}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Roles aceptados</div>
-            </div>
-            <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1rem'}}>
+              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Roles aceptados →</div>
+            </a>
+            <a href="/aportes" style={{textDecoration:'none',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1rem',display:'block'}}>
               <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>${totalAportes.toLocaleString()}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Aportes totales</div>
-            </div>
+              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Aportes totales →</div>
+            </a>
             <a href="/score" style={{textDecoration:'none',background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
               <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#AFA9EC'}}>{perfil?.escala_score || 0}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Escala Score</div>
+              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Escala Score →</div>
             </a>
             {esFundador && (
-              <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1rem'}}>
+              <a href="/admin" style={{textDecoration:'none',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>{recibidasPendientes}</div>
-                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones por revisar</div>
-              </div>
+                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones por revisar →</div>
+              </a>
+            )}
+            {esFundador && (
+              <a href="/ingresos" style={{textDecoration:'none',background:'rgba(29,158,117,0.05)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'12px',padding:'1rem',display:'block'}}>
+                <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>${totalIngresos.toLocaleString()}</div>
+                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Ingresos del proyecto →</div>
+              </a>
             )}
             {mensajesNoLeidos > 0 && (
               <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem',cursor:'pointer'}} onClick={() => misProyectos.length > 0 && (window.location.href='/proyectos/'+misProyectos[0].id+'/workspace/chat')}>
@@ -675,10 +691,10 @@ export default function Dashboard() {
               </div>
             )}
             {proyectosFinalizados.length > 0 && (
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1rem'}}>
+              <a href="/proyectos" style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1rem',display:'block'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>{proyectosFinalizados.length}</div>
-                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Proyectos finalizados</div>
-              </div>
+                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Proyectos finalizados →</div>
+              </a>
             )}
 
             <div style={{borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'0.875rem',marginTop:'0.25rem'}}>
