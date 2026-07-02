@@ -316,6 +316,22 @@ const fases = [
       { num: '18.8', nombre: 'Fix: carriles de compensación y tipos de proyecto quedaron sin ninguna mención en el home tras la reestructuración inicial — se agregaron versiones resumidas con link a compensacion.html', done: true, valor: 300000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '19',
+    titulo: 'Modelo de Compensación — Cumplió/Forma de Pago (reemplaza Carriles A/B/C)',
+    estado: 'completa',
+    valor_total: 5500000,
+    valor_hecho: 5500000,
+    hitos: [
+      { num: '19.1', nombre: 'Migración de base de datos — estado_financiacion en proyectos, cumplio/forma_pago en postulaciones, tabla nueva deuda_pendiente con RLS', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '19.2', nombre: 'Toggle "Con Recursos para Etapa Inicial" / "Riesgo Compartido" en la creación de proyecto', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '19.3', nombre: '/carril reescrito por completo — confirmar cumplimiento (con vista de tareas verificadas del especialista) y elegir forma de pago según el estado del proyecto', done: true, valor: 1800000, quien: 'Claude AI' },
+      { num: '19.4', nombre: 'API de deuda pendiente + registro visible en el workspace, ordenado de menor a mayor, con resolución selectiva (pagar cash o formalizar acciones deuda por deuda)', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '19.5', nombre: 'Nuevo evento de notificación — cumplimiento_confirmado, avisa al especialista con la forma de pago definida (o que no aplicó pago)', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '19.6', nombre: 'Fix: GET de postulaciones no soportaba filtrar "todas las postulaciones de mis proyectos" — /carril viejo consultaba la relación al revés y nunca mostraba nada real', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '19.7', nombre: 'Actualización de textos en detalle de proyecto, workspace y dashboard — ya no mencionan carriles A/B/C', done: true, valor: 300000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {

@@ -18,6 +18,7 @@ export default function Workspace() {
   const [creandoHito, setCreandoHito] = useState(false)
   const [nuevoAporte, setNuevoAporte] = useState({ descripcion: '', valor: '', tipo: 'horas' })
   const [registrando, setRegistrando] = useState(false)
+  const [deuda, setDeuda] = useState({ pendiente: [], resuelta: [], total_pendiente: 0 })
   const [badgeTareas, setBadgeTareas] = useState(0)
   const [badgeChat, setBadgeChat] = useState(0)
 
@@ -81,6 +82,11 @@ export default function Workspace() {
       setAportes(aportesData.aportes || [])
       setPostulaciones(postEquipo)
 
+      // Cargar deuda pendiente (solo tiene datos si el proyecto pasó por Riesgo Compartido)
+      const deudaRes = await fetch('/api/deuda?proyecto_id=' + pid)
+      const deudaData = await deudaRes.json()
+      setDeuda({ pendiente: deudaData.pendiente || [], resuelta: deudaData.resuelta || [], total_pendiente: deudaData.total_pendiente || 0 })
+
       // Cargar badge tareas pendientes
       const tRes = await fetch('/api/tareas?proyecto_id=' + pid)
       const tData = await tRes.json()
@@ -127,6 +133,25 @@ export default function Workspace() {
     const data = await res.json()
     if (!data.error) setHitos(h => h.map(x => x.id === hito.id ? data.hito : x))
     setActualizando(null)
+  }
+
+  async function resolverDeuda(deudaId, resuelta_como) {
+    const res = await fetch('/api/deuda', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: deudaId, resuelta_como, resuelta_por: usuario?.id })
+    })
+    const data = await res.json()
+    if (!data.error) {
+      setDeuda(prev => {
+        const item = prev.pendiente.find(d => d.id === deudaId)
+        return {
+          pendiente: prev.pendiente.filter(d => d.id !== deudaId),
+          resuelta: item ? [...prev.resuelta, { ...item, resuelta: true, resuelta_como }] : prev.resuelta,
+          total_pendiente: prev.total_pendiente - Number(item?.valor || 0),
+        }
+      })
+    }
   }
 
   async function crearHito() {
@@ -476,18 +501,37 @@ export default function Workspace() {
             </div>
 
             <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
-              <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Los 3 carriles de compensación</div>
-              {[
-                {id:'A',label:'Carril A — Extraordinario',desc:'El aporte fue excepcional. Te conviertes en socio accionista al precio de mercado completo.',color:'#1D9E75'},
-                {id:'B',label:'Carril B — Normal',desc:'Cumpliste lo esperado. Recibes el 50% del precio pactado más experiencia y red de contactos.',color:'#E8A020'},
-                {id:'C',label:'Carril C — Sales del proyecto',desc:'El equipo decide que no continúas. Recibes el precio de mercado completo en efectivo.',color:'#D85A30'},
-              ].map(c => (
-                <div key={c.id} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'10px',padding:'0.875rem',marginBottom:'0.5rem'}}>
-                  <div style={{fontSize:'0.82rem',fontWeight:'700',color:c.color,marginBottom:'0.2rem'}}>{c.label}</div>
-                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>{c.desc}</div>
-                </div>
-              ))}
+              <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem'}}>Modelo de compensación</div>
+              <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6',marginBottom:'1rem'}}>
+                No cumplió → no se paga nada. Cumplió → se paga según el estado del proyecto: <strong style={{color:'#fff'}}>{proyecto?.estado_financiacion === 'con_recursos' ? 'Con Recursos (cash o acciones)' : 'Riesgo Compartido (acciones o deuda como pasivo)'}</strong>.
+              </div>
+              <a href="/carril" style={{display:'inline-block',fontSize:'0.78rem',color:'#1D9E75',fontWeight:'600',textDecoration:'none'}}>Confirmar cumplimiento y forma de pago →</a>
             </div>
+
+            {(deuda.pendiente.length > 0 || deuda.resuelta.length > 0) && (
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginTop:'1rem'}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1rem'}}>
+                  <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff'}}>Deuda registrada</div>
+                  <div style={{fontFamily:'monospace',fontSize:'0.85rem',fontWeight:'700',color:'#E8A020'}}>${deuda.total_pendiente.toLocaleString()} pendiente</div>
+                </div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.875rem'}}>Ordenada de menor a mayor — lo más básico primero, para resolver rápido cuando entre capital.</div>
+                {deuda.pendiente.map(d => (
+                  <div key={d.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'0.75rem',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'8px',padding:'0.75rem',marginBottom:'0.5rem'}}>
+                    <div>
+                      <div style={{fontSize:'0.78rem',color:'#fff',fontWeight:'600'}}>{d.concepto}</div>
+                      <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{d.perfiles?.nombre || 'Especialista'} · {d.forma_pago === 'acciones' ? 'convertible en acciones' : 'deuda como pasivo'} · ${Number(d.valor).toLocaleString()}</div>
+                    </div>
+                    <div style={{display:'flex',gap:'0.4rem',flexShrink:0}}>
+                      <button onClick={() => resolverDeuda(d.id, 'cash')} style={{background:'rgba(29,158,117,0.15)',border:'1px solid rgba(29,158,117,0.4)',color:'#1D9E75',fontSize:'0.68rem',fontWeight:'700',padding:'0.4rem 0.6rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Pagar cash</button>
+                      <button onClick={() => resolverDeuda(d.id, 'acciones')} style={{background:'rgba(83,74,183,0.15)',border:'1px solid rgba(83,74,183,0.4)',color:'#534AB7',fontSize:'0.68rem',fontWeight:'700',padding:'0.4rem 0.6rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Formalizar acciones</button>
+                    </div>
+                  </div>
+                ))}
+                {deuda.resuelta.length > 0 && (
+                  <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.75rem'}}>{deuda.resuelta.length} deuda(s) ya resuelta(s)</div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

@@ -11,11 +11,13 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const rol_id = searchParams.get('rol_id')
   const postulante_id = searchParams.get('postulante_id')
+  const fundador_id = searchParams.get('fundador_id')
   let query = supabase
     .from('postulaciones')
-    .select('*, perfiles ( nombre, ciudad, pais, rol_principal, escala_score, especialidad, whatsapp ), roles ( nombre, proyecto_id, proyectos ( nombre, sector, ciudad ) )')
+    .select('*, perfiles ( nombre, ciudad, pais, rol_principal, escala_score, especialidad, whatsapp ), roles!inner ( nombre, proyecto_id, proyectos!inner ( nombre, sector, ciudad, fundador_id, estado_financiacion ) )')
   if (rol_id) query = query.eq('rol_id', rol_id)
   if (postulante_id) query = query.eq('postulante_id', postulante_id)
+  if (fundador_id) query = query.eq('roles.proyectos.fundador_id', fundador_id)
   const { data, error } = await query.order('created_at', { ascending: false })
   if (error) return Response.json({ error: error.message }, { status: 500 })
   return Response.json({ postulaciones: data })
@@ -62,14 +64,23 @@ export async function POST(request) {
 
 export async function PATCH(request) {
   const body = await request.json()
-  const { id, estado } = body
-  if (!id || !estado) return Response.json({ error: 'Faltan campos' }, { status: 400 })
+  const { id, estado, cumplio, cumplio_confirmado_por, forma_pago, valor, concepto } = body
+  if (!id) return Response.json({ error: 'Falta id' }, { status: 400 })
+
+  const updates = {}
+  if (estado) updates.estado = estado
+  if (typeof cumplio === 'boolean') {
+    updates.cumplio = cumplio
+    updates.cumplio_confirmado_por = cumplio_confirmado_por || null
+    updates.cumplio_confirmado_en = new Date().toISOString()
+  }
+  if (forma_pago) updates.forma_pago = forma_pago
 
   const { data, error } = await supabase
     .from('postulaciones')
-    .update({ estado })
+    .update(updates)
     .eq('id', id)
-    .select('*, perfiles ( nombre, email ), roles ( nombre, proyecto_id, proyectos ( nombre ) )')
+    .select('*, perfiles ( nombre, email ), roles ( nombre, proyecto_id, proyectos ( nombre, estado_financiacion ) )')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
@@ -98,6 +109,43 @@ export async function PATCH(request) {
     }
   } catch (e) {
     console.error('Error notificando cambio de postulacion:', e)
+  }
+
+  // Cumplimiento confirmado — notifica y, si el proyecto está en Riesgo Compartido, registra la deuda
+  if (typeof cumplio === 'boolean') {
+    try {
+      const postulante_email = data.perfiles?.email
+      const postulante_nombre = data.perfiles?.nombre || 'Usuario'
+      const rol_nombre = data.roles?.nombre || 'el rol'
+      const proyecto_nombre = data.roles?.proyectos?.nombre || 'el proyecto'
+      const proyecto_id = data.roles?.proyecto_id
+      const estadoFin = data.roles?.proyectos?.estado_financiacion || 'riesgo_compartido'
+
+      if (cumplio === true && forma_pago && estadoFin === 'riesgo_compartido' && (forma_pago === 'acciones' || forma_pago === 'pasivo')) {
+        await supabase.from('deuda_pendiente').insert([{
+          proyecto_id,
+          postulacion_id: data.id,
+          beneficiario_id: data.postulante_id,
+          concepto: concepto || (rol_nombre + ' — ' + proyecto_nombre),
+          valor: valor || 0,
+          forma_pago,
+        }])
+      }
+
+      if (data.postulante_id) {
+        const forma_pago_labels = { cash: 'pago en efectivo', acciones: 'convertible en acciones', pasivo: 'deuda como pasivo de la empresa' }
+        await notificar('cumplimiento_confirmado', { id: data.postulante_id, email: postulante_email }, {
+          postulante_nombre,
+          proyecto_nombre,
+          proyecto_id,
+          cumplio,
+          forma_pago_label: forma_pago_labels[forma_pago] || forma_pago || '',
+          workspace_url: BASE_URL + '/proyectos/' + proyecto_id + '/workspace',
+        })
+      }
+    } catch (e) {
+      console.error('Error procesando cumplimiento/deuda:', e.message)
+    }
   }
 
   return Response.json({ postulacion: data })

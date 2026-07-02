@@ -2,44 +2,20 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
-const carriles = [
-  {
-    id: 'A',
-    nombre: 'Carril A — Extraordinario',
-    desc: 'El aporte fue excepcional. El especialista se convierte en socio accionista.',
-    compensacion: 'Equity al precio de mercado completo',
-    color: '#1D9E75',
-    bg: 'rgba(29,158,117,0.1)',
-    border: 'rgba(29,158,117,0.3)',
-  },
-  {
-    id: 'B',
-    nombre: 'Carril B — Normal',
-    desc: 'El aporte cumplió lo esperado. Se paga el precio pactado más experiencia y red.',
-    compensacion: '50% del precio de mercado',
-    color: '#E8A020',
-    bg: 'rgba(232,160,32,0.1)',
-    border: 'rgba(232,160,32,0.3)',
-  },
-  {
-    id: 'C',
-    nombre: 'Carril C — Sale del proyecto',
-    desc: 'El proyecto decide que el especialista no continúa como socio.',
-    compensacion: 'Precio de mercado completo en efectivo',
-    color: '#D85A30',
-    bg: 'rgba(216,90,48,0.1)',
-    border: 'rgba(216,90,48,0.3)',
-  },
-]
+const FORMAS = {
+  cash: { label: 'Cash', desc: 'Pago en efectivo, inmediato', color: '#1D9E75' },
+  acciones: { label: 'Convertible en acciones', desc: 'Riesgo real de terminar en $0 si el proyecto no genera valor', color: '#534AB7' },
+  pasivo: { label: 'Deuda como pasivo', desc: 'Riesgo real de terminar en $0 si el proyecto nunca genera ingresos', color: '#E8A020' },
+}
 
 export default function Carril() {
   const [usuario, setUsuario] = useState(null)
-  const [proyectos, setProyectos] = useState([])
   const [postulaciones, setPostulaciones] = useState([])
-  const [seleccionados, setSeleccionados] = useState({})
-  const [guardados, setGuardados] = useState({})
+  const [tareasPorProyecto, setTareasPorProyecto] = useState({})
   const [cargando, setCargando] = useState(true)
   const [guardando, setGuardando] = useState(null)
+  const [eligiendoForma, setEligiendoForma] = useState({})
+  const [valorInput, setValorInput] = useState({})
 
   useEffect(() => {
     async function cargar() {
@@ -47,33 +23,70 @@ export default function Carril() {
       if (!user) { window.location.href = '/registro'; return }
       setUsuario(user)
 
-      const [pRes, postRes] = await Promise.all([
-        fetch('/api/proyectos'),
-        fetch('/api/postulaciones?postulante_id=' + user.id)
-      ])
-
-      const pData = await pRes.json()
+      const postRes = await fetch('/api/postulaciones?fundador_id=' + user.id)
       const postData = await postRes.json()
-
-      const misproyectos = (pData.proyectos || []).filter(p => p.fundador_id === user.id)
-      setProyectos(misproyectos)
-
       const aceptadas = (postData.postulaciones || []).filter(p => p.estado === 'aceptada')
       setPostulaciones(aceptadas)
+
+      // Cargar tareas de cada proyecto involucrado, una vez por proyecto
+      const proyectoIds = [...new Set(aceptadas.map(p => p.roles?.proyecto_id).filter(Boolean))]
+      const tareasMap = {}
+      await Promise.all(proyectoIds.map(async (pid) => {
+        const res = await fetch('/api/tareas?proyecto_id=' + pid)
+        const data = await res.json()
+        tareasMap[pid] = data.tareas || []
+      }))
+      setTareasPorProyecto(tareasMap)
 
       setCargando(false)
     }
     cargar()
   }, [])
 
-  async function guardarCarril(postulacion_id, carril) {
-    setGuardando(postulacion_id)
-    await fetch('/api/postulaciones', {
+  function tareasDe(postulacion) {
+    const pid = postulacion.roles?.proyecto_id
+    const todas = tareasPorProyecto[pid] || []
+    return todas.filter(t => t.asignado_a === postulacion.postulante_id)
+  }
+
+  async function marcarCumplio(postulacion, cumplio) {
+    setGuardando(postulacion.id)
+    if (!cumplio) {
+      // No cumplió — se cierra sin pago, sin necesidad de elegir forma de pago
+      const res = await fetch('/api/postulaciones', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: postulacion.id, cumplio: false, cumplio_confirmado_por: usuario.id })
+      })
+      const data = await res.json()
+      setPostulaciones(ps => ps.map(p => p.id === postulacion.id ? data.postulacion : p))
+      setGuardando(null)
+    } else {
+      // Cumplió — se abre el selector de forma de pago, todavía no se guarda
+      setEligiendoForma(e => ({ ...e, [postulacion.id]: true }))
+      setGuardando(null)
+    }
+  }
+
+  async function confirmarFormaPago(postulacion, forma_pago) {
+    const valor = Number(valorInput[postulacion.id] || 0)
+    if (!valor) { alert('Ingresa el valor acordado antes de confirmar'); return }
+    setGuardando(postulacion.id)
+    const res = await fetch('/api/postulaciones', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: postulacion_id, estado: 'aceptada', carril })
+      body: JSON.stringify({
+        id: postulacion.id,
+        cumplio: true,
+        cumplio_confirmado_por: usuario.id,
+        forma_pago,
+        valor,
+        concepto: (postulacion.roles?.nombre || 'Rol') + ' — ' + (postulacion.roles?.proyectos?.nombre || ''),
+      })
     })
-    setGuardados(g => ({ ...g, [postulacion_id]: carril }))
+    const data = await res.json()
+    setPostulaciones(ps => ps.map(p => p.id === postulacion.id ? data.postulacion : p))
+    setEligiendoForma(e => ({ ...e, [postulacion.id]: false }))
     setGuardando(null)
   }
 
@@ -90,95 +103,86 @@ export default function Carril() {
         <div style={{display:'flex',gap:'1.5rem'}}>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
           <a href="/admin" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Panel fundador</a>
-          <a href="/carril" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Definir carril</a>
+          <a href="/carril" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Cumplimiento y pago</a>
         </div>
       </nav>
 
       <main style={{maxWidth:'900px',margin:'0 auto',padding:'2rem 1.25rem'}}>
         <div style={{marginBottom:'2rem'}}>
           <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#E8A020',marginBottom:'0.4rem'}}>Modelo de compensación</div>
-          <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Definir carril de compensación</div>
-          <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Cuando el capitalista llega, ejecutor y capitalista definen juntos el carril de cada especialista.</div>
-        </div>
-
-        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:'1rem',marginBottom:'2.5rem'}}>
-          {carriles.map(c => (
-            <div key={c.id} style={{background:c.bg,border:`1px solid ${c.border}`,borderRadius:'12px',padding:'1.25rem',position:'relative',overflow:'hidden'}}>
-              <div style={{fontFamily:'monospace',fontSize:'3rem',fontWeight:'700',color:c.color,opacity:0.15,position:'absolute',top:0,right:'0.75rem',lineHeight:1}}>{c.id}</div>
-              <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.3rem'}}>{c.nombre}</div>
-              <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'0.5rem',lineHeight:'1.5'}}>{c.desc}</div>
-              <div style={{fontSize:'0.72rem',fontWeight:'600',color:c.color}}>{c.compensacion}</div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem',paddingBottom:'0.75rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
-          Postulaciones aceptadas — definir carril
+          <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Confirmar cumplimiento y forma de pago</div>
+          <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Un solo filtro decide si hay pago: ¿cumplió lo pactado? Si sí, elige cómo se paga según el estado del proyecto.</div>
         </div>
 
         {postulaciones.length === 0 ? (
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
             <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📋</div>
             <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin postulaciones aceptadas</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Los carriles se definen cuando hay especialistas con postulaciones aceptadas en tus proyectos.</div>
+            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Aquí verás a cada especialista aceptado en tus proyectos, para confirmar su cumplimiento y forma de pago.</div>
             <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>
           </div>
         ) : (
           <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-            {postulaciones.map(p => (
-              <div key={p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
-                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'1rem',marginBottom:'1.25rem'}}>
-                  <div>
-                    <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.roles?.nombre || 'Rol'}</div>
-                    <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Postulación aceptada · {new Date(p.created_at).toLocaleDateString('es-CO')}</div>
-                  </div>
-                  {guardados[p.id] && (
-                    <span style={{fontSize:'0.78rem',fontWeight:'700',padding:'0.3rem 0.875rem',borderRadius:'20px',background: guardados[p.id]==='A' ? 'rgba(29,158,117,0.15)' : guardados[p.id]==='B' ? 'rgba(232,160,32,0.15)' : 'rgba(216,90,48,0.1)', color: guardados[p.id]==='A' ? '#1D9E75' : guardados[p.id]==='B' ? '#E8A020' : '#D85A30'}}>
-                      ✓ Carril {guardados[p.id]} definido
+            {postulaciones.map(p => {
+              const tareas = tareasDe(p)
+              const verificadas = tareas.filter(t => t.estado === 'verificada').length
+              const estadoFin = p.roles?.proyectos?.estado_financiacion || 'riesgo_compartido'
+              const opciones = estadoFin === 'con_recursos' ? ['cash', 'acciones'] : ['acciones', 'pasivo']
+              const yaResuelto = typeof p.cumplio === 'boolean'
+
+              return (
+                <div key={p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'1rem',marginBottom:'1rem'}}>
+                    <div>
+                      <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.perfiles?.nombre || 'Especialista'} — {p.roles?.nombre || 'Rol'}</div>
+                      <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>{p.roles?.proyectos?.nombre || 'Proyecto'} · {tareas.length > 0 ? `${verificadas} de ${tareas.length} tareas verificadas` : 'Sin tareas registradas todavía'}</div>
+                    </div>
+                    <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',textTransform:'uppercase',letterSpacing:'0.04em',background: estadoFin === 'con_recursos' ? 'rgba(29,158,117,0.15)' : 'rgba(232,160,32,0.15)', color: estadoFin === 'con_recursos' ? '#1D9E75' : '#E8A020'}}>
+                      {estadoFin === 'con_recursos' ? 'Con Recursos' : 'Riesgo Compartido'}
                     </span>
+                  </div>
+
+                  {yaResuelto ? (
+                    p.cumplio ? (
+                      <div style={{padding:'0.875rem',borderRadius:'8px',background: `${FORMAS[p.forma_pago]?.color}1A`, border:`1px solid ${FORMAS[p.forma_pago]?.color}4D`}}>
+                        <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff'}}>✓ Cumplió — {FORMAS[p.forma_pago]?.label}</div>
+                        <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginTop:'0.2rem'}}>{FORMAS[p.forma_pago]?.desc}</div>
+                      </div>
+                    ) : (
+                      <div style={{padding:'0.875rem',borderRadius:'8px',background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.3)'}}>
+                        <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff'}}>✗ No cumplió — sin pago</div>
+                      </div>
+                    )
+                  ) : !eligiendoForma[p.id] ? (
+                    <div style={{display:'flex',gap:'0.75rem'}}>
+                      <button onClick={() => marcarCumplio(p, true)} disabled={guardando === p.id} style={{flex:1,background:'rgba(29,158,117,0.15)',border:'1px solid rgba(29,158,117,0.4)',color:'#1D9E75',fontWeight:'700',fontSize:'0.82rem',padding:'0.75rem',borderRadius:'8px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>✓ Cumplió</button>
+                      <button onClick={() => marcarCumplio(p, false)} disabled={guardando === p.id} style={{flex:1,background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.3)',color:'#D85A30',fontWeight:'700',fontSize:'0.82rem',padding:'0.75rem',borderRadius:'8px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>✗ No cumplió</button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div style={{fontSize:'0.72rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Valor acordado (COP)</div>
+                      <input type="number" value={valorInput[p.id] || ''} onChange={e => setValorInput(v => ({ ...v, [p.id]: e.target.value }))} placeholder="Ej: 500000" style={{width:'100%',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.6rem 0.75rem',color:'#fff',fontSize:'0.85rem',marginBottom:'0.875rem',fontFamily:'Inter,sans-serif'}} />
+                      <div style={{fontSize:'0.72rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Forma de pago</div>
+                      <div style={{display:'grid',gridTemplateColumns:`repeat(${opciones.length},1fr)`,gap:'0.5rem'}}>
+                        {opciones.map(op => (
+                          <button key={op} onClick={() => confirmarFormaPago(p, op)} disabled={guardando === p.id} style={{background:`${FORMAS[op].color}1A`,border:`1px solid ${FORMAS[op].color}4D`,borderRadius:'8px',padding:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif',textAlign:'left'}}>
+                            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff'}}>{FORMAS[op].label}</div>
+                            <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>{FORMAS[op].desc}</div>
+                          </button>
+                        ))}
+                      </div>
+                      <button onClick={() => setEligiendoForma(e => ({ ...e, [p.id]: false }))} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#8FA3CC',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
+                    </div>
                   )}
                 </div>
-
-                <div style={{fontSize:'0.72rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.75rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Seleccionar carril</div>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'0.5rem'}}>
-                  {carriles.map(c => (
-                    <button
-                      key={c.id}
-                      onClick={() => {
-                        setSeleccionados(s => ({ ...s, [p.id]: c.id }))
-                        guardarCarril(p.id, c.id)
-                      }}
-                      disabled={guardando === p.id}
-                      style={{
-                        background: seleccionados[p.id] === c.id || guardados[p.id] === c.id ? c.bg : 'rgba(255,255,255,0.04)',
-                        border: seleccionados[p.id] === c.id || guardados[p.id] === c.id ? `2px solid ${c.color}` : '1px solid rgba(255,255,255,0.1)',
-                        borderRadius:'8px',
-                        padding:'0.75rem',
-                        cursor:'pointer',
-                        fontFamily:'Inter,sans-serif',
-                        transition:'all 0.2s'
-                      }}
-                    >
-                      <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:c.color,marginBottom:'0.2rem'}}>{c.id}</div>
-                      <div style={{fontSize:'0.72rem',color:'#fff',fontWeight:'600'}}>{c.id === 'A' ? 'Extraordinario' : c.id === 'B' ? 'Normal' : 'Sale'}</div>
-                    </button>
-                  ))}
-                </div>
-
-                {seleccionados[p.id] && (
-                  <div style={{marginTop:'0.875rem',padding:'0.75rem',borderRadius:'8px',background: carriles.find(c=>c.id===seleccionados[p.id])?.bg,border:`1px solid ${carriles.find(c=>c.id===seleccionados[p.id])?.border}`}}>
-                    <div style={{fontSize:'0.78rem',color:'#fff',fontWeight:'600',marginBottom:'0.2rem'}}>{carriles.find(c=>c.id===seleccionados[p.id])?.nombre}</div>
-                    <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>{carriles.find(c=>c.id===seleccionados[p.id])?.compensacion}</div>
-                  </div>
-                )}
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
 
         <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:'12px',padding:'1.25rem',marginTop:'2rem'}}>
           <div style={{fontSize:'0.75rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Regla del modelo</div>
-          <div style={{fontSize:'0.82rem',color:'#8FA3CC',lineHeight:'1.6'}}>En ningún escenario el especialista pierde por haber tomado el riesgo. Carril A: equity completo. Carril B: 50% pactado + experiencia + red. Carril C: precio de mercado completo en efectivo.</div>
+          <div style={{fontSize:'0.82rem',color:'#8FA3CC',lineHeight:'1.6'}}>No cumplió → no se paga nada. Cumplió y el proyecto tiene recursos → cash o acciones. Cumplió y el proyecto está en Riesgo Compartido → acciones o deuda como pasivo, con riesgo real de terminar en $0 hasta que el proyecto genere valor.</div>
         </div>
       </main>
     </div>

@@ -24,7 +24,7 @@ export default function Proyectos() {
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [creandoPais, setCreandoPais] = useState(false)
   const [form, setForm] = useState({
-    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: ''
+    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido'
   })
 
   useEffect(() => {
@@ -241,6 +241,18 @@ export default function Proyectos() {
               <div style={s.tipoCard(form.tipo === 'B')} onClick={() => actualizar('tipo', 'B')}>
                 <div style={s.tipoLabel}>Tipo B — Transformación</div>
                 <div style={s.tipoDesc}>Empresa existente con una brecha específica</div>
+              </div>
+            </div>
+
+            <label style={s.label}>¿El proyecto tiene recursos para esta etapa inicial? *</label>
+            <div style={s.tipoGrid}>
+              <div style={s.tipoCard(form.estado_financiacion === 'con_recursos')} onClick={() => actualizar('estado_financiacion', 'con_recursos')}>
+                <div style={s.tipoLabel}>Con Recursos para Etapa Inicial</div>
+                <div style={s.tipoDesc}>Hay fondos reales para pagar en efectivo lo que se acuerde con cada especialista</div>
+              </div>
+              <div style={s.tipoCard(form.estado_financiacion === 'riesgo_compartido')} onClick={() => actualizar('estado_financiacion', 'riesgo_compartido')}>
+                <div style={s.tipoLabel}>Riesgo Compartido</div>
+                <div style={s.tipoDesc}>Todavía no hay fondos — el pago queda en acciones o como deuda de la empresa, condicionado a que el proyecto genere valor</div>
               </div>
             </div>
 

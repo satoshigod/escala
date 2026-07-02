@@ -126,7 +126,7 @@ export default function ProyectoDetalle() {
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
             <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#E8A020',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'0.875rem'}}>¿Cómo funciona tu compensación?</div>
             <div style={{fontSize:'0.85rem',color:'#C8D4E8',lineHeight:'1.7'}}>
-              Tu trabajo queda registrado como deuda diferida a precio de mercado. Cuando llegue el capital o los ingresos, se paga según el carril que defina el equipo — Carril A (equity), Carril B (50% del precio pactado) o Carril C (precio completo en efectivo).
+              Tu trabajo queda registrado desde el primer día. Si cumples lo pactado, se paga — la forma depende de si el proyecto ya tiene recursos para esta etapa (cash o acciones) o está en Riesgo Compartido (acciones o deuda registrada como pasivo, condicionada a que el proyecto genere valor).
             </div>
           </div>
         </div>
