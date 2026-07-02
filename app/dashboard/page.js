@@ -236,7 +236,7 @@ export default function Dashboard() {
       {/* ZONA 1 — HEADER: identidad, switcher de vista, perfil */}
       <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:'1.5rem'}}>
-          <div style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div>
+          <a href="/dashboard" style={{textDecoration:'none'}}><div style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div></a>
           {conectadoRealtime && (
             <div title="Notificaciones en tiempo real activas" style={{width:'7px',height:'7px',borderRadius:'50%',background:'#1D9E75',boxShadow:'0 0 6px rgba(29,158,117,0.6)'}}></div>
           )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 export default function Registro() {
@@ -10,6 +10,11 @@ export default function Registro() {
   const [nombre, setNombre] = useState('')
   const [mensaje, setMensaje] = useState('')
   const [cargando, setCargando] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('modo') === 'login') setModo('login')
+  }, [])
 
   async function registrarse() {
     setCargando(true)
@@ -72,7 +77,7 @@ export default function Registro() {
   return (
     <main style={s.wrap}>
       <div style={s.card}>
-        <div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div>
+        <a href="/" style={{textDecoration:'none'}}><div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div></a>
         <div style={s.sub}>Plataforma de empresas colaborativas</div>
 
         <a href="/que-es-escala" style={{display:'block',fontSize:'0.78rem',color:'#1D9E75',textDecoration:'none',marginBottom:'1.5rem',marginTop:'-1rem'}}>¿Primera vez? Entiende cómo funciona en 2 minutos →</a>
@@ -91,7 +96,7 @@ export default function Registro() {
             <input style={s.input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" />
 
             <label style={s.label}>Contraseña</label>
-            <input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" />
+            <input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && !cargando && registrarse()} placeholder="Mínimo 6 caracteres" />
 
             <button style={s.btn} onClick={registrarse} disabled={cargando}>
               {cargando ? 'Creando cuenta...' : 'Crear cuenta en Escala →'}
@@ -105,7 +110,7 @@ export default function Registro() {
             <input style={s.input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" />
 
             <label style={s.label}>Contraseña</label>
-            <input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Tu contraseña" />
+            <input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && !cargando && iniciarSesion()} placeholder="Tu contraseña" />
 
             <button style={s.btn} onClick={iniciarSesion} disabled={cargando}>
               {cargando ? 'Entrando...' : 'Iniciar sesión →'}

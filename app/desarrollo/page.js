@@ -332,6 +332,18 @@ const fases = [
       { num: '19.7', nombre: 'Actualización de textos en detalle de proyecto, workspace y dashboard — ya no mencionan carriles A/B/C', done: true, valor: 300000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '20',
+    titulo: 'Navegación intuitiva — auditoría y fixes',
+    estado: 'progreso',
+    valor_total: 2600000,
+    valor_hecho: 2600000,
+    hitos: [
+      { num: '20.1', nombre: 'Fix: el Enter en el campo de contraseña no enviaba el formulario de login ni el de registro — había que darle clic al botón sí o sí', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '20.2', nombre: 'Fix: el logo de Escala no era clickeable en NINGUNA de las 26 páginas de la app — auditoría completa + link agregado en las 20 que faltaban, con el destino correcto según si la página requiere sesión o es pública', done: true, valor: 1600000, quien: 'Claude AI' },
+      { num: '20.3', nombre: 'Fix: la landing pública solo tenía botón de Registrarme — se agregó "Iniciar sesión" al nav y al menú móvil de las 8 páginas, más soporte de ?modo=login en /registro para abrir directo en esa pestaña', done: true, valor: 700000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
@@ -350,7 +362,7 @@ export default function Desarrollo() {
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',color:'#fff'}}>
       <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <div style={{fontSize:'1.1rem',fontWeight:'900',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div>
+        <a href="/dashboard" style={{textDecoration:'none'}}><div style={{fontSize:'1.1rem',fontWeight:'900',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div></a>
         <div style={{display:'flex',gap:'1.5rem'}}>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
           <a href="/desarrollo" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Desarrollo</a>

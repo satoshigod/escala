@@ -139,7 +139,7 @@ export default function Onboarding() {
   return (
     <main style={s.wrap}>
       <div style={s.card}>
-        <div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div>
+        <a href="/" style={{textDecoration:'none'}}><div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div></a>
 
         <div style={s.progBar}><div style={s.progFill}></div></div>
 

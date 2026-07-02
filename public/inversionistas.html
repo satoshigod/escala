@@ -88,9 +88,16 @@ nav{
   transition:background 0.2s;
 }
 .nav-cta:hover{background:#178f67;}
+.nav-login{
+  display:none;color:var(--dm);text-decoration:none;
+  font-size:0.8rem;font-weight:600;white-space:nowrap;
+  padding:0.4rem 0.75rem;transition:color 0.2s;
+}
+.nav-login:hover{color:#fff;}
 @media(min-width:900px){
   .nav-links{display:flex;}
   .nav-cta{display:block;}
+  .nav-login{display:block;}
   .hamburger{display:none!important;}
 }
 
@@ -546,6 +553,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
     <li><a href="proyectos.html" class="hi">Proyectos ↗</a></li>
     <li><a href="impulso.html" class="ha">Ángel ✦</a></li>
   </ul>
+  <a href="/registro?modo=login" class="nav-login">Iniciar sesión</a>
   <a href="/registro" class="nav-cta">Registrarme</a>
   <button class="hamburger" id="hbg" onclick="toggleMenu()" aria-label="Menú">
     <span></span><span></span><span></span>
@@ -564,6 +572,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <a href="proyectos.html" class="mg" onclick="closeMenu()">Proyectos ✦</a>
   <a href="impulso.html" class="ma" onclick="closeMenu()">Ángel de Impulso ✦</a>
   <a href="costos.html" onclick="closeMenu()">Costos →</a>
+  <a href="/registro?modo=login" onclick="closeMenu()">Iniciar sesión →</a>
   <a href="/registro" class="mc" onclick="closeMenu()">Registrarme gratis →</a>
 </div>
 
