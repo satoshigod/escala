@@ -336,8 +336,8 @@ const fases = [
     num: '20',
     titulo: 'Navegación intuitiva — auditoría y fixes',
     estado: 'progreso',
-    valor_total: 6150000,
-    valor_hecho: 6150000,
+    valor_total: 7250000,
+    valor_hecho: 7250000,
     hitos: [
       { num: '20.1', nombre: 'Fix: el Enter en el campo de contraseña no enviaba el formulario de login ni el de registro — había que darle clic al botón sí o sí', done: true, valor: 300000, quien: 'Claude AI' },
       { num: '20.2', nombre: 'Fix: el logo de Escala no era clickeable en NINGUNA de las 26 páginas de la app — auditoría completa + link agregado en las 20 que faltaban, con el destino correcto según si la página requiere sesión o es pública', done: true, valor: 1600000, quien: 'Claude AI' },
@@ -347,7 +347,8 @@ const fases = [
       { num: '20.6', nombre: 'Fix: crash de JS en /onboarding cuando alguien llega sin sesión (accedía a datos de un usuario null antes de que el redirect surtiera efecto)', done: true, valor: 200000, quien: 'Claude AI' },
       { num: '20.7', nombre: 'Fix: confirmación obligatoria antes de marcar "No cumplió" en /carril — antes era un clic sin aviso para una decisión financiera irreversible desde la UI', done: true, valor: 200000, quien: 'Claude AI' },
       { num: '20.8', nombre: 'Fix: mismo bug del logout pero disparado por sesión expirada — 23 páginas redirigían a la pestaña de Crear cuenta en vez de Iniciar sesión al perder la sesión', done: true, valor: 900000, quien: 'Claude AI' },
-      { num: '20.9', nombre: 'Accesibilidad — htmlFor/id agregado a los 31 campos de los 5 formularios de mayor tráfico (registro, onboarding, crear proyecto, editar perfil, aportes). Quedan pendientes 41 campos en admin-escala, invitar, ingresos, hitos y qa', done: true, valor: 900000, quien: 'Claude AI' },
+      { num: '20.9', nombre: 'Accesibilidad — htmlFor/id agregado a los 31 campos de los 5 formularios de mayor tráfico (registro, onboarding, crear proyecto, editar perfil, aportes)', done: true, valor: 900000, quien: 'Claude AI' },
+      { num: '20.10', nombre: 'Accesibilidad — htmlFor/id en los 41 campos restantes (admin-escala, workspace/tareas, invitar, ingresos, hitos). Los 72 labels de toda la app quedan cubiertos', done: true, valor: 1100000, quien: 'Claude AI' },
     ]
   },
 ]

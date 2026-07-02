@@ -460,8 +460,8 @@ export default function AdminEscala() {
               <div style={st.formBox}>
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nueva industria</div>
                 <div style={{marginBottom:'0.75rem'}}>
-                  <label style={st.label}>Nombre</label>
-                  <input style={st.input} value={nuevaIndustria.nombre} onChange={e => setNuevaIndustria(n => ({...n,nombre:e.target.value}))} placeholder="Ej: Salud, Educación..." />
+                  <label style={st.label} htmlFor="ae-ind-nombre">Nombre</label>
+                  <input id="ae-ind-nombre" style={st.input} value={nuevaIndustria.nombre} onChange={e => setNuevaIndustria(n => ({...n,nombre:e.target.value}))} placeholder="Ej: Salud, Educación..." />
                 </div>
                 <div style={{fontSize:'0.75rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Tareas ({nuevaIndustria.tareas?.length || 0})</div>
                 {(nuevaIndustria.tareas||[]).map((t,i) => (
@@ -472,19 +472,19 @@ export default function AdminEscala() {
                 ))}
                 <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr auto',gap:'0.5rem',marginTop:'0.75rem',alignItems:'end'}}>
                   <div>
-                    <label style={st.label}>Tarea</label>
-                    <input style={st.input} value={nuevaTareaInd.nombre} onChange={e => setNuevaTareaInd(n=>({...n,nombre:e.target.value}))} placeholder="Nombre de la tarea..." />
+                    <label style={st.label} htmlFor="ae-ind-tarea-nombre">Tarea</label>
+                    <input id="ae-ind-tarea-nombre" style={st.input} value={nuevaTareaInd.nombre} onChange={e => setNuevaTareaInd(n=>({...n,nombre:e.target.value}))} placeholder="Nombre de la tarea..." />
                   </div>
                   <div>
-                    <label style={st.label}>Categoría</label>
-                    <select style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-ind-tarea-cat">Categoría</label>
+                    <select id="ae-ind-tarea-cat" style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
                       {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={st.label}>Rol</label>
-                    <select style={st.select} value={nuevaTareaInd.rol_nombre} onChange={e => setNuevaTareaInd(n=>({...n,rol_nombre:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-ind-tarea-rol">Rol</label>
+                    <select id="ae-ind-tarea-rol" style={st.select} value={nuevaTareaInd.rol_nombre} onChange={e => setNuevaTareaInd(n=>({...n,rol_nombre:e.target.value}))}>
                       <option value="">Rol...</option>
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
@@ -502,8 +502,8 @@ export default function AdminEscala() {
               <div style={st.formBox}>
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Editando: {industriaEditando.nombre}</div>
                 <div style={{marginBottom:'0.75rem'}}>
-                  <label style={st.label}>Nombre</label>
-                  <input style={st.input} value={industriaEditando.nombre} onChange={e => setIndustriaEditando(n=>({...n,nombre:e.target.value}))} />
+                  <label style={st.label} htmlFor="ae-ind-edit-nombre">Nombre</label>
+                  <input id="ae-ind-edit-nombre" style={st.input} value={industriaEditando.nombre} onChange={e => setIndustriaEditando(n=>({...n,nombre:e.target.value}))} />
                 </div>
                 <div style={{fontSize:'0.75rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Tareas ({industriaEditando.tareas?.length || 0})</div>
                 {(industriaEditando.tareas||[]).map((t,i) => (
@@ -514,19 +514,19 @@ export default function AdminEscala() {
                 ))}
                 <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr auto',gap:'0.5rem',marginTop:'0.75rem',alignItems:'end'}}>
                   <div>
-                    <label style={st.label}>Nueva tarea</label>
-                    <input style={st.input} value={nuevaTareaInd.nombre} onChange={e => setNuevaTareaInd(n=>({...n,nombre:e.target.value}))} placeholder="Nombre de la tarea..." />
+                    <label style={st.label} htmlFor="ae-ind-edit-tarea-nombre">Nueva tarea</label>
+                    <input id="ae-ind-edit-tarea-nombre" style={st.input} value={nuevaTareaInd.nombre} onChange={e => setNuevaTareaInd(n=>({...n,nombre:e.target.value}))} placeholder="Nombre de la tarea..." />
                   </div>
                   <div>
-                    <label style={st.label}>Categoría</label>
-                    <select style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-ind-edit-tarea-cat">Categoría</label>
+                    <select id="ae-ind-edit-tarea-cat" style={st.select} value={nuevaTareaInd.categoria} onChange={e => setNuevaTareaInd(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
                       {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={st.label}>Rol</label>
-                    <select style={st.select} value={nuevaTareaInd.rol_nombre} onChange={e => setNuevaTareaInd(n=>({...n,rol_nombre:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-ind-edit-tarea-rol">Rol</label>
+                    <select id="ae-ind-edit-tarea-rol" style={st.select} value={nuevaTareaInd.rol_nombre} onChange={e => setNuevaTareaInd(n=>({...n,rol_nombre:e.target.value}))}>
                       <option value="">Rol...</option>
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
@@ -595,12 +595,12 @@ export default function AdminEscala() {
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nuevo país</div>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem',marginBottom:'0.75rem'}}>
                   <div>
-                    <label style={st.label}>Nombre del país</label>
-                    <input style={st.input} value={nuevoPais.nombre} onChange={e => setNuevoPais(n=>({...n,nombre:e.target.value}))} placeholder="Ej: Brasil, Ecuador..." />
+                    <label style={st.label} htmlFor="ae-pais-nombre">Nombre del país</label>
+                    <input id="ae-pais-nombre" style={st.input} value={nuevoPais.nombre} onChange={e => setNuevoPais(n=>({...n,nombre:e.target.value}))} placeholder="Ej: Brasil, Ecuador..." />
                   </div>
                   <div>
-                    <label style={st.label}>Bandera (emoji)</label>
-                    <input style={st.input} value={nuevoPais.bandera} onChange={e => setNuevoPais(n=>({...n,bandera:e.target.value}))} placeholder="🇧🇷" />
+                    <label style={st.label} htmlFor="ae-pais-bandera">Bandera (emoji)</label>
+                    <input id="ae-pais-bandera" style={st.input} value={nuevoPais.bandera} onChange={e => setNuevoPais(n=>({...n,bandera:e.target.value}))} placeholder="🇧🇷" />
                   </div>
                 </div>
                 <div style={{fontSize:'0.75rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Tareas regulatorias ({nuevoPais.tareas?.length||0})</div>
@@ -612,19 +612,19 @@ export default function AdminEscala() {
                 ))}
                 <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr auto',gap:'0.5rem',marginTop:'0.75rem',alignItems:'end'}}>
                   <div>
-                    <label style={st.label}>Tarea</label>
-                    <input style={st.input} value={nuevaTareaPais.nombre} onChange={e => setNuevaTareaPais(n=>({...n,nombre:e.target.value}))} placeholder="Ej: Registro en SAT..." />
+                    <label style={st.label} htmlFor="ae-pais-tarea-nombre">Tarea</label>
+                    <input id="ae-pais-tarea-nombre" style={st.input} value={nuevaTareaPais.nombre} onChange={e => setNuevaTareaPais(n=>({...n,nombre:e.target.value}))} placeholder="Ej: Registro en SAT..." />
                   </div>
                   <div>
-                    <label style={st.label}>Categoría</label>
-                    <select style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-pais-tarea-cat">Categoría</label>
+                    <select id="ae-pais-tarea-cat" style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
                       {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={st.label}>Rol</label>
-                    <select style={st.select} value={nuevaTareaPais.rol_nombre} onChange={e => setNuevaTareaPais(n=>({...n,rol_nombre:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-pais-tarea-rol">Rol</label>
+                    <select id="ae-pais-tarea-rol" style={st.select} value={nuevaTareaPais.rol_nombre} onChange={e => setNuevaTareaPais(n=>({...n,rol_nombre:e.target.value}))}>
                       <option value="">Rol...</option>
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
@@ -643,12 +643,12 @@ export default function AdminEscala() {
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Editando: {paisEditando.bandera} {paisEditando.nombre}</div>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem',marginBottom:'0.75rem'}}>
                   <div>
-                    <label style={st.label}>Nombre</label>
-                    <input style={st.input} value={paisEditando.nombre} onChange={e => setPaisEditando(n=>({...n,nombre:e.target.value}))} />
+                    <label style={st.label} htmlFor="ae-pais-edit-nombre">Nombre</label>
+                    <input id="ae-pais-edit-nombre" style={st.input} value={paisEditando.nombre} onChange={e => setPaisEditando(n=>({...n,nombre:e.target.value}))} />
                   </div>
                   <div>
-                    <label style={st.label}>Bandera</label>
-                    <input style={st.input} value={paisEditando.bandera} onChange={e => setPaisEditando(n=>({...n,bandera:e.target.value}))} />
+                    <label style={st.label} htmlFor="ae-pais-edit-bandera">Bandera</label>
+                    <input id="ae-pais-edit-bandera" style={st.input} value={paisEditando.bandera} onChange={e => setPaisEditando(n=>({...n,bandera:e.target.value}))} />
                   </div>
                 </div>
                 <div style={{fontSize:'0.75rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Tareas ({paisEditando.tareas?.length||0})</div>
@@ -660,19 +660,19 @@ export default function AdminEscala() {
                 ))}
                 <div style={{display:'grid',gridTemplateColumns:'2fr 1fr 1fr auto',gap:'0.5rem',marginTop:'0.75rem',alignItems:'end'}}>
                   <div>
-                    <label style={st.label}>Nueva tarea</label>
-                    <input style={st.input} value={nuevaTareaPais.nombre} onChange={e => setNuevaTareaPais(n=>({...n,nombre:e.target.value}))} placeholder="Ej: Registro mercantil..." />
+                    <label style={st.label} htmlFor="ae-pais-edit-tarea-nombre">Nueva tarea</label>
+                    <input id="ae-pais-edit-tarea-nombre" style={st.input} value={nuevaTareaPais.nombre} onChange={e => setNuevaTareaPais(n=>({...n,nombre:e.target.value}))} placeholder="Ej: Registro mercantil..." />
                   </div>
                   <div>
-                    <label style={st.label}>Categoría</label>
-                    <select style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-pais-edit-tarea-cat">Categoría</label>
+                    <select id="ae-pais-edit-tarea-cat" style={st.select} value={nuevaTareaPais.categoria} onChange={e => setNuevaTareaPais(n=>({...n,categoria:e.target.value}))}>
                       <option value="">Categoría...</option>
                       {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label style={st.label}>Rol</label>
-                    <select style={st.select} value={nuevaTareaPais.rol_nombre} onChange={e => setNuevaTareaPais(n=>({...n,rol_nombre:e.target.value}))}>
+                    <label style={st.label} htmlFor="ae-pais-edit-tarea-rol">Rol</label>
+                    <select id="ae-pais-edit-tarea-rol" style={st.select} value={nuevaTareaPais.rol_nombre} onChange={e => setNuevaTareaPais(n=>({...n,rol_nombre:e.target.value}))}>
                       <option value="">Rol...</option>
                       {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
                     </select>
@@ -734,12 +734,12 @@ export default function AdminEscala() {
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nueva especialidad</div>
                 <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
                   <div>
-                    <label style={st.label}>Nombre</label>
-                    <input style={st.input} value={nuevaEspecialidad.nombre} onChange={e => setNuevaEspecialidad(n => ({...n,nombre:e.target.value}))} placeholder="Ej: Especialista en marcas, UX Researcher..." />
+                    <label style={st.label} htmlFor="ae-esp-nombre">Nombre</label>
+                    <input id="ae-esp-nombre" style={st.input} value={nuevaEspecialidad.nombre} onChange={e => setNuevaEspecialidad(n => ({...n,nombre:e.target.value}))} placeholder="Ej: Especialista en marcas, UX Researcher..." />
                   </div>
                   <div>
-                    <label style={st.label}>Categoría asociada</label>
-                    <select style={st.select} value={nuevaEspecialidad.categoria} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaCategoriaNueva(true)}else{setNuevaEspecialidad(n=>({...n,categoria:e.target.value}));setMostrarNuevaCategoriaNueva(false)} }}>
+                    <label style={st.label} htmlFor="ae-esp-cat">Categoría asociada</label>
+                    <select id="ae-esp-cat" style={st.select} value={nuevaEspecialidad.categoria} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaCategoriaNueva(true)}else{setNuevaEspecialidad(n=>({...n,categoria:e.target.value}));setMostrarNuevaCategoriaNueva(false)} }}>
                       <option value="">Selecciona categoría...</option>
                       {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                       <option value="__nueva__">+ Mi categoría no está en la lista</option>
@@ -767,12 +767,12 @@ export default function AdminEscala() {
                 <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Editando: {especialidadEditando.nombre}</div>
                 <div style={{display:'grid',gridTemplateColumns:'2fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
                   <div>
-                    <label style={st.label}>Nombre</label>
-                    <input style={st.input} value={especialidadEditando.nombre} onChange={e => setEspecialidadEditando(n=>({...n,nombre:e.target.value}))} />
+                    <label style={st.label} htmlFor="ae-esp-edit-nombre">Nombre</label>
+                    <input id="ae-esp-edit-nombre" style={st.input} value={especialidadEditando.nombre} onChange={e => setEspecialidadEditando(n=>({...n,nombre:e.target.value}))} />
                   </div>
                   <div>
-                    <label style={st.label}>Categoría asociada</label>
-                    <select style={st.select} value={especialidadEditando.categoria || ''} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaCategoriaEditar(true)}else{setEspecialidadEditando(n=>({...n,categoria:e.target.value}));setMostrarNuevaCategoriaEditar(false)} }}>
+                    <label style={st.label} htmlFor="ae-esp-edit-cat">Categoría asociada</label>
+                    <select id="ae-esp-edit-cat" style={st.select} value={especialidadEditando.categoria || ''} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaCategoriaEditar(true)}else{setEspecialidadEditando(n=>({...n,categoria:e.target.value}));setMostrarNuevaCategoriaEditar(false)} }}>
                       <option value="">Selecciona categoría...</option>
                       {categoriasDB.map(c => <option key={c.nombre} value={c.nombre}>{c.nombre}</option>)}
                       <option value="__nueva__">+ Mi categoría no está en la lista</option>

@@ -281,15 +281,15 @@ export default function Tareas() {
             <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Cargar plantilla de tareas por rol</div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Rol</label>
-                <select value={rolInicializar} onChange={e=>setRolInicializar(e.target.value)} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-rol-inicial">Rol</label>
+                <select id="tk-rol-inicial" value={rolInicializar} onChange={e=>setRolInicializar(e.target.value)} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Selecciona un rol...</option>
                   {Object.keys(plantillas).map(r => <option key={r} value={r}>{r} ({plantillas[r].length} tareas)</option>)}
                 </select>
               </div>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Asignar a (opcional)</label>
-                <select value={miembroInicializar} onChange={e=>setMiembroInicializar(e.target.value)} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-asignar-inicial">Asignar a (opcional)</label>
+                <select id="tk-asignar-inicial" value={miembroInicializar} onChange={e=>setMiembroInicializar(e.target.value)} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Sin asignar</option>
                   {equipo.map(e => <option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}</option>)}
                 </select>
@@ -313,28 +313,28 @@ export default function Tareas() {
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
             <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nueva tarea</div>
             <div style={{marginBottom:'0.75rem'}}>
-              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Nombre de la tarea *</label>
-              <input value={nuevaTarea.nombre} onChange={e=>setNuevaTarea(n=>({...n,nombre:e.target.value}))} placeholder="¿Qué hay que hacer?" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-nombre">Nombre de la tarea *</label>
+              <input id="tk-nombre" value={nuevaTarea.nombre} onChange={e=>setNuevaTarea(n=>({...n,nombre:e.target.value}))} placeholder="¿Qué hay que hacer?" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
             </div>
             <div style={{marginBottom:'0.75rem'}}>
-              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>¿Por qué se agrega esta tarea?</label>
-              <input value={nuevaTarea.razon_creacion} onChange={e=>setNuevaTarea(n=>({...n,razon_creacion:e.target.value}))} placeholder="Contexto para que el equipo entienda por qué se necesita..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-razon">¿Por qué se agrega esta tarea?</label>
+              <input id="tk-razon" value={nuevaTarea.razon_creacion} onChange={e=>setNuevaTarea(n=>({...n,razon_creacion:e.target.value}))} placeholder="Contexto para que el equipo entienda por qué se necesita..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Descripción</label>
-                <input value={nuevaTarea.descripcion} onChange={e=>setNuevaTarea(n=>({...n,descripcion:e.target.value}))} placeholder="Detalle..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-descripcion">Descripción</label>
+                <input id="tk-descripcion" value={nuevaTarea.descripcion} onChange={e=>setNuevaTarea(n=>({...n,descripcion:e.target.value}))} placeholder="Detalle..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
               </div>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Categoría</label>
-                <select value={nuevaTarea.categoria} onChange={e=>setNuevaTarea(n=>({...n,categoria:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-categoria">Categoría</label>
+                <select id="tk-categoria" value={nuevaTarea.categoria} onChange={e=>setNuevaTarea(n=>({...n,categoria:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">General</option>
                   {['Legal','Finanzas','Técnico','Gestión','Diseño','Marketing','Inversión','Operaciones'].map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}}>Asignar a</label>
-                <select key={'asignar-' + nuevaTarea.categoria} value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-asignado">Asignar a</label>
+                <select id="tk-asignado" key={'asignar-' + nuevaTarea.categoria} value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Sin asignar</option>
                   {miembrosParaCategoria(nuevaTarea.categoria, esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria)).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}{e.perfiles?.pais ? ' (' + e.perfiles.pais + ')' : ''}</option>)}
                 </select>
