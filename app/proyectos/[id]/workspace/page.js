@@ -25,7 +25,7 @@ export default function Workspace() {
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro'; return }
+      if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
       const pid = window.location.pathname.split('/').slice(-2)[0]

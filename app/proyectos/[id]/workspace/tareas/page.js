@@ -34,7 +34,7 @@ export default function Tareas() {
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro'; return }
+      if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
       const parts = window.location.pathname.split('/')

@@ -9,7 +9,7 @@ export default function Bienvenida() {
   useEffect(() => {
     async function verificar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro'; return }
+      if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
       const res = await fetch('/api/usuarios?id=' + user.id)

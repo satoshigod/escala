@@ -39,7 +39,7 @@ export default function Onboarding() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) window.location.href = '/'
+      if (!data.user) { window.location.href = '/'; return }
       setUsuario(data.user)
       setForm(f => ({ ...f, nombre: data.user.user_metadata?.nombre || '' }))
     })
@@ -149,14 +149,14 @@ export default function Onboarding() {
             <div style={s.titulo}>Cuéntanos quién eres</div>
             <div style={s.subtitulo}>Esta información aparece en tu perfil público de Escala.</div>
 
-            <label style={s.label}>Nombre completo</label>
-            <input style={s.input} value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} placeholder="Tu nombre completo" />
+            <label style={s.label} htmlFor="ob-nombre">Nombre completo</label>
+            <input id="ob-nombre" style={s.input} value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} placeholder="Tu nombre completo" />
 
-            <label style={s.label}>Ciudad</label>
-            <input style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
+            <label style={s.label} htmlFor="ob-ciudad">Ciudad</label>
+            <input id="ob-ciudad" style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
 
-            <label style={s.label}>País de jurisdicción</label>
-            <select style={{...s.input, background:'#1a2a4a'}} value={form.pais} onChange={e => { if(e.target.value==='__nuevo__'){setMostrarNuevoPais(true)}else{actualizar('pais',e.target.value);setMostrarNuevoPais(false)} }}>
+            <label style={s.label} htmlFor="ob-pais">País de jurisdicción</label>
+            <select id="ob-pais" style={{...s.input, background:'#1a2a4a'}} value={form.pais} onChange={e => { if(e.target.value==='__nuevo__'){setMostrarNuevoPais(true)}else{actualizar('pais',e.target.value);setMostrarNuevoPais(false)} }}>
               <option value="">Selecciona tu país...</option>
               {paisesDB.map(p => <option key={p.nombre} value={p.nombre}>{p.bandera||'🌐'} {p.nombre}</option>)}
               <option value="__nuevo__">+ Mi país no está en la lista</option>
@@ -167,12 +167,8 @@ export default function Onboarding() {
                 <button onClick={crearNuevoPais} disabled={creandoPais||!nuevoPaisNombre.trim()} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{creandoPais?'...':'Agregar'}</button>
               </div>
             )}
-            {form.pais && form.pais!=='__nuevo__' && ['abogado','contador'].some(r => form.especialidad?.toLowerCase().includes(r)) && (
-              <div style={{fontSize:'0.7rem',color:'#1D9E75',marginBottom:'1rem'}}>✓ Tu jurisdicción será {form.pais} — te asignarán proyectos de ese país primero</div>
-            )}
-
-            <label style={s.label}>WhatsApp</label>
-            <input style={s.input} value={form.whatsapp} onChange={e => actualizar('whatsapp', e.target.value)} placeholder="+57 300 123 4567" />
+            <label style={s.label} htmlFor="ob-whatsapp">WhatsApp</label>
+            <input id="ob-whatsapp" style={s.input} value={form.whatsapp} onChange={e => actualizar('whatsapp', e.target.value)} placeholder="+57 300 123 4567" />
 
             <button style={s.btn} onClick={() => form.nombre && form.ciudad ? setPaso(2) : setMensaje('Completa nombre y ciudad')}>
               Continuar →
@@ -202,8 +198,8 @@ export default function Onboarding() {
               ))}
             </div>
 
-            <label style={s.label}>Tu especialidad o profesión</label>
-            <select style={{...s.input, background:'#1a2a4a'}} value={form.especialidad} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaEspecialidad(true)}else{actualizar('especialidad',e.target.value);setMostrarNuevaEspecialidad(false)} }}>
+            <label style={s.label} htmlFor="ob-especialidad">Tu especialidad o profesión</label>
+            <select id="ob-especialidad" style={{...s.input, background:'#1a2a4a'}} value={form.especialidad} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaEspecialidad(true)}else{actualizar('especialidad',e.target.value);setMostrarNuevaEspecialidad(false)} }}>
               <option value="">Selecciona tu especialidad...</option>
               {especialidadesDB.map(esp => <option key={esp.nombre} value={esp.nombre}>{esp.nombre}</option>)}
               <option value="__nueva__">+ Mi especialidad no está en la lista</option>
@@ -229,11 +225,11 @@ export default function Onboarding() {
             <div style={s.titulo}>¿Qué tienes y qué buscas?</div>
             <div style={s.subtitulo}>Esto nos ayuda a conectarte con los proyectos correctos.</div>
 
-            <label style={s.label}>¿Qué tienes para aportar?</label>
-            <textarea style={s.textarea} value={form.lo_que_aporto} onChange={e => actualizar('lo_que_aporto', e.target.value)} placeholder="Ej: 10 años de experiencia en derecho comercial, contactos en el sector financiero..." />
+            <label style={s.label} htmlFor="ob-aporto">¿Qué tienes para aportar?</label>
+            <textarea id="ob-aporto" style={s.textarea} value={form.lo_que_aporto} onChange={e => actualizar('lo_que_aporto', e.target.value)} placeholder="Ej: 10 años de experiencia en derecho comercial, contactos en el sector financiero..." />
 
-            <label style={s.label}>¿Qué buscas en Escala?</label>
-            <textarea style={s.textarea} value={form.lo_que_busco} onChange={e => actualizar('lo_que_busco', e.target.value)} placeholder="Ej: Un proyecto con potencial donde mi conocimiento se convierta en participación..." />
+            <label style={s.label} htmlFor="ob-busco">¿Qué buscas en Escala?</label>
+            <textarea id="ob-busco" style={s.textarea} value={form.lo_que_busco} onChange={e => actualizar('lo_que_busco', e.target.value)} placeholder="Ej: Un proyecto con potencial donde mi conocimiento se convierta en participación..." />
 
             <button style={s.btnSec} onClick={() => setPaso(2)}>← Volver</button>
             <button style={{ ...s.btn, background: cargando ? '#0F6E56' : '#1D9E75' }} onClick={guardar} disabled={cargando}>

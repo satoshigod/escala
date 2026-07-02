@@ -89,14 +89,14 @@ export default function Registro() {
 
         {modo === 'registro' && (
           <>
-            <label style={s.label}>Nombre completo</label>
-            <input style={s.input} type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Tu nombre completo" />
+            <label style={s.label} htmlFor="reg-nombre">Nombre completo</label>
+            <input id="reg-nombre" style={s.input} type="text" value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Tu nombre completo" />
 
-            <label style={s.label}>Email</label>
-            <input style={s.input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" />
+            <label style={s.label} htmlFor="reg-email">Email</label>
+            <input id="reg-email" style={s.input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" />
 
-            <label style={s.label}>Contraseña</label>
-            <input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && !cargando && registrarse()} placeholder="Mínimo 6 caracteres" />
+            <label style={s.label} htmlFor="reg-password">Contraseña</label>
+            <input id="reg-password" style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && !cargando && registrarse()} placeholder="Mínimo 6 caracteres" />
 
             <button style={s.btn} onClick={registrarse} disabled={cargando}>
               {cargando ? 'Creando cuenta...' : 'Crear cuenta en Escala →'}
@@ -106,11 +106,11 @@ export default function Registro() {
 
         {modo === 'login' && (
           <>
-            <label style={s.label}>Email</label>
-            <input style={s.input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" />
+            <label style={s.label} htmlFor="login-email">Email</label>
+            <input id="login-email" style={s.input} type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@email.com" />
 
-            <label style={s.label}>Contraseña</label>
-            <input style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && !cargando && iniciarSesion()} placeholder="Tu contraseña" />
+            <label style={s.label} htmlFor="login-password">Contraseña</label>
+            <input id="login-password" style={s.input} type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && !cargando && iniciarSesion()} placeholder="Tu contraseña" />
 
             <button style={s.btn} onClick={iniciarSesion} disabled={cargando}>
               {cargando ? 'Entrando...' : 'Iniciar sesión →'}

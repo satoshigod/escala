@@ -27,7 +27,7 @@ export default function EditarPerfil() {
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro'; return }
+      if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
       const res = await fetch('/api/usuarios?id=' + user.id)
@@ -111,22 +111,22 @@ export default function EditarPerfil() {
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.75rem',marginBottom:'1.25rem'}}>
           <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Datos básicos</div>
 
-          <label style={s.label}>Nombre completo</label>
-          <input style={{...s.input,marginBottom:'1rem'}} value={form.nombre} onChange={e=>actualizar('nombre',e.target.value)} />
+          <label style={s.label} htmlFor="pe-nombre">Nombre completo</label>
+          <input id="pe-nombre" style={{...s.input,marginBottom:'1rem'}} value={form.nombre} onChange={e=>actualizar('nombre',e.target.value)} />
 
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1rem'}}>
             <div>
-              <label style={s.label}>Ciudad</label>
-              <input style={s.input} value={form.ciudad} onChange={e=>actualizar('ciudad',e.target.value)} placeholder="Medellín, Bogotá..." />
+              <label style={s.label} htmlFor="pe-ciudad">Ciudad</label>
+              <input id="pe-ciudad" style={s.input} value={form.ciudad} onChange={e=>actualizar('ciudad',e.target.value)} placeholder="Medellín, Bogotá..." />
             </div>
             <div>
-              <label style={s.label}>WhatsApp</label>
-              <input style={s.input} value={form.whatsapp} onChange={e=>actualizar('whatsapp',e.target.value)} placeholder="+57 300 123 4567" />
+              <label style={s.label} htmlFor="pe-whatsapp">WhatsApp</label>
+              <input id="pe-whatsapp" style={s.input} value={form.whatsapp} onChange={e=>actualizar('whatsapp',e.target.value)} placeholder="+57 300 123 4567" />
             </div>
           </div>
 
-          <label style={s.label}>Especialidad o profesión</label>
-          <input style={s.input} value={form.especialidad} onChange={e=>actualizar('especialidad',e.target.value)} placeholder="Ej: Abogado, Diseñador, Gerente de Proyecto..." />
+          <label style={s.label} htmlFor="pe-especialidad">Especialidad o profesión</label>
+          <input id="pe-especialidad" style={s.input} value={form.especialidad} onChange={e=>actualizar('especialidad',e.target.value)} placeholder="Ej: Abogado, Diseñador, Gerente de Proyecto..." />
         </div>
 
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.75rem',marginBottom:'1.25rem'}}>
@@ -184,10 +184,10 @@ export default function EditarPerfil() {
 
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.75rem',marginBottom:'1.5rem'}}>
           <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Sobre ti</div>
-          <label style={s.label}>¿Qué tienes para aportar?</label>
-          <textarea style={{...s.input,marginBottom:'1rem',minHeight:'70px',resize:'vertical'}} value={form.lo_que_aporto} onChange={e=>actualizar('lo_que_aporto',e.target.value)} />
-          <label style={s.label}>¿Qué buscas en Escala?</label>
-          <textarea style={{...s.input,minHeight:'70px',resize:'vertical'}} value={form.lo_que_busco} onChange={e=>actualizar('lo_que_busco',e.target.value)} />
+          <label style={s.label} htmlFor="pe-aporto">¿Qué tienes para aportar?</label>
+          <textarea id="pe-aporto" style={{...s.input,marginBottom:'1rem',minHeight:'70px',resize:'vertical'}} value={form.lo_que_aporto} onChange={e=>actualizar('lo_que_aporto',e.target.value)} />
+          <label style={s.label} htmlFor="pe-busco">¿Qué buscas en Escala?</label>
+          <textarea id="pe-busco" style={{...s.input,minHeight:'70px',resize:'vertical'}} value={form.lo_que_busco} onChange={e=>actualizar('lo_que_busco',e.target.value)} />
         </div>
 
         {mensaje && (

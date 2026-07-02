@@ -20,7 +20,7 @@ export default function Carril() {
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro'; return }
+      if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
       const postRes = await fetch('/api/postulaciones?fundador_id=' + user.id)
@@ -50,6 +50,7 @@ export default function Carril() {
   }
 
   async function marcarCumplio(postulacion, cumplio) {
+    if (!cumplio && !confirm('¿Confirmas que ' + (postulacion.perfiles?.nombre || 'este especialista') + ' NO cumplió lo pactado?\n\nEsto significa que no recibe ningún pago por su aporte en este rol. No hay forma de deshacerlo desde aquí después de confirmar.')) return
     setGuardando(postulacion.id)
     if (!cumplio) {
       // No cumplió — se cierra sin pago, sin necesidad de elegir forma de pago

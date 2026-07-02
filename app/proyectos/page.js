@@ -30,7 +30,7 @@ export default function Proyectos() {
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro'; return }
+      if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
       const [pRes, paisRes] = await Promise.all([
         fetch('/api/proyectos'),
@@ -226,11 +226,11 @@ export default function Proyectos() {
             <div style={s.formTitle}>Publicar proyecto en Escala</div>
             <div style={s.formSub}>Define tu proyecto y lo que necesitas. Aparecerá en el directorio para que especialistas y capitalistas puedan postularse.</div>
 
-            <label style={s.label}>Nombre del proyecto *</label>
-            <input style={s.input} value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} placeholder="Ej: VetApp, Ekivibe, POS Restaurantes..." />
+            <label style={s.label} htmlFor="py-nombre">Nombre del proyecto *</label>
+            <input id="py-nombre" style={s.input} value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} placeholder="Ej: VetApp, Ekivibe, POS Restaurantes..." />
 
-            <label style={s.label}>Descripción *</label>
-            <textarea style={s.textarea} value={form.descripcion} onChange={e => actualizar('descripcion', e.target.value)} placeholder="¿Qué es el proyecto? ¿Qué problema resuelve? ¿En qué etapa está?" />
+            <label style={s.label} htmlFor="py-descripcion">Descripción *</label>
+            <textarea id="py-descripcion" style={s.textarea} value={form.descripcion} onChange={e => actualizar('descripcion', e.target.value)} placeholder="¿Qué es el proyecto? ¿Qué problema resuelve? ¿En qué etapa está?" />
 
             <label style={s.label}>Tipo de proyecto *</label>
             <div style={s.tipoGrid}>
@@ -258,22 +258,22 @@ export default function Proyectos() {
 
             <div style={s.row}>
               <div>
-                <label style={s.label}>Sector *</label>
-                <select style={s.select} value={form.sector} onChange={e => actualizar('sector', e.target.value)}>
+                <label style={s.label} htmlFor="py-sector">Sector *</label>
+                <select id="py-sector" style={s.select} value={form.sector} onChange={e => actualizar('sector', e.target.value)}>
                   <option value="">Selecciona...</option>
                   {sectores.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
               <div>
-                <label style={s.label}>Ciudad</label>
-                <input style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá..." />
+                <label style={s.label} htmlFor="py-ciudad">Ciudad</label>
+                <input id="py-ciudad" style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá..." />
               </div>
             </div>
 
             <div style={s.row}>
               <div>
-                <label style={s.label}>País del proyecto</label>
-                <select style={s.select} value={form.pais} onChange={e => { if(e.target.value==='__nuevo__'){setMostrarNuevoPais(true)}else{actualizar('pais',e.target.value);setMostrarNuevoPais(false)} }}>
+                <label style={s.label} htmlFor="py-pais">País del proyecto</label>
+                <select id="py-pais" style={s.select} value={form.pais} onChange={e => { if(e.target.value==='__nuevo__'){setMostrarNuevoPais(true)}else{actualizar('pais',e.target.value);setMostrarNuevoPais(false)} }}>
                   <option value="">Selecciona país...</option>
                   {paisesDB.map(p => <option key={p.nombre} value={p.nombre}>{p.bandera||'🌐'} {p.nombre}</option>)}
                   <option value="__nuevo__">+ Mi país no está en la lista</option>
@@ -287,8 +287,8 @@ export default function Proyectos() {
                 {form.pais && form.pais!=='__nuevo__' && <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'-0.5rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas regulatorias de {form.pais} al crear</div>}
               </div>
               <div>
-                <label style={s.label}>Industria (opcional)</label>
-                <select style={s.select} value={form.industria} onChange={e => actualizar('industria', e.target.value)}>
+                <label style={s.label} htmlFor="py-industria">Industria (opcional)</label>
+                <select id="py-industria" style={s.select} value={form.industria} onChange={e => actualizar('industria', e.target.value)}>
                   <option value="">Selecciona industria...</option>
                   {INDUSTRIAS_LIST.map(i => <option key={i} value={i}>{i}</option>)}
                 </select>

@@ -11,7 +11,7 @@ export default function PerfilPublico() {
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro'; return }
+      if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuarioActual(user)
 
       const id = window.location.pathname.split('/').pop()
