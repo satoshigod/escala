@@ -179,7 +179,7 @@ export default function Dashboard() {
 
   async function cerrarSesion() {
     await supabase.auth.signOut()
-    window.location.href = '/registro'
+    window.location.href = '/registro?modo=login'
   }
 
   async function cambiarEstado(id, estado) {

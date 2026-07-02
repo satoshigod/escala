@@ -894,6 +894,7 @@ const MANUAL = [
   { id: 'm4', nombre: 'Logo clickeable — página pre-sesión', texto: 'Desde /registro o /onboarding, haz clic en el logo. Debe llevarte a la portada pública (/), no a /dashboard.' },
   { id: 'm5', nombre: 'Botón "Iniciar sesión" en la landing', texto: 'Entra a escala.network sin sesión iniciada. Debe verse "Iniciar sesión" junto a "Registrarme" en el nav de arriba.' },
   { id: 'm6', nombre: '"Iniciar sesión" abre la pestaña correcta', texto: 'Haz clic en "Iniciar sesión" desde la landing. Debe abrir /registro ya en la pestaña de login, no en la de crear cuenta.' },
+  { id: 'm7', nombre: '"Salir" del dashboard lleva a login, no a crear cuenta', texto: 'Desde el dashboard, haz clic en "Salir". Debe cerrarte la sesión y llevarte a /registro con la pestaña de Iniciar sesión activa, no la de Crear cuenta.' },
 ]
 
 export default function QA() {

@@ -336,12 +336,13 @@ const fases = [
     num: '20',
     titulo: 'Navegación intuitiva — auditoría y fixes',
     estado: 'progreso',
-    valor_total: 2600000,
-    valor_hecho: 2600000,
+    valor_total: 2750000,
+    valor_hecho: 2750000,
     hitos: [
       { num: '20.1', nombre: 'Fix: el Enter en el campo de contraseña no enviaba el formulario de login ni el de registro — había que darle clic al botón sí o sí', done: true, valor: 300000, quien: 'Claude AI' },
       { num: '20.2', nombre: 'Fix: el logo de Escala no era clickeable en NINGUNA de las 26 páginas de la app — auditoría completa + link agregado en las 20 que faltaban, con el destino correcto según si la página requiere sesión o es pública', done: true, valor: 1600000, quien: 'Claude AI' },
       { num: '20.3', nombre: 'Fix: la landing pública solo tenía botón de Registrarme — se agregó "Iniciar sesión" al nav y al menú móvil de las 8 páginas, más soporte de ?modo=login en /registro para abrir directo en esa pestaña', done: true, valor: 700000, quien: 'Claude AI' },
+      { num: '20.4', nombre: 'Fix: "Salir" del dashboard llevaba a la pestaña de Crear cuenta en vez de la de Iniciar sesión — no seguía el estándar de la industria para logout', done: true, valor: 150000, quien: 'Claude AI' },
     ]
   },
 ]
