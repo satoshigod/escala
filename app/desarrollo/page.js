@@ -373,6 +373,19 @@ const fases = [
       { num: '21.8', nombre: 'QA: 6 tests automáticos del sistema de ofertas (origen, separación, default, búsqueda por email) + 2 verificaciones manuales nuevas (flujo bienvenida, oferta visible al invitado)', done: true, valor: 400000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '22',
+    titulo: 'Ingresos del proyecto — ventas, contratos y negocios generados',
+    estado: 'completa',
+    valor_total: 3200000,
+    valor_hecho: 3200000,
+    hitos: [
+      { num: '22.1', nombre: 'Migración: tabla ingresos separada de aportes — ingresos es lo que el proyecto genera (ventas, contratos), aportes es lo que la gente mete (tiempo, servicios, capital)', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '22.2', nombre: 'API /api/ingresos: GET lista por proyecto con total acumulado, POST con verificación de permisos (fundador/gerente/admin), DELETE solo para fundador', done: true, valor: 900000, quien: 'Claude AI' },
+      { num: '22.3', nombre: '/ingresos reescrita desde cero: formulario con descripción, tipo, valor, fecha y comprobante — visible solo para quien tiene permisos, el resto ve mensaje explicativo', done: true, valor: 1100000, quien: 'Claude AI' },
+      { num: '22.4', nombre: 'QA: 4 tests automáticos (registrar, listar, verificar total, rechazar no autorizado)', done: true, valor: 600000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {

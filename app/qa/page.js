@@ -991,6 +991,82 @@ const GRUPOS = [
       },
     ]
   },
+  {
+    nombre: '📊 Ingresos del proyecto (Fase 22)',
+    tests: [
+      {
+        id: 'ing_setup',
+        nombre: 'Setup — proyecto para probar ingresos',
+        run: async () => {
+          const nombre = 'QA-Ingresos-' + Date.now()
+          const res = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA ingresos', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          window._qaIngresosProyectoId = data.proyecto.id
+          return 'Proyecto creado: ' + data.proyecto.id.substring(0,8) + '...'
+        }
+      },
+      {
+        id: 'ing_registrar',
+        nombre: 'Registrar un ingreso (fundador puede)',
+        run: async () => {
+          if (!window._qaIngresosProyectoId) throw new Error('Corre primero el Setup')
+          const res = await fetch('/api/ingresos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaIngresosProyectoId, registrado_por: FUNDADOR_ID, descripcion: 'QA venta de prueba', valor: 1500000, tipo: 'venta', fecha: new Date().toISOString().split('T')[0] })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (!data.ingreso?.id) throw new Error('No se creó el ingreso')
+          window._qaIngresosId = data.ingreso.id
+          return 'Ingreso registrado: $' + Number(data.ingreso.valor).toLocaleString()
+        }
+      },
+      {
+        id: 'ing_listar',
+        nombre: 'Listar ingresos y verificar total',
+        run: async () => {
+          if (!window._qaIngresosProyectoId) throw new Error('Corre primero el Setup')
+          const res = await fetch('/api/ingresos?proyecto_id=' + window._qaIngresosProyectoId)
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          const encontrado = (data.ingresos || []).find(i => i.id === window._qaIngresosId)
+          if (!encontrado) throw new Error('El ingreso no aparece en la lista')
+          if (data.total !== 1500000) throw new Error('El total no cuadra: ' + data.total)
+          return data.ingresos.length + ' ingreso(s) — total $' + data.total.toLocaleString()
+        }
+      },
+      {
+        id: 'ing_no_autorizado',
+        nombre: 'Usuario sin permiso no puede registrar ingreso',
+        run: async () => {
+          if (!window._qaIngresosProyectoId) throw new Error('Corre primero el Setup')
+          // Intenta registrar con un UUID que no es el fundador ni tiene rol aceptado
+          const res = await fetch('/api/ingresos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaIngresosProyectoId, registrado_por: '00000000-0000-0000-0000-000000000000', descripcion: 'intento no autorizado', valor: 999, tipo: 'venta' })
+          })
+          const data = await res.json()
+          if (!data.error) throw new Error('Debería haber rechazado el registro — no lo hizo')
+          return 'Rechazado correctamente: ' + data.error
+        }
+      },
+      {
+        id: 'ing_cleanup',
+        nombre: 'Limpieza — eliminar proyecto de prueba',
+        run: async () => {
+          if (!window._qaIngresosProyectoId) return 'Nada que limpiar'
+          await fetch('/api/proyectos/' + window._qaIngresosProyectoId, { method: 'DELETE' })
+          window._qaIngresosProyectoId = null
+          window._qaIngresosId = null
+          return 'Proyecto eliminado'
+        }
+      },
+    ]
+  },
 ]
 
 const MANUAL = [
