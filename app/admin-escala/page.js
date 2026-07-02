@@ -628,10 +628,11 @@ export default function AdminEscala() {
                     </select>
                   </div>
                   <div>
-                    <label style={st.label} htmlFor="ae-pais-tarea-rol">Rol</label>
+                    <label style={st.label} htmlFor="ae-pais-tarea-rol">¿Quién la ejecuta?</label>
                     <select id="ae-pais-tarea-rol" style={st.select} value={nuevaTareaPais.rol_nombre} onChange={e => setNuevaTareaPais(n=>({...n,rol_nombre:e.target.value}))}>
                       <option value="">Rol...</option>
-                      {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                      <option value="abogado">Abogado</option>
+                      <option value="contador">Contador</option>
                     </select>
                   </div>
                   <button type="button" onClick={() => agregarTareaA(nuevoPais, setNuevoPais, nuevaTareaPais, setNuevaTareaPais)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
@@ -676,10 +677,11 @@ export default function AdminEscala() {
                     </select>
                   </div>
                   <div>
-                    <label style={st.label} htmlFor="ae-pais-edit-tarea-rol">Rol</label>
+                    <label style={st.label} htmlFor="ae-pais-edit-tarea-rol">¿Quién la ejecuta?</label>
                     <select id="ae-pais-edit-tarea-rol" style={st.select} value={nuevaTareaPais.rol_nombre} onChange={e => setNuevaTareaPais(n=>({...n,rol_nombre:e.target.value}))}>
                       <option value="">Rol...</option>
-                      {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                      <option value="abogado">Abogado</option>
+                      <option value="contador">Contador</option>
                     </select>
                   </div>
                   <button type="button" onClick={() => agregarTareaA(paisEditando, setPaisEditando, nuevaTareaPais, setNuevaTareaPais)} style={{...st.btnGreen,padding:'0.65rem 1rem'}}>+ Agregar</button>
