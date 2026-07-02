@@ -7,6 +7,8 @@ export default function Score() {
   const [perfil, setPerfil] = useState(null)
   const [postulaciones, setPostulaciones] = useState([])
   const [aportes, setAportes] = useState([])
+  const [tareasVerificadas, setTareasVerificadas] = useState(0)
+  const [aportesValidados, setAportesValidados] = useState(0)
   const [cargando, setCargando] = useState(true)
   const [calificando, setCalificando] = useState(null)
   const [califs, setCalifs] = useState({})
@@ -20,9 +22,11 @@ export default function Score() {
       if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
-      const [pRes, postRes] = await Promise.all([
+      const [pRes, postRes, tareasRes, aportesRes] = await Promise.all([
         fetch('/api/usuarios?id=' + user.id),
-        fetch('/api/postulaciones?postulante_id=' + user.id)
+        fetch('/api/postulaciones?postulante_id=' + user.id),
+        supabase.from('tareas').select('id', { count: 'exact', head: true }).eq('asignado_a', user.id).eq('estado', 'verificada'),
+        supabase.from('aportes').select('id', { count: 'exact', head: true }).eq('aportante_id', user.id).eq('validado', true),
       ])
 
       const pData = await pRes.json()
@@ -30,40 +34,29 @@ export default function Score() {
 
       setPerfil(pData.usuario)
       setPostulaciones(postData.postulaciones || [])
+      setTareasVerificadas(tareasRes.count || 0)
+      setAportesValidados(aportesRes.count || 0)
       setCargando(false)
     }
     cargar()
   }, [])
 
-  function calcularScore(perfil, postulaciones) {
-    if (!perfil) return 0
-    let score = 0
-    const aceptadas = postulaciones.filter(p => p.estado === 'aceptada').length
-    const total = postulaciones.length
-    if (total > 0) score += Math.round((aceptadas / total) * 40)
-    if (perfil.nombre) score += 10
-    if (perfil.ciudad) score += 5
-    if (perfil.especialidad) score += 10
-    if (perfil.lo_que_aporto) score += 10
-    if (perfil.lo_que_busco) score += 5
-    if (perfil.whatsapp) score += 5
-    if (aceptadas > 0) score += 15
-    return Math.min(score, 100)
-  }
-
-  const score = calcularScore(perfil, postulaciones)
+  const score = perfil?.escala_score || 0
   const aceptadas = postulaciones.filter(p => p.estado === 'aceptada').length
   const pendientes = postulaciones.filter(p => p.estado === 'pendiente').length
 
   const scoreColor = score >= 70 ? '#1D9E75' : score >= 40 ? '#E8A020' : '#D85A30'
   const scoreLabel = score >= 70 ? 'Excelente' : score >= 40 ? 'En desarrollo' : 'Iniciando'
+  const pctGauge = Math.min(score, 100)
 
+  // Refleja exactamente la fórmula real de calcular_escala_score() en la base de datos:
+  // (tareas_verificadas × 10) + (aportes_validados × 15) + (postulaciones_aceptadas × 20)
   const dimensiones = [
-    { label: 'Perfil completo', valor: perfil?.nombre && perfil?.ciudad && perfil?.especialidad ? 100 : 50, max: 30, color: '#1D9E75' },
-    { label: 'Postulaciones aceptadas', valor: postulaciones.length > 0 ? Math.round((aceptadas / postulaciones.length) * 100) : 0, max: 40, color: '#E8A020' },
-    { label: 'Proyectos completados', valor: (perfil?.proyectos_completados || 0) * 20, max: 20, color: '#AFA9EC' },
-    { label: 'Tasa de cumplimiento', valor: aceptadas > 0 ? 100 : 0, max: 10, color: '#1D9E75' },
+    { label: 'Tareas verificadas', puntos: tareasVerificadas * 10, detalle: tareasVerificadas + ' × 10 pts', color: '#1D9E75' },
+    { label: 'Aportes validados', puntos: aportesValidados * 15, detalle: aportesValidados + ' × 15 pts', color: '#E8A020' },
+    { label: 'Postulaciones aceptadas', puntos: aceptadas * 20, detalle: aceptadas + ' × 20 pts', color: '#AFA9EC' },
   ]
+  const maxDimension = Math.max(...dimensiones.map(d => d.puntos), 1)
 
   if (cargando) return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>
@@ -94,7 +87,7 @@ export default function Score() {
             <svg width="160" height="160" viewBox="0 0 160 160">
               <circle cx="80" cy="80" r="70" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="12"/>
               <circle cx="80" cy="80" r="70" fill="none" stroke={scoreColor} strokeWidth="12"
-                strokeDasharray={`${(score/100) * 440} 440`}
+                strokeDasharray={`${(pctGauge/100) * 440} 440`}
                 strokeLinecap="round"
                 transform="rotate(-90 80 80)"
                 style={{transition:'stroke-dasharray 1s ease'}}
@@ -148,11 +141,11 @@ export default function Score() {
           {dimensiones.map(d => (
             <div key={d.label} style={{marginBottom:'1rem'}}>
               <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.78rem',marginBottom:'4px'}}>
-                <span style={{color:'#8FA3CC'}}>{d.label}</span>
-                <span style={{color:'#fff',fontFamily:'monospace'}}>{Math.min(Math.round(d.valor * d.max / 100), d.max)} / {d.max} pts</span>
+                <span style={{color:'#8FA3CC'}}>{d.label} <span style={{color:'#6B7280'}}>({d.detalle})</span></span>
+                <span style={{color:'#fff',fontFamily:'monospace'}}>{d.puntos} pts</span>
               </div>
               <div style={{height:'6px',background:'rgba(255,255,255,0.08)',borderRadius:'3px',overflow:'hidden'}}>
-                <div style={{height:'100%',width:Math.min(d.valor,100)+'%',background:d.color,borderRadius:'3px',transition:'width 0.8s ease'}}></div>
+                <div style={{height:'100%',width:(d.puntos/maxDimension*100)+'%',background:d.color,borderRadius:'3px',transition:'width 0.8s ease'}}></div>
               </div>
             </div>
           ))}

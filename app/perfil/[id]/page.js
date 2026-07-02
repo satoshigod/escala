@@ -43,21 +43,7 @@ export default function PerfilPublico() {
   const total = postulaciones.length
   const tasaExito = total > 0 ? Math.round((aceptadas / total) * 100) : 0
 
-  const calcularScore = (perfil, postulaciones) => {
-    if (!perfil) return 0
-    let score = 0
-    if (total > 0) score += Math.round((aceptadas / total) * 40)
-    if (perfil.nombre) score += 10
-    if (perfil.ciudad) score += 5
-    if (perfil.especialidad) score += 10
-    if (perfil.lo_que_aporto) score += 10
-    if (perfil.lo_que_busco) score += 5
-    if (perfil.whatsapp) score += 5
-    if (aceptadas > 0) score += 15
-    return Math.min(score, 100)
-  }
-
-  const score = calcularScore(perfil, postulaciones)
+  const score = perfil?.escala_score || 0
   const scoreColor = score >= 70 ? '#1D9E75' : score >= 40 ? '#E8A020' : '#D85A30'
   const esPropioPerfil = usuarioActual?.id === perfil?.id
 
@@ -155,7 +141,7 @@ export default function PerfilPublico() {
             <svg width="100" height="100" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8"/>
               <circle cx="50" cy="50" r="42" fill="none" stroke={scoreColor} strokeWidth="8"
-                strokeDasharray={`${(score/100) * 264} 264`}
+                strokeDasharray={`${(Math.min(score,100)/100) * 264} 264`}
                 strokeLinecap="round"
                 transform="rotate(-90 50 50)"
               />

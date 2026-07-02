@@ -336,8 +336,8 @@ const fases = [
     num: '20',
     titulo: 'Navegación intuitiva — auditoría y fixes',
     estado: 'progreso',
-    valor_total: 7250000,
-    valor_hecho: 7250000,
+    valor_total: 9900000,
+    valor_hecho: 9900000,
     hitos: [
       { num: '20.1', nombre: 'Fix: el Enter en el campo de contraseña no enviaba el formulario de login ni el de registro — había que darle clic al botón sí o sí', done: true, valor: 300000, quien: 'Claude AI' },
       { num: '20.2', nombre: 'Fix: el logo de Escala no era clickeable en NINGUNA de las 26 páginas de la app — auditoría completa + link agregado en las 20 que faltaban, con el destino correcto según si la página requiere sesión o es pública', done: true, valor: 1600000, quien: 'Claude AI' },
@@ -349,6 +349,11 @@ const fases = [
       { num: '20.8', nombre: 'Fix: mismo bug del logout pero disparado por sesión expirada — 23 páginas redirigían a la pestaña de Crear cuenta en vez de Iniciar sesión al perder la sesión', done: true, valor: 900000, quien: 'Claude AI' },
       { num: '20.9', nombre: 'Accesibilidad — htmlFor/id agregado a los 31 campos de los 5 formularios de mayor tráfico (registro, onboarding, crear proyecto, editar perfil, aportes)', done: true, valor: 900000, quien: 'Claude AI' },
       { num: '20.10', nombre: 'Accesibilidad — htmlFor/id en los 41 campos restantes (admin-escala, workspace/tareas, invitar, ingresos, hitos). Los 72 labels de toda la app quedan cubiertos', done: true, valor: 1100000, quien: 'Claude AI' },
+      { num: '20.11', nombre: 'Auditoría completa de las 14 páginas restantes (calendario, directorio, buscar, score, métricas, comercial, angel, bienvenida, postulaciones, perfil, chat, p/[id], que-es-escala) — cierra la revisión de las 30 páginas de la app', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: '20.12', nombre: 'Fix: /postulaciones mostraba el UUID crudo del proyecto en vez del nombre (el dato ya venía en la API, no se usaba), y tenía un link "Hitos" pegado por error dentro del botón del estado vacío', done: true, valor: 250000, quien: 'Claude AI' },
+      { num: '20.13', nombre: 'Fix: error de gramática en la pregunta pública de que-es-escala ("me convierto" → "se convierte")', done: true, valor: 50000, quien: 'Claude AI' },
+      { num: '20.14', nombre: 'Fix crítico: /score y /perfil/[id] calculaban el Escala Score con fórmulas propias inventadas, nunca leían el campo real escala_score que usa el resto de la app (directorio, métricas) — dos personas podían ver dos números distintos para el mismo score. Reconstruido con datos reales y la fórmula exacta de la función de base de datos', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '20.15', nombre: 'Fix: "Iniciar sesión" en la página pública de proyecto (/p/[id]) abría la pestaña de Crear cuenta — mismo bug ya corregido en la landing, pero en un archivo distinto que no se había tocado', done: true, valor: 150000, quien: 'Claude AI' },
     ]
   },
 ]

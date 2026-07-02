@@ -61,7 +61,7 @@ export default function ProyectoPublico() {
         <a href="/" style={{textDecoration:'none'}}><div style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div></a>
         <div style={{display:'flex',gap:'1rem'}}>
           <a href="/registro" style={{background:'rgba(255,255,255,0.08)',color:'#fff',padding:'0.4rem 1rem',borderRadius:'6px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'600'}}>Registrarme</a>
-          <a href="/registro" style={{background:'#1D9E75',color:'#fff',padding:'0.4rem 1rem',borderRadius:'6px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700'}}>Iniciar sesion</a>
+          <a href="/registro?modo=login" style={{background:'#1D9E75',color:'#fff',padding:'0.4rem 1rem',borderRadius:'6px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700'}}>Iniciar sesion</a>
         </div>
       </nav>
 

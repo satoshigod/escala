@@ -10,7 +10,7 @@ const PREGUNTAS = [
     a: 'La mayoría de buenas ideas mueren porque el fundador no tiene equipo, no tiene dinero para contratarlo, o no sabe cómo formalizar la colaboración de quienes sí quieren ayudar. Escala estructura esa colaboración con reglas claras desde el día uno.'
   },
   {
-    q: '¿Cómo me convierto en participación lo que aporto?',
+    q: '¿Cómo se convierte en participación lo que aporto?',
     a: 'Es el motor de compensación: cada aporte no monetario (horas, conocimiento, activos) o monetario que registras se convierte en participación económica futura cuando el proyecto empieza a generar ingresos.'
   },
   {

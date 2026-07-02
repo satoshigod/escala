@@ -64,7 +64,7 @@ export default function Postulaciones() {
             <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📋</div>
             <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin postulaciones todavía</div>
             <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Explora los proyectos activos y postúlate a los roles que te interesen.</div>
-            <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Hitos</a><a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>
+            <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>
           </div>
         ) : (
           <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
@@ -73,7 +73,7 @@ export default function Postulaciones() {
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'0.75rem',marginBottom:'0.875rem'}}>
                   <div>
                     <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.roles?.nombre || 'Rol'}</div>
-                    <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>Proyecto ID: {p.roles?.proyecto_id?.substring(0,8)}...</div>
+                    <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>{p.roles?.proyectos?.nombre || 'Proyecto'}</div>
                   </div>
                   <span style={{fontSize:'0.75rem',fontWeight:'700',padding:'0.3rem 0.875rem',borderRadius:'20px',background:`rgba(${p.estado==='aceptada'?'29,158,117':p.estado==='rechazada'?'216,90,48':'232,160,32'},0.15)`,color:estadoColor[p.estado],border:`1px solid rgba(${p.estado==='aceptada'?'29,158,117':p.estado==='rechazada'?'216,90,48':'232,160,32'},0.3)`}}>
                     {estadoLabel[p.estado]}
