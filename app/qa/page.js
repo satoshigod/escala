@@ -679,6 +679,212 @@ const GRUPOS = [
       },
     ]
   },
+  {
+    nombre: '💰 Modelo de Compensación (Fase 19)',
+    tests: [
+      {
+        id: 'comp_setup_riesgo',
+        nombre: 'Setup — proyecto Riesgo Compartido + rol + postulación aceptada',
+        run: async () => {
+          const nombre = 'QA-Comp-Riesgo-' + Date.now()
+          const resP = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA compensacion riesgo', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'riesgo_compartido' })
+          })
+          const dataP = await resP.json()
+          if (dataP.error) throw new Error(dataP.error)
+          if (dataP.proyecto.estado_financiacion !== 'riesgo_compartido') throw new Error('estado_financiacion no se guardó correctamente: ' + dataP.proyecto.estado_financiacion)
+          window._qaCompRiesgoProyectoId = dataP.proyecto.id
+
+          const resR = await fetch('/api/roles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaCompRiesgoProyectoId, nombre: 'QA Rol Riesgo', tipo_aporte: 'tiempo', modalidad: 'equity' })
+          })
+          const dataR = await resR.json()
+          if (dataR.error) throw new Error(dataR.error)
+          window._qaCompRiesgoRolId = dataR.rol.id
+
+          const resPost = await fetch('/api/postulaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol_id: window._qaCompRiesgoRolId, postulante_id: FUNDADOR_ID, mensaje: 'QA test' })
+          })
+          const dataPost = await resPost.json()
+          if (dataPost.error) throw new Error(dataPost.error)
+          window._qaCompRiesgoPostulacionId = dataPost.postulacion.id
+
+          const resAcept = await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaCompRiesgoPostulacionId, estado: 'aceptada' })
+          })
+          const dataAcept = await resAcept.json()
+          if (dataAcept.error) throw new Error(dataAcept.error)
+
+          return 'Proyecto Riesgo Compartido + postulación aceptada — listo para probar cumplimiento'
+        }
+      },
+      {
+        id: 'comp_cumplio_acciones',
+        nombre: 'Marcar cumplió con forma_pago=acciones (debe crear deuda_pendiente)',
+        run: async () => {
+          if (!window._qaCompRiesgoPostulacionId) throw new Error('Corre primero el Setup')
+          const res = await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaCompRiesgoPostulacionId, cumplio: true, cumplio_confirmado_por: FUNDADOR_ID, forma_pago: 'acciones', valor: 500000, concepto: 'QA test deuda' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (data.postulacion.cumplio !== true) throw new Error('cumplio no quedó en true')
+          if (data.postulacion.forma_pago !== 'acciones') throw new Error('forma_pago no se guardó')
+          return 'Cumplimiento confirmado con acciones — revisa correo/campanita'
+        }
+      },
+      {
+        id: 'comp_verificar_deuda',
+        nombre: 'Verificar que la deuda quedó registrada en /api/deuda',
+        run: async () => {
+          if (!window._qaCompRiesgoProyectoId) throw new Error('Corre primero el Setup')
+          const res = await fetch('/api/deuda?proyecto_id=' + window._qaCompRiesgoProyectoId)
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          const encontrada = (data.pendiente || []).find(d => d.postulacion_id === window._qaCompRiesgoPostulacionId)
+          if (!encontrada) throw new Error('La deuda no aparece en /api/deuda — revisar la creación automática en el PATCH de postulaciones')
+          if (Number(encontrada.valor) !== 500000) throw new Error('El valor de la deuda no coincide: ' + encontrada.valor)
+          window._qaCompDeudaId = encontrada.id
+          return 'Deuda encontrada: $' + Number(encontrada.valor).toLocaleString() + ' — ' + encontrada.concepto
+        }
+      },
+      {
+        id: 'comp_resolver_deuda',
+        nombre: 'Resolver la deuda (pagar cash)',
+        run: async () => {
+          if (!window._qaCompDeudaId) throw new Error('Corre primero verificar deuda')
+          const res = await fetch('/api/deuda', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaCompDeudaId, resuelta_como: 'cash', resuelta_por: FUNDADOR_ID })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (data.deuda.resuelta !== true) throw new Error('La deuda no quedó marcada como resuelta')
+          return 'Deuda resuelta en cash — revisa correo/campanita'
+        }
+      },
+      {
+        id: 'comp_setup_con_recursos',
+        nombre: 'Setup — proyecto Con Recursos + rol + postulación aceptada',
+        run: async () => {
+          const nombre = 'QA-Comp-ConRecursos-' + Date.now()
+          const resP = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA compensacion con recursos', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
+          })
+          const dataP = await resP.json()
+          if (dataP.error) throw new Error(dataP.error)
+          if (dataP.proyecto.estado_financiacion !== 'con_recursos') throw new Error('estado_financiacion no se guardó correctamente: ' + dataP.proyecto.estado_financiacion)
+          window._qaCompRecProyectoId = dataP.proyecto.id
+
+          const resR = await fetch('/api/roles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaCompRecProyectoId, nombre: 'QA Rol Con Recursos', tipo_aporte: 'tiempo', modalidad: 'equity' })
+          })
+          const dataR = await resR.json()
+          if (dataR.error) throw new Error(dataR.error)
+          window._qaCompRecRolId = dataR.rol.id
+
+          const resPost = await fetch('/api/postulaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol_id: window._qaCompRecRolId, postulante_id: FUNDADOR_ID, mensaje: 'QA test' })
+          })
+          const dataPost = await resPost.json()
+          if (dataPost.error) throw new Error(dataPost.error)
+          window._qaCompRecPostulacionId = dataPost.postulacion.id
+
+          await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaCompRecPostulacionId, estado: 'aceptada' })
+          })
+
+          return 'Proyecto Con Recursos + postulación aceptada — listo'
+        }
+      },
+      {
+        id: 'comp_cumplio_cash',
+        nombre: 'Marcar cumplió con forma_pago=cash (NO debe crear deuda_pendiente)',
+        run: async () => {
+          if (!window._qaCompRecPostulacionId) throw new Error('Corre primero el Setup Con Recursos')
+          const res = await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaCompRecPostulacionId, cumplio: true, cumplio_confirmado_por: FUNDADOR_ID, forma_pago: 'cash', valor: 300000, concepto: 'QA test cash' })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+
+          const resDeuda = await fetch('/api/deuda?proyecto_id=' + window._qaCompRecProyectoId)
+          const dataDeuda = await resDeuda.json()
+          const encontrada = (dataDeuda.pendiente || []).find(d => d.postulacion_id === window._qaCompRecPostulacionId)
+          if (encontrada) throw new Error('Se creó deuda_pendiente para un proyecto Con Recursos — no debería pasar')
+
+          return 'Cumplió con cash, sin deuda creada (correcto) — revisa correo/campanita'
+        }
+      },
+      {
+        id: 'comp_no_cumplio',
+        nombre: 'no_cumplio — verificar que no aplica pago',
+        run: async () => {
+          const resR = await fetch('/api/roles', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaCompRecProyectoId, nombre: 'QA Rol No Cumplio', tipo_aporte: 'tiempo', modalidad: 'equity' })
+          })
+          const dataR = await resR.json()
+          if (dataR.error) throw new Error(dataR.error)
+          window._qaCompNoCumpleRolId = dataR.rol.id
+
+          const resPost = await fetch('/api/postulaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ rol_id: window._qaCompNoCumpleRolId, postulante_id: FUNDADOR_ID, mensaje: 'QA test' })
+          })
+          const dataPost = await resPost.json()
+          if (dataPost.error) throw new Error(dataPost.error)
+          window._qaCompNoCumplePostulacionId = dataPost.postulacion.id
+
+          await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaCompNoCumplePostulacionId, estado: 'aceptada' })
+          })
+
+          const res = await fetch('/api/postulaciones', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaCompNoCumplePostulacionId, cumplio: false, cumplio_confirmado_por: FUNDADOR_ID })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (data.postulacion.cumplio !== false) throw new Error('cumplio no quedó en false')
+          if (data.postulacion.forma_pago) throw new Error('No debería tener forma_pago si no cumplió')
+
+          return 'No cumplió registrado correctamente, sin forma de pago — revisa correo/campanita'
+        }
+      },
+      {
+        id: 'comp_cleanup',
+        nombre: 'Limpieza — eliminar los 2 proyectos de prueba',
+        run: async () => {
+          const ids = [window._qaCompRiesgoProyectoId, window._qaCompRecProyectoId].filter(Boolean)
+          for (const pid of ids) {
+            await fetch('/api/proyectos/' + pid, { method: 'DELETE' })
+          }
+          window._qaCompRiesgoProyectoId = null
+          window._qaCompRiesgoRolId = null
+          window._qaCompRiesgoPostulacionId = null
+          window._qaCompDeudaId = null
+          window._qaCompRecProyectoId = null
+          window._qaCompRecRolId = null
+          window._qaCompRecPostulacionId = null
+          window._qaCompNoCumpleRolId = null
+          window._qaCompNoCumplePostulacionId = null
+          return ids.length + ' proyecto(s) de prueba eliminados'
+        }
+      },
+    ]
+  },
 ]
 
 export default function QA() {
