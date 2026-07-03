@@ -434,6 +434,26 @@ export default function Tareas() {
           </div>
         )}
 
+        {tareas.length > 0 && (
+          <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',marginBottom:'1.5rem'}}>
+            <button onClick={()=>setFiltroEstado('todos')} style={{background:filtroEstado==='todos'?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todas</button>
+            {['pendiente','en_progreso','completada','verificada'].map(e=>(
+              <button key={e} onClick={()=>setFiltroEstado(e)} style={{background:filtroEstado===e?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado===e?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                {estadoConfig[e]?.label}
+              </button>
+            ))}
+            {(esFundador || verTodas) && (
+              <>
+                <span style={{width:'1px',background:'rgba(255,255,255,0.1)',margin:'0 0.25rem'}}></span>
+                <button onClick={()=>setFiltroRol('todos')} style={{background:filtroRol==='todos'?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todos los roles</button>
+                {rolesTareas.map(r=>(
+                  <button key={r} onClick={()=>setFiltroRol(r)} style={{background:filtroRol===r?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol===r?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{r}</button>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+
         {tareasFiltradas.length === 0 && tareas.length === 0 ? (
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
             <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>📋</div>
@@ -451,29 +471,10 @@ export default function Tareas() {
           </div>
         ) : tareasFiltradas.length === 0 ? (
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center',color:'#8FA3CC',fontSize:'0.85rem'}}>
-            No hay tareas con ese filtro.
+            No hay tareas con ese filtro. <button onClick={()=>setFiltroEstado('todos')} style={{background:'none',border:'none',color:'#1D9E75',cursor:'pointer',fontFamily:'Inter,sans-serif',fontSize:'0.85rem',textDecoration:'underline'}}>Ver todas →</button>
           </div>
         ) : (
-          <>
-            <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',marginBottom:'1.5rem'}}>
-              <button onClick={()=>setFiltroEstado('todos')} style={{background:filtroEstado==='todos'?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todas</button>
-              {['pendiente','en_progreso','completada','verificada'].map(e=>(
-                <button key={e} onClick={()=>setFiltroEstado(e)} style={{background:filtroEstado===e?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado===e?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                  {estadoConfig[e]?.label}
-                </button>
-              ))}
-              {(esFundador || verTodas) && (
-                <>
-                  <span style={{width:'1px',background:'rgba(255,255,255,0.1)',margin:'0 0.25rem'}}></span>
-                  <button onClick={()=>setFiltroRol('todos')} style={{background:filtroRol==='todos'?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todos los roles</button>
-                  {rolesTareas.map(r=>(
-                    <button key={r} onClick={()=>setFiltroRol(r)} style={{background:filtroRol===r?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol===r?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{r}</button>
-                  ))}
-                </>
-              )}
-            </div>
-
-            <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+          <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
               {tareasFiltradas.map(t => {
                 const cfg = estadoConfig[t.estado] || estadoConfig.pendiente
                 const esMia = t.asignado_a === usuario?.id
@@ -526,7 +527,7 @@ export default function Tareas() {
                 )
               })}
             </div>
-          </>
+          </div>
         )}
       </main>
     </div>

@@ -521,50 +521,47 @@ export default function Workspace() {
             )}
 
             <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
-              {miContrato && (
-              <div style={{background:'rgba(175,169,236,0.06)',border:`1px solid ${miContrato.estado==='vigente'?'rgba(29,158,117,0.3)':'rgba(175,169,236,0.2)'}`,borderRadius:'12px',padding:'1.25rem',marginBottom:'1rem'}}>
+              {!esFundador && (
+              <div style={{background: miContrato ? 'rgba(175,169,236,0.06)' : 'rgba(255,255,255,0.03)', border:`1px solid ${miContrato?.estado==='vigente'?'rgba(29,158,117,0.3)':'rgba(175,169,236,0.2)'}`,borderRadius:'12px',padding:'1.25rem',marginBottom:'1rem'}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.75rem'}}>
                   <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff'}}>📄 Contrato de prestación de servicios</div>
-                  <span style={{fontSize:'0.65rem',fontWeight:'700',padding:'3px 10px',borderRadius:'20px',background:miContrato.estado==='vigente'?'rgba(29,158,117,0.15)':miContrato.estado==='firmado_parcial'?'rgba(232,160,32,0.15)':'rgba(255,255,255,0.08)',color:miContrato.estado==='vigente'?'#1D9E75':miContrato.estado==='firmado_parcial'?'#E8A020':'#8FA3CC'}}>
+                  {miContrato && <span style={{fontSize:'0.65rem',fontWeight:'700',padding:'3px 10px',borderRadius:'20px',background:miContrato.estado==='vigente'?'rgba(29,158,117,0.15)':miContrato.estado==='firmado_parcial'?'rgba(232,160,32,0.15)':'rgba(255,255,255,0.08)',color:miContrato.estado==='vigente'?'#1D9E75':miContrato.estado==='firmado_parcial'?'#E8A020':'#8FA3CC'}}>
                     {miContrato.estado==='vigente'?'✓ Vigente':miContrato.estado==='firmado_parcial'?'Firma parcial':'Pendiente de firma'}
-                  </span>
+                  </span>}
                 </div>
-                <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'0.875rem',lineHeight:'1.5'}}>
-                  <span style={{color:miContrato.firmado_fundador?'#1D9E75':'#8FA3CC'}}>{miContrato.firmado_fundador?'✓':'○'} Fundador firmó</span>
-                  <span style={{margin:'0 0.75rem',color:'rgba(255,255,255,0.15)'}}>·</span>
-                  <span style={{color:miContrato.firmado_profesional?'#1D9E75':'#8FA3CC'}}>{miContrato.firmado_profesional?'✓':'○'} Especialista firmó</span>
-                </div>
-                <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
-                  {miContrato.contenido_json?.texto_pdf && (
-                    <button onClick={() => {
-                      const blob = new Blob([miContrato.contenido_json.texto_pdf], {type:'text/plain;charset=utf-8'})
-                      const url = URL.createObjectURL(blob)
-                      const a = document.createElement('a'); a.href=url; a.download=`Contrato_${proyecto?.nombre}.txt`; a.click()
-                      URL.revokeObjectURL(url)
-                    }} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                      ⬇ Descargar contrato
-                    </button>
-                  )}
-                  {!miContrato.firmado_profesional && usuario?.id !== proyecto?.fundador_id && (
-                    <button onClick={async () => {
-                      const res = await fetch('/api/contratos', {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:miContrato.id,tipo:'profesional'})})
-                      const data = await res.json()
-                      if (data.contrato) setMiContrato(data.contrato)
-                    }} style={{background:'#1D9E75',border:'none',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                      ✓ Confirmar mi firma
-                    </button>
-                  )}
-                  {!miContrato.firmado_fundador && usuario?.id === proyecto?.fundador_id && (
-                    <button onClick={async () => {
-                      const res = await fetch('/api/contratos', {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:miContrato.id,tipo:'fundador'})})
-                      const data = await res.json()
-                      if (data.contrato) setMiContrato(data.contrato)
-                    }} style={{background:'#1D9E75',border:'none',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                      ✓ Confirmar mi firma
-                    </button>
-                  )}
-                </div>
-                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.75rem',lineHeight:'1.5'}}>Descarga el contrato, fírmalo físicamente y confirma tu firma aquí. El contrato queda vigente cuando ambas partes confirmen.</div>
+                {miContrato ? (<>
+                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'0.875rem',lineHeight:'1.5'}}>
+                    <span style={{color:miContrato.firmado_fundador?'#1D9E75':'#8FA3CC'}}>{miContrato.firmado_fundador?'✓':'○'} Fundador firmó</span>
+                    <span style={{margin:'0 0.75rem',color:'rgba(255,255,255,0.15)'}}>·</span>
+                    <span style={{color:miContrato.firmado_profesional?'#1D9E75':'#8FA3CC'}}>{miContrato.firmado_profesional?'✓':'○'} Especialista firmó</span>
+                  </div>
+                  <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
+                    {miContrato.contenido_json?.texto_pdf && (
+                      <button onClick={() => {
+                        const blob = new Blob([miContrato.contenido_json.texto_pdf], {type:'text/plain;charset=utf-8'})
+                        const url = URL.createObjectURL(blob)
+                        const a = document.createElement('a'); a.href=url; a.download=`Contrato_${proyecto?.nombre}.txt`; a.click()
+                        URL.revokeObjectURL(url)
+                      }} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                        ⬇ Descargar contrato
+                      </button>
+                    )}
+                    {!miContrato.firmado_profesional && (
+                      <button onClick={async () => {
+                        const res = await fetch('/api/contratos', {method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:miContrato.id,tipo:'profesional'})})
+                        const data = await res.json()
+                        if (data.contrato) setMiContrato(data.contrato)
+                      }} style={{background:'#1D9E75',border:'none',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                        ✓ Confirmar mi firma
+                      </button>
+                    )}
+                  </div>
+                  <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.75rem',lineHeight:'1.5'}}>Descarga el contrato, fírmalo físicamente y confirma tu firma aquí.</div>
+                </>) : (
+                  <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6'}}>
+                    El contrato se genera automáticamente cuando el fundador acepta tu postulación. Si ya fuiste aceptado y no aparece, contacta al fundador.
+                  </div>
+                )}
               </div>
               )}
 
