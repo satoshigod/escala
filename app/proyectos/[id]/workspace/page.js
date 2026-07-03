@@ -240,6 +240,17 @@ export default function Workspace() {
     setRegistrando(false)
   }
 
+  async function eliminarRol(rolId) {
+    if (!confirm('¿Eliminar este rol? Los especialistas que se hayan postulado ya no podrán ver la postulación.')) return
+    const res = await fetch('/api/roles?id=' + rolId + '&fundador_id=' + usuario?.id, { method: 'DELETE' })
+    const data = await res.json()
+    if (data.ok) {
+      setRoles(prev => prev.filter(r => r.id !== rolId))
+    } else {
+      alert('Error al eliminar: ' + (data.error || 'intenta de nuevo'))
+    }
+  }
+
   async function crearRolProyecto() {
     if (!rolForm.nombre.trim() || !proyecto?.id) {
       setMensajeRol('Completa el nombre del rol')
@@ -660,14 +671,22 @@ export default function Workspace() {
               ) : (
                 roles.map(rol => (
                   <div key={rol.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'0.75rem',marginBottom:'0.75rem'}}>
-                      <div>
-                        <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff'}}>{rol.nombre}</div>
-                        <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.35rem'}}>{rol.tipo_aporte ? rol.tipo_aporte.replace(/_/g,' ') : 'Aporte'} · {rol.modalidad ? rol.modalidad.replace(/_/g,' ') : 'Modalidad'}</div>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'0.75rem',marginBottom:'0.5rem'}}>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff'}}>{rol.nombre}</div>
+                        {rol.sub_especialidad && (
+                          <div style={{fontSize:'0.72rem',color:'#1D9E75',fontWeight:'600',marginTop:'0.15rem'}}>{rol.sub_especialidad}</div>
+                        )}
+                        <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.25rem'}}>{rol.tipo_aporte ? rol.tipo_aporte.replace(/_/g,' ') : 'Aporte'} · {rol.modalidad ? rol.modalidad.replace(/_/g,' ') : 'Modalidad'}</div>
                       </div>
-                      <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.35rem 0.75rem',borderRadius:'999px',background: rol.estado === 'abierto' ? 'rgba(29,158,117,0.14)' : 'rgba(255,255,255,0.08)',color: rol.estado === 'abierto' ? '#1D9E75' : '#8FA3CC'}}>{rol.estado === 'abierto' ? 'Abierto' : 'Cerrado'}</span>
+                      <div style={{display:'flex',gap:'0.5rem',alignItems:'center',flexShrink:0}}>
+                        <span style={{fontSize:'0.7rem',fontWeight:'700',padding:'0.3rem 0.7rem',borderRadius:'999px',background: rol.estado === 'abierto' ? 'rgba(29,158,117,0.14)' : 'rgba(255,255,255,0.08)',color: rol.estado === 'abierto' ? '#1D9E75' : '#8FA3CC'}}>{rol.estado === 'abierto' ? 'Abierto' : 'Cerrado'}</span>
+                        {esFundador && (
+                          <button onClick={() => eliminarRol(rol.id)} title="Eliminar rol" style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.25)',borderRadius:'6px',padding:'0.3rem 0.5rem',color:'#D85A30',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif',lineHeight:1}}>✕</button>
+                        )}
+                      </div>
                     </div>
-                    {rol.descripcion && <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6',marginBottom:'0.85rem'}}>{rol.descripcion}</div>}
+                    {rol.descripcion && <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6',marginBottom:'0.75rem'}}>{rol.descripcion}</div>}
                     <div style={{display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:'0.5rem'}}>
                       <div style={{fontSize:'0.72rem',color:'#fff'}}>{rol.valor_mercado ? '$'+Number(rol.valor_mercado).toLocaleString()+'/mes' : 'Valor a negociar'}</div>
                       {rol.es_prioritario && <div style={{fontSize:'0.72rem',color:'#E8A020',fontWeight:'700'}}>Prioritario</div>}

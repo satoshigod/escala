@@ -87,3 +87,36 @@ export async function PATCH(request) {
   if (error) return Response.json({ error: error.message }, { status: 500 })
   return Response.json({ rol: data })
 }
+
+// DELETE — eliminar un rol (solo el fundador del proyecto)
+export async function DELETE(request) {
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get('id')
+  const fundador_id = searchParams.get('fundador_id')
+  if (!id) return Response.json({ error: 'Falta id' }, { status: 400 })
+
+  // Verificar que quien elimina es el fundador
+  if (fundador_id) {
+    const { data: rol } = await supabase
+      .from('roles')
+      .select('proyecto_id')
+      .eq('id', id)
+      .single()
+
+    if (rol) {
+      const { data: proyecto } = await supabase
+        .from('proyectos')
+        .select('fundador_id')
+        .eq('id', rol.proyecto_id)
+        .single()
+
+      if (proyecto?.fundador_id !== fundador_id) {
+        return Response.json({ error: 'Solo el fundador puede eliminar roles' }, { status: 403 })
+      }
+    }
+  }
+
+  const { error } = await supabase.from('roles').delete().eq('id', id)
+  if (error) return Response.json({ error: error.message }, { status: 500 })
+  return Response.json({ ok: true })
+}
