@@ -109,6 +109,22 @@ export async function PATCH(request) {
         }
       )
     }
+
+    // Generar contrato automáticamente al aceptar
+    if (estado === 'aceptada' && data.roles?.proyectos?.fundador_id) {
+      try {
+        await fetch(BASE_URL + '/api/contratos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            postulacion_id: data.id,
+            fundador_id: data.roles.proyectos.fundador_id,
+          })
+        })
+      } catch (e) {
+        console.error('Error generando contrato:', e.message)
+      }
+    }
   } catch (e) {
     console.error('Error notificando cambio de postulacion:', e)
   }
