@@ -268,7 +268,7 @@ export default function Workspace() {
         descripcion: rolForm.descripcion,
         tipo_aporte: rolForm.tipo_aporte,
         valor_mercado: Number(rolForm.valor_mercado) || 0,
-        modalidad: proyecto?.estado_financiacion === 'con_recursos' ? 'con_recursos' : 'riesgo_compartido',
+        modalidad: proyecto?.estado_financiacion === 'con_recursos' ? 'equity' : 'deuda_diferida',
         es_prioritario: rolForm.es_prioritario,
         estado: 'abierto',
         fundador_id: usuario?.id,
