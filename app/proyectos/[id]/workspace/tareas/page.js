@@ -3,17 +3,16 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../../../../lib/supabase'
 
 const estadoConfig = {
-  pendiente: { label: 'Pendiente', color: '#8FA3CC', bg: 'rgba(143,163,204,0.1)', icon: '○' },
-  en_progreso: { label: 'En progreso', color: '#E8A020', bg: 'rgba(232,160,32,0.1)', icon: '◑' },
-  completada: { label: 'Completada', color: '#1D9E75', bg: 'rgba(29,158,117,0.1)', icon: '◉' },
-  verificada: { label: 'Verificada', color: '#AFA9EC', bg: 'rgba(175,169,236,0.1)', icon: '✓' },
+  pendiente: { label: 'Pendiente', color: '#8FA3CC', bg: 'rgba(143,163,204,0.1)', icon: 'o' },
+  en_progreso: { label: 'En progreso', color: '#E8A020', bg: 'rgba(232,160,32,0.1)', icon: '~' },
+  completada: { label: 'Completada', color: '#1D9E75', bg: 'rgba(29,158,117,0.1)', icon: '*' },
+  verificada: { label: 'Verificada', color: '#AFA9EC', bg: 'rgba(175,169,236,0.1)', icon: 'v' },
 }
 
 function normalizarTexto(text) {
   return (text || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
 }
 
-// Detecta si el rol es un abogado o contador de constitución
 function detectarRolConstitucion(nombreRol, subEsp) {
   const n = normalizarTexto(nombreRol || '')
   const s = normalizarTexto(subEsp || '')
@@ -26,7 +25,6 @@ function detectarRolConstitucion(nombreRol, subEsp) {
 
 export default function Tareas() {
   const [usuario, setUsuario] = useState(null)
-  const [perfil, setPerfil] = useState(null)
   const [proyecto, setProyecto] = useState(null)
   const [roles, setRoles] = useState([])
   const [miRol, setMiRol] = useState(null)
@@ -50,8 +48,8 @@ export default function Tareas() {
 
   function getProyectoIdFromPath() {
     const parts = window.location.pathname.split('/').filter(Boolean)
-    const proyectoIndex = parts.indexOf('proyectos')
-    return proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
+    const idx = parts.indexOf('proyectos')
+    return idx !== -1 ? parts[idx + 1] : null
   }
 
   function tareaPerteneceAMiRol(tarea) {
@@ -60,13 +58,9 @@ export default function Tareas() {
     const esRolLegal = /abogado|legal|juridico/.test(miNombre)
     const esRolContable = /contador|contable|contabilidad|tributario/.test(miNombre)
     const categoria = normalizarTexto(tarea.categoria)
-    const nombreTarea = normalizarTexto(tarea.nombre)
     const rolTarea = normalizarTexto(tarea.rol_nombre)
-
-    if (categoria.includes('constituc') || nombreTarea.includes('constituc') || rolTarea.includes('constituc')) {
-      return esRolLegal || esRolContable
-    }
-    if (!tarea?.rol_nombre) {
+    if (categoria.includes('constituc') || rolTarea.includes('constituc')) return esRolLegal || esRolContable
+    if (!tarea.rol_nombre) {
       if (categoria === 'legal' && esRolLegal) return true
       if (categoria === 'finanzas' && esRolContable) return true
       return false
@@ -76,7 +70,7 @@ export default function Tareas() {
     if (miNombre.includes(rolTarea) || rolTarea.includes(miNombre)) return true
     const miPalabras = miNombre.split(/\s+/).filter(Boolean)
     const rolPalabras = rolTarea.split(/\s+/).filter(Boolean)
-    return miPalabras.some(word => word.length > 2 && rolPalabras.includes(word))
+    return miPalabras.some(w => w.length > 2 && rolPalabras.includes(w))
   }
 
   useEffect(() => {
@@ -88,15 +82,13 @@ export default function Tareas() {
       const pid = getProyectoIdFromPath()
       if (!pid || pid === 'undefined') { window.location.href = '/proyectos'; return }
 
-      const [pRes, perfilRes, rolesRes, postRes] = await Promise.all([
+      const [pRes, rolesRes, postRes] = await Promise.all([
         fetch('/api/proyectos/' + pid),
-        fetch('/api/usuarios?id=' + user.id),
         fetch('/api/roles?proyecto_id=' + pid),
         fetch('/api/postulaciones?postulante_id=' + user.id + '&proyecto_id=' + pid)
       ])
 
       const pData = await pRes.json()
-      const perfilData = await perfilRes.json()
       const rolesData = await rolesRes.json()
       const postData = await postRes.json()
 
@@ -113,13 +105,11 @@ export default function Tareas() {
 
       setAcceso(true)
       setProyecto(proy)
-      setPerfil(perfilData.usuario)
       setRoles(todosRoles)
       setMiRol(rolEncontrado || null)
       setEsFundador(esFund)
       setEsGerente(esGer)
 
-      // Cargar equipo
       const equipoData = []
       await Promise.all(todosRoles.map(async rol => {
         const r = await fetch('/api/postulaciones?rol_id=' + rol.id)
@@ -132,15 +122,11 @@ export default function Tareas() {
       }))
       setEquipo(equipoData)
 
-      // Cargar tareas
       const tRes = await fetch('/api/tareas?proyecto_id=' + pid)
       const tData = await tRes.json()
       let tareasActuales = tData.tareas || []
       setPlantillas(tData.plantillas || {})
 
-      // ── AUTO-INICIALIZAR TAREAS DE CONSTITUCIÓN ──────────────────────────
-      // Si el especialista es abogado/contador de constitución y aún no tiene
-      // tareas asignadas en este proyecto, las creamos automáticamente.
       if (!esFund && rolEncontrado) {
         const rolTipo = detectarRolConstitucion(rolEncontrado.nombre, rolEncontrado.sub_especialidad)
         if (rolTipo) {
@@ -159,9 +145,7 @@ export default function Tareas() {
               })
             })
             const initData = await initRes.json()
-            if (initData.tareas && initData.tareas.length > 0) {
-              tareasActuales = [...tareasActuales, ...initData.tareas]
-            }
+            if (initData.tareas?.length > 0) tareasActuales = [...tareasActuales, ...initData.tareas]
           }
         }
       }
@@ -188,7 +172,6 @@ export default function Tareas() {
     if (!nuevaTarea.nombre) return
     setCreando(true)
     const pid = getProyectoIdFromPath()
-    if (!pid || pid === 'undefined') { setCreando(false); alert('ID de proyecto inválido'); return }
     const miembro = equipo.find(e => e.postulante_id === nuevaTarea.asignado_a)
     const res = await fetch('/api/tareas', {
       method: 'POST',
@@ -217,17 +200,10 @@ export default function Tareas() {
     if (!rolInicializar) return
     setCreando(true)
     const pid = getProyectoIdFromPath()
-    if (!pid || pid === 'undefined') { setCreando(false); alert('ID de proyecto inválido'); return }
     const res = await fetch('/api/tareas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        proyecto_id: pid,
-        rol_nombre: rolInicializar,
-        asignado_a: miembroInicializar || null,
-        creado_por: usuario?.id,
-        inicializar: true
-      })
+      body: JSON.stringify({ proyecto_id: pid, rol_nombre: rolInicializar, asignado_a: miembroInicializar || null, creado_por: usuario?.id, inicializar: true })
     })
     const data = await res.json()
     if (!data.error) {
@@ -241,37 +217,22 @@ export default function Tareas() {
 
   const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
+  const tareasAsignadasAMi = tareas.filter(t => t.asignado_a === usuario?.id)
 
   const ROLES_REGULATORIOS = ['Abogado', 'Contador']
-  const ESPECIALIZACION_GLOBAL_KEYWORDS = ['internacional', 'propiedad intelectual', 'marcas', 'comercio exterior', 'compliance', 'protección de datos']
+  const GLOBAL_KW = ['internacional', 'propiedad intelectual', 'marcas', 'comercio exterior']
 
-  function miembrosParaCategoria(categoria, esTareaRegulatoria) {
-    const CATEGORIA_ROL = {
-      'Legal': ['Abogado'],
-      'Finanzas': ['Contador'],
-      'Técnico': ['Desarrollador Full-Stack'],
-      'Diseño': ['Diseñador'],
-      'Marketing': ['Community Manager'],
-      'Inversión': ['Inversionista inicial'],
-      'Gestión': ['Gerente de Proyecto'],
-    }
-    const rolesCompatibles = CATEGORIA_ROL[categoria] || null
-    if (!rolesCompatibles) return equipo
-    let candidatos = equipo.filter(e => rolesCompatibles.some(r => e.rol_nombre?.toLowerCase().includes(r.toLowerCase())))
-    const esRolRegulatorio = rolesCompatibles.some(r => ROLES_REGULATORIOS.includes(r))
-    if (esRolRegulatorio && esTareaRegulatoria && proyecto?.pais) {
-      candidatos = candidatos.filter(e => e.perfiles?.pais === proyecto.pais)
-    }
-    return candidatos
+  function miembrosParaCategoria(categoria) {
+    const MAP = { 'Legal': ['Abogado'], 'Finanzas': ['Contador'], 'Tecnico': ['Desarrollador Full-Stack'], 'Diseno': ['Disenador'], 'Marketing': ['Community Manager'], 'Inversion': ['Inversionista inicial'], 'Gestion': ['Gerente de Proyecto'] }
+    const rolesC = MAP[categoria] || null
+    if (!rolesC) return equipo
+    return equipo.filter(e => rolesC.some(r => e.rol_nombre?.toLowerCase().includes(r.toLowerCase())))
   }
 
-  function esTareaRegulatoria(nombreTarea, categoria) {
+  function esTareaRegulatoria(nombre, categoria) {
     if (categoria !== 'Legal' && categoria !== 'Finanzas') return false
-    const nombreLower = (nombreTarea || '').toLowerCase()
-    return !ESPECIALIZACION_GLOBAL_KEYWORDS.some(kw => nombreLower.includes(kw))
+    return !GLOBAL_KW.some(kw => (nombre || '').toLowerCase().includes(kw))
   }
-
-  const tareasAsignadasAMi = tareas.filter(t => t.asignado_a === usuario?.id)
 
   const tareasFiltradas = tareas.filter(t => {
     if (!esFundador && !verTodas) {
@@ -295,9 +256,9 @@ export default function Tareas() {
 
   if (!acceso) return (
     <div style={{minHeight:'100vh',background:'#0B1628',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',fontFamily:'Inter,sans-serif',gap:'1rem'}}>
-      <div style={{fontSize:'2rem'}}>🔒</div>
+      <div style={{fontSize:'2rem'}}>&#x1F512;</div>
       <div style={{color:'#fff',fontWeight:'700'}}>Acceso restringido</div>
-      <a href="/proyectos" style={{color:'#1D9E75',textDecoration:'none'}}>← Ver proyectos</a>
+      <a href="/proyectos" style={{color:'#1D9E75',textDecoration:'none'}}>Ver proyectos</a>
     </div>
   )
 
@@ -305,10 +266,10 @@ export default function Tareas() {
     <div style={{minHeight:'100vh',background:'#0B1628',fontFamily:'Inter,sans-serif'}}>
       <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
-          <a href={'/proyectos/'+proyecto?.id+'/workspace'} style={{color:'#8FA3CC',textDecoration:'none',fontSize:'0.82rem'}}>← Workspace</a>
+          <a href={'/proyectos/'+proyecto?.id+'/workspace'} style={{color:'#8FA3CC',textDecoration:'none',fontSize:'0.82rem'}}>Workspace</a>
           <span style={{color:'rgba(255,255,255,0.2)'}}>·</span>
           <span style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff'}}>{proyecto?.nombre}</span>
-          <span style={{fontSize:'0.75rem',color:'#8FA3CC'}}>— Plan de trabajo</span>
+          <span style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Plan de trabajo</span>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Dashboard</a>
@@ -317,7 +278,6 @@ export default function Tareas() {
       </nav>
 
       <main style={{maxWidth:'1000px',margin:'0 auto',padding:'2rem 1.25rem'}}>
-
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'2rem',flexWrap:'wrap',gap:'1rem'}}>
           <div>
             <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Plan de trabajo</div>
@@ -334,11 +294,11 @@ export default function Tareas() {
             <div style={{display:'flex',gap:'0.5rem'}}>
               {esGerente && !esFundador && (
                 <button onClick={()=>setVerTodas(!verTodas)} style={{background: verTodas ? 'rgba(232,160,32,0.15)' : 'rgba(255,255,255,0.06)', color: verTodas ? '#E8A020' : '#8FA3CC', border: verTodas ? '1px solid rgba(232,160,32,0.3)' : '1px solid rgba(255,255,255,0.12)', borderRadius:'8px', padding:'0.6rem 1rem', fontSize:'0.78rem', fontWeight:'600', cursor:'pointer', fontFamily:'Inter,sans-serif'}}>
-                  {verTodas ? '👤 Ver solo mis tareas' : '👥 Ver todas las tareas'}
+                  {verTodas ? 'Ver solo mis tareas' : 'Ver todas las tareas'}
                 </button>
               )}
               <button onClick={() => {setMostrarInicializar(!mostrarInicializar);setMostrarNueva(false)}} style={{background:'rgba(232,160,32,0.1)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'8px',padding:'0.6rem 1rem',fontSize:'0.78rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                📋 Cargar plantilla de rol
+                Cargar plantilla de rol
               </button>
               <button onClick={() => {setMostrarNueva(!mostrarNueva);setMostrarInicializar(false)}} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
                 + Nueva tarea
@@ -363,29 +323,24 @@ export default function Tareas() {
             <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Cargar plantilla de tareas por rol</div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-rol-inicial">Rol</label>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-rol-inicial">Rol</label>
                 <select id="tk-rol-inicial" value={rolInicializar} onChange={e=>setRolInicializar(e.target.value)} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Selecciona un rol...</option>
                   {Object.keys(plantillas).map(r => <option key={r} value={r}>{r} ({plantillas[r].length} tareas)</option>)}
                 </select>
               </div>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-asignar-inicial">Asignar a (opcional)</label>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-asignar-inicial">Asignar a (opcional)</label>
                 <select id="tk-asignar-inicial" value={miembroInicializar} onChange={e=>setMiembroInicializar(e.target.value)} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Sin asignar</option>
-                  {equipo.map(e => <option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}</option>)}
+                  {equipo.map(e => <option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} - {e.rol_nombre}</option>)}
                 </select>
               </div>
             </div>
-            {rolInicializar && (
-              <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'1rem'}}>
-                Se cargarán {plantillas[rolInicializar]?.length} tareas base para el rol de {rolInicializar}.
-              </div>
-            )}
             <div style={{display:'flex',gap:'0.75rem'}}>
               <button onClick={() => {setMostrarInicializar(false);setRolInicializar('')}} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
               <button onClick={inicializarRol} disabled={!rolInicializar||creando} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.5rem',fontSize:'0.82rem',fontWeight:'700',cursor:rolInicializar?'pointer':'not-allowed',fontFamily:'Inter,sans-serif'}}>
-                {creando ? 'Cargando...' : 'Cargar tareas →'}
+                {creando ? 'Cargando...' : 'Cargar tareas'}
               </button>
             </div>
           </div>
@@ -395,40 +350,37 @@ export default function Tareas() {
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
             <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Nueva tarea</div>
             <div style={{marginBottom:'0.75rem'}}>
-              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-nombre">Nombre de la tarea *</label>
-              <input id="tk-nombre" value={nuevaTarea.nombre} onChange={e=>setNuevaTarea(n=>({...n,nombre:e.target.value}))} placeholder="¿Qué hay que hacer?" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-nombre">Nombre de la tarea *</label>
+              <input id="tk-nombre" value={nuevaTarea.nombre} onChange={e=>setNuevaTarea(n=>({...n,nombre:e.target.value}))} placeholder="Que hay que hacer?" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
             </div>
             <div style={{marginBottom:'0.75rem'}}>
-              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-razon">¿Por qué se agrega esta tarea?</label>
-              <input id="tk-razon" value={nuevaTarea.razon_creacion} onChange={e=>setNuevaTarea(n=>({...n,razon_creacion:e.target.value}))} placeholder="Contexto para que el equipo entienda por qué se necesita..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
+              <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-razon">Por que se agrega esta tarea?</label>
+              <input id="tk-razon" value={nuevaTarea.razon_creacion} onChange={e=>setNuevaTarea(n=>({...n,razon_creacion:e.target.value}))} placeholder="Contexto para el equipo..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
             </div>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-descripcion">Descripción</label>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-descripcion">Descripcion</label>
                 <input id="tk-descripcion" value={nuevaTarea.descripcion} onChange={e=>setNuevaTarea(n=>({...n,descripcion:e.target.value}))} placeholder="Detalle..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif'}}/>
               </div>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-categoria">Categoría</label>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-categoria">Categoria</label>
                 <select id="tk-categoria" value={nuevaTarea.categoria} onChange={e=>setNuevaTarea(n=>({...n,categoria:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">General</option>
-                  {['Legal','Finanzas','Técnico','Gestión','Diseño','Marketing','Inversión','Operaciones'].map(c=><option key={c} value={c}>{c}</option>)}
+                  {['Legal','Finanzas','Tecnico','Gestion','Diseno','Marketing','Inversion','Operaciones'].map(c=><option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
-                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="tk-asignado">Asignar a</label>
-                <select id="tk-asignado" key={'asignar-' + nuevaTarea.categoria} value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-asignado">Asignar a</label>
+                <select id="tk-asignado" value={nuevaTarea.asignado_a} onChange={e=>setNuevaTarea(n=>({...n,asignado_a:e.target.value}))} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Sin asignar</option>
-                  {miembrosParaCategoria(nuevaTarea.categoria, esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria)).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}{e.perfiles?.pais ? ' (' + e.perfiles.pais + ')' : ''}</option>)}
+                  {miembrosParaCategoria(nuevaTarea.categoria).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} - {e.rol_nombre}</option>)}
                 </select>
-                {nuevaTarea.categoria && esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria) && proyecto?.pais && (
-                  <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.3rem'}}>✓ Filtrando por jurisdicción {proyecto.pais}</div>
-                )}
               </div>
             </div>
             <div style={{display:'flex',gap:'0.75rem'}}>
               <button onClick={()=>setMostrarNueva(false)} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
               <button onClick={crearTarea} disabled={!nuevaTarea.nombre||creando} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.5rem',fontSize:'0.82rem',fontWeight:'700',cursor:nuevaTarea.nombre?'pointer':'not-allowed',fontFamily:'Inter,sans-serif'}}>
-                {creando ? 'Creando...' : 'Crear tarea →'}
+                {creando ? 'Creando...' : 'Crear tarea'}
               </button>
             </div>
           </div>
@@ -443,90 +395,87 @@ export default function Tareas() {
               </button>
             ))}
             {(esFundador || verTodas) && (
-              <>
-                <span style={{width:'1px',background:'rgba(255,255,255,0.1)',margin:'0 0.25rem'}}></span>
+              <span style={{display:'contents'}}>
+                <span style={{width:'1px',background:'rgba(255,255,255,0.1)',margin:'0 0.25rem',display:'inline-block'}}></span>
                 <button onClick={()=>setFiltroRol('todos')} style={{background:filtroRol==='todos'?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todos los roles</button>
                 {rolesTareas.map(r=>(
                   <button key={r} onClick={()=>setFiltroRol(r)} style={{background:filtroRol===r?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol===r?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{r}</button>
                 ))}
-              </>
+              </span>
             )}
           </div>
         )}
 
         {tareasFiltradas.length === 0 && tareas.length === 0 ? (
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>📋</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Sin tareas todavía</div>
+            <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>&#x1F4CB;</div>
+            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Sin tareas todavia</div>
             <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>
-              {esFundador||esGerente
-                ? 'Carga la plantilla de tareas para cada rol del equipo o crea tareas manualmente.'
-                : 'El fundador asignará tareas a tu rol próximamente.'}
+              {esFundador||esGerente ? 'Carga la plantilla de tareas para cada rol del equipo o crea tareas manualmente.' : 'El fundador asignara tareas a tu rol proximamente.'}
             </div>
             {(esFundador||esGerente) && (
               <button onClick={()=>setMostrarInicializar(true)} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.75rem 1.5rem',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                📋 Cargar plantilla de rol →
+                Cargar plantilla de rol
               </button>
             )}
           </div>
         ) : tareasFiltradas.length === 0 ? (
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center',color:'#8FA3CC',fontSize:'0.85rem'}}>
-            No hay tareas con ese filtro. <button onClick={()=>setFiltroEstado('todos')} style={{background:'none',border:'none',color:'#1D9E75',cursor:'pointer',fontFamily:'Inter,sans-serif',fontSize:'0.85rem',textDecoration:'underline'}}>Ver todas →</button>
+            No hay tareas con ese filtro.{' '}
+            <button onClick={()=>setFiltroEstado('todos')} style={{background:'none',border:'none',color:'#1D9E75',cursor:'pointer',fontFamily:'Inter,sans-serif',fontSize:'0.85rem',textDecoration:'underline'}}>Ver todas</button>
           </div>
         ) : (
           <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
-              {tareasFiltradas.map(t => {
-                const cfg = estadoConfig[t.estado] || estadoConfig.pendiente
-                const esMia = t.asignado_a === usuario?.id
-                const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
-                const puedeMover = esMia || esFundador || esGerente
+            {tareasFiltradas.map(t => {
+              const cfg = estadoConfig[t.estado] || estadoConfig.pendiente
+              const esMia = t.asignado_a === usuario?.id
+              const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
+              const puedeMover = esMia || esFundador || esGerente
 
-                return (
-                  <div key={t.id} style={{background: esMia ? 'rgba(29,158,117,0.04)' : 'rgba(255,255,255,0.03)', border: esMia ? '1px solid rgba(29,158,117,0.15)' : '1px solid rgba(255,255,255,0.07)', borderRadius:'10px', padding:'1rem 1.25rem'}}>
-                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem',flexWrap:'wrap'}}>
-                      <div style={{flex:1}}>
-                        <div style={{display:'flex',gap:'0.5rem',alignItems:'center',marginBottom:'0.3rem',flexWrap:'wrap'}}>
-                          {t.rol_nombre && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase'}}>{t.rol_nombre}</span>}
-                          {t.categoria && <span style={{fontSize:'0.62rem',padding:'1px 6px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{t.categoria}</span>}
-                          {esMia && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75'}}>● Mía</span>}
-                          {t.razon_creacion && t.razon_creacion.includes('Constitución') && (
-                            <span style={{fontSize:'0.62rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.1)',padding:'1px 6px',borderRadius:'4px'}}>⚖️ Constitución</span>
-                          )}
-                        </div>
-                        <div style={{fontSize:'0.875rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.2rem'}}>{t.nombre}</div>
-                        {t.descripcion && <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.3rem'}}>{t.descripcion}</div>}
-                        <div style={{fontSize:'0.68rem',color:'#6B7280',marginTop:'0.3rem'}}>
-                          {t.asignado_perfil?.nombre ? 'Asignada a ' + t.asignado_perfil.nombre : 'Sin asignar'}
-                          {t.completado_at ? ' · Completada ' + new Date(t.completado_at).toLocaleDateString('es-CO') : ''}
-                          {t.verificado_perfil?.nombre ? ' · Verificada por ' + t.verificado_perfil.nombre : ''}
-                        </div>
+              return (
+                <div key={t.id} style={{background: esMia ? 'rgba(29,158,117,0.04)' : 'rgba(255,255,255,0.03)', border: esMia ? '1px solid rgba(29,158,117,0.15)' : '1px solid rgba(255,255,255,0.07)', borderRadius:'10px', padding:'1rem 1.25rem'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem',flexWrap:'wrap'}}>
+                    <div style={{flex:1}}>
+                      <div style={{display:'flex',gap:'0.5rem',alignItems:'center',marginBottom:'0.3rem',flexWrap:'wrap'}}>
+                        {t.rol_nombre && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase'}}>{t.rol_nombre}</span>}
+                        {t.categoria && <span style={{fontSize:'0.62rem',padding:'1px 6px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{t.categoria}</span>}
+                        {esMia && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75'}}>Mia</span>}
+                        {t.razon_creacion && t.razon_creacion.includes('Constituci') && (
+                          <span style={{fontSize:'0.62rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.1)',padding:'1px 6px',borderRadius:'4px'}}>Constitucion</span>
+                        )}
                       </div>
-
-                      <div style={{display:'flex',gap:'0.4rem',alignItems:'center',flexShrink:0}}>
-                        <span style={{fontSize:'0.7rem',fontWeight:'700',padding:'0.2rem 0.75rem',borderRadius:'20px',background:cfg.bg,color:cfg.color}}>
-                          {cfg.icon} {cfg.label}
-                        </span>
-                        {puedeMover && t.estado === 'pendiente' && (
-                          <button onClick={()=>cambiarEstado(t,'en_progreso')} disabled={actualizando===t.id} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                            {actualizando===t.id?'...':'Iniciar'}
-                          </button>
-                        )}
-                        {puedeMover && t.estado === 'en_progreso' && (
-                          <button onClick={()=>cambiarEstado(t,'completada')} disabled={actualizando===t.id} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                            {actualizando===t.id?'...':'Completar'}
-                          </button>
-                        )}
-                        {puedeVerificar && (
-                          <button onClick={()=>cambiarEstado(t,'verificada')} disabled={actualizando===t.id} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                            {actualizando===t.id?'...':'✓ Verificar'}
-                          </button>
-                        )}
+                      <div style={{fontSize:'0.875rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.2rem'}}>{t.nombre}</div>
+                      {t.descripcion && <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.3rem'}}>{t.descripcion}</div>}
+                      <div style={{fontSize:'0.68rem',color:'#6B7280',marginTop:'0.3rem'}}>
+                        {t.asignado_perfil?.nombre ? 'Asignada a ' + t.asignado_perfil.nombre : 'Sin asignar'}
+                        {t.completado_at ? ' · Completada ' + new Date(t.completado_at).toLocaleDateString('es-CO') : ''}
+                        {t.verificado_perfil?.nombre ? ' · Verificada por ' + t.verificado_perfil.nombre : ''}
                       </div>
                     </div>
+                    <div style={{display:'flex',gap:'0.4rem',alignItems:'center',flexShrink:0}}>
+                      <span style={{fontSize:'0.7rem',fontWeight:'700',padding:'0.2rem 0.75rem',borderRadius:'20px',background:cfg.bg,color:cfg.color}}>
+                        {cfg.label}
+                      </span>
+                      {puedeMover && t.estado === 'pendiente' && (
+                        <button onClick={()=>cambiarEstado(t,'en_progreso')} disabled={actualizando===t.id} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+                          {actualizando===t.id?'...':'Iniciar'}
+                        </button>
+                      )}
+                      {puedeMover && t.estado === 'en_progreso' && (
+                        <button onClick={()=>cambiarEstado(t,'completada')} disabled={actualizando===t.id} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+                          {actualizando===t.id?'...':'Completar'}
+                        </button>
+                      )}
+                      {puedeVerificar && (
+                        <button onClick={()=>cambiarEstado(t,'verificada')} disabled={actualizando===t.id} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+                          {actualizando===t.id?'...':'Verificar'}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                )
-              })}
-            </div>
+                </div>
+              )
+            })}
           </div>
         )}
       </main>
