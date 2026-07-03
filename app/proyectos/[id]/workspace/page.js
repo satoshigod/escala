@@ -355,6 +355,24 @@ export default function Workspace() {
               </div>
             </div>
 
+            <div style={{display:'flex',gap:'1rem',flexWrap:'wrap',marginBottom:'2rem'}}>
+              <div style={{flex:'1 1 320px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+                <div>
+                  <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Roles del proyecto</div>
+                  <div style={{fontSize:'1.6rem',fontWeight:'800',color:'#1D9E75',marginBottom:'0.5rem'}}>{roles.filter(r => r.estado === 'abierto').length}</div>
+                  <div style={{fontSize:'0.85rem',color:'#8FA3CC',lineHeight:'1.6'}}>{roles.filter(r => r.estado === 'abierto').length > 0 ? 'Roles abiertos para que el equipo se postule.' : 'Aún no hay roles abiertos en este proyecto.'}</div>
+                </div>
+                <button onClick={() => setTab('roles')} style={{marginTop:'1rem',background:'#1D9E75',color:'#fff',border:'none',borderRadius:'10px',padding:'0.85rem 1.25rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Ver roles</button>
+              </div>
+              {esFundador && (
+                <div style={{flex:'1 1 320px',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'14px',padding:'1.5rem'}}>
+                  <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Publicar un nuevo rol</div>
+                  <div style={{fontSize:'0.85rem',color:'#fff',lineHeight:'1.6',marginBottom:'1rem'}}>Agrega un rol que tu proyecto necesita y empieza a recibir postulaciones hoy.</div>
+                  <button onClick={() => { setTab('roles'); setMostrarFormRol(true) }} style={{background:'#fff',color:'#0B1628',border:'none',borderRadius:'10px',padding:'0.85rem 1.25rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Ir a publicar rol</button>
+                </div>
+              )}
+            </div>
+
             {hitos.length > 0 && (
               <div style={{marginBottom:'2rem'}}>
                 <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'1rem',paddingBottom:'0.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>Próximos hitos</div>
