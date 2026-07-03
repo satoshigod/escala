@@ -310,7 +310,10 @@ export default function Tareas() {
           <span style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff'}}>{proyecto?.nombre}</span>
           <span style={{fontSize:'0.75rem',color:'#8FA3CC'}}>— Plan de trabajo</span>
         </div>
-        <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Dashboard</a>
+        <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
+          <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Dashboard</a>
+          <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/registro?modo=login' }} style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.25)',color:'#D85A30',fontSize:'0.75rem',fontWeight:'600',padding:'0.3rem 0.75rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
+        </div>
       </nav>
 
       <main style={{maxWidth:'1000px',margin:'0 auto',padding:'2rem 1.25rem'}}>

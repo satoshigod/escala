@@ -331,7 +331,8 @@ export default function Workspace() {
   const hitosPendientes = hitos.filter(h => !h.completado).length
   const miRol = miPostulacion ? roles.find(r => r.id === miPostulacion.rol_id) : null
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
-  const mostrarPresupuesto = true
+  const esMiRolConstitucion = esRolConstitucion(miRol)
+  const mostrarPresupuesto = esFundador || !esMiRolConstitucion
 
   useEffect(() => {
     if (!mostrarPresupuesto && tab === 'presupuesto') {
@@ -411,6 +412,7 @@ export default function Workspace() {
           )}
           <a href={'/proyectos/' + proyecto?.id} style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Ver proyecto</a>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Dashboard</a>
+          <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/registro?modo=login' }} style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.25)',color:'#D85A30',fontSize:'0.75rem',fontWeight:'600',padding:'0.3rem 0.75rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
       </nav>
 
@@ -694,7 +696,11 @@ export default function Workspace() {
                 {(esAbogado || esContador) && subOpciones.length > 0 && (
                   <div style={{marginBottom:'1rem'}}>
                     <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>¿Qué servicio específico necesitas?</label>
-                    <select value={rolForm.sub_especialidad} onChange={e => setRolForm(r => ({...r, sub_especialidad: e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif',marginBottom: subSeleccionada ? '0.75rem' : 0}}>
+                    <select value={rolForm.sub_especialidad} onChange={e => {
+                      const val = e.target.value
+                      const opcion = subOpciones.find(s => s.value === val)
+                      setRolForm(r => ({ ...r, sub_especialidad: val, descripcion: opcion ? opcion.desc : r.descripcion }))
+                    }} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif',marginBottom: subSeleccionada ? '0.75rem' : 0}}>
                       <option value="">Selecciona el servicio...</option>
                       {subOpciones.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
                     </select>
