@@ -70,6 +70,7 @@ export default function PerfilPublico() {
         <div style={{display:'flex',gap:'1.5rem'}}>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
           <button onClick={() => window.history.back()} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.82rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>← Volver</button>
+          <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/registro?modo=login' }} style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.25)',color:'#D85A30',fontSize:'0.78rem',fontWeight:'600',padding:'0.3rem 0.875rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
       </nav>
 

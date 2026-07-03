@@ -240,10 +240,7 @@ export default function Tareas() {
   }
 
   const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
-  const misTareas = tareas.filter(t =>
-    t.asignado_a === usuario?.id ||
-    (!t.asignado_a && tareaPerteneceAMiRol(t))
-  )
+  const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
 
   const ROLES_REGULATORIOS = ['Abogado', 'Contador']
   const ESPECIALIZACION_GLOBAL_KEYWORDS = ['internacional', 'propiedad intelectual', 'marcas', 'comercio exterior', 'compliance', 'protección de datos']
@@ -274,10 +271,12 @@ export default function Tareas() {
     return !ESPECIALIZACION_GLOBAL_KEYWORDS.some(kw => nombreLower.includes(kw))
   }
 
+  const tareasAsignadasAMi = tareas.filter(t => t.asignado_a === usuario?.id)
+
   const tareasFiltradas = tareas.filter(t => {
     if (!esFundador && !verTodas) {
       if (t.asignado_a === usuario?.id) return true
-      if (!t.asignado_a && tareaPerteneceAMiRol(t)) return true
+      if (!t.asignado_a && tareasAsignadasAMi.length === 0 && tareaPerteneceAMiRol(t)) return true
       return false
     }
     if (filtroRol !== 'todos' && t.rol_nombre !== filtroRol) return false

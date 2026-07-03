@@ -206,7 +206,11 @@ export default function Dashboard() {
   const esFundador = misProyectos.length > 0
   const primerProyectoFundado = misProyectos.find(p => p.estado === 'activo') || misProyectos[0] || null
   const totalAportes = misAportes.reduce((s, a) => s + (a.valor || 0), 0)
-  const postulacionActiva = misPostulaciones.find(p => p.estado === 'aceptada' && p.roles?.proyecto_id)
+  const postulacionActiva = misPostulaciones.find(p =>
+    p.estado === 'aceptada' &&
+    p.roles?.proyecto_id &&
+    !misProyectos.some(mp => mp.id === p.roles?.proyecto_id)
+  )
   const proyectoActivo = postulacionActiva ? todosProyectos.find(p => p.id === postulacionActiva.roles.proyecto_id) : null
   const rolActivo = postulacionActiva?.roles?.nombre || null
   const postAceptadas = misPostulaciones.filter(p => p.estado === 'aceptada').length

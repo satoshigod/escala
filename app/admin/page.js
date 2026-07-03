@@ -95,7 +95,7 @@ export default function Admin() {
     await fetch('/api/postulaciones', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, estado })
+      body: JSON.stringify({ id, estado, fundador_id: usuario?.id })
     })
     setPostulaciones(prev => ({
       ...prev,

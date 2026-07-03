@@ -23,7 +23,9 @@ export default function ProyectoDetalle() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
-      const pid = window.location.pathname.split('/').pop()
+      const parts = window.location.pathname.split('/').filter(Boolean)
+      const proyectoIndex = parts.indexOf('proyectos')
+      const pid = proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
 
       const [r1, r2, r3, r4] = await Promise.all([
         fetch('/api/proyectos/' + pid),
@@ -88,6 +90,7 @@ export default function ProyectoDetalle() {
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
           <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
           <button onClick={() => window.history.back()} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.82rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>← Volver</button>
+          <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/registro?modo=login' }} style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.25)',color:'#D85A30',fontSize:'0.78rem',fontWeight:'600',padding:'0.3rem 0.875rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
       </nav>
 
