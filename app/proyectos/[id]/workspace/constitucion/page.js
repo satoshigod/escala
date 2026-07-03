@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../../../../lib/supabase'
+import { supabase } from '../../../../../lib/supabase'
 
 const ROL_ABOGADO = ['abogado', 'legal', 'jurídico']
 const ROL_CONTADOR = ['contador', 'contable', 'contabilidad', 'tributario']
