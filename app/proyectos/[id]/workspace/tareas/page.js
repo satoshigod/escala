@@ -275,9 +275,10 @@ export default function Tareas() {
 
   const tareasFiltradas = tareas.filter(t => {
     if (!esFundador && !verTodas) {
-      if (t.asignado_a === usuario?.id) return true
-      if (!t.asignado_a && tareasAsignadasAMi.length === 0 && tareaPerteneceAMiRol(t)) return true
-      return false
+      const esMia = t.asignado_a === usuario?.id || (!t.asignado_a && tareasAsignadasAMi.length === 0 && tareaPerteneceAMiRol(t))
+      if (!esMia) return false
+      if (filtroEstado !== 'todos' && t.estado !== filtroEstado) return false
+      return true
     }
     if (filtroRol !== 'todos' && t.rol_nombre !== filtroRol) return false
     if (filtroEstado !== 'todos' && t.estado !== filtroEstado) return false
