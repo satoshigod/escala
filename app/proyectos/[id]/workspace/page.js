@@ -200,6 +200,7 @@ export default function Workspace() {
   const hitosPendientes = hitos.filter(h => !h.completado).length
   const miRol = roles.find(r => postulaciones.some(p => p.rol_id === r.id && p.estado === 'aceptada'))
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
+  const esMiRolConstitucion = miRol?.nombre ? /abogado|legal|contador|contabilidad/i.test(miRol.nombre) : false
 
   const tabs = [
     { id: 'resumen', label: 'Resumen', icon: '📊' },
@@ -209,6 +210,7 @@ export default function Workspace() {
     { id: 'presupuesto', label: 'Presupuesto', icon: '💸' },
     { id: 'economia', label: 'Economía', icon: '💰' },
     { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },
+    ...(esMiRolConstitucion ? [{ id: 'constitucion', label: 'Constitución', icon: '⚖️' }] : []),
     { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
   ]
 
@@ -238,9 +240,12 @@ export default function Workspace() {
           {esFundador && <span style={{fontSize:'0.62rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(232,160,32,0.2)',color:'#E8A020'}}>Fundador</span>}
           {miRol && !esFundador && <span style={{fontSize:'0.62rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(29,158,117,0.2)',color:'#1D9E75'}}>{miRol.nombre}</span>}
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
+        <div style={{display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
           <a href={'/proyectos/'+proyecto?.id+'/workspace/tareas'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>📋 Tareas</a>
           <a href={'/proyectos/'+proyecto?.id+'/workspace/chat'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>💬 Chat</a>
+          {esMiRolConstitucion && (
+            <a href={'/proyectos/'+proyecto?.id+'/workspace/constitucion'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>⚖️ Constitución</a>
+          )}
           <a href={'/proyectos/' + proyecto?.id} style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Ver proyecto</a>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Dashboard</a>
         </div>
@@ -540,8 +545,19 @@ export default function Workspace() {
             <div style={{fontSize:'2rem',marginBottom:'1rem'}}>✅</div>
             <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Plan de trabajo del proyecto</div>
             <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Tareas asignadas por rol con seguimiento de avance y verificación del fundador.</div>
-            <a href={window?.location?.pathname?.replace('/workspace','/workspace/tareas')} style={{background:'#1D9E75',color:'#fff',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
+            <a href={'/proyectos/'+proyecto?.id+'/workspace/tareas'} style={{background:'#1D9E75',color:'#fff',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
               Ver plan de trabajo completo →
+            </a>
+          </div>
+        )}
+
+        {tab === 'constitucion' && (
+          <div style={{textAlign:'center',padding:'3rem'}}>
+            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>⚖️</div>
+            <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Workspace de constitución</div>
+            <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Accede a las tareas de constitución específicas para tu rol de abogado o contador.</div>
+            <a href={'/proyectos/'+proyecto?.id+'/workspace/constitucion'} style={{background:'#AFA9EC',color:'#0B1628',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
+              Abrir constitución →
             </a>
           </div>
         )}
