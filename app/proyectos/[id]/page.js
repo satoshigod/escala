@@ -157,7 +157,10 @@ export default function ProyectoDetalle() {
                 return (
                   <div key={rol.id} style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.3)',borderRadius:'12px',padding:'1.25rem'}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'0.5rem'}}>
-                      <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff'}}>{rol.nombre}</div>
+                      <div>
+                        <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff'}}>{rol.nombre}</div>
+                        {rol.sub_especialidad && <div style={{fontSize:'0.72rem',color:'#E8A020',fontWeight:'600',marginTop:'2px'}}>{rol.sub_especialidad}</div>}
+                      </div>
                       <span style={{fontSize:'0.62rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(232,160,32,0.2)',color:'#E8A020'}}>🔥 Prioritario</span>
                     </div>
                     {rol.descripcion && <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.875rem'}}>{rol.descripcion}</div>}
@@ -195,7 +198,10 @@ export default function ProyectoDetalle() {
                 const yaPostulado = misPostulaciones.includes(rol.id)
                 return (
                   <div key={rol.id} style={{background:'rgba(255,255,255,0.04)',border: yaPostulado ? '1px solid rgba(29,158,117,0.3)' : '1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
-                    <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>{rol.nombre} {rol.es_prioritario?'🔥':''}</div>
+                    <div style={{marginBottom:'0.4rem'}}>
+                      <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff'}}>{rol.nombre} {rol.es_prioritario?'🔥':''}</div>
+                      {rol.sub_especialidad && <div style={{fontSize:'0.72rem',color:'#1D9E75',fontWeight:'600',marginTop:'2px'}}>{rol.sub_especialidad}</div>}
+                    </div>
                     {rol.descripcion && <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.875rem'}}>{rol.descripcion}</div>}
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.875rem'}}>
                       <div style={{fontFamily:'monospace',fontSize:'0.82rem',fontWeight:'600',color:'#fff'}}>{rol.valor_mercado ? '$'+rol.valor_mercado.toLocaleString() : 'A negociar'}</div>

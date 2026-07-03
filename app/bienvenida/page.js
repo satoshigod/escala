@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const ROLES = [
-  { value: 'ideador', icon: '💡', titulo: 'Ideador / Fundador', desc: 'Tienes una idea o empresa y buscas equipo' },
-  { value: 'especialista', icon: '🔧', titulo: 'Especialista', desc: 'Aportas conocimiento, tiempo o servicios a cambio de participación diferida' },
-  { value: 'ejecutor', icon: '⚙️', titulo: 'Ejecutor / Gerente', desc: 'Gestionas proyectos y equipos, liberas al fundador para crecer' },
-  { value: 'capitalista', icon: '💰', titulo: 'Capitalista', desc: 'Aportas capital a proyectos con potencial a cambio de equity' },
-  { value: 'angel', icon: '🌟', titulo: 'Ángel de Impulso', desc: 'Financias hitos específicos sin equity ni devolución' },
-  { value: 'mentor', icon: '🧭', titulo: 'Mentor', desc: 'Aportas experiencia estratégica sin ejecutar tareas operativas' },
-  { value: 'empresa', icon: '🏢', titulo: 'Empresa', desc: 'Actúas como fundadora, ejecutora, prestadora de servicios o ángel' },
+  { value: 'ideador',      icon: '💡', titulo: 'Ideador / Fundador',  desc: 'Tengo una idea de negocio' },
+  { value: 'especialista', icon: '🔧', titulo: 'Especialista',         desc: 'Tengo conocimiento profesional' },
+  { value: 'ejecutor',     icon: '⚙️', titulo: 'Ejecutor / Gerente',  desc: 'Sé construir y operar empresas' },
+  { value: 'capitalista',  icon: '💰', titulo: 'Capitalista',          desc: 'Tengo capital para invertir' },
+  { value: 'angel',        icon: '🌟', titulo: 'Ángel de Impulso',    desc: 'Quiero financiar un hito' },
+  { value: 'mentor',       icon: '🧭', titulo: 'Mentor',               desc: 'Quiero aportar experiencia estratégica' },
+  { value: 'empresa',      icon: '🏢', titulo: 'Empresa',              desc: 'Represento una empresa' },
 ]
 
 export default function Bienvenida() {

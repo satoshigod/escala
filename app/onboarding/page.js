@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const roles = [
-  { id: 'ideador', icon: '💡', label: 'Ideador', desc: 'Tengo una idea de negocio', ejemplo: 'Publicas tu proyecto y armas equipo sin necesidad de tener dinero para contratar' },
-  { id: 'capitalista', icon: '💰', label: 'Capitalista', desc: 'Tengo capital para invertir', ejemplo: 'Aportas dinero a un proyecto y tu inversión queda registrada como participación' },
-  { id: 'especialista', icon: '🔧', label: 'Especialista', desc: 'Tengo conocimiento profesional', ejemplo: 'Abogado, contador, diseñador, programador — tu tiempo se convierte en participación futura' },
-  { id: 'ejecutor', icon: '⚙️', label: 'Ejecutor', desc: 'Sé construir y operar empresas', ejemplo: 'Coordinas al equipo, ejecutas el día a día y haces que el proyecto avance' },
-  { id: 'angel', icon: '🌟', label: 'Ángel de Impulso', desc: 'Quiero financiar un hito', ejemplo: 'Pagas algo puntual (un registro de marca, un MVP) sin financiar toda la empresa' },
-  { id: 'mentor', icon: '🧭', label: 'Mentor', desc: 'Quiero aportar experiencia estratégica', ejemplo: 'Orientas a los fundadores en comercial, finanzas o tecnología sin ejecutar tareas operativas' },
-  { id: 'empresa', icon: '🏢', label: 'Empresa', desc: 'Represento una empresa', ejemplo: 'Puedes actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora según el proyecto' },
+  { id: 'ideador',      icon: '💡', label: 'Ideador / Fundador',  desc: 'Tengo una idea de negocio',              ejemplo: 'Publicas tu proyecto y armas equipo sin necesidad de tener dinero para contratar' },
+  { id: 'especialista', icon: '🔧', label: 'Especialista',         desc: 'Tengo conocimiento profesional',          ejemplo: 'Abogado, contador, diseñador, programador — tu tiempo se convierte en participación futura' },
+  { id: 'ejecutor',     icon: '⚙️', label: 'Ejecutor / Gerente',  desc: 'Sé construir y operar empresas',          ejemplo: 'Coordinas al equipo, ejecutas el día a día y haces que el proyecto avance' },
+  { id: 'capitalista',  icon: '💰', label: 'Capitalista',          desc: 'Tengo capital para invertir',             ejemplo: 'Aportas dinero a un proyecto y tu inversión queda registrada como participación' },
+  { id: 'angel',        icon: '🌟', label: 'Ángel de Impulso',    desc: 'Quiero financiar un hito',                ejemplo: 'Pagas algo puntual (un registro de marca, un MVP) sin financiar toda la empresa' },
+  { id: 'mentor',       icon: '🧭', label: 'Mentor',               desc: 'Quiero aportar experiencia estratégica', ejemplo: 'Orientas a los fundadores en comercial, finanzas o tecnología sin ejecutar tareas operativas' },
+  { id: 'empresa',      icon: '🏢', label: 'Empresa',              desc: 'Represento una empresa',                  ejemplo: 'Puedes actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora según el proyecto' },
 ]
 
 export default function Onboarding() {
@@ -134,7 +134,7 @@ export default function Onboarding() {
     textarea: { width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', marginBottom: '1rem', fontFamily: 'Inter, sans-serif', resize: 'vertical', minHeight: '80px' },
     btn: { width: '100%', background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.9rem', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter, sans-serif' },
     btnSec: { width: '100%', background: 'transparent', color: '#8FA3CC', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'Inter, sans-serif', marginBottom: '0.75rem' },
-    rolGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.5rem' },
+    rolGrid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem', marginBottom: '1.5rem' },
     rolCard: activo => ({ background: activo ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.04)', border: activo ? '2px solid #1D9E75' : '1px solid rgba(255,255,255,0.12)', borderRadius: '10px', padding: '1rem', cursor: 'pointer', transition: 'all 0.2s' }),
     rolIcon: { fontSize: '1.4rem', marginBottom: '0.4rem' },
     rolLabel: { fontSize: '0.85rem', fontWeight: '700', color: '#fff', marginBottom: '0.2rem' },
