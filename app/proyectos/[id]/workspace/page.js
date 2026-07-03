@@ -309,7 +309,15 @@ export default function Workspace() {
   const hitosPendientes = hitos.filter(h => !h.completado).length
   const miRol = roles.find(r => postulaciones.some(p => p.rol_id === r.id && p.estado === 'aceptada'))
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
-  const esMiRolConstitucion = miRol?.nombre ? /abogado|legal|contador|contabilidad/i.test(miRol.nombre) : false
+  const esMiRolConstitucion = (() => {
+    const nombre = (miRol?.nombre || '').toLowerCase()
+    const sub = (miRol?.sub_especialidad || '').toLowerCase()
+    const texto = `${nombre} ${sub}`
+    const esConstitucion = /constitución|constitucion|constitución de empresa|constitucion de empresa/.test(texto)
+    const esAbogado = /abogado|legal|jur[ií]dico/.test(texto)
+    const esContador = /contador|contable|contabilidad|tributario/.test(texto)
+    return esConstitucion && (esAbogado || esContador)
+  })()
 
   async function salirProyecto() {
     if (!miPostulacion) return
@@ -485,7 +493,7 @@ export default function Workspace() {
             </div>
             {miPostulacion && !esFundador && (
               <div style={{marginTop:'1rem',display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
-                <button onClick={salirProyecto} style={{background:'#D85A30',color:'#fff',border:'none',borderRadius:'10px',padding:'0.9rem 1.1rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                <button onClick={salirProyecto} style={{background:'rgba(232,160,32,0.14)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'10px',padding:'0.9rem 1.1rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
                   Salir del proyecto
                 </button>
               </div>

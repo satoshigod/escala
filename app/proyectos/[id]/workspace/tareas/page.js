@@ -14,6 +14,7 @@ export default function Tareas() {
   const [perfil, setPerfil] = useState(null)
   const [proyecto, setProyecto] = useState(null)
   const [roles, setRoles] = useState([])
+  const [miRol, setMiRol] = useState(null)
   const [equipo, setEquipo] = useState([])
   const [tareas, setTareas] = useState([])
   const [plantillas, setPlantillas] = useState({})
@@ -30,6 +31,13 @@ export default function Tareas() {
   const [rolInicializar, setRolInicializar] = useState('')
   const [miembroInicializar, setMiembroInicializar] = useState('')
   const [creando, setCreando] = useState(false)
+
+  function tareaPerteneceAMiRol(tarea) {
+    if (!miRol?.nombre || !tarea?.rol_nombre) return false
+    const miNombre = miRol.nombre.toLowerCase()
+    const rolTarea = tarea.rol_nombre.toLowerCase()
+    return miNombre.includes(rolTarea) || rolTarea.includes(miNombre) || miNombre.split(' ').some(word => word && rolTarea.includes(word))
+  }
 
   useEffect(() => {
     async function cargar() {
@@ -67,6 +75,7 @@ export default function Tareas() {
       setProyecto(proy)
       setPerfil(perfilData.usuario)
       setRoles(todosRoles)
+      setMiRol(miRol || null)
       setEsFundador(esFund)
       setEsGerente(esGer)
 
@@ -166,7 +175,10 @@ export default function Tareas() {
   }
 
   const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
-  const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
+  const misTareas = tareas.filter(t =>
+    t.asignado_a === usuario?.id ||
+    (!t.asignado_a && tareaPerteneceAMiRol(t))
+  )
   const [verTodas, setVerTodas] = useState(false)
 
   // Roles que requieren coincidencia de jurisdicción — la categoría legal/fiscal depende de la ley local
@@ -208,7 +220,11 @@ export default function Tareas() {
     return !esGlobalPorPalabraClave
   }
   const tareasFiltradas = tareas.filter(t => {
-    if (!esFundador && !verTodas && t.asignado_a !== usuario?.id) return false
+    if (!esFundador && !verTodas) {
+      if (t.asignado_a === usuario?.id) return true
+      if (!t.asignado_a && tareaPerteneceAMiRol(t)) return true
+      return false
+    }
     if (filtroRol !== 'todos' && t.rol_nombre !== filtroRol) return false
     if (filtroEstado !== 'todos' && t.estado !== filtroEstado) return false
     return true
