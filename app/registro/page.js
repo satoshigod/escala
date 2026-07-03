@@ -37,9 +37,9 @@ export default function Registro() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: data.user.id, email, nombre })
       }).catch(() => {})
-      window.location.href = '/bienvenida'
+      window.location.href = '/onboarding'
     } else {
-      window.location.href = '/bienvenida'
+      window.location.href = '/onboarding'
     }
     setCargando(false)
   }
