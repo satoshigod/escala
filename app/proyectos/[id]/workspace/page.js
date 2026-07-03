@@ -80,7 +80,7 @@ export default function Workspace() {
         fetch('/api/roles?proyecto_id=' + pid),
         fetch('/api/hitos?proyecto_id=' + pid),
         fetch('/api/aportes?proyecto_id=' + pid),
-        fetch('/api/postulaciones?postulante_id=' + user.id)
+        fetch('/api/postulaciones?postulante_id=' + user.id + '&proyecto_id=' + pid)
       ])
 
       const pData = await pRes.json()
@@ -97,7 +97,7 @@ export default function Workspace() {
       // Verificar acceso: fundador o postulación aceptada en este proyecto
       const esFundador = proy?.fundador_id === user.id
       const miPostulacionAceptada = todasPost.find(p =>
-        p.estado === 'aceptada' && todosRoles.some(r => r.id === p.rol_id)
+        p.estado === 'aceptada' && p.roles?.proyecto_id === pid && todosRoles.some(r => r.id === p.rol_id)
       )
       setMiPostulacion(miPostulacionAceptada || null)
 
@@ -307,7 +307,7 @@ export default function Workspace() {
   const totalAportes = aportes.reduce((s, a) => s + (a.valor || 0), 0)
   const hitosCompletados = hitos.filter(h => h.completado).length
   const hitosPendientes = hitos.filter(h => !h.completado).length
-  const miRol = roles.find(r => postulaciones.some(p => p.rol_id === r.id && p.estado === 'aceptada'))
+  const miRol = miPostulacion ? roles.find(r => r.id === miPostulacion.rol_id) : null
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
   const esMiRolConstitucion = (() => {
     const nombre = (miRol?.nombre || '').toLowerCase()

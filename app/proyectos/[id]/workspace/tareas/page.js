@@ -33,10 +33,15 @@ export default function Tareas() {
   const [creando, setCreando] = useState(false)
 
   function tareaPerteneceAMiRol(tarea) {
-    if (!miRol?.nombre || !tarea?.rol_nombre) return false
-    const miNombre = miRol.nombre.toLowerCase()
-    const rolTarea = tarea.rol_nombre.toLowerCase()
-    return miNombre.includes(rolTarea) || rolTarea.includes(miNombre) || miNombre.split(' ').some(word => word && rolTarea.includes(word))
+    if (!miRol || !tarea?.rol_nombre) return false
+    const miNombre = `${miRol.nombre} ${miRol.sub_especialidad || ''}`.toLowerCase().trim()
+    const rolTarea = tarea.rol_nombre.toLowerCase().trim()
+    if (!miNombre || !rolTarea) return false
+    if (miNombre === rolTarea) return true
+    if (miNombre.includes(rolTarea) || rolTarea.includes(miNombre)) return true
+    const miPalabras = miNombre.split(/\s+/).filter(Boolean)
+    const rolPalabras = rolTarea.split(/\s+/).filter(Boolean)
+    return miPalabras.some(word => word.length > 2 && rolPalabras.includes(word))
   }
 
   useEffect(() => {
@@ -52,7 +57,7 @@ export default function Tareas() {
         fetch('/api/proyectos/' + pid),
         fetch('/api/usuarios?id=' + user.id),
         fetch('/api/roles?proyecto_id=' + pid),
-        fetch('/api/postulaciones?postulante_id=' + user.id)
+        fetch('/api/postulaciones?postulante_id=' + user.id + '&proyecto_id=' + pid)
       ])
 
       const pData = await pRes.json()
@@ -65,7 +70,7 @@ export default function Tareas() {
       const posts = postData.postulaciones || []
 
       const esFund = proy?.fundador_id === user.id
-      const miPost = posts.find(p => p.estado === 'aceptada' && todosRoles.some(r => r.id === p.rol_id))
+      const miPost = posts.find(p => p.estado === 'aceptada' && p.roles?.proyecto_id === pid && todosRoles.some(r => r.id === p.rol_id))
       const miRol = todosRoles.find(r => r.id === miPost?.rol_id)
       const esGer = miRol?.nombre?.toLowerCase().includes('gerente')
 

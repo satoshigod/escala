@@ -61,8 +61,8 @@ export default function Constitucion({ params }) {
       if (!miPost) { window.location.href = '/proyectos/' + proyectoId + '/workspace'; return }
 
       const rolEncontrado = todosRoles.find(r => r.id === miPost.rol_id)
-      const tipoRol = detectarRol(rolEncontrado?.nombre)
       const subEs = rolEncontrado?.sub_especialidad || ''
+      const tipoRol = detectarRol(rolEncontrado?.nombre, subEs)
 
       setMiRol(rolEncontrado)
       setMiPostulacion(miPost)

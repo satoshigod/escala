@@ -27,7 +27,7 @@ export default function Chat() {
         fetch('/api/proyectos/' + pid),
         fetch('/api/usuarios?id=' + user.id),
         fetch('/api/roles?proyecto_id=' + pid),
-        fetch('/api/postulaciones?postulante_id=' + user.id)
+        fetch('/api/postulaciones?postulante_id=' + user.id + '&proyecto_id=' + pid)
       ])
 
       const pData = await pRes.json()
