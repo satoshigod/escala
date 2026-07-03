@@ -1,7 +1,20 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../../lib/supabase'
-
+const MODALIDADES = [
+  { value: 'equity', label: 'Equity' },
+  { value: 'deuda_diferida', label: 'Deuda diferida' },
+  { value: 'convertible', label: 'Deuda convertible' },
+  { value: 'success_fee', label: 'Success fee' },
+  { value: 'hibrido', label: 'Híbrido' },
+]
+const TIPOS_APORTE = [
+  { value: 'tiempo', label: 'Tiempo' },
+  { value: 'servicio', label: 'Servicio' },
+  { value: 'capital', label: 'Capital' },
+  { value: 'conocimiento', label: 'Conocimiento' },
+  { value: 'activo', label: 'Activo' },
+]
 export default function Workspace() {
   const [usuario, setUsuario] = useState(null)
   const [perfil, setPerfil] = useState(null)
@@ -21,6 +34,10 @@ export default function Workspace() {
   const [deuda, setDeuda] = useState({ pendiente: [], resuelta: [], total_pendiente: 0 })
   const [badgeTareas, setBadgeTareas] = useState(0)
   const [badgeChat, setBadgeChat] = useState(0)
+  const [mostrarFormRol, setMostrarFormRol] = useState(false)
+  const [rolForm, setRolForm] = useState({ nombre: '', descripcion: '', tipo_aporte: 'tiempo', valor_mercado: '', modalidad: 'equity', es_prioritario: false })
+  const [guardandoRol, setGuardandoRol] = useState(false)
+  const [mensajeRol, setMensajeRol] = useState('')
 
   useEffect(() => {
     async function cargar() {
@@ -29,6 +46,10 @@ export default function Workspace() {
       setUsuario(user)
 
       const pid = window.location.pathname.split('/').slice(-2)[0]
+      const initialTab = new URLSearchParams(window.location.search).get('tab')
+      if (initialTab && ['resumen','hitos','equipo','aportes','presupuesto','economia','roles','tareas','constitucion','chat'].includes(initialTab)) {
+        setTab(initialTab)
+      }
 
       const [pRes, perfilRes, rolesRes, hitosRes, aportesRes, postRes] = await Promise.all([
         fetch('/api/proyectos/' + pid),
@@ -192,6 +213,40 @@ export default function Workspace() {
     setRegistrando(false)
   }
 
+  async function crearRolProyecto() {
+    if (!rolForm.nombre.trim() || !proyecto?.id) {
+      setMensajeRol('Completa el nombre del rol')
+      return
+    }
+    setGuardandoRol(true)
+    setMensajeRol('')
+    const res = await fetch('/api/roles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        proyecto_id: proyecto.id,
+        nombre: rolForm.nombre,
+        descripcion: rolForm.descripcion,
+        tipo_aporte: rolForm.tipo_aporte,
+        valor_mercado: Number(rolForm.valor_mercado) || 0,
+        modalidad: rolForm.modalidad,
+        es_prioritario: rolForm.es_prioritario,
+        estado: 'abierto'
+      })
+    })
+    const data = await res.json()
+    if (data.error) {
+      setMensajeRol('Error: ' + data.error)
+    } else {
+      setRoles(prev => [...prev, data.rol])
+      setMensajeRol('✓ Rol publicado correctamente')
+      setRolForm({ nombre: '', descripcion: '', tipo_aporte: 'tiempo', valor_mercado: '', modalidad: 'equity', es_prioritario: false })
+      setMostrarFormRol(false)
+      setTimeout(() => setMensajeRol(''), 3500)
+    }
+    setGuardandoRol(false)
+  }
+
   const esFundador = proyecto?.fundador_id === usuario?.id
   const misAportes = aportes.filter(a => a.aportante_id === usuario?.id)
   const totalMisAportes = misAportes.reduce((s, a) => s + (a.valor || 0), 0)
@@ -209,6 +264,7 @@ export default function Workspace() {
     { id: 'aportes', label: 'Mis aportes', icon: '📋' },
     { id: 'presupuesto', label: 'Presupuesto', icon: '💸' },
     { id: 'economia', label: 'Economía', icon: '💰' },
+    { id: 'roles', label: 'Roles', icon: '🧩' , badge: roles.filter(r => r.estado === 'abierto').length > 0 ? roles.filter(r => r.estado === 'abierto').length : null},
     { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },
     ...(esMiRolConstitucion ? [{ id: 'constitucion', label: 'Constitución', icon: '⚖️' }] : []),
     { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
@@ -245,6 +301,9 @@ export default function Workspace() {
           <a href={'/proyectos/'+proyecto?.id+'/workspace/chat'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>💬 Chat</a>
           {esMiRolConstitucion && (
             <a href={'/proyectos/'+proyecto?.id+'/workspace/constitucion'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>⚖️ Constitución</a>
+          )}
+          {esFundador && (
+            <button onClick={() => setTab('roles')} style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'none',cursor:'pointer'}}>🧩 Roles</button>
           )}
           <a href={'/proyectos/' + proyecto?.id} style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Ver proyecto</a>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Dashboard</a>
@@ -428,6 +487,89 @@ export default function Workspace() {
                   <div style={{fontSize:'0.78rem',color:'#8FA3CC',fontWeight:'600'}}>{roles.filter(r=>r.estado==='abierto').length} roles abiertos</div>
                   <div style={{fontSize:'0.72rem',color:'#1D9E75',marginTop:'0.25rem'}}>Ver y compartir</div>
                 </a>
+              )}
+            </div>
+          </div>
+        )}
+
+        {tab === 'roles' && (
+          <div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem',flexWrap:'wrap',marginBottom:'1.25rem'}}>
+              <div>
+                <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff'}}>Roles del proyecto</div>
+                <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginTop:'0.25rem'}}>Visualiza roles abiertos y crea nuevos puestos si eres fundador.</div>
+              </div>
+              {esFundador && (
+                <button onClick={() => setMostrarFormRol(prev => !prev)} style={{background: mostrarFormRol ? 'transparent' : '#1D9E75', color: mostrarFormRol ? '#8FA3CC' : '#fff', border: mostrarFormRol ? '1px solid rgba(255,255,255,0.15)' : 'none', borderRadius:'8px', padding:'0.6rem 1.15rem', fontSize:'0.82rem', fontWeight:'700', cursor:'pointer', fontFamily:'Inter,sans-serif'}}>
+                  {mostrarFormRol ? 'Cancelar' : '+ Publicar rol'}
+                </button>
+              )}
+            </div>
+
+            {mensajeRol && (
+              <div style={{marginBottom:'1.25rem',background: mensajeRol.startsWith('✓') ? 'rgba(29,158,117,0.1)' : 'rgba(216,90,48,0.08)',border: mensajeRol.startsWith('✓') ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(216,90,48,0.25)',borderRadius:'10px',padding:'0.95rem 1rem',color: mensajeRol.startsWith('✓') ? '#1D9E75' : '#D85A30',fontSize:'0.85rem'}}>{mensajeRol}</div>
+            )}
+
+            {esFundador && mostrarFormRol && (
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1rem'}}>
+                  <div>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Nombre del rol</label>
+                    <input value={rolForm.nombre} onChange={e => setRolForm(r => ({ ...r, nombre: e.target.value }))} placeholder="Ej. Product Manager" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}} />
+                  </div>
+                  <div>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Tipo de aporte</label>
+                    <select value={rolForm.tipo_aporte} onChange={e => setRolForm(r => ({ ...r, tipo_aporte: e.target.value }))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                      {TIPOS_APORTE.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1rem'}}>
+                  <div>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Modalidad</label>
+                    <select value={rolForm.modalidad} onChange={e => setRolForm(r => ({ ...r, modalidad: e.target.value }))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                      {MODALIDADES.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Valor mercado</label>
+                    <input type="number" value={rolForm.valor_mercado} onChange={e => setRolForm(r => ({ ...r, valor_mercado: e.target.value }))} placeholder="0" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}} />
+                  </div>
+                </div>
+                <div style={{marginBottom:'1rem'}}>
+                  <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Descripción</label>
+                  <textarea value={rolForm.descripcion} onChange={e => setRolForm(r => ({ ...r, descripcion: e.target.value }))} placeholder="Descripción breve del rol" rows="4" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.9rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}} />
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:'0.75rem',marginBottom:'1rem'}}>
+                  <label style={{display:'flex',alignItems:'center',gap:'0.5rem',fontSize:'0.9rem',color:'#8FA3CC'}}>
+                    <input type="checkbox" checked={rolForm.es_prioritario} onChange={e => setRolForm(r => ({ ...r, es_prioritario: e.target.checked }))} style={{width:'16px',height:'16px'}} />
+                    Rol prioritario
+                  </label>
+                </div>
+                <button onClick={crearRolProyecto} disabled={guardandoRol} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'10px',padding:'0.75rem 1.5rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{guardandoRol ? 'Guardando...' : 'Publicar rol'}</button>
+              </div>
+            )}
+
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:'1rem'}}>
+              {roles.length === 0 ? (
+                <div style={{gridColumn:'1/-1',color:'#8FA3CC',textAlign:'center',padding:'2rem',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px'}}>{esFundador ? 'No hay roles publicados aún. Publica el primero para recibir postulaciones.' : 'No hay roles publicados aún. Espera a que el fundador publique roles.'}</div>
+              ) : (
+                roles.map(rol => (
+                  <div key={rol.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'0.75rem',marginBottom:'0.75rem'}}>
+                      <div>
+                        <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff'}}>{rol.nombre}</div>
+                        <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.35rem'}}>{rol.tipo_aporte ? rol.tipo_aporte.replace(/_/g,' ') : 'Aporte'} · {rol.modalidad ? rol.modalidad.replace(/_/g,' ') : 'Modalidad'}</div>
+                      </div>
+                      <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.35rem 0.75rem',borderRadius:'999px',background: rol.estado === 'abierto' ? 'rgba(29,158,117,0.14)' : 'rgba(255,255,255,0.08)',color: rol.estado === 'abierto' ? '#1D9E75' : '#8FA3CC'}}>{rol.estado === 'abierto' ? 'Abierto' : 'Cerrado'}</span>
+                    </div>
+                    {rol.descripcion && <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6',marginBottom:'0.85rem'}}>{rol.descripcion}</div>}
+                    <div style={{display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:'0.5rem'}}>
+                      <div style={{fontSize:'0.72rem',color:'#fff'}}>{rol.valor_mercado ? '$'+Number(rol.valor_mercado).toLocaleString()+'/mes' : 'Valor a negociar'}</div>
+                      {rol.es_prioritario && <div style={{fontSize:'0.72rem',color:'#E8A020',fontWeight:'700'}}>Prioritario</div>}
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </div>

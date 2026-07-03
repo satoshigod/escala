@@ -215,6 +215,7 @@ export default function Dashboard() {
   )
 
   const acciones = [
+    ...(esFundador && misProyectos.length > 0 ? [{ icon: '🧩', label: 'Publicar rol', href: '/proyectos/'+misProyectos[0].id+'/workspace?tab=roles' }] : []),
     { icon: '🚀', label: 'Crear proyecto', href: '/proyectos' },
     { icon: '🔍', label: 'Buscar especialista', href: '/directorio' },
     { icon: '💰', label: 'Registrar aporte', href: '/aportes' },
