@@ -68,6 +68,15 @@ export default function Workspace() {
     return proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
   }
 
+  function normalizarTexto(text) {
+    return (text || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+  }
+
+  function esRolConstitucion(rol) {
+    const texto = normalizarTexto(`${rol?.nombre || ''} ${rol?.sub_especialidad || ''}`)
+    return /constituc/.test(texto)
+  }
+
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -321,16 +330,14 @@ export default function Workspace() {
   const hitosPendientes = hitos.filter(h => !h.completado).length
   const miRol = miPostulacion ? roles.find(r => r.id === miPostulacion.rol_id) : null
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
-  const esMiRolConstitucion = (() => {
-    if (!miRol || miRol.sub_especialidad) return false
-    const nombre = (miRol.nombre || '').toLowerCase()
-    const sub = (miRol.sub_especialidad || '').toLowerCase()
-    const texto = `${nombre} ${sub}`
-    const esConstitucion = /constitución|constitucion|constitución de empresa|constitucion de empresa/.test(texto)
-    const esAbogado = /abogado|legal|jur[ií]dico/.test(texto)
-    const esContador = /contador|contable|contabilidad|tributario/.test(texto)
-    return esConstitucion && (esAbogado || esContador)
-  })()
+  const esMiRolConstitucion = esRolConstitucion(miRol)
+  const mostrarPresupuesto = esFundador || !esMiRolConstitucion
+
+  useEffect(() => {
+    if (!mostrarPresupuesto && tab === 'presupuesto') {
+      setTab('resumen')
+    }
+  }, [mostrarPresupuesto, tab])
 
   async function salirProyecto() {
     if (!miPostulacion) return
@@ -354,7 +361,7 @@ export default function Workspace() {
     { id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null },
     { id: 'equipo', label: 'Equipo', icon: '👥' },
     { id: 'aportes', label: 'Mis aportes', icon: '📋' },
-    { id: 'presupuesto', label: 'Presupuesto', icon: '💸' },
+    ...(mostrarPresupuesto ? [{ id: 'presupuesto', label: 'Presupuesto', icon: '💸' }] : []),
     { id: 'economia', label: 'Economía', icon: '💰' },
     { id: 'roles', label: 'Roles', icon: '🧩' , badge: roles.filter(r => r.estado === 'abierto').length > 0 ? roles.filter(r => r.estado === 'abierto').length : null},
     { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },

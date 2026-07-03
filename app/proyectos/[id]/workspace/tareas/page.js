@@ -38,14 +38,29 @@ export default function Tareas() {
     return proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
   }
 
+  function normalizarTexto(text) {
+    return (text || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+  }
+
   function tareaPerteneceAMiRol(tarea) {
     if (!miRol || !tarea) return false
-    const miNombre = `${miRol.nombre} ${miRol.sub_especialidad || ''}`.toLowerCase().trim()
-    if (tarea.categoria?.toLowerCase() === 'constitución') {
-      return /abogado|legal|jur[ií]dico|contador|contable|contabilidad|tributario/.test(miNombre)
+    const miNombre = normalizarTexto(`${miRol.nombre} ${miRol.sub_especialidad || ''}`).trim()
+    const esRolLegal = /abogado|legal|juridico/.test(miNombre)
+    const esRolContable = /contador|contable|contabilidad|tributario/.test(miNombre)
+    const categoria = normalizarTexto(tarea.categoria)
+    const nombreTarea = normalizarTexto(tarea.nombre)
+    const rolTarea = normalizarTexto(tarea.rol_nombre)
+
+    if (categoria.includes('constituc') || nombreTarea.includes('constituc') || rolTarea.includes('constituc')) {
+      return esRolLegal || esRolContable
     }
-    if (!tarea?.rol_nombre) return false
-    const rolTarea = tarea.rol_nombre.toLowerCase().trim()
+
+    if (!tarea?.rol_nombre) {
+      if (categoria === 'legal' && esRolLegal) return true
+      if (categoria === 'finanzas' && esRolContable) return true
+      return false
+    }
+
     if (!miNombre || !rolTarea) return false
     if (miNombre === rolTarea) return true
     if (miNombre.includes(rolTarea) || rolTarea.includes(miNombre)) return true

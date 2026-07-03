@@ -65,7 +65,8 @@ export default function Constitucion({ params }) {
       }
 
       const rolEncontrado = todosRoles.find(r => r.id === miPost.rol_id)
-      if (!proyectoId || proyectoId === 'undefined' || rolEncontrado?.sub_especialidad) {
+      const subEs = rolEncontrado?.sub_especialidad || ''
+      if (!proyectoId || proyectoId === 'undefined' || !esConstitucion(rolEncontrado?.nombre + ' ' + subEs)) {
         window.location.href = proyectoId ? '/proyectos/' + proyectoId + '/workspace/tareas' : '/proyectos'
         return
       }
