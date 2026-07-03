@@ -88,7 +88,7 @@ export async function PATCH(request) {
   return Response.json({ rol: data })
 }
 
-// DELETE — eliminar un rol (solo el fundador del proyecto)
+// DELETE — eliminar un rol (solo el fundador, solo si no tiene postulaciones aceptadas)
 export async function DELETE(request) {
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
@@ -114,6 +114,17 @@ export async function DELETE(request) {
         return Response.json({ error: 'Solo el fundador puede eliminar roles' }, { status: 403 })
       }
     }
+  }
+
+  // No se puede eliminar si ya hay alguien aceptado — hay una obligación contractual
+  const { data: aceptadas } = await supabase
+    .from('postulaciones')
+    .select('id')
+    .eq('rol_id', id)
+    .eq('estado', 'aceptada')
+
+  if (aceptadas && aceptadas.length > 0) {
+    return Response.json({ error: 'No puedes eliminar este rol — ya hay un especialista aceptado. Si el especialista se retira, el rol vuelve a estar disponible automáticamente.' }, { status: 409 })
   }
 
   const { error } = await supabase.from('roles').delete().eq('id', id)

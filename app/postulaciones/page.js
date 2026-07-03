@@ -35,8 +35,25 @@ export default function Postulaciones() {
     setActualizando(null)
   }
 
-  const estadoColor = { pendiente: '#E8A020', aceptada: '#1D9E75', rechazada: '#D85A30' }
-  const estadoLabel = { pendiente: '⏳ Pendiente', aceptada: '✅ Aceptada', rechazada: '✗ Declinada' }
+  async function desistir(postulacion) {
+    if (!confirm('¿Confirmas que te retiras de este rol?\n\nEl contrato quedará registrado como cancelado y el rol vuelve a estar disponible para otros. Esta acción no se puede deshacer.')) return
+    setActualizando(postulacion.id)
+    const res = await fetch('/api/desistir', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ postulacion_id: postulacion.id, usuario_id: usuario?.id })
+    })
+    const data = await res.json()
+    if (data.ok) {
+      setMisPostulaciones(p => p.map(x => x.id === postulacion.id ? { ...x, estado: 'retirada' } : x))
+    } else {
+      alert(data.error || 'Error al retirarte')
+    }
+    setActualizando(null)
+  }
+
+  const estadoColor = { pendiente: '#E8A020', aceptada: '#1D9E75', rechazada: '#D85A30', retirada: '#8FA3CC' }
+  const estadoLabel = { pendiente: '⏳ Pendiente', aceptada: '✅ Aceptada', rechazada: '✗ Declinada', retirada: '↩ Retirada' }
 
   function CardBase({ p, children }) {
     return (
@@ -108,6 +125,14 @@ export default function Postulaciones() {
                       </button>
                     </div>
                   )}
+                  {p.estado === 'aceptada' && (
+                    <button onClick={() => desistir(p)} disabled={actualizando === p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.12)',color:'#8FA3CC',borderRadius:'6px',padding:'0.4rem 0.875rem',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                      ↩ Retirarme de este rol
+                    </button>
+                  )}
+                  {p.estado === 'retirada' && (
+                    <div style={{fontSize:'0.75rem',color:'#8FA3CC',fontStyle:'italic'}}>Te retiraste — el contrato quedó registrado como cancelado.</div>
+                  )}
                 </CardBase>
               ))}
             </div>
@@ -131,7 +156,22 @@ export default function Postulaciones() {
             </div>
           ) : (
             <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-              {misPostulaciones.map(p => <CardBase key={p.id} p={p} />)}
+              {misPostulaciones.map(p => (
+                <CardBase key={p.id} p={p}>
+                  {p.estado === 'aceptada' && (
+                    <button
+                      onClick={() => desistir(p)}
+                      disabled={actualizando === p.id}
+                      style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.12)',color:'#8FA3CC',borderRadius:'6px',padding:'0.4rem 0.875rem',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif',marginTop:'0.25rem'}}
+                    >
+                      ↩ Retirarme de este rol
+                    </button>
+                  )}
+                  {p.estado === 'retirada' && (
+                    <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginTop:'0.25rem',fontStyle:'italic'}}>Te retiraste — el contrato quedó registrado como cancelado.</div>
+                  )}
+                </CardBase>
+              ))}
             </div>
           )}
         </div>
