@@ -2,9 +2,20 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
+const ROLES = [
+  { value: 'ideador', icon: '💡', titulo: 'Ideador / Fundador', desc: 'Tienes una idea o empresa y buscas equipo' },
+  { value: 'especialista', icon: '🔧', titulo: 'Especialista', desc: 'Aportas conocimiento, tiempo o servicios a cambio de participación diferida' },
+  { value: 'ejecutor', icon: '⚙️', titulo: 'Ejecutor / Gerente', desc: 'Gestionas proyectos y equipos, liberas al fundador para crecer' },
+  { value: 'capitalista', icon: '💰', titulo: 'Capitalista', desc: 'Aportas capital a proyectos con potencial a cambio de equity' },
+  { value: 'angel', icon: '🌟', titulo: 'Ángel de Impulso', desc: 'Financias hitos específicos sin equity ni devolución' },
+  { value: 'mentor', icon: '🧭', titulo: 'Mentor', desc: 'Aportas experiencia estratégica sin ejecutar tareas operativas' },
+  { value: 'empresa', icon: '🏢', titulo: 'Empresa', desc: 'Actúas como fundadora, ejecutora, prestadora de servicios o ángel' },
+]
+
 export default function Bienvenida() {
   const [usuario, setUsuario] = useState(null)
   const [cargando, setCargando] = useState(true)
+  const [rolSel, setRolSel] = useState(null)
 
   useEffect(() => {
     async function verificar() {
@@ -18,12 +29,20 @@ export default function Bienvenida() {
 
       if (perfil?.rol_principal && perfil?.especialidad) {
         window.location.href = '/dashboard'
-      } else {
-        setCargando(false)
+        return
       }
+      setCargando(false)
     }
     verificar()
   }, [])
+
+  function continuar() {
+    if (rolSel) {
+      window.location.href = '/onboarding?rol=' + rolSel
+    } else {
+      window.location.href = '/onboarding'
+    }
+  }
 
   if (cargando) return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>
@@ -33,32 +52,41 @@ export default function Bienvenida() {
 
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',display:'flex',alignItems:'center',justifyContent:'center',padding:'1.5rem'}}>
-      <div style={{maxWidth:'520px',width:'100%',textAlign:'center'}}>
+      <div style={{maxWidth:'600px',width:'100%',textAlign:'center'}}>
         <div style={{fontSize:'2.5rem',marginBottom:'1.5rem'}}>👋</div>
         <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.5rem'}}>Bienvenido a Escala</div>
-        <h1 style={{fontSize:'clamp(1.5rem,4vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'1rem'}}>Antes de empezar, cuéntanos quién eres</h1>
-        <p style={{fontSize:'0.9rem',color:'#8FA3CC',lineHeight:'1.7',marginBottom:'2rem'}}>
-          Tu perfil determina cómo te ven los fundadores y qué proyectos aparecen para ti. Solo toma 2 minutos.
+        <h1 style={{fontSize:'clamp(1.4rem,4vw,1.9rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.75rem'}}>¿Con qué perfil entras a Escala?</h1>
+        <p style={{fontSize:'0.875rem',color:'#8FA3CC',lineHeight:'1.7',marginBottom:'1.75rem'}}>
+          Selecciona el que mejor te describe. Puedes cambiarlo después desde tu perfil.
         </p>
 
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'2rem',textAlign:'left'}}>
-          {[
-            { icon: '🔧', titulo: 'Especialista', desc: 'Aportas conocimiento, tiempo o servicios a cambio de participación diferida' },
-            { icon: '⚙️', titulo: 'Ejecutor', desc: 'Gestionas proyectos y equipos, liberas al fundador para crecer' },
-            { icon: '💰', titulo: 'Capitalista', desc: 'Aportas capital a proyectos con potencial a cambio de equity' },
-            { icon: '🌟', titulo: 'Ángel de Impulso', desc: 'Financias hitos específicos sin equity ni devolución' },
-          ].map(r => (
-            <div key={r.titulo} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem'}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem',marginBottom:'1.75rem',textAlign:'left'}}>
+          {ROLES.map(r => (
+            <div
+              key={r.value}
+              onClick={() => setRolSel(r.value)}
+              style={{
+                background: rolSel === r.value ? 'rgba(29,158,117,0.12)' : 'rgba(255,255,255,0.04)',
+                border: rolSel === r.value ? '1.5px solid #1D9E75' : '1px solid rgba(255,255,255,0.08)',
+                borderRadius:'12px',
+                padding:'1rem',
+                cursor:'pointer',
+                transition:'all 0.15s',
+              }}
+            >
               <div style={{fontSize:'1.25rem',marginBottom:'0.4rem'}}>{r.icon}</div>
-              <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{r.titulo}</div>
+              <div style={{fontSize:'0.82rem',fontWeight:'700',color: rolSel === r.value ? '#1D9E75' : '#fff',marginBottom:'0.2rem'}}>{r.titulo}</div>
               <div style={{fontSize:'0.72rem',color:'#8FA3CC',lineHeight:'1.4'}}>{r.desc}</div>
             </div>
           ))}
         </div>
 
-        <a href="/onboarding" style={{display:'block',background:'#1D9E75',color:'#fff',padding:'1rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'1rem',fontWeight:'800',marginBottom:'1rem'}}>
-          Completar mi perfil →
-        </a>
+        <button
+          onClick={continuar}
+          style={{display:'block',width:'100%',background: rolSel ? '#1D9E75' : 'rgba(29,158,117,0.4)',color:'#fff',padding:'1rem 2rem',borderRadius:'10px',border:'none',fontSize:'1rem',fontWeight:'800',marginBottom:'1rem',cursor: rolSel ? 'pointer' : 'default',fontFamily:'Inter,sans-serif',transition:'background 0.2s'}}
+        >
+          {rolSel ? 'Completar mi perfil →' : 'Selecciona un perfil para continuar'}
+        </button>
         <a href="/dashboard" style={{display:'block',color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>
           Saltar por ahora y explorar
         </a>
