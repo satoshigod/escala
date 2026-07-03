@@ -5,59 +5,82 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 )
 
-// GET — listar todas las especialidades disponibles
-export async function GET() {
-  const { data, error } = await supabase
+// GET — listar especialidades/roles
+// ?aprobado=true → solo aprobadas
+// ?pendientes=true → solo pendientes de aprobación (admin-escala)
+export async function GET(request) {
+  const { searchParams } = new URL(request.url)
+  const soloAprobadas = searchParams.get('aprobado') === 'true'
+  const soloPendientes = searchParams.get('pendientes') === 'true'
+
+  let query = supabase
     .from('especialidades')
-    .select('id, nombre, categoria, creado_por, created_at, perfiles:creado_por ( nombre )')
+    .select('id, nombre, categoria, aprobado, propuesto_por, created_at, perfiles:propuesto_por ( nombre )')
+    .order('categoria')
     .order('nombre')
 
+  if (soloAprobadas) query = query.eq('aprobado', true)
+  if (soloPendientes) query = query.eq('aprobado', false)
+
+  const { data, error } = await query
   if (error) return Response.json({ error: error.message }, { status: 500 })
   return Response.json({ especialidades: data })
 }
 
-// POST — crear nueva especialidad desde el cliente
+// POST — proponer o crear especialidad/rol
+// propuesto_por presente → propuesta del fundador (aprobado=false hasta admin)
+// sin propuesto_por → creación directa desde admin-escala (aprobado=true)
 export async function POST(request) {
   try {
     const body = await request.json()
-    const { nombre, categoria, creado_por } = body
+    const { nombre, categoria, creado_por, propuesto_por } = body
 
     if (!nombre || !nombre.trim()) {
-      return Response.json({ error: 'Falta nombre de la especialidad' }, { status: 400 })
+      return Response.json({ error: 'Falta nombre' }, { status: 400 })
     }
 
     const nombreLimpio = nombre.trim()
-    const creadoPorLimpio = (creado_por && typeof creado_por === 'string' && creado_por.length > 0) ? creado_por : null
-
-    const { data: existente, error: errorBusqueda } = await supabase
+    const { data: existente } = await supabase
       .from('especialidades')
-      .select('id, nombre, categoria')
+      .select('id, nombre, categoria, aprobado')
       .ilike('nombre', nombreLimpio)
       .maybeSingle()
 
-    if (errorBusqueda) {
-      return Response.json({ error: 'Error buscando especialidad: ' + errorBusqueda.message }, { status: 500 })
-    }
+    if (existente) return Response.json({ especialidad: existente, existia: true })
 
-    if (existente) {
-      return Response.json({ especialidad: existente, existia: true })
-    }
-
-    const payloadInsert = { nombre: nombreLimpio, categoria: categoria || 'General', creado_por: creadoPorLimpio }
-
-    const { data: nuevaEsp, error: errorInsert } = await supabase
+    const esPropuesta = !!propuesto_por
+    const { data: nueva, error: err } = await supabase
       .from('especialidades')
-      .insert(payloadInsert)
-      .select('id, nombre, categoria, creado_por, created_at')
+      .insert({
+        nombre: nombreLimpio,
+        categoria: categoria || 'General',
+        aprobado: !esPropuesta,
+        propuesto_por: propuesto_por || null,
+        creado_por: creado_por || propuesto_por || null,
+      })
+      .select('id, nombre, categoria, aprobado, propuesto_por')
       .single()
 
-    if (errorInsert) {
-      return Response.json({ error: 'Error creando especialidad: ' + errorInsert.message }, { status: 500 })
-    }
-
-    return Response.json({ especialidad: nuevaEsp, existia: false }, { status: 201 })
-
+    if (err) return Response.json({ error: err.message }, { status: 500 })
+    return Response.json({ especialidad: nueva, existia: false }, { status: 201 })
   } catch (e) {
-    return Response.json({ error: 'Error inesperado: ' + e.message }, { status: 500 })
+    return Response.json({ error: e.message }, { status: 500 })
   }
+}
+
+// PATCH — aprobar o rechazar propuesta (admin-escala)
+export async function PATCH(request) {
+  const body = await request.json()
+  const { id, aprobado } = body
+  if (!id) return Response.json({ error: 'Falta id' }, { status: 400 })
+
+  const { data, error } = await supabase
+    .from('especialidades')
+    .update({ aprobado: aprobado ?? true })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) return Response.json({ error: error.message }, { status: 500 })
+  return Response.json({ especialidad: data })
 }

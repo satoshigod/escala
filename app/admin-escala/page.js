@@ -268,7 +268,8 @@ export default function AdminEscala() {
     { id: 'proyectos', label: '🚀 Proyectos' },
     { id: 'industrias', label: '🏭 Industrias' },
     { id: 'paises', label: '🌎 Países' },
-    { id: 'especialidades', label: '🎓 Especialidades' },
+    { id: 'especialidades', label: '🎓 Especialidades / Roles' },
+    { id: 'propuestas', label: '⏳ Propuestas pendientes' },
   ]
 
   const st = {
@@ -817,7 +818,81 @@ export default function AdminEscala() {
           </div>
         )}
 
+        {tab === 'propuestas' && (
+          <PropuestasPendientes st={st} />
+        )}
+
       </main>
+    </div>
+  )
+}
+
+function PropuestasPendientes({ st }) {
+  const [propuestas, setPropuestas] = useState([])
+  const [cargando, setCargando] = useState(true)
+  const [actualizando, setActualizando] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/especialidades?pendientes=true')
+      .then(r => r.json())
+      .then(d => { setPropuestas(d.especialidades || []); setCargando(false) })
+  }, [])
+
+  async function aprobar(id) {
+    setActualizando(id)
+    await fetch('/api/especialidades', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, aprobado: true })
+    })
+    setPropuestas(prev => prev.filter(p => p.id !== id))
+    setActualizando(null)
+  }
+
+  async function rechazar(id) {
+    setActualizando(id)
+    await fetch('/api/especialidades', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, aprobado: false })
+    })
+    setPropuestas(prev => prev.filter(p => p.id !== id))
+    setActualizando(null)
+  }
+
+  if (cargando) return <div style={{color:'#8FA3CC',fontSize:'0.85rem'}}>Cargando propuestas...</div>
+
+  return (
+    <div>
+      <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'1rem'}}>
+        Especialidades / Roles propuestos por fundadores
+      </div>
+      {propuestas.length === 0 ? (
+        <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center',color:'#8FA3CC',fontSize:'0.85rem'}}>
+          Sin propuestas pendientes — todo está al día.
+        </div>
+      ) : (
+        <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
+          {propuestas.map(p => (
+            <div key={p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'10px',padding:'1rem 1.25rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
+              <div>
+                <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff'}}>{p.nombre}</div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'2px'}}>
+                  Categoría: {p.categoria || 'General'} · Propuesto por: {p.perfiles?.nombre || 'Fundador'}
+                </div>
+              </div>
+              <div style={{display:'flex',gap:'0.5rem'}}>
+                <button onClick={() => aprobar(p.id)} disabled={actualizando === p.id} style={{...st.btnGreen, padding:'0.4rem 0.875rem', fontSize:'0.78rem'}}>
+                  ✓ Aprobar
+                </button>
+                <button onClick={() => rechazar(p.id)} disabled={actualizando === p.id} style={{background:'rgba(216,90,48,0.1)',color:'#D85A30',border:'1px solid rgba(216,90,48,0.25)',borderRadius:'6px',padding:'0.4rem 0.875rem',fontSize:'0.78rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                  ✗ Rechazar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
