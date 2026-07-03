@@ -7,22 +7,24 @@ const supabase = createClient(
 
 // POST — especialista desiste de su rol en un proyecto
 export async function POST(request) {
-  const body = await request.json()
-  const { postulacion_id, usuario_id } = body
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
+  if (authError || !user) return Response.json({ error: 'No autorizado' }, { status: 401 })
 
-  if (!postulacion_id || !usuario_id) {
+  const body = await request.json()
+  const { postulacion_id } = body
+
+  if (!postulacion_id) {
     return Response.json({ error: 'Faltan campos' }, { status: 400 })
   }
 
-  // Verificar que la postulación pertenece a este usuario
-  const { data: post } = await supabase
+  const { data: post, error: postError } = await supabase
     .from('postulaciones')
-    .select('*, roles:rol_id(id, proyecto_id)')
+    .select('*, roles:rol_id(id)')
     .eq('id', postulacion_id)
     .single()
 
-  if (!post) return Response.json({ error: 'Postulación no encontrada' }, { status: 404 })
-  if (post.postulante_id !== usuario_id) return Response.json({ error: 'No autorizado' }, { status: 403 })
+  if (postError || !post) return Response.json({ error: 'Postulación no encontrada' }, { status: 404 })
+  if (post.postulante_id !== user.id) return Response.json({ error: 'No autorizado' }, { status: 403 })
   if (post.estado !== 'aceptada') return Response.json({ error: 'Solo puedes retirarte de roles donde fuiste aceptado' }, { status: 400 })
 
   // 1. Marcar la postulación como retirada

@@ -206,6 +206,9 @@ export default function Dashboard() {
   const esFundador = misProyectos.length > 0
   const primerProyectoFundado = misProyectos.find(p => p.estado === 'activo') || misProyectos[0] || null
   const totalAportes = misAportes.reduce((s, a) => s + (a.valor || 0), 0)
+  const postulacionActiva = misPostulaciones.find(p => p.estado === 'aceptada' && p.roles?.proyecto_id)
+  const proyectoActivo = postulacionActiva ? todosProyectos.find(p => p.id === postulacionActiva.roles.proyecto_id) : null
+  const rolActivo = postulacionActiva?.roles?.nombre || null
   const postAceptadas = misPostulaciones.filter(p => p.estado === 'aceptada').length
   const recibidasPendientes = postulacionesRecibidas.filter(p => p.estado === 'pendiente').length
 
@@ -606,6 +609,14 @@ export default function Dashboard() {
             </div>
 
             {/* Postulaciones recibidas (solo si es fundador) */}
+            {proyectoActivo && (
+              <div style={{marginBottom:'1.75rem',background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.18)',borderRadius:'14px',padding:'1rem'}}>
+                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',marginBottom:'0.5rem'}}>Proyecto activo</div>
+                <div style={{fontSize:'1rem',fontWeight:'800',color:'#fff',marginBottom:'0.25rem'}}>{proyectoActivo.nombre}</div>
+                <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'0.85rem'}}>{rolActivo ? 'Rol aceptado: ' + rolActivo : 'Tienes un rol aceptado en este proyecto.'}</div>
+                <a href={'/proyectos/'+proyectoActivo.id+'/workspace'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.65rem 0.95rem',borderRadius:'10px',textDecoration:'none',display:'inline-block'}}>Ir al workspace</a>
+              </div>
+            )}
             {esFundador && postulacionesRecibidas.length > 0 && (
               <div style={{marginBottom:'1.75rem'}}>
                 <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Últimas postulaciones recibidas</div>

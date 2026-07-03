@@ -41,6 +41,7 @@ export default function Workspace() {
   const [hitos, setHitos] = useState([])
   const [aportes, setAportes] = useState([])
   const [postulaciones, setPostulaciones] = useState([])
+  const [miPostulacion, setMiPostulacion] = useState(null)
   const [tab, setTab] = useState('resumen')
   const [cargando, setCargando] = useState(true)
   const [acceso, setAcceso] = useState(false)
@@ -98,6 +99,7 @@ export default function Workspace() {
       const miPostulacionAceptada = todasPost.find(p =>
         p.estado === 'aceptada' && todosRoles.some(r => r.id === p.rol_id)
       )
+      setMiPostulacion(miPostulacionAceptada || null)
 
       if (!esFundador && !miPostulacionAceptada) {
         setAcceso(false)
@@ -242,7 +244,7 @@ export default function Workspace() {
 
   async function eliminarRol(rolId) {
     if (!confirm('¿Eliminar este rol? Los especialistas que se hayan postulado ya no podrán ver la postulación.')) return
-    const res = await fetch('/api/roles?id=' + rolId + '&fundador_id=' + usuario?.id, { method: 'DELETE' })
+    const res = await fetch('/api/roles?id=' + rolId, { method: 'DELETE' })
     const data = await res.json()
     if (data.ok) {
       setRoles(prev => prev.filter(r => r.id !== rolId))
@@ -282,7 +284,6 @@ export default function Workspace() {
         modalidad: proyecto?.estado_financiacion === 'con_recursos' ? 'equity' : 'deuda_diferida',
         es_prioritario: rolForm.es_prioritario,
         estado: 'abierto',
-        fundador_id: usuario?.id,
       })
     })
     const data = await res.json()
@@ -309,6 +310,23 @@ export default function Workspace() {
   const miRol = roles.find(r => postulaciones.some(p => p.rol_id === r.id && p.estado === 'aceptada'))
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
   const esMiRolConstitucion = miRol?.nombre ? /abogado|legal|contador|contabilidad/i.test(miRol.nombre) : false
+
+  async function salirProyecto() {
+    if (!miPostulacion) return
+    if (!confirm('¿Confirmas que te retiras de este rol? El contrato quedará cancelado y perderás acceso al workspace si no eres fundador.')) return
+    const res = await fetch('/api/desistir', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ postulacion_id: miPostulacion.id })
+    })
+    const data = await res.json()
+    if (data.ok) {
+      alert(data.mensaje || 'Te has retirado del proyecto.')
+      window.location.href = '/proyectos'
+    } else {
+      alert(data.error || 'Error al salir del proyecto')
+    }
+  }
 
   const tabs = [
     { id: 'resumen', label: 'Resumen', icon: '📊' },
@@ -465,6 +483,13 @@ export default function Workspace() {
                 </div>
               </div>
             </div>
+            {miPostulacion && !esFundador && (
+              <div style={{marginTop:'1rem',display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
+                <button onClick={salirProyecto} style={{background:'#D85A30',color:'#fff',border:'none',borderRadius:'10px',padding:'0.9rem 1.1rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                  Salir del proyecto
+                </button>
+              </div>
+            )}
           </div>
         )}
 
