@@ -369,6 +369,14 @@ export default function Workspace() {
     { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
   ]
 
+  function handleTabClick(id) {
+    if ((id === 'tareas' || id === 'constitucion') && proyecto?.id) {
+      window.location.href = '/proyectos/' + proyecto.id + '/workspace/' + id
+      return
+    }
+    setTab(id)
+  }
+
   if (cargando) return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>
       Cargando workspace...
@@ -411,12 +419,27 @@ export default function Workspace() {
 
       {/* TABS */}
       <div style={{background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'0 1.5rem',display:'flex',gap:'0',overflowX:'auto'}}>
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{background:'none',border:'none',borderBottom: tab===t.id ? '2px solid #1D9E75' : '2px solid transparent',color: tab===t.id ? '#fff' : '#8FA3CC',padding:'0.875rem 1.25rem',fontSize:'0.82rem',fontWeight: tab===t.id ? '700' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.4rem',position:'relative'}}>
-            {t.icon} {t.label}
-            {t.badge && <span style={{background:'#E8A020',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{t.badge}</span>}
-          </button>
-        ))}
+        {tabs.map(t => {
+          const tabContent = (
+            <>
+              {t.icon} {t.label}
+              {t.badge && <span style={{background:'#E8A020',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{t.badge}</span>}
+            </>
+          )
+          const baseStyle = {background:'none',border:'none',borderBottom: tab===t.id ? '2px solid #1D9E75' : '2px solid transparent',color: tab===t.id ? '#fff' : '#8FA3CC',padding:'0.875rem 1.25rem',fontSize:'0.82rem',fontWeight: tab===t.id ? '700' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.4rem',position:'relative',textDecoration:'none'}
+          if ((t.id === 'tareas' || t.id === 'constitucion') && proyecto?.id) {
+            return (
+              <a key={t.id} href={'/proyectos/' + proyecto.id + '/workspace/' + t.id} style={baseStyle}>
+                {tabContent}
+              </a>
+            )
+          }
+          return (
+            <button key={t.id} onClick={() => handleTabClick(t.id)} style={baseStyle}>
+              {tabContent}
+            </button>
+          )
+        })}
       </div>
 
       <main style={{maxWidth:'1000px',margin:'0 auto',padding:'2rem 1.25rem'}}>
