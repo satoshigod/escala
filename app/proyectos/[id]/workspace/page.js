@@ -9,11 +9,29 @@ const MODALIDADES = [
   { value: 'hibrido', label: 'Híbrido' },
 ]
 const TIPOS_APORTE = [
-  { value: 'tiempo', label: 'Tiempo' },
-  { value: 'servicio', label: 'Servicio' },
+  { value: 'servicio', label: 'Servicio profesional' },
+  { value: 'tiempo', label: 'Tiempo / trabajo' },
+  { value: 'conocimiento', label: 'Conocimiento / mentoría' },
   { value: 'capital', label: 'Capital' },
-  { value: 'conocimiento', label: 'Conocimiento' },
   { value: 'activo', label: 'Activo' },
+]
+
+const SUB_ESP_ABOGADO = [
+  { value: 'Constitución de empresas', label: 'Constitución de empresas', desc: 'Estudio de forma societaria, redacción de estatutos, registro en Cámara de Comercio, NIT ante la DIAN y trámites legales iniciales.' },
+  { value: 'Contratos comerciales', label: 'Contratos comerciales', desc: 'Redacción y revisión de contratos con clientes, proveedores, distribuidores o socios.' },
+  { value: 'Propiedad intelectual', label: 'Propiedad intelectual', desc: 'Registro de marca, patentes, protección de software y activos intelectuales del proyecto.' },
+  { value: 'Derecho laboral', label: 'Derecho laboral', desc: 'Contratos de trabajo, reglamento interno, liquidaciones y cumplimiento normativo laboral.' },
+  { value: 'Derecho tributario', label: 'Derecho tributario', desc: 'Planeación tributaria, revisión de obligaciones fiscales y representación ante la DIAN.' },
+  { value: 'General', label: 'Asesoría jurídica general', desc: 'Acompañamiento legal general del proyecto en las áreas que se requieran.' },
+]
+
+const SUB_ESP_CONTADOR = [
+  { value: 'Constitución de empresas', label: 'Constitución de empresas', desc: 'RUT, régimen tributario, facturación electrónica, apertura de libros contables y configuración de obligaciones ante la DIAN.' },
+  { value: 'Contabilidad mensual', label: 'Contabilidad mensual', desc: 'Registro contable mensual, conciliaciones y estados financieros básicos.' },
+  { value: 'Declaraciones tributarias', label: 'Declaraciones tributarias', desc: 'Preparación y presentación de declaraciones de IVA, renta, retención en la fuente e industria y comercio.' },
+  { value: 'Nómina', label: 'Nómina', desc: 'Liquidación de nómina, aportes a seguridad social y prestaciones sociales.' },
+  { value: 'Auditoría', label: 'Auditoría', desc: 'Revisión independiente de estados financieros y control interno.' },
+  { value: 'General', label: 'Asesoría contable general', desc: 'Acompañamiento contable y tributario general del proyecto.' },
 ]
 export default function Workspace() {
   const [usuario, setUsuario] = useState(null)
@@ -35,9 +53,13 @@ export default function Workspace() {
   const [badgeTareas, setBadgeTareas] = useState(0)
   const [badgeChat, setBadgeChat] = useState(0)
   const [mostrarFormRol, setMostrarFormRol] = useState(false)
-  const [rolForm, setRolForm] = useState({ nombre: '', sub_especialidad: '', descripcion: '', tipo_aporte: 'tiempo', valor_mercado: '', modalidad: 'equity', es_prioritario: false })
+  const [rolForm, setRolForm] = useState({ nombre: '', sub_especialidad: '', descripcion: '', tipo_aporte: 'servicio', valor_mercado: '', es_prioritario: false })
   const [guardandoRol, setGuardandoRol] = useState(false)
   const [mensajeRol, setMensajeRol] = useState('')
+  const [catalogoEsp, setCatalogoEsp] = useState([])
+  const [busquedaEsp, setBusquedaEsp] = useState('')
+  const [vistaRol, setVistaRol] = useState('catalogo') // 'catalogo' | 'nueva'
+  const [nuevaEspNombre, setNuevaEspNombre] = useState('')
 
   useEffect(() => {
     async function cargar() {
@@ -107,6 +129,11 @@ export default function Workspace() {
       const deudaRes = await fetch('/api/deuda?proyecto_id=' + pid)
       const deudaData = await deudaRes.json()
       setDeuda({ pendiente: deudaData.pendiente || [], resuelta: deudaData.resuelta || [], total_pendiente: deudaData.total_pendiente || 0 })
+
+      // Cargar catálogo de especialidades para el formulario de roles
+      const espRes = await fetch('/api/especialidades?aprobado=true')
+      const espData = await espRes.json()
+      setCatalogoEsp(espData.especialidades || [])
 
       // Cargar badge tareas pendientes
       const tRes = await fetch('/api/tareas?proyecto_id=' + pid)
@@ -220,6 +247,17 @@ export default function Workspace() {
     }
     setGuardandoRol(true)
     setMensajeRol('')
+
+    // Si es una especialidad nueva, proponerla al catálogo
+    const estaEnCatalogo = catalogoEsp.some(e => e.nombre.toLowerCase() === rolForm.nombre.toLowerCase())
+    if (!estaEnCatalogo && usuario?.id) {
+      await fetch('/api/especialidades', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre: rolForm.nombre, categoria: 'General', propuesto_por: usuario.id })
+      })
+    }
+
     const res = await fetch('/api/roles', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -230,7 +268,7 @@ export default function Workspace() {
         descripcion: rolForm.descripcion,
         tipo_aporte: rolForm.tipo_aporte,
         valor_mercado: Number(rolForm.valor_mercado) || 0,
-        modalidad: rolForm.modalidad,
+        modalidad: proyecto?.estado_financiacion === 'con_recursos' ? 'con_recursos' : 'riesgo_compartido',
         es_prioritario: rolForm.es_prioritario,
         estado: 'abierto',
         fundador_id: usuario?.id,
@@ -242,7 +280,9 @@ export default function Workspace() {
     } else {
       setRoles(prev => [...prev, data.rol])
       setMensajeRol('✓ Rol publicado correctamente')
-      setRolForm({ nombre: '', sub_especialidad: '', descripcion: '', tipo_aporte: 'tiempo', valor_mercado: '', modalidad: 'equity', es_prioritario: false })
+      setRolForm({ nombre: '', sub_especialidad: '', descripcion: '', tipo_aporte: 'servicio', valor_mercado: '', es_prioritario: false })
+      setBusquedaEsp('')
+      setVistaRol('catalogo')
       setMostrarFormRol(false)
       setTimeout(() => setMensajeRol(''), 3500)
     }
@@ -530,69 +570,90 @@ export default function Workspace() {
               <div style={{marginBottom:'1.25rem',background: mensajeRol.startsWith('✓') ? 'rgba(29,158,117,0.1)' : 'rgba(216,90,48,0.08)',border: mensajeRol.startsWith('✓') ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(216,90,48,0.25)',borderRadius:'10px',padding:'0.95rem 1rem',color: mensajeRol.startsWith('✓') ? '#1D9E75' : '#D85A30',fontSize:'0.85rem'}}>{mensajeRol}</div>
             )}
 
-            {esFundador && mostrarFormRol && (
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+            {esFundador && mostrarFormRol && (() => {
+              const esAbogado = rolForm.nombre.toLowerCase().includes('abogado') || rolForm.nombre.toLowerCase().includes('legal')
+              const esContador = rolForm.nombre.toLowerCase().includes('contador') || rolForm.nombre.toLowerCase().includes('contable')
+              const subOpciones = esAbogado ? SUB_ESP_ABOGADO : esContador ? SUB_ESP_CONTADOR : []
+              const subSeleccionada = subOpciones.find(s => s.value === rolForm.sub_especialidad)
+              const espFiltradas = catalogoEsp.filter(e => !busquedaEsp || e.nombre.toLowerCase().includes(busquedaEsp.toLowerCase()))
+              const rangeSugerido = (esAbogado || esContador) && rolForm.sub_especialidad === 'Constitución de empresas'
+              return (
+              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Publicar especialidad / Rol</div>
+                {vistaRol === 'catalogo' ? (
+                  <div style={{marginBottom:'1rem'}}>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Especialidad / Rol *</label>
+                    <input value={busquedaEsp} onChange={e => { setBusquedaEsp(e.target.value); setRolForm(r => ({...r, nombre: e.target.value})) }} placeholder="Buscar: Abogado, Contador, Diseñador..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box',marginBottom:'0.5rem'}} />
+                    <div style={{maxHeight:'180px',overflowY:'auto',display:'flex',flexDirection:'column',gap:'3px',marginBottom:'0.5rem'}}>
+                      {espFiltradas.map(e => (
+                        <div key={e.id} onClick={() => { setRolForm(r => ({...r, nombre: e.nombre, tipo_aporte: e.tipo_aporte || 'servicio'})); setBusquedaEsp(e.nombre) }} style={{padding:'0.6rem 0.875rem',borderRadius:'8px',cursor:'pointer',fontSize:'0.85rem',background: rolForm.nombre === e.nombre ? 'rgba(29,158,117,0.12)' : 'rgba(255,255,255,0.03)',border: rolForm.nombre === e.nombre ? '1px solid rgba(29,158,117,0.3)' : '1px solid rgba(255,255,255,0.06)',color: rolForm.nombre === e.nombre ? '#1D9E75' : '#fff',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                          <span>{e.nombre} {rolForm.nombre === e.nombre ? '✓' : ''}</span>
+                          {e.categoria && <span style={{fontSize:'0.65rem',color:'#8FA3CC'}}>{e.categoria}</span>}
+                        </div>
+                      ))}
+                      {espFiltradas.length === 0 && busquedaEsp && (
+                        <div style={{fontSize:'0.82rem',color:'#8FA3CC',padding:'0.5rem'}}>"{busquedaEsp}" no está en el catálogo. <button onClick={() => { setVistaRol('nueva'); setNuevaEspNombre(busquedaEsp) }} style={{background:'none',border:'none',color:'#1D9E75',cursor:'pointer',fontFamily:'Inter,sans-serif',fontSize:'0.82rem',textDecoration:'underline'}}>Crear nueva →</button></div>
+                      )}
+                    </div>
+                    <button onClick={() => setVistaRol('nueva')} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif',textDecoration:'underline'}}>+ No encuentro lo que busco — crear especialidad nueva</button>
+                  </div>
+                ) : (
+                  <div style={{marginBottom:'1rem'}}>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Nombre de la nueva especialidad / Rol *</label>
+                    <div style={{display:'flex',gap:'0.5rem',marginBottom:'0.5rem'}}>
+                      <input value={rolForm.nombre} onChange={e => setRolForm(r => ({...r, nombre: e.target.value}))} placeholder="Ej: Experto en logística para clínica" style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}} />
+                      <button onClick={() => setVistaRol('catalogo')} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0 0.875rem',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>← Volver</button>
+                    </div>
+                    <div style={{fontSize:'0.72rem',color:'#8FA3CC',lineHeight:'1.5'}}>El nombre se propone al catálogo de Escala para aprobación.</div>
+                  </div>
+                )}
+                {(esAbogado || esContador) && subOpciones.length > 0 && (
+                  <div style={{marginBottom:'1rem'}}>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>¿Qué servicio específico necesitas?</label>
+                    <select value={rolForm.sub_especialidad} onChange={e => setRolForm(r => ({...r, sub_especialidad: e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif',marginBottom: subSeleccionada ? '0.75rem' : 0}}>
+                      <option value="">Selecciona el servicio...</option>
+                      {subOpciones.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+                    </select>
+                    {subSeleccionada && (
+                      <div style={{padding:'0.75rem',background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'8px',fontSize:'0.78rem',color:'#C8D4E8',lineHeight:'1.6'}}>
+                        <strong style={{color:'#1D9E75'}}>¿Qué incluye?</strong> {subSeleccionada.desc}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1rem'}}>
                   <div>
-                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Nombre del rol</label>
-                    <input value={rolForm.nombre} onChange={e => setRolForm(r => ({ ...r, nombre: e.target.value }))} placeholder="Ej. Abogado, Contador, Product Manager" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}} />
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>{rangeSugerido ? 'Valor COP (sugerido: $300K–$800K)' : 'Valor en COP (0 = a negociar)'}</label>
+                    <input type="number" value={rolForm.valor_mercado} onChange={e => setRolForm(r => ({...r, valor_mercado: e.target.value}))} placeholder={rangeSugerido ? '300000 – 800000' : '0'} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}} />
                   </div>
-                  {(['abogado','contador'].some(r => rolForm.nombre.toLowerCase().includes(r))) && (
-                    <div>
-                      <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Sub-especialidad</label>
-                      <select value={rolForm.sub_especialidad} onChange={e => setRolForm(r => ({...r, sub_especialidad: e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
-                        <option value="">Selecciona el servicio específico...</option>
-                        {rolForm.nombre.toLowerCase().includes('abogado') ? <>
-                          <option value="Constitución de empresas">Constitución de empresas</option>
-                          <option value="Contratos comerciales">Contratos comerciales</option>
-                          <option value="Propiedad intelectual">Propiedad intelectual</option>
-                          <option value="Derecho laboral">Derecho laboral</option>
-                          <option value="Derecho tributario">Derecho tributario</option>
-                          <option value="General">General / Asesoría jurídica</option>
-                        </> : <>
-                          <option value="Constitución de empresas">Constitución de empresas</option>
-                          <option value="Contabilidad mensual">Contabilidad mensual</option>
-                          <option value="Declaraciones tributarias">Declaraciones tributarias</option>
-                          <option value="Nómina">Nómina</option>
-                          <option value="Auditoría">Auditoría</option>
-                          <option value="General">General / Asesoría contable</option>
-                        </>}
-                      </select>
-                    </div>
-                  )}
                   <div>
-                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Tipo de aporte</label>
-                    <select value={rolForm.tipo_aporte} onChange={e => setRolForm(r => ({ ...r, tipo_aporte: e.target.value }))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
+                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Tipo de aporte</label>
+                    <select value={rolForm.tipo_aporte} onChange={e => setRolForm(r => ({...r, tipo_aporte: e.target.value}))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
                       {TIPOS_APORTE.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
                     </select>
                   </div>
                 </div>
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'1rem',marginBottom:'1rem'}}>
-                  <div>
-                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Modalidad</label>
-                    <select value={rolForm.modalidad} onChange={e => setRolForm(r => ({ ...r, modalidad: e.target.value }))} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
-                      {MODALIDADES.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Valor mercado</label>
-                    <input type="number" value={rolForm.valor_mercado} onChange={e => setRolForm(r => ({ ...r, valor_mercado: e.target.value }))} placeholder="0" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}} />
-                  </div>
+                <div style={{padding:'0.75rem',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'8px',fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1rem',lineHeight:'1.6'}}>
+                  <strong style={{color:'#fff'}}>Modalidad:</strong> {proyecto?.estado_financiacion === 'con_recursos' ? 'Con Recursos — cobra en efectivo o acciones al completar.' : 'Riesgo Compartido — pago diferido en deuda o acciones. Riesgo real de $0 si el proyecto no genera valor.'}
                 </div>
                 <div style={{marginBottom:'1rem'}}>
-                  <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.35rem'}}>Descripción</label>
-                  <textarea value={rolForm.descripcion} onChange={e => setRolForm(r => ({ ...r, descripcion: e.target.value }))} placeholder="Descripción breve del rol" rows="4" style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.9rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif'}} />
+                  <label style={{display:'block',fontSize:'0.72rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.5rem',textTransform:'uppercase',letterSpacing:'0.04em'}}>Descripción adicional (opcional)</label>
+                  <textarea value={rolForm.descripcion} onChange={e => setRolForm(r => ({...r, descripcion: e.target.value}))} placeholder="¿Hay algo específico de tu proyecto que el especialista deba saber?" rows={3} style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'10px',padding:'0.8rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',fontFamily:'Inter,sans-serif',resize:'vertical'}} />
                 </div>
-                <div style={{display:'flex',alignItems:'center',gap:'0.75rem',marginBottom:'1rem'}}>
-                  <label style={{display:'flex',alignItems:'center',gap:'0.5rem',fontSize:'0.9rem',color:'#8FA3CC'}}>
-                    <input type="checkbox" checked={rolForm.es_prioritario} onChange={e => setRolForm(r => ({ ...r, es_prioritario: e.target.checked }))} style={{width:'16px',height:'16px'}} />
-                    Rol prioritario
-                  </label>
+                <label style={{display:'flex',alignItems:'center',gap:'0.5rem',fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.25rem',cursor:'pointer'}}>
+                  <input type="checkbox" checked={rolForm.es_prioritario} onChange={e => setRolForm(r => ({...r, es_prioritario: e.target.checked}))} style={{width:'16px',height:'16px'}} />
+                  Marcar como prioritario — aparece destacado en el proyecto
+                </label>
+                {mensajeRol && <div style={{fontSize:'0.82rem',color: mensajeRol.startsWith('✓')?'#1D9E75':'#D85A30',marginBottom:'0.875rem'}}>{mensajeRol}</div>}
+                <div style={{display:'flex',gap:'0.75rem'}}>
+                  <button onClick={() => { setMostrarFormRol(false); setRolForm({nombre:'',sub_especialidad:'',descripcion:'',tipo_aporte:'servicio',valor_mercado:'',es_prioritario:false}); setBusquedaEsp(''); setVistaRol('catalogo') }} style={{background:'transparent',border:'1px solid rgba(255,255,255,0.15)',color:'#8FA3CC',borderRadius:'8px',padding:'0.65rem 1.25rem',fontSize:'0.85rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
+                  <button onClick={crearRolProyecto} disabled={!rolForm.nombre.trim() || guardandoRol} style={{background: rolForm.nombre.trim()?'#1D9E75':'rgba(29,158,117,0.3)',color:'#fff',border:'none',borderRadius:'8px',padding:'0.65rem 1.5rem',fontSize:'0.85rem',fontWeight:'700',cursor: rolForm.nombre.trim()?'pointer':'default',fontFamily:'Inter,sans-serif'}}>
+                    {guardandoRol ? 'Publicando...' : 'Publicar rol →'}
+                  </button>
                 </div>
-                <button onClick={crearRolProyecto} disabled={guardandoRol} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'10px',padding:'0.75rem 1.5rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{guardandoRol ? 'Guardando...' : 'Publicar rol'}</button>
               </div>
-            )}
-
+              )
+            })()}
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:'1rem'}}>
               {roles.length === 0 ? (
                 <div style={{gridColumn:'1/-1',color:'#8FA3CC',textAlign:'center',padding:'2rem',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px'}}>{esFundador ? 'No hay roles publicados aún. Publica el primero para recibir postulaciones.' : 'No hay roles publicados aún. Espera a que el fundador publique roles.'}</div>
