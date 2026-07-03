@@ -119,6 +119,7 @@ export default function Admin() {
         valor_mercado: Number(rolForm.valor_mercado) || 0,
         modalidad: rolForm.modalidad,
         es_prioritario: rolForm.es_prioritario,
+        fundador_id: usuario.id,
       })
     })
     const data = await res.json()
@@ -164,6 +165,7 @@ export default function Admin() {
         valor_mercado: Number(nuevaEspForm.valor_mercado) || 0,
         modalidad: nuevaEspForm.modalidad,
         es_prioritario: nuevaEspForm.es_prioritario,
+        fundador_id: usuario.id,
       })
     })
     const data = await res.json()

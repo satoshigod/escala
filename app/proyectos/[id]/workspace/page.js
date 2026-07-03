@@ -231,7 +231,8 @@ export default function Workspace() {
         valor_mercado: Number(rolForm.valor_mercado) || 0,
         modalidad: rolForm.modalidad,
         es_prioritario: rolForm.es_prioritario,
-        estado: 'abierto'
+        estado: 'abierto',
+        fundador_id: usuario?.id,
       })
     })
     const data = await res.json()

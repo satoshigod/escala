@@ -24,28 +24,23 @@ export async function GET(request) {
 
 // POST — crear rol en un proyecto
 export async function POST(request) {
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) return Response.json({ error: 'No autorizado' }, { status: 401 })
-
   const body = await request.json()
-  const { proyecto_id, nombre, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario } = body
+  const { proyecto_id, nombre, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario, fundador_id } = body
 
   if (!proyecto_id || !nombre || !tipo_aporte || !modalidad) {
     return Response.json({ error: 'Faltan campos requeridos' }, { status: 400 })
   }
 
-  const { data: proyecto, error: proyectoError } = await supabase
-    .from('proyectos')
-    .select('id, fundador_id')
-    .eq('id', proyecto_id)
-    .single()
+  // Verificar que quien crea el rol es el fundador del proyecto
+  if (fundador_id) {
+    const { data: proyecto } = await supabase
+      .from('proyectos')
+      .select('fundador_id')
+      .eq('id', proyecto_id)
+      .single()
 
-  if (proyectoError || !proyecto) {
-    return Response.json({ error: 'Proyecto no encontrado' }, { status: 404 })
-  }
-
-  if (proyecto.fundador_id !== user.id) {
-    return Response.json({ error: 'Solo el fundador puede publicar roles' }, { status: 403 })
+    if (!proyecto) return Response.json({ error: 'Proyecto no encontrado' }, { status: 404 })
+    if (proyecto.fundador_id !== fundador_id) return Response.json({ error: 'Solo el fundador puede publicar roles' }, { status: 403 })
   }
 
   const { data, error } = await supabase
