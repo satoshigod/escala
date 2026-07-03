@@ -368,7 +368,7 @@ export default function Workspace() {
                 <div style={{flex:'1 1 320px',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'14px',padding:'1.5rem'}}>
                   <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Publicar un nuevo rol</div>
                   <div style={{fontSize:'0.85rem',color:'#fff',lineHeight:'1.6',marginBottom:'1rem'}}>Agrega un rol que tu proyecto necesita y empieza a recibir postulaciones hoy.</div>
-                  <button onClick={() => { setTab('roles'); setMostrarFormRol(true) }} style={{background:'#fff',color:'#0B1628',border:'none',borderRadius:'10px',padding:'0.85rem 1.25rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Ir a publicar rol</button>
+                  <button onClick={() => { setTab('roles'); setMostrarFormRol(true) }} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'10px',padding:'0.85rem 1.25rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Publicar rol</button>
                 </div>
               )}
             </div>

@@ -69,8 +69,8 @@ export default function Dashboard() {
 
       // Cargar total de ingresos del primer proyecto del fundador
       const primerProyecto = (data.misProyectos || [])[0]
-      if (primerProyecto) {
-        fetch('/api/ingresos?proyecto_id=' + primerProyecto.id)
+      if (primerProyectoFundado) {
+        fetch('/api/ingresos?proyecto_id=' + primerProyectoFundado.id)
           .then(r => r.json())
           .then(d => setTotalIngresos(d.total || 0))
           .catch(() => {})
@@ -204,6 +204,7 @@ export default function Dashboard() {
   }
 
   const esFundador = misProyectos.length > 0
+  const primerProyectoFundado = misProyectos.find(p => p.estado === 'activo') || misProyectos[0] || null
   const totalAportes = misAportes.reduce((s, a) => s + (a.valor || 0), 0)
   const postAceptadas = misPostulaciones.filter(p => p.estado === 'aceptada').length
   const recibidasPendientes = postulacionesRecibidas.filter(p => p.estado === 'pendiente').length
@@ -215,7 +216,7 @@ export default function Dashboard() {
   )
 
   const acciones = [
-    ...(esFundador && misProyectos.length > 0 ? [{ icon: '🧩', label: 'Publicar rol', href: '/proyectos/'+misProyectos[0].id+'/workspace?tab=roles' }] : []),
+    ...(primerProyectoFundado ? [{ icon: '🧩', label: 'Publicar rol', href: '/proyectos/'+primerProyectoFundado.id+'/workspace?tab=roles' }] : []),
     { icon: '🚀', label: 'Crear proyecto', href: '/proyectos' },
     { icon: '🔍', label: 'Buscar especialista', href: '/directorio' },
     { icon: '💰', label: 'Registrar aporte', href: '/aportes' },
@@ -593,8 +594,9 @@ export default function Dashboard() {
                         )}
                         <div style={{display:'flex',gap:'0.4rem',flexWrap:'wrap'}}>
                           <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.7rem',borderRadius:'6px',textDecoration:'none'}}>Workspace</a>
+                          <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#534AB7',padding:'0.3rem 0.7rem',borderRadius:'6px',textDecoration:'none'}}>Publicar rol</a>
                           <a href="/hitos" style={{fontSize:'0.7rem',fontWeight:'600',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Hitos</a>
-                          <a href="/aportes" style={{fontSize:'0.7rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Aportes</a>
+                          <a href="/aportes" style={{fontSize:'0.7rem',fontWeight:'600',color:'#AFA3EC',background:'rgba(83,74,183,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Aportes</a>
                         </div>
                       </div>
                     )
@@ -685,8 +687,8 @@ export default function Dashboard() {
                 <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Ingresos del proyecto →</div>
               </a>
             )}
-            {mensajesNoLeidos > 0 && (
-              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem',cursor:'pointer'}} onClick={() => misProyectos.length > 0 && (window.location.href='/proyectos/'+misProyectos[0].id+'/workspace/chat')}>
+            {mensajesNoLeidos > 0 && primerProyectoFundado && (
+              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem',cursor:'pointer'}} onClick={() => window.location.href='/proyectos/'+primerProyectoFundado.id+'/workspace/chat'}>
                 <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>{mensajesNoLeidos}</div>
                 <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Mensajes sin leer →</div>
               </div>
@@ -706,7 +708,7 @@ export default function Dashboard() {
                 <a href="/metricas" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📊 Métricas</a>
                 <a href="/carril" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>🛤️ Cumplimiento y pago</a>
                 <a href="/postulaciones" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📋 Postulaciones</a>
-                {misProyectos.length > 0 && <a href={'/p/'+misProyectos[0].id} target="_blank" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>🔗 Link público</a>}
+                {primerProyectoFundado && <a href={'/p/'+primerProyectoFundado.id} target="_blank" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>🔗 Link público</a>}
               </div>
             </div>
           </div>
