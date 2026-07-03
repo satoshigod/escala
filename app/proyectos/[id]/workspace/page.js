@@ -62,13 +62,23 @@ export default function Workspace() {
   const [vistaRol, setVistaRol] = useState('catalogo') // 'catalogo' | 'nueva'
   const [nuevaEspNombre, setNuevaEspNombre] = useState('')
 
+  function getProyectoIdFromPath() {
+    const parts = window.location.pathname.split('/').filter(Boolean)
+    const proyectoIndex = parts.indexOf('proyectos')
+    return proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
+  }
+
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
-      const pid = window.location.pathname.split('/').slice(-2)[0]
+      const pid = getProyectoIdFromPath()
+      if (!pid || pid === 'undefined') {
+        window.location.href = '/proyectos'
+        return
+      }
       const initialTab = new URLSearchParams(window.location.search).get('tab')
       if (initialTab && ['resumen','hitos','equipo','aportes','presupuesto','economia','roles','tareas','constitucion','chat'].includes(initialTab)) {
         setTab(initialTab)
@@ -207,7 +217,8 @@ export default function Workspace() {
   async function crearHito() {
     if (!nuevoHito.trim()) return
     setCreandoHito(true)
-    const pid = window.location.pathname.split('/').slice(-2)[0]
+    const pid = getProyectoIdFromPath()
+    if (!pid || pid === 'undefined') { setCreandoHito(false); alert('ID de proyecto inválido'); return }
     const res = await fetch('/api/hitos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -221,7 +232,8 @@ export default function Workspace() {
   async function registrarAporte() {
     if (!nuevoAporte.descripcion || !nuevoAporte.valor) return
     setRegistrando(true)
-    const pid = window.location.pathname.split('/').slice(-2)[0]
+    const pid = getProyectoIdFromPath()
+    if (!pid || pid === 'undefined') { setRegistrando(false); alert('ID de proyecto inválido'); return }
     const res = await fetch('/api/aportes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -310,8 +322,9 @@ export default function Workspace() {
   const miRol = miPostulacion ? roles.find(r => r.id === miPostulacion.rol_id) : null
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
   const esMiRolConstitucion = (() => {
-    const nombre = (miRol?.nombre || '').toLowerCase()
-    const sub = (miRol?.sub_especialidad || '').toLowerCase()
+    if (!miRol || miRol.sub_especialidad) return false
+    const nombre = (miRol.nombre || '').toLowerCase()
+    const sub = (miRol.sub_especialidad || '').toLowerCase()
     const texto = `${nombre} ${sub}`
     const esConstitucion = /constitución|constitucion|constitución de empresa|constitucion de empresa/.test(texto)
     const esAbogado = /abogado|legal|jur[ií]dico/.test(texto)
@@ -376,10 +389,10 @@ export default function Workspace() {
           {miRol && !esFundador && <span style={{fontSize:'0.62rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(29,158,117,0.2)',color:'#1D9E75'}}>{miRol.nombre}</span>}
         </div>
         <div style={{display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
-          <a href={'/proyectos/'+proyecto?.id+'/workspace/tareas'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>📋 Tareas</a>
-          <a href={'/proyectos/'+proyecto?.id+'/workspace/chat'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>💬 Chat</a>
+          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>📋 Tareas</a>
+          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/chat' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>💬 Chat</a>
           {esMiRolConstitucion && (
-            <a href={'/proyectos/'+proyecto?.id+'/workspace/constitucion'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>⚖️ Constitución</a>
+            <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/constitucion' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>⚖️ Constitución</a>
           )}
           {esFundador && (
             <button onClick={() => setTab('roles')} style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'none',cursor:'pointer'}}>🧩 Roles</button>
@@ -854,7 +867,7 @@ export default function Workspace() {
             <div style={{fontSize:'2rem',marginBottom:'1rem'}}>⚖️</div>
             <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Workspace de constitución</div>
             <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Accede a las tareas de constitución específicas para tu rol de abogado o contador.</div>
-            <a href={'/proyectos/'+proyecto?.id+'/workspace/constitucion'} style={{background:'#AFA9EC',color:'#0B1628',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
+            <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/constitucion' : '#'} style={{background:'#AFA9EC',color:'#0B1628',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
               Abrir constitución →
             </a>
           </div>

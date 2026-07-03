@@ -32,9 +32,19 @@ export default function Tareas() {
   const [miembroInicializar, setMiembroInicializar] = useState('')
   const [creando, setCreando] = useState(false)
 
+  function getProyectoIdFromPath() {
+    const parts = window.location.pathname.split('/').filter(Boolean)
+    const proyectoIndex = parts.indexOf('proyectos')
+    return proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
+  }
+
   function tareaPerteneceAMiRol(tarea) {
-    if (!miRol || !tarea?.rol_nombre) return false
+    if (!miRol || !tarea) return false
     const miNombre = `${miRol.nombre} ${miRol.sub_especialidad || ''}`.toLowerCase().trim()
+    if (tarea.categoria?.toLowerCase() === 'constitución') {
+      return /abogado|legal|jur[ií]dico|contador|contable|contabilidad|tributario/.test(miNombre)
+    }
+    if (!tarea?.rol_nombre) return false
     const rolTarea = tarea.rol_nombre.toLowerCase().trim()
     if (!miNombre || !rolTarea) return false
     if (miNombre === rolTarea) return true
@@ -50,9 +60,8 @@ export default function Tareas() {
       if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
-      const parts = window.location.pathname.split('/')
-      const pid = parts[parts.indexOf('proyectos') + 1]
-
+      const pid = getProyectoIdFromPath()
+      if (!pid || pid === 'undefined') { window.location.href = '/proyectos'; return }
       const [pRes, perfilRes, rolesRes, postRes] = await Promise.all([
         fetch('/api/proyectos/' + pid),
         fetch('/api/usuarios?id=' + user.id),
@@ -127,8 +136,8 @@ export default function Tareas() {
   async function crearTarea() {
     if (!nuevaTarea.nombre) return
     setCreando(true)
-    const parts = window.location.pathname.split('/')
-    const pid = parts[parts.indexOf('proyectos') + 1]
+    const pid = getProyectoIdFromPath()
+    if (!pid || pid === 'undefined') { setCreando(false); alert('ID de proyecto inválido'); return }
     const miembro = equipo.find(e => e.postulante_id === nuevaTarea.asignado_a)
     const res = await fetch('/api/tareas', {
       method: 'POST',
@@ -156,8 +165,8 @@ export default function Tareas() {
   async function inicializarRol() {
     if (!rolInicializar) return
     setCreando(true)
-    const parts = window.location.pathname.split('/')
-    const pid = parts[parts.indexOf('proyectos') + 1]
+    const pid = getProyectoIdFromPath()
+    if (!pid || pid === 'undefined') { setCreando(false); alert('ID de proyecto inválido'); return }
     const res = await fetch('/api/tareas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

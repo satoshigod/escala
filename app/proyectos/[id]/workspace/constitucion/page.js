@@ -9,12 +9,12 @@ const SUB_CONSTITUCION = ['constitución', 'constitucion', 'constitución de emp
 function detectarRol(nombreRol, subEsp) {
   const n = (nombreRol || '').toLowerCase()
   const s = (subEsp || '').toLowerCase()
-  if (ROL_ABOGADO.some(r => n.includes(r) || s.includes(r))) return 'abogado'
-  if (ROL_CONTADOR.some(r => n.includes(r) || s.includes(r))) return 'contador'
+  if (ROL_ABOGADO.some(r => n.includes(r) || s.includes(r))) return 'Abogado'
+  if (ROL_CONTADOR.some(r => n.includes(r) || s.includes(r))) return 'Contador'
   const esCon = esConstitucion(n) || esConstitucion(s)
   if (esCon) {
-    if (/contador|contable|contabilidad|tributario/.test(n + ' ' + s)) return 'contador'
-    return 'abogado'
+    if (/contador|contable|contabilidad|tributario/.test(n + ' ' + s)) return 'Contador'
+    return 'Abogado'
   }
   return null
 }
@@ -40,6 +40,7 @@ export default function Constitucion({ params }) {
 
   useEffect(() => {
     async function cargar() {
+      if (!proyectoId) { window.location.href = '/proyectos'; return }
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
@@ -49,7 +50,7 @@ export default function Constitucion({ params }) {
       const proy = pData.proyecto
       setProyecto(proy)
 
-      const postRes = await fetch('/api/postulaciones?postulante_id=' + user.id)
+      const postRes = await fetch('/api/postulaciones?postulante_id=' + user.id + '&proyecto_id=' + proyectoId)
       const postData = await postRes.json()
       const rolesRes = await fetch('/api/roles?proyecto_id=' + proyectoId)
       const rolesData = await rolesRes.json()
@@ -58,10 +59,16 @@ export default function Constitucion({ params }) {
       const miPost = (postData.postulaciones || []).find(p =>
         p.estado === 'aceptada' && todosRoles.some(r => r.id === p.rol_id)
       )
-      if (!miPost) { window.location.href = '/proyectos/' + proyectoId + '/workspace'; return }
+      if (!miPost) {
+        window.location.href = proyectoId ? '/proyectos/' + proyectoId + '/workspace/tareas' : '/proyectos'
+        return
+      }
 
       const rolEncontrado = todosRoles.find(r => r.id === miPost.rol_id)
-      const subEs = rolEncontrado?.sub_especialidad || ''
+      if (!proyectoId || proyectoId === 'undefined' || rolEncontrado?.sub_especialidad) {
+        window.location.href = proyectoId ? '/proyectos/' + proyectoId + '/workspace/tareas' : '/proyectos'
+        return
+      }
       const tipoRol = detectarRol(rolEncontrado?.nombre, subEs)
 
       setMiRol(rolEncontrado)
@@ -77,7 +84,7 @@ export default function Constitucion({ params }) {
           .single()
 
         const todasTareas = paisData?.tareas || []
-        const tareasRol = todasTareas.filter(t => (t.rol_nombre || '') === tipoRol)
+        const tareasRol = todasTareas.filter(t => (t.rol_nombre || '').toLowerCase() === (tipoRol || '').toLowerCase())
 
         // Sincronizar con tareas del proyecto
         const { data: tareasProyecto } = await supabase
@@ -185,7 +192,7 @@ export default function Constitucion({ params }) {
   if (!rolTipo) return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif',gap:'1rem'}}>
       <div>Este workspace es exclusivo para abogados y contadores asignados a este proyecto.</div>
-      <a href={'/proyectos/' + proyectoId + '/workspace'} style={{color:'#1D9E75',textDecoration:'none'}}>← Volver al workspace general</a>
+      <a href={proyectoId ? '/proyectos/' + proyectoId + '/workspace' : '/proyectos'} style={{color:'#1D9E75',textDecoration:'none'}}>← Volver al workspace general</a>
     </div>
   )
 
@@ -198,7 +205,7 @@ export default function Constitucion({ params }) {
           <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'3px 10px',borderRadius:'20px',background: proyecto?.estado_financiacion==='con_recursos'?'rgba(29,158,117,0.15)':'rgba(232,160,32,0.15)',color: proyecto?.estado_financiacion==='con_recursos'?'#1D9E75':'#E8A020'}}>
             {proyecto?.estado_financiacion==='con_recursos'?'Con recursos':'Riesgo compartido'}
           </span>
-          <a href={'/proyectos/'+proyectoId+'/workspace'} style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>← Workspace</a>
+          <a href={proyectoId ? '/proyectos/'+proyectoId+'/workspace' : '/proyectos'} style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>← Workspace</a>
         </div>
       </nav>
 

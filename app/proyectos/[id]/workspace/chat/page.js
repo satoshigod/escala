@@ -20,8 +20,10 @@ export default function Chat() {
       if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
 
-      const parts = window.location.pathname.split('/')
-      const pid = parts[parts.indexOf('proyectos') + 1]
+      const parts = window.location.pathname.split('/').filter(Boolean)
+      const proyectoIndex = parts.indexOf('proyectos')
+      const pid = proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
+      if (!pid || pid === 'undefined') { window.location.href = '/proyectos'; return }
 
       const [pRes, perfilRes, rolesRes, postRes] = await Promise.all([
         fetch('/api/proyectos/' + pid),
