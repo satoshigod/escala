@@ -44,7 +44,15 @@ export default function Onboarding() {
       setForm(f => ({ ...f, nombre: data.user.user_metadata?.nombre || '' }))
     })
     fetch('/api/paises').then(r => r.json()).then(d => setPaisesDB(d.paises || []))
-    fetch('/api/especialidades').then(r => r.json()).then(d => setEspecialidadesDB(d.especialidades || []))
+    fetch('/api/especialidades?aprobado=true').then(r => r.json()).then(d => setEspecialidadesDB(d.especialidades || []))
+
+    // Si viene de /bienvenida con un rol preseleccionado, lo aplica y salta al paso 2
+    const params = new URLSearchParams(window.location.search)
+    const rolParam = params.get('rol')
+    if (rolParam) {
+      setForm(f => ({ ...f, rol_principal: rolParam }))
+      setPaso(2)
+    }
   }, [])
 
   function actualizar(campo, valor) {
