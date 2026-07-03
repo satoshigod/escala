@@ -6,10 +6,16 @@ const ROL_ABOGADO = ['abogado', 'legal', 'jurídico']
 const ROL_CONTADOR = ['contador', 'contable', 'contabilidad', 'tributario']
 const SUB_CONSTITUCION = ['constitución', 'constitucion', 'constitución de empresa', 'constitucion de empresa']
 
-function detectarRol(nombreRol) {
+function detectarRol(nombreRol, subEsp) {
   const n = (nombreRol || '').toLowerCase()
-  if (ROL_ABOGADO.some(r => n.includes(r))) return 'abogado'
-  if (ROL_CONTADOR.some(r => n.includes(r))) return 'contador'
+  const s = (subEsp || '').toLowerCase()
+  if (ROL_ABOGADO.some(r => n.includes(r) || s.includes(r))) return 'abogado'
+  if (ROL_CONTADOR.some(r => n.includes(r) || s.includes(r))) return 'contador'
+  const esCon = esConstitucion(n) || esConstitucion(s)
+  if (esCon) {
+    if (/contador|contable|contabilidad|tributario/.test(n + ' ' + s)) return 'contador'
+    return 'abogado'
+  }
   return null
 }
 
