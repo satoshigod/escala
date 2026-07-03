@@ -9,6 +9,21 @@ const estadoConfig = {
   verificada: { label: 'Verificada', color: '#AFA9EC', bg: 'rgba(175,169,236,0.1)', icon: '✓' },
 }
 
+function normalizarTexto(text) {
+  return (text || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
+}
+
+// Detecta si el rol es un abogado o contador de constitución
+function detectarRolConstitucion(nombreRol, subEsp) {
+  const n = normalizarTexto(nombreRol || '')
+  const s = normalizarTexto(subEsp || '')
+  const esConstitucion = /constituc/.test(n + ' ' + s)
+  if (!esConstitucion) return null
+  if (/abogado|legal|juridico/.test(n + ' ' + s)) return 'Abogado'
+  if (/contador|contable|contabilidad|tributario/.test(n + ' ' + s)) return 'Contador'
+  return null
+}
+
 export default function Tareas() {
   const [usuario, setUsuario] = useState(null)
   const [perfil, setPerfil] = useState(null)
@@ -31,15 +46,12 @@ export default function Tareas() {
   const [rolInicializar, setRolInicializar] = useState('')
   const [miembroInicializar, setMiembroInicializar] = useState('')
   const [creando, setCreando] = useState(false)
+  const [verTodas, setVerTodas] = useState(false)
 
   function getProyectoIdFromPath() {
     const parts = window.location.pathname.split('/').filter(Boolean)
     const proyectoIndex = parts.indexOf('proyectos')
     return proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
-  }
-
-  function normalizarTexto(text) {
-    return (text || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
   }
 
   function tareaPerteneceAMiRol(tarea) {
@@ -54,13 +66,11 @@ export default function Tareas() {
     if (categoria.includes('constituc') || nombreTarea.includes('constituc') || rolTarea.includes('constituc')) {
       return esRolLegal || esRolContable
     }
-
     if (!tarea?.rol_nombre) {
       if (categoria === 'legal' && esRolLegal) return true
       if (categoria === 'finanzas' && esRolContable) return true
       return false
     }
-
     if (!miNombre || !rolTarea) return false
     if (miNombre === rolTarea) return true
     if (miNombre.includes(rolTarea) || rolTarea.includes(miNombre)) return true
@@ -77,6 +87,7 @@ export default function Tareas() {
 
       const pid = getProyectoIdFromPath()
       if (!pid || pid === 'undefined') { window.location.href = '/proyectos'; return }
+
       const [pRes, perfilRes, rolesRes, postRes] = await Promise.all([
         fetch('/api/proyectos/' + pid),
         fetch('/api/usuarios?id=' + user.id),
@@ -95,8 +106,8 @@ export default function Tareas() {
 
       const esFund = proy?.fundador_id === user.id
       const miPost = posts.find(p => p.estado === 'aceptada' && p.roles?.proyecto_id === pid && todosRoles.some(r => r.id === p.rol_id))
-      const miRol = todosRoles.find(r => r.id === miPost?.rol_id)
-      const esGer = miRol?.nombre?.toLowerCase().includes('gerente')
+      const rolEncontrado = todosRoles.find(r => r.id === miPost?.rol_id)
+      const esGer = rolEncontrado?.nombre?.toLowerCase().includes('gerente')
 
       if (!esFund && !miPost) { setAcceso(false); setCargando(false); return }
 
@@ -104,7 +115,7 @@ export default function Tareas() {
       setProyecto(proy)
       setPerfil(perfilData.usuario)
       setRoles(todosRoles)
-      setMiRol(miRol || null)
+      setMiRol(rolEncontrado || null)
       setEsFundador(esFund)
       setEsGerente(esGer)
 
@@ -124,13 +135,38 @@ export default function Tareas() {
       // Cargar tareas
       const tRes = await fetch('/api/tareas?proyecto_id=' + pid)
       const tData = await tRes.json()
-      setTareas(tData.tareas || [])
+      let tareasActuales = tData.tareas || []
       setPlantillas(tData.plantillas || {})
 
-      // Si no es fundador ni gerente, filtrar solo sus tareas
-      if (!esFund && !esGer) {
-        setFiltroRol('todos')
+      // ── AUTO-INICIALIZAR TAREAS DE CONSTITUCIÓN ──────────────────────────
+      // Si el especialista es abogado/contador de constitución y aún no tiene
+      // tareas asignadas en este proyecto, las creamos automáticamente.
+      if (!esFund && rolEncontrado) {
+        const rolTipo = detectarRolConstitucion(rolEncontrado.nombre, rolEncontrado.sub_especialidad)
+        if (rolTipo) {
+          const misTareasActuales = tareasActuales.filter(t => t.asignado_a === user.id)
+          if (misTareasActuales.length === 0) {
+            const initRes = await fetch('/api/tareas', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                proyecto_id: pid,
+                inicializar_constitucion: true,
+                rol_nombre_especialista: rolEncontrado.nombre,
+                sub_especialidad: rolEncontrado.sub_especialidad || '',
+                asignado_a: user.id,
+                creado_por: user.id,
+              })
+            })
+            const initData = await initRes.json()
+            if (initData.tareas && initData.tareas.length > 0) {
+              tareasActuales = [...tareasActuales, ...initData.tareas]
+            }
+          }
+        }
       }
+
+      setTareas(tareasActuales)
       setCargando(false)
     }
     cargar()
@@ -208,15 +244,10 @@ export default function Tareas() {
     t.asignado_a === usuario?.id ||
     (!t.asignado_a && tareaPerteneceAMiRol(t))
   )
-  const [verTodas, setVerTodas] = useState(false)
 
-  // Roles que requieren coincidencia de jurisdicción — la categoría legal/fiscal depende de la ley local
   const ROLES_REGULATORIOS = ['Abogado', 'Contador']
-  // Categorías que, aunque coincidan con un rol regulatorio, no dependen de legislación local (propiedad intelectual, contratos internacionales, etc.) — quedan fuera de la restricción geográfica
   const ESPECIALIZACION_GLOBAL_KEYWORDS = ['internacional', 'propiedad intelectual', 'marcas', 'comercio exterior', 'compliance', 'protección de datos']
 
-  // Asignación inteligente — filtra miembros del equipo según categoría de la tarea
-  // y aplica restricción geográfica solo cuando el rol es regulatorio Y la tarea no es de especialización global
   function miembrosParaCategoria(categoria, esTareaRegulatoria) {
     const CATEGORIA_ROL = {
       'Legal': ['Abogado'],
@@ -228,26 +259,21 @@ export default function Tareas() {
       'Gestión': ['Gerente de Proyecto'],
     }
     const rolesCompatibles = CATEGORIA_ROL[categoria] || null
-    if (!rolesCompatibles) return equipo // sin restricción de categoría, todos disponibles
-
+    if (!rolesCompatibles) return equipo
     let candidatos = equipo.filter(e => rolesCompatibles.some(r => e.rol_nombre?.toLowerCase().includes(r.toLowerCase())))
-
-    // Restricción geográfica: solo aplica a roles regulatorios cuando la tarea está marcada como tal
     const esRolRegulatorio = rolesCompatibles.some(r => ROLES_REGULATORIOS.includes(r))
     if (esRolRegulatorio && esTareaRegulatoria && proyecto?.pais) {
       candidatos = candidatos.filter(e => e.perfiles?.pais === proyecto.pais)
     }
-
     return candidatos
   }
 
-  // Determina si una tarea es de naturaleza regulatoria local (categoría + nombre sugieren ley local)
   function esTareaRegulatoria(nombreTarea, categoria) {
     if (categoria !== 'Legal' && categoria !== 'Finanzas') return false
     const nombreLower = (nombreTarea || '').toLowerCase()
-    const esGlobalPorPalabraClave = ESPECIALIZACION_GLOBAL_KEYWORDS.some(kw => nombreLower.includes(kw))
-    return !esGlobalPorPalabraClave
+    return !ESPECIALIZACION_GLOBAL_KEYWORDS.some(kw => nombreLower.includes(kw))
   }
+
   const tareasFiltradas = tareas.filter(t => {
     if (!esFundador && !verTodas) {
       if (t.asignado_a === usuario?.id) return true
@@ -259,7 +285,9 @@ export default function Tareas() {
     return true
   })
 
-  const pctCompletadas = tareas.length > 0 ? Math.round((tareas.filter(t => t.estado === 'verificada' || t.estado === 'completada').length / tareas.length) * 100) : 0
+  const pctCompletadas = tareas.length > 0
+    ? Math.round((tareas.filter(t => t.estado === 'verificada' || t.estado === 'completada').length / tareas.length) * 100)
+    : 0
 
   if (cargando) return (
     <div style={{minHeight:'100vh',background:'#0B1628',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>Cargando tareas...</div>
@@ -290,8 +318,14 @@ export default function Tareas() {
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'2rem',flexWrap:'wrap',gap:'1rem'}}>
           <div>
             <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Plan de trabajo</div>
-            <div style={{fontSize:'clamp(1.3rem,3vw,1.75rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>{esFundador||esGerente ? 'Tareas del equipo' : 'Mis tareas'}</div>
-            <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{esFundador||esGerente ? `${tareas.length} tareas · ${pctCompletadas}% completadas` : `${misTareas.length} tareas asignadas · ${misTareas.filter(t=>t.estado==='completada'||t.estado==='verificada').length} completadas`}</div>
+            <div style={{fontSize:'clamp(1.3rem,3vw,1.75rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>
+              {esFundador||esGerente ? 'Tareas del equipo' : 'Mis tareas'}
+            </div>
+            <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>
+              {esFundador||esGerente
+                ? `${tareas.length} tareas · ${pctCompletadas}% completadas`
+                : `${misTareas.length} tareas asignadas · ${misTareas.filter(t=>t.estado==='completada'||t.estado==='verificada').length} completadas`}
+            </div>
           </div>
           {(esFundador || esGerente) && (
             <div style={{display:'flex',gap:'0.5rem'}}>
@@ -384,23 +418,10 @@ export default function Tareas() {
                   {miembrosParaCategoria(nuevaTarea.categoria, esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria)).map(e=><option key={e.postulante_id} value={e.postulante_id}>{e.perfiles?.nombre} — {e.rol_nombre}{e.perfiles?.pais ? ' (' + e.perfiles.pais + ')' : ''}</option>)}
                 </select>
                 {nuevaTarea.categoria && esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria) && proyecto?.pais && (
-                  <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.3rem'}}>
-                    ✓ Filtrando por jurisdicción {proyecto.pais} — tarea regulatoria local
-                  </div>
-                )}
-                {nuevaTarea.categoria && !esTareaRegulatoria(nuevaTarea.nombre, nuevaTarea.categoria) && (nuevaTarea.categoria==='Legal'||nuevaTarea.categoria==='Finanzas') && (
-                  <div style={{fontSize:'0.68rem',color:'#E8A020',marginTop:'0.3rem'}}>
-                    🌐 Especialización global — cualquier país disponible
-                  </div>
-                )}
-                {nuevaTarea.categoria && nuevaTarea.categoria!=='Legal' && nuevaTarea.categoria!=='Finanzas' && miembrosParaCategoria(nuevaTarea.categoria, false).length < equipo.length && (
-                  <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.3rem'}}>
-                    ✓ Mostrando solo ejecutores compatibles con {nuevaTarea.categoria}
-                  </div>
+                  <div style={{fontSize:'0.68rem',color:'#1D9E75',marginTop:'0.3rem'}}>✓ Filtrando por jurisdicción {proyecto.pais}</div>
                 )}
               </div>
             </div>
-
             <div style={{display:'flex',gap:'0.75rem'}}>
               <button onClick={()=>setMostrarNueva(false)} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
               <button onClick={crearTarea} disabled={!nuevaTarea.nombre||creando} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.5rem',fontSize:'0.82rem',fontWeight:'700',cursor:nuevaTarea.nombre?'pointer':'not-allowed',fontFamily:'Inter,sans-serif'}}>
@@ -410,27 +431,41 @@ export default function Tareas() {
           </div>
         )}
 
-        {tareas.length === 0 ? (
+        {tareasFiltradas.length === 0 && tareas.length === 0 ? (
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
             <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>📋</div>
             <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Sin tareas todavía</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Carga la plantilla de tareas para cada rol del equipo o crea tareas manualmente.</div>
+            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>
+              {esFundador||esGerente
+                ? 'Carga la plantilla de tareas para cada rol del equipo o crea tareas manualmente.'
+                : 'El fundador asignará tareas a tu rol próximamente.'}
+            </div>
             {(esFundador||esGerente) && (
               <button onClick={()=>setMostrarInicializar(true)} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.75rem 1.5rem',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
                 📋 Cargar plantilla de rol →
               </button>
             )}
           </div>
+        ) : tareasFiltradas.length === 0 ? (
+          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center',color:'#8FA3CC',fontSize:'0.85rem'}}>
+            No hay tareas con ese filtro.
+          </div>
         ) : (
           <>
             <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap',marginBottom:'1.5rem'}}>
               <button onClick={()=>setFiltroEstado('todos')} style={{background:filtroEstado==='todos'?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todas</button>
-              {['pendiente','en_progreso','completada','verificada'].map(e=><button key={e} onClick={()=>setFiltroEstado(e)} style={{background:filtroEstado===e?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado===e?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{estadoConfig[e]?.label}</button>)}
+              {['pendiente','en_progreso','completada','verificada'].map(e=>(
+                <button key={e} onClick={()=>setFiltroEstado(e)} style={{background:filtroEstado===e?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.04)',color:filtroEstado===e?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                  {estadoConfig[e]?.label}
+                </button>
+              ))}
               {(esFundador || verTodas) && (
                 <>
                   <span style={{width:'1px',background:'rgba(255,255,255,0.1)',margin:'0 0.25rem'}}></span>
                   <button onClick={()=>setFiltroRol('todos')} style={{background:filtroRol==='todos'?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol==='todos'?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Todos los roles</button>
-                  {rolesTareas.map(r=><button key={r} onClick={()=>setFiltroRol(r)} style={{background:filtroRol===r?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol===r?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{r}</button>)}
+                  {rolesTareas.map(r=>(
+                    <button key={r} onClick={()=>setFiltroRol(r)} style={{background:filtroRol===r?'#1D9E75':'rgba(255,255,255,0.06)',color:filtroRol===r?'#fff':'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{r}</button>
+                  ))}
                 </>
               )}
             </div>
@@ -450,14 +485,14 @@ export default function Tareas() {
                           {t.rol_nombre && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase'}}>{t.rol_nombre}</span>}
                           {t.categoria && <span style={{fontSize:'0.62rem',padding:'1px 6px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{t.categoria}</span>}
                           {esMia && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75'}}>● Mía</span>}
-                          {t.razon_creacion && <span style={{fontSize:'0.62rem',color:'#6B7280'}}>+ agregada</span>}
+                          {t.razon_creacion && t.razon_creacion.includes('Constitución') && (
+                            <span style={{fontSize:'0.62rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.1)',padding:'1px 6px',borderRadius:'4px'}}>⚖️ Constitución</span>
+                          )}
                         </div>
                         <div style={{fontSize:'0.875rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.2rem'}}>{t.nombre}</div>
                         {t.descripcion && <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.3rem'}}>{t.descripcion}</div>}
-                        {t.razon_creacion && <div style={{fontSize:'0.7rem',color:'#6B7280',fontStyle:'italic'}}>Por qué: {t.razon_creacion}</div>}
                         <div style={{fontSize:'0.68rem',color:'#6B7280',marginTop:'0.3rem'}}>
                           {t.asignado_perfil?.nombre ? 'Asignada a ' + t.asignado_perfil.nombre : 'Sin asignar'}
-                          {t.creador?.nombre && t.razon_creacion ? ' · Creada por ' + t.creador.nombre : ''}
                           {t.completado_at ? ' · Completada ' + new Date(t.completado_at).toLocaleDateString('es-CO') : ''}
                           {t.verificado_perfil?.nombre ? ' · Verificada por ' + t.verificado_perfil.nombre : ''}
                         </div>

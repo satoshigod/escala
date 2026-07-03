@@ -56,7 +56,6 @@ const TAREAS_BASE = {
   ],
 }
 
-// Tareas regulatorias por país — cargadas automáticamente según el país del proyecto
 const TAREAS_PAIS = {
   'Colombia': [
     { nombre: 'Constituir SAS ante notaría', descripcion: 'Escritura pública o documento privado para constituir la Sociedad por Acciones Simplificada.', categoria: 'Legal', rol_nombre: 'Abogado' },
@@ -112,7 +111,6 @@ const TAREAS_PAIS = {
   ],
 }
 
-// Tareas comerciales por industria — se cargan al crear el proyecto
 const TAREAS_INDUSTRIA = {
   'Restaurante': [
     { nombre: 'Diseñar carta digital', descripcion: 'Menú digital actualizable con fotos, precios y descripción de platos.', categoria: 'Marketing', rol_nombre: 'Diseñador' },
@@ -156,7 +154,6 @@ const TAREAS_INDUSTRIA = {
   ],
 }
 
-// Categorías por rol — para asignación inteligente
 const CATEGORIA_POR_ROL = {
   'Abogado': ['Legal'],
   'Contador': ['Finanzas'],
@@ -167,6 +164,19 @@ const CATEGORIA_POR_ROL = {
   'Inversionista inicial': ['Inversión'],
 }
 
+// Detecta si un rol es abogado de constitución o contador de constitución
+function detectarRolConstitucion(nombreRol, subEsp) {
+  const n = (nombreRol || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+  const s = (subEsp || '').toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '')
+  const esConstitucion = /constituc/.test(n + ' ' + s)
+  if (!esConstitucion) return null
+  const esAbogado = /abogado|legal|juridico/.test(n + ' ' + s)
+  const esContador = /contador|contable|contabilidad|tributario/.test(n + ' ' + s)
+  if (esAbogado) return 'Abogado'
+  if (esContador) return 'Contador'
+  return null
+}
+
 async function registrarHistorial(tarea_id, proyecto_id, accion, realizado_por, descripcion) {
   await supabase.from('historial_tareas').insert([{ tarea_id, proyecto_id, accion, realizado_por, descripcion }])
 }
@@ -175,7 +185,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const proyecto_id = searchParams.get('proyecto_id')
   const tarea_id = searchParams.get('tarea_id')
-  const categoria = searchParams.get('categoria') // Para asignación inteligente
+  const categoria = searchParams.get('categoria')
 
   if (!proyecto_id && !tarea_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
@@ -197,7 +207,6 @@ export async function GET(request) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Si se pide filtro por categoría — devolver ejecutores compatibles del equipo del proyecto
   if (categoria) {
     const rolesCompatibles = Object.entries(CATEGORIA_POR_ROL)
       .filter(([, cats]) => cats.includes(categoria))
@@ -210,11 +219,94 @@ export async function GET(request) {
 
 export async function POST(request) {
   const body = await request.json()
-  const { proyecto_id, rol_nombre, asignado_a, nombre, descripcion, categoria, creado_por, razon_creacion, inicializar, inicializar_pais, pais, inicializar_industria, industria } = body
+  const {
+    proyecto_id, rol_nombre, asignado_a, nombre, descripcion, categoria,
+    creado_por, razon_creacion, inicializar, inicializar_pais, pais,
+    inicializar_industria, industria,
+    // Nuevo: auto-inicializar tareas de constitución para un especialista aceptado
+    inicializar_constitucion, rol_nombre_especialista, sub_especialidad
+  } = body
 
   if (!proyecto_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
-  // INICIALIZAR TAREAS REGULATORIAS POR PAÍS — lee de la DB
+  // ── AUTO-INICIALIZAR TAREAS DE CONSTITUCIÓN PARA UN ESPECIALISTA ──────────
+  // Se llama cuando se acepta una postulación de abogado/contador de constitución
+  // y también al cargar /workspace/tareas si el especialista no tiene tareas aún.
+  if (inicializar_constitucion && rol_nombre_especialista !== undefined) {
+    const rolTipo = detectarRolConstitucion(rol_nombre_especialista, sub_especialidad)
+    if (!rolTipo) return Response.json({ tareas: [], mensaje: 'No es un rol de constitución' }, { status: 200 })
+
+    // Obtener el país del proyecto
+    const { data: proy } = await supabase
+      .from('proyectos')
+      .select('pais')
+      .eq('id', proyecto_id)
+      .single()
+
+    const paisProyecto = proy?.pais
+
+    // Buscar tareas del país en paises_regulatorios primero, luego fallback a TAREAS_PAIS
+    let tareasSource = []
+    if (paisProyecto) {
+      const { data: paisData } = await supabase
+        .from('paises_regulatorios')
+        .select('tareas')
+        .eq('nombre', paisProyecto)
+        .single()
+      tareasSource = paisData?.tareas || TAREAS_PAIS[paisProyecto] || []
+    }
+
+    // Filtrar solo las del rol correspondiente (abogado o contador)
+    const tareasDelRol = tareasSource.filter(t =>
+      (t.rol_nombre || '').toLowerCase() === rolTipo.toLowerCase()
+    )
+
+    if (tareasDelRol.length === 0) {
+      return Response.json({ tareas: [], mensaje: `Sin tareas configuradas para ${rolTipo} en ${paisProyecto}` }, { status: 200 })
+    }
+
+    // Verificar cuáles ya existen para no duplicar
+    const { data: existentes } = await supabase
+      .from('tareas')
+      .select('nombre')
+      .eq('proyecto_id', proyecto_id)
+      .eq('asignado_a', asignado_a)
+
+    const nombresExistentes = new Set((existentes || []).map(t => t.nombre))
+    const nuevas = tareasDelRol.filter(t => !nombresExistentes.has(t.nombre))
+
+    if (nuevas.length === 0) {
+      return Response.json({ tareas: [], mensaje: 'Tareas ya existentes', ya_inicializado: true }, { status: 200 })
+    }
+
+    const tareasAInsertar = nuevas.map(t => ({
+      proyecto_id,
+      rol_nombre: rolTipo,
+      asignado_a: asignado_a || null,
+      nombre: t.nombre,
+      descripcion: t.descripcion || '',
+      categoria: t.categoria || 'Legal',
+      estado: 'pendiente',
+      creado_por: creado_por || null,
+      razon_creacion: `Constitución de empresas — ${paisProyecto || 'país no definido'}`,
+    }))
+
+    const { data: insertadas, error: insertError } = await supabase
+      .from('tareas')
+      .insert(tareasAInsertar)
+      .select('*, asignado_perfil:asignado_a ( nombre, email )')
+
+    if (insertError) return Response.json({ error: insertError.message }, { status: 500 })
+
+    for (const tarea of insertadas) {
+      await registrarHistorial(tarea.id, proyecto_id, 'creada', creado_por,
+        `Tarea de constitución asignada automáticamente a ${tarea.asignado_perfil?.nombre || 'especialista'}`)
+    }
+
+    return Response.json({ tareas: insertadas, tipo: 'constitucion', rol: rolTipo, pais: paisProyecto }, { status: 201 })
+  }
+
+  // INICIALIZAR TAREAS REGULATORIAS POR PAÍS
   if (inicializar_pais && pais) {
     const { data: paisData } = await supabase
       .from('paises_regulatorios')
@@ -248,7 +340,7 @@ export async function POST(request) {
     return Response.json({ tareas: data, tipo: 'pais', pais }, { status: 201 })
   }
 
-  // INICIALIZAR TAREAS COMERCIALES POR INDUSTRIA — lee de la DB
+  // INICIALIZAR TAREAS COMERCIALES POR INDUSTRIA
   if (inicializar_industria && industria) {
     const { data: indData } = await supabase
       .from('industrias')
@@ -294,7 +386,6 @@ export async function POST(request) {
     const { data, error } = await supabase.from('tareas').insert(tareas).select('*, asignado_perfil:asignado_a ( nombre, email )')
     if (error) return Response.json({ error: error.message }, { status: 500 })
 
-    // Registrar historial y notificar
     const creadorData = creado_por ? await supabase.from('perfiles').select('nombre, email').eq('id', creado_por).single() : null
     const creadorNombre = creadorData?.data?.nombre || 'El fundador'
 
@@ -303,7 +394,6 @@ export async function POST(request) {
         creadorNombre + ' asignó esta tarea a ' + (tarea.asignado_perfil?.nombre || 'sin asignar') + ' al cargar la plantilla de ' + rol_nombre)
     }
 
-    // Notificación al asignado
     if (asignado_a && data.length > 0) {
       const asignadoData = await supabase.from('perfiles').select('nombre, email').eq('id', asignado_a).single()
       if (asignadoData.data) {
@@ -356,7 +446,6 @@ export async function PATCH(request) {
 
   if (!id) return Response.json({ error: 'Falta el id' }, { status: 400 })
 
-  // Si solo se actualiza fecha_limite sin cambiar estado
   if (fecha_limite !== undefined && !estado) {
     const { data, error } = await supabase
       .from('tareas').update({ fecha_limite: fecha_limite || null }).eq('id', id)
@@ -392,7 +481,6 @@ export async function PATCH(request) {
   await registrarHistorial(id, tareaAnterior.data?.proyecto_id, estado, quien,
     quienNombre + ' marcó esta tarea como ' + (accionLabels[estado] || estado))
 
-  // Notificación al fundador cuando se completa
   if (estado === 'completada') {
     const fundadorId = tareaAnterior.data?.proyecto?.fundador_id
     const fundadorEmail = tareaAnterior.data?.proyecto?.perfiles?.email
@@ -408,7 +496,6 @@ export async function PATCH(request) {
     }
   }
 
-  // Notificación al asignado cuando se verifica
   if (estado === 'verificada' && data.asignado_a) {
     await notificar('tarea_verificada', { id: data.asignado_a, email: data.asignado_perfil?.email }, {
       asignado_nombre: data.asignado_perfil?.nombre,
@@ -417,7 +504,6 @@ export async function PATCH(request) {
       workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
     })
 
-    // Recalcular score del asignado automáticamente
     if (data.asignado_a) {
       try {
         await supabase.rpc('calcular_escala_score', { perfil_uuid: data.asignado_a })

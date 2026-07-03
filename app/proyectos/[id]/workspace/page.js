@@ -89,7 +89,7 @@ export default function Workspace() {
         return
       }
       const initialTab = new URLSearchParams(window.location.search).get('tab')
-      if (initialTab && ['resumen','hitos','equipo','aportes','presupuesto','economia','roles','tareas','constitucion','chat'].includes(initialTab)) {
+      if (initialTab && ['resumen','hitos','equipo','aportes','presupuesto','economia','roles','tareas','chat'].includes(initialTab)) {
         setTab(initialTab)
       }
 
@@ -265,7 +265,7 @@ export default function Workspace() {
 
   async function eliminarRol(rolId) {
     if (!confirm('¿Eliminar este rol? Los especialistas que se hayan postulado ya no podrán ver la postulación.')) return
-    const res = await fetch('/api/roles?id=' + rolId, { method: 'DELETE' })
+    const res = await fetch('/api/roles?id=' + rolId + '&fundador_id=' + usuario?.id, { method: 'DELETE' })
     const data = await res.json()
     if (data.ok) {
       setRoles(prev => prev.filter(r => r.id !== rolId))
@@ -305,6 +305,7 @@ export default function Workspace() {
         modalidad: proyecto?.estado_financiacion === 'con_recursos' ? 'equity' : 'deuda_diferida',
         es_prioritario: rolForm.es_prioritario,
         estado: 'abierto',
+        fundador_id: usuario?.id,
       })
     })
     const data = await res.json()
@@ -330,8 +331,7 @@ export default function Workspace() {
   const hitosPendientes = hitos.filter(h => !h.completado).length
   const miRol = miPostulacion ? roles.find(r => r.id === miPostulacion.rol_id) : null
   const equipo = postulaciones.filter(p => p.estado === 'aceptada' && roles.some(r => r.id === p.rol_id))
-  const esMiRolConstitucion = esRolConstitucion(miRol)
-  const mostrarPresupuesto = esFundador || !esMiRolConstitucion
+  const mostrarPresupuesto = true
 
   useEffect(() => {
     if (!mostrarPresupuesto && tab === 'presupuesto') {
@@ -345,7 +345,7 @@ export default function Workspace() {
     const res = await fetch('/api/desistir', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ postulacion_id: miPostulacion.id })
+      body: JSON.stringify({ postulacion_id: miPostulacion.id, especialista_id: usuario?.id })
     })
     const data = await res.json()
     if (data.ok) {
@@ -363,15 +363,14 @@ export default function Workspace() {
     { id: 'aportes', label: 'Mis aportes', icon: '📋' },
     ...(mostrarPresupuesto ? [{ id: 'presupuesto', label: 'Presupuesto', icon: '💸' }] : []),
     { id: 'economia', label: 'Economía', icon: '💰' },
-    { id: 'roles', label: 'Roles', icon: '🧩' , badge: roles.filter(r => r.estado === 'abierto').length > 0 ? roles.filter(r => r.estado === 'abierto').length : null},
+    { id: 'roles', label: 'Roles', icon: '🧩', badge: roles.filter(r => r.estado === 'abierto').length > 0 ? roles.filter(r => r.estado === 'abierto').length : null },
     { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },
-    ...(esMiRolConstitucion ? [{ id: 'constitucion', label: 'Constitución', icon: '⚖️' }] : []),
     { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
   ]
 
   function handleTabClick(id) {
-    if ((id === 'tareas' || id === 'constitucion') && proyecto?.id) {
-      window.location.href = '/proyectos/' + proyecto.id + '/workspace/' + id
+    if (id === 'tareas' && proyecto?.id) {
+      window.location.href = '/proyectos/' + proyecto.id + '/workspace/tareas'
       return
     }
     setTab(id)
@@ -406,9 +405,7 @@ export default function Workspace() {
         <div style={{display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>📋 Tareas</a>
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/chat' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>💬 Chat</a>
-          {esMiRolConstitucion && (
-            <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/constitucion' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>⚖️ Constitución</a>
-          )}
+
           {esFundador && (
             <button onClick={() => setTab('roles')} style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'none',cursor:'pointer'}}>🧩 Roles</button>
           )}
@@ -427,7 +424,7 @@ export default function Workspace() {
             </>
           )
           const baseStyle = {background:'none',border:'none',borderBottom: tab===t.id ? '2px solid #1D9E75' : '2px solid transparent',color: tab===t.id ? '#fff' : '#8FA3CC',padding:'0.875rem 1.25rem',fontSize:'0.82rem',fontWeight: tab===t.id ? '700' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.4rem',position:'relative',textDecoration:'none'}
-          if ((t.id === 'tareas' || t.id === 'constitucion') && proyecto?.id) {
+          if (t.id === 'tareas' && proyecto?.id) {
             return (
               <a key={t.id} href={'/proyectos/' + proyecto.id + '/workspace/' + t.id} style={baseStyle}>
                 {tabContent}
@@ -888,17 +885,6 @@ export default function Workspace() {
             <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Tareas asignadas por rol con seguimiento de avance y verificación del fundador.</div>
             <a href={'/proyectos/'+proyecto?.id+'/workspace/tareas'} style={{background:'#1D9E75',color:'#fff',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
               Ver plan de trabajo completo →
-            </a>
-          </div>
-        )}
-
-        {tab === 'constitucion' && (
-          <div style={{textAlign:'center',padding:'3rem'}}>
-            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>⚖️</div>
-            <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Workspace de constitución</div>
-            <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Accede a las tareas de constitución específicas para tu rol de abogado o contador.</div>
-            <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/constitucion' : '#'} style={{background:'#AFA9EC',color:'#0B1628',padding:'0.875rem 2rem',borderRadius:'10px',textDecoration:'none',fontSize:'0.95rem',fontWeight:'700',display:'inline-block'}}>
-              Abrir constitución →
             </a>
           </div>
         )}

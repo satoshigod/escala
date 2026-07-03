@@ -23,17 +23,19 @@ export async function GET(request) {
 }
 
 // POST — crear rol en un proyecto
+// El fundador_id viene del body (mismo patrón que /api/proyectos)
 export async function POST(request) {
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) return Response.json({ error: 'No autorizado' }, { status: 401 })
-
   const body = await request.json()
-  const { proyecto_id, nombre, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario } = body
+  const { proyecto_id, nombre, sub_especialidad, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario, estado, fundador_id } = body
 
   if (!proyecto_id || !nombre || !tipo_aporte || !modalidad) {
     return Response.json({ error: 'Faltan campos requeridos' }, { status: 400 })
   }
+  if (!fundador_id) {
+    return Response.json({ error: 'Falta fundador_id' }, { status: 400 })
+  }
 
+  // Verificar que quien solicita es el fundador del proyecto
   const { data: proyecto, error: proyectoError } = await supabase
     .from('proyectos')
     .select('fundador_id')
@@ -43,13 +45,13 @@ export async function POST(request) {
   if (proyectoError || !proyecto) {
     return Response.json({ error: 'Proyecto no encontrado' }, { status: 404 })
   }
-  if (proyecto.fundador_id !== user.id) {
+  if (proyecto.fundador_id !== fundador_id) {
     return Response.json({ error: 'Solo el fundador puede publicar roles' }, { status: 403 })
   }
 
   const { data, error } = await supabase
     .from('roles')
-    .insert([{ proyecto_id, nombre, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario }])
+    .insert([{ proyecto_id, nombre, sub_especialidad: sub_especialidad || null, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario, estado: estado || 'abierto' }])
     .select()
     .single()
 
@@ -59,13 +61,11 @@ export async function POST(request) {
 
 // PATCH — actualizar estado de un rol
 export async function PATCH(request) {
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) return Response.json({ error: 'No autorizado' }, { status: 401 })
-
   const body = await request.json()
-  const { id, estado } = body
+  const { id, estado, fundador_id } = body
 
   if (!id || !estado) return Response.json({ error: 'Faltan campos' }, { status: 400 })
+  if (!fundador_id) return Response.json({ error: 'Falta fundador_id' }, { status: 400 })
 
   const { data: rol, error: rolError } = await supabase
     .from('roles')
@@ -76,8 +76,7 @@ export async function PATCH(request) {
   if (rolError || !rol) {
     return Response.json({ error: 'Rol no encontrado' }, { status: 404 })
   }
-
-  if (rol.proyectos?.fundador_id !== user.id) {
+  if (rol.proyectos?.fundador_id !== fundador_id) {
     return Response.json({ error: 'Solo el fundador puede actualizar el rol' }, { status: 403 })
   }
 
@@ -94,12 +93,12 @@ export async function PATCH(request) {
 
 // DELETE — eliminar un rol (solo el fundador, solo si no tiene postulaciones aceptadas)
 export async function DELETE(request) {
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) return Response.json({ error: 'No autorizado' }, { status: 401 })
-
   const { searchParams } = new URL(request.url)
   const id = searchParams.get('id')
+  const fundador_id = searchParams.get('fundador_id')
+
   if (!id) return Response.json({ error: 'Falta id' }, { status: 400 })
+  if (!fundador_id) return Response.json({ error: 'Falta fundador_id' }, { status: 400 })
 
   const { data: rol, error: rolError } = await supabase
     .from('roles')
@@ -110,12 +109,11 @@ export async function DELETE(request) {
   if (rolError || !rol) {
     return Response.json({ error: 'Rol no encontrado' }, { status: 404 })
   }
-
-  if (rol.proyectos?.fundador_id !== user.id) {
+  if (rol.proyectos?.fundador_id !== fundador_id) {
     return Response.json({ error: 'Solo el fundador puede eliminar roles' }, { status: 403 })
   }
 
-  // No se puede eliminar si ya hay alguien aceptado — hay una obligación contractual
+  // No se puede eliminar si ya hay alguien aceptado
   const { data: aceptadas } = await supabase
     .from('postulaciones')
     .select('id')
