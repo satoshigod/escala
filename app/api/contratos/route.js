@@ -6,20 +6,28 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY
 )
 
-// GET — contratos de un proyecto o de un profesional
+// GET — contratos de un proyecto, profesional o postulacion
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const proyecto_id = searchParams.get('proyecto_id')
   const profesional_id = searchParams.get('profesional_id')
   const postulacion_id = searchParams.get('postulacion_id')
+  const especialista_id = searchParams.get('especialista_id')
 
   let query = supabase
     .from('contratos')
-    .select('*, proyectos:proyecto_id(nombre, pais, ciudad, sector, descripcion, estado_financiacion), perfiles_fundador:fundador_id(nombre, email), perfiles_profesional:profesional_id(nombre, email)')
+    .select(`
+      *,
+      proyectos:proyecto_id(nombre, pais, ciudad, sector, descripcion, estado_financiacion),
+      perfil_fundador:fundador_id(nombre, email),
+      perfil_profesional:profesional_id(nombre, email),
+      roles:rol_id(nombre, sub_especialidad, valor_mercado, modalidad)
+    `)
     .order('created_at', { ascending: false })
 
   if (proyecto_id) query = query.eq('proyecto_id', proyecto_id)
   if (profesional_id) query = query.eq('profesional_id', profesional_id)
+  if (especialista_id) query = query.eq('profesional_id', especialista_id)
   if (postulacion_id) query = query.eq('postulacion_id', postulacion_id)
 
   const { data, error } = await query
@@ -27,36 +35,41 @@ export async function GET(request) {
   return Response.json({ contratos: data || [] })
 }
 
-// POST — generar contrato al aceptar una postulación
+// POST — generar contrato al aceptar una postulacion
 export async function POST(request) {
   const body = await request.json()
   const { postulacion_id, fundador_id } = body
 
   if (!postulacion_id || !fundador_id) {
-    return Response.json({ error: 'Faltan campos' }, { status: 400 })
+    return Response.json({ error: 'Faltan campos: postulacion_id y fundador_id' }, { status: 400 })
   }
 
-  // Verificar que no exista ya un contrato para esta postulación
+  // Verificar que no exista ya un contrato para esta postulacion
   const { data: existente } = await supabase
     .from('contratos')
-    .select('id')
+    .select('id, estado, firmado_fundador, firmado_profesional')
     .eq('postulacion_id', postulacion_id)
     .maybeSingle()
 
   if (existente) return Response.json({ contrato: existente, existia: true })
 
-  // Cargar todos los datos necesarios para generar el contrato
+  // Cargar todos los datos necesarios
   const { data: post } = await supabase
     .from('postulaciones')
     .select('*, roles:rol_id(*, proyectos:proyecto_id(*)), perfiles:postulante_id(*)')
     .eq('id', postulacion_id)
     .single()
 
-  if (!post) return Response.json({ error: 'Postulación no encontrada' }, { status: 404 })
+  if (!post) return Response.json({ error: 'Postulacion no encontrada' }, { status: 404 })
 
   const proyecto = post.roles?.proyectos
   const profesional = post.perfiles
   const rol = post.roles
+
+  // Verificar que el fundador es correcto
+  if (proyecto?.fundador_id !== fundador_id) {
+    return Response.json({ error: 'Solo el fundador del proyecto puede generar contratos' }, { status: 403 })
+  }
 
   // Cargar datos del fundador
   const { data: fundador } = await supabase
@@ -65,7 +78,7 @@ export async function POST(request) {
     .eq('id', fundador_id)
     .single()
 
-  // Cargar tareas del país para esta especialidad/sub-especialidad
+  // Cargar tareas del pais para esta especialidad
   let pais_tareas = []
   if (proyecto?.pais && rol?.sub_especialidad) {
     const { data: paisData } = await supabase
@@ -76,26 +89,23 @@ export async function POST(request) {
 
     const todasTareas = paisData?.tareas || []
     const rolNombre = (rol.nombre || '').toLowerCase()
-    const esAbogado = ['abogado', 'legal', 'jurídico'].some(r => rolNombre.includes(r))
+    const esAbogado = ['abogado', 'legal', 'juridico'].some(r => rolNombre.includes(r))
     const esContador = ['contador', 'contable', 'contabilidad', 'tributario'].some(r => rolNombre.includes(r))
 
-    if (esAbogado) pais_tareas = todasTareas.filter(t => t.rol_nombre === 'abogado')
-    if (esContador) pais_tareas = todasTareas.filter(t => t.rol_nombre === 'contador')
+    if (esAbogado) pais_tareas = todasTareas.filter(t => (t.rol_nombre || '').toLowerCase() === 'abogado')
+    if (esContador) pais_tareas = todasTareas.filter(t => (t.rol_nombre || '').toLowerCase() === 'contador')
   }
 
-  // Generar el contenido estructurado del contrato
+  // Generar contenido del contrato
   const contenido = generarContenidoContrato({
-    proyecto,
-    profesional,
-    fundador,
-    rol,
-    postulacion: post,
-    pais_tareas,
+    proyecto, profesional, fundador, rol, postulacion: post, pais_tareas,
   })
-
   const textoPDF = generarTextoPDF(contenido)
 
-  // Guardar el contrato en la base de datos
+  // Determinar carril segun estado_financiacion
+  const carril = proyecto?.estado_financiacion === 'con_recursos' ? 'A' : 'B'
+
+  // Guardar contrato
   const { data: contrato, error } = await supabase
     .from('contratos')
     .insert([{
@@ -104,10 +114,14 @@ export async function POST(request) {
       rol_id: rol?.id,
       fundador_id,
       profesional_id: post.postulante_id,
-      modalidad: proyecto?.estado_financiacion || 'riesgo_compartido',
+      modalidad: rol?.modalidad || 'deuda_diferida',
       valor: rol?.valor_mercado || 0,
       sub_especialidad: rol?.sub_especialidad || null,
+      carril,
       estado: 'pendiente_firma',
+      firmado_fundador: false,
+      firmado_profesional: false,
+      condiciones: textoPDF,
       contenido_json: { ...contenido, texto_pdf: textoPDF },
     }])
     .select()
@@ -120,9 +134,9 @@ export async function POST(request) {
 // PATCH — confirmar firma (fundador o profesional)
 export async function PATCH(request) {
   const body = await request.json()
-  const { id, firmante, tipo } = body // tipo: 'fundador' | 'profesional'
+  const { id, tipo } = body // tipo: 'fundador' | 'profesional'
 
-  if (!id || !tipo) return Response.json({ error: 'Faltan campos' }, { status: 400 })
+  if (!id || !tipo) return Response.json({ error: 'Faltan campos: id y tipo' }, { status: 400 })
 
   const updates = {}
   if (tipo === 'fundador') {
@@ -133,17 +147,24 @@ export async function PATCH(request) {
     updates.fecha_firma_profesional = new Date().toISOString()
   }
 
-  // Verificar si el otro ya firmó para actualizar estado
-  const { data: actual } = await supabase.from('contratos').select('firmado_fundador, firmado_profesional').eq('id', id).single()
-  const ambosFirmaron = (tipo === 'fundador' && actual?.firmado_profesional) || (tipo === 'profesional' && actual?.firmado_fundador)
-  if (ambosFirmaron) updates.estado = 'vigente'
-  else updates.estado = 'firmado_parcial'
+  // Ver si el otro ya firmo para marcar como vigente
+  const { data: actual } = await supabase
+    .from('contratos')
+    .select('firmado_fundador, firmado_profesional')
+    .eq('id', id)
+    .single()
+
+  const ambosFirmaron =
+    (tipo === 'fundador' && actual?.firmado_profesional) ||
+    (tipo === 'profesional' && actual?.firmado_fundador)
+
+  updates.estado = ambosFirmaron ? 'vigente' : 'firmado_parcial'
 
   const { data, error } = await supabase
     .from('contratos')
     .update(updates)
     .eq('id', id)
-    .select()
+    .select('*, perfil_fundador:fundador_id(nombre), perfil_profesional:profesional_id(nombre), roles:rol_id(nombre, sub_especialidad)')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })

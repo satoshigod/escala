@@ -123,7 +123,7 @@ export default function Workspace() {
 
       // Cargar contrato del especialista si existe
       if (miPostulacionAceptada) {
-        const contratoRes = await fetch('/api/contratos?postulacion_id=' + miPostulacionAceptada.id)
+        const contratoRes = await fetch('/api/contratos?profesional_id=' + user.id + '&proyecto_id=' + pid + '&postulacion_id=' + miPostulacionAceptada.id)
         const contratoData = await contratoRes.json()
         if (contratoData.contratos?.length > 0) setMiContrato(contratoData.contratos[0])
       }

@@ -97,6 +97,16 @@ export default function Admin() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, estado, fundador_id: usuario?.id })
     })
+
+    // Si se acepta, generar contrato automaticamente
+    if (estado === 'aceptada') {
+      await fetch('/api/contratos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postulacion_id: id, fundador_id: usuario?.id })
+      })
+    }
+
     setPostulaciones(prev => ({
       ...prev,
       [rol_nombre]: prev[rol_nombre].map(p => p.id === id ? { ...p, estado } : p)
