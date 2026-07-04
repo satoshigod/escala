@@ -289,6 +289,10 @@ export default function Tareas() {
   // Extraer el segmento de la razon_creacion de una tarea
   function getSegmento(tarea) {
     const r = tarea.razon_creacion || ''
+    // Tareas del sistema de países regulatorios → siempre bajo "Constitución de empresas"
+    if (r.includes('regulatori') || r.includes('Tarea regulatoria')) {
+      return 'Constitución de empresas'
+    }
     const match = r.match(/— (.+)$/)
     return match ? match[1] : 'General'
   }
