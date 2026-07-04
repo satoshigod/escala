@@ -1,6 +1,30 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../../lib/supabase'
+
+function descargarContratoPDF(texto, nombreArchivo) {
+  if (typeof window === 'undefined') return
+  const previo = document.getElementById('escala-pdf-frame')
+  if (previo) previo.remove()
+  const prevBar = document.getElementById('escala-pdf-bar')
+  if (prevBar) prevBar.remove()
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>${nombreArchivo}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Georgia,serif;font-size:10pt;color:#1a1a2e}.header{background:#0B1628;color:white;padding:14px 32px;display:flex;align-items:center;gap:6px}.logo-e{color:#1D9E75;font-size:16pt;font-weight:bold;font-family:Arial}.logo-la{color:white;font-size:16pt;font-weight:bold;font-family:Arial}.logo-sub{color:#8FA3CC;font-size:7.5pt;margin-left:10px;font-family:Arial}.content{padding:24px 40px 60px}p{margin-bottom:5pt;line-height:1.65}.titulo{font-size:9.5pt;font-weight:bold;color:#1D9E75;margin-top:14pt;margin-bottom:3pt;font-family:Arial}.footer-p{position:fixed;bottom:0;left:0;right:0;background:#f0f0f0;padding:5px 32px;font-size:7pt;color:#888;font-family:Arial;display:flex;justify-content:space-between;border-top:1px solid #ddd}@page{margin:0}</style></head><body><div class="header"><span class="logo-e">Esca</span><span class="logo-la">la</span><span class="logo-sub">escala.network — Contrato de Prestacion de Servicios</span></div><div class="content">${texto.split('\n').map(l=>{const t=l.trim();if(!t)return '<br>';const es=/^(CLAUSULA|ANEXO|PARTES|FIRMAS|PROYECTO|AVISO|CONTRATO DE)/.test(t)||(t.length>3&&t===t.toUpperCase()&&/[A-Z]{3}/.test(t));return es?`<p class="titulo">${t}</p>`:`<p>${l.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>`}).join('')}</div><div class="footer-p"><span>Escala actua unicamente como intermediario tecnologico y no es parte de este contrato.</span><span>${nombreArchivo}</span></div></body></html>`
+
+  const iframe = document.createElement('iframe')
+  iframe.id = 'escala-pdf-frame'
+  iframe.style.cssText = 'position:fixed;top:50px;left:0;width:100%;height:calc(100% - 50px);border:none;z-index:99999;background:white;'
+  document.body.appendChild(iframe)
+  const doc = iframe.contentDocument || iframe.contentWindow.document
+  doc.open(); doc.write(html); doc.close()
+
+  const bar = document.createElement('div')
+  bar.id = 'escala-pdf-bar'
+  bar.style.cssText = 'position:fixed;top:0;left:0;right:0;height:50px;z-index:100000;background:#0B1628;padding:0 24px;display:flex;gap:12px;align-items:center;'
+  bar.innerHTML = '<span style="color:#1D9E75;font-weight:700;font-family:Arial;font-size:14px;">Esca<span style="color:white">la</span></span><span style="color:#8FA3CC;font-size:12px;font-family:Arial;flex:1;">Selecciona Guardar como PDF al imprimir</span><button onclick="document.getElementById(\'escala-pdf-frame\').contentWindow.print()" style="background:#1D9E75;color:white;border:none;padding:8px 20px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial;">Guardar PDF</button><button id="cerrar-pdf-btn" style="background:rgba(255,255,255,0.1);color:#8FA3CC;border:1px solid rgba(255,255,255,0.2);padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;font-family:Arial;">Cerrar</button>'
+  document.body.appendChild(bar)
+  document.getElementById('cerrar-pdf-btn').onclick = () => { iframe.remove(); bar.remove() }
+}
 const MODALIDADES = [
   { value: 'equity', label: 'Equity' },
   { value: 'deuda_diferida', label: 'Deuda diferida' },
@@ -539,7 +563,7 @@ export default function Workspace() {
                     {(miContrato.contenido_json?.texto_pdf || miContrato.condiciones) && (
                       <button onClick={async () => {
                         const texto = miContrato.contenido_json?.texto_pdf || miContrato.condiciones || ''
-                        await descargarContratoPDF(texto, `Contrato_${proyecto?.nombre || 'Escala'}.pdf`)
+                        descargarContratoPDF(texto, `Contrato_${proyecto?.nombre || 'Escala'}.pdf`)
                       }} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
                         ⬇ Descargar PDF
                       </button>
