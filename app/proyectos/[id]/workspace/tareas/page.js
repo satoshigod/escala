@@ -274,6 +274,11 @@ export default function Tareas() {
   const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
   const tareasAsignadasAMi = tareas.filter(t => t.asignado_a === usuario?.id)
+  const [rolesAbiertos, setRolesAbiertos] = useState({})
+
+  function toggleRol(rol) {
+    setRolesAbiertos(prev => ({ ...prev, [rol]: !prev[rol] }))
+  }
 
   const ROLES_REGULATORIOS = ['Abogado', 'Contador']
   const GLOBAL_KW = ['internacional', 'propiedad intelectual', 'marcas', 'comercio exterior']
@@ -521,54 +526,101 @@ export default function Tareas() {
           </div>
         ) : (
           <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
-            {tareasFiltradas.map(t => {
+            {rolesTareas.filter(rol => tareasFiltradas.some(t => t.rol_nombre === rol)).map(rol => {
+              const tareasDelRol = tareasFiltradas.filter(t => t.rol_nombre === rol)
+              const abierto = rolesAbiertos[rol] !== false // abierto por defecto
+              const completadas = tareasDelRol.filter(t => t.estado === 'completada' || t.estado === 'verificada').length
+              const pct = tareasDelRol.length > 0 ? Math.round((completadas / tareasDelRol.length) * 100) : 0
+              const hayMias = tareasDelRol.some(t => t.asignado_a === usuario?.id)
+
+              return (
+                <div key={rol} style={{background:'rgba(255,255,255,0.03)',border: hayMias ? '1px solid rgba(29,158,117,0.15)' : '1px solid rgba(255,255,255,0.07)',borderRadius:'12px',overflow:'hidden'}}>
+                  <div onClick={() => toggleRol(rol)} style={{padding:'1rem 1.25rem',cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
+                    <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flex:1}}>
+                      <div>
+                        <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff'}}>{rol}</div>
+                        <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'2px'}}>{tareasDelRol.length} tareas · {pct}% completadas</div>
+                      </div>
+                    </div>
+                    <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flexShrink:0}}>
+                      <div style={{width:'80px',height:'4px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',overflow:'hidden'}}>
+                        <div style={{height:'100%',width:pct+'%',background:'#1D9E75',borderRadius:'2px'}}></div>
+                      </div>
+                      <span style={{color:'#8FA3CC',fontSize:'0.75rem'}}>{abierto ? '▲' : '▼'}</span>
+                    </div>
+                  </div>
+
+                  {abierto && (
+                    <div style={{borderTop:'1px solid rgba(255,255,255,0.06)',padding:'0.5rem 0.75rem',display:'flex',flexDirection:'column',gap:'0.375rem'}}>
+                      {tareasDelRol.map(t => {
+                        const cfg = estadoConfig[t.estado] || estadoConfig.pendiente
+                        const esMia = t.asignado_a === usuario?.id
+                        const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
+                        const puedeMover = esMia || esFundador || esGerente
+
+                        return (
+                          <div key={t.id} style={{background: esMia ? 'rgba(29,158,117,0.04)' : 'rgba(255,255,255,0.02)', border: esMia ? '1px solid rgba(29,158,117,0.12)' : '1px solid rgba(255,255,255,0.05)', borderRadius:'8px', padding:'0.75rem 1rem'}}>
+                            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem',flexWrap:'wrap'}}>
+                              <div style={{flex:1}}>
+                                <div style={{display:'flex',gap:'0.4rem',alignItems:'center',marginBottom:'0.25rem',flexWrap:'wrap'}}>
+                                  {t.categoria && <span style={{fontSize:'0.6rem',padding:'1px 5px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{t.categoria}</span>}
+                                  {esMia && <span style={{fontSize:'0.6rem',fontWeight:'700',color:'#1D9E75'}}>Mia</span>}
+                                  {t.razon_creacion && t.razon_creacion.includes('Bootstrapping') && (
+                                    <span style={{fontSize:'0.6rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'1px 5px',borderRadius:'4px'}}>Bootstrapping</span>
+                                  )}
+                                </div>
+                                <div style={{fontSize:'0.82rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.15rem'}}>{t.nombre}</div>
+                                {t.descripcion && <div style={{fontSize:'0.72rem',color:'#6B7280',lineHeight:'1.4'}}>{t.descripcion}</div>}
+                                <div style={{fontSize:'0.65rem',color:'#6B7280',marginTop:'0.25rem'}}>
+                                  {t.asignado_perfil?.nombre ? 'Asignada a ' + t.asignado_perfil.nombre : 'Sin asignar'}
+                                  {t.completado_at ? ' · Completada ' + new Date(t.completado_at).toLocaleDateString('es-CO') : ''}
+                                </div>
+                              </div>
+                              <div style={{display:'flex',gap:'0.4rem',alignItems:'center',flexShrink:0}}>
+                                <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'0.15rem 0.625rem',borderRadius:'20px',background:cfg.bg,color:cfg.color}}>{cfg.label}</span>
+                                {puedeMover && t.estado === 'pendiente' && (
+                                  <button onClick={()=>cambiarEstado(t,'en_progreso')} disabled={actualizando===t.id} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+                                    {actualizando===t.id?'...':'Iniciar'}
+                                  </button>
+                                )}
+                                {puedeMover && t.estado === 'en_progreso' && (
+                                  <button onClick={()=>cambiarEstado(t,'completada')} disabled={actualizando===t.id} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+                                    {actualizando===t.id?'...':'Completar'}
+                                  </button>
+                                )}
+                                {puedeVerificar && (
+                                  <button onClick={()=>cambiarEstado(t,'verificada')} disabled={actualizando===t.id} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
+                                    {actualizando===t.id?'...':'Verificar'}
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            {tareasFiltradas.filter(t => !t.rol_nombre).map(t => {
               const cfg = estadoConfig[t.estado] || estadoConfig.pendiente
               const esMia = t.asignado_a === usuario?.id
               const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
               const puedeMover = esMia || esFundador || esGerente
-
               return (
-                <div key={t.id} style={{background: esMia ? 'rgba(29,158,117,0.04)' : 'rgba(255,255,255,0.03)', border: esMia ? '1px solid rgba(29,158,117,0.15)' : '1px solid rgba(255,255,255,0.07)', borderRadius:'10px', padding:'1rem 1.25rem'}}>
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem',flexWrap:'wrap'}}>
+                <div key={t.id} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'10px',padding:'0.75rem 1rem'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem'}}>
                     <div style={{flex:1}}>
-                      <div style={{display:'flex',gap:'0.5rem',alignItems:'center',marginBottom:'0.3rem',flexWrap:'wrap'}}>
-                        {t.rol_nombre && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase'}}>{t.rol_nombre}</span>}
-                        {t.categoria && <span style={{fontSize:'0.62rem',padding:'1px 6px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{t.categoria}</span>}
-                        {esMia && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75'}}>Mia</span>}
-                        {t.razon_creacion && t.razon_creacion.includes('Bootstrapping') && (
-                          <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'1px 6px',borderRadius:'4px'}}>Bootstrapping</span>
-                        )}
-                        {t.razon_creacion && t.razon_creacion.includes('Constituci') && !t.razon_creacion.includes('Bootstrapping') && (
-                          <span style={{fontSize:'0.62rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.1)',padding:'1px 6px',borderRadius:'4px'}}>Constitucion</span>
-                        )}
-                      </div>
-                      <div style={{fontSize:'0.875rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.2rem'}}>{t.nombre}</div>
-                      {t.descripcion && <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.3rem'}}>{t.descripcion}</div>}
-                      <div style={{fontSize:'0.68rem',color:'#6B7280',marginTop:'0.3rem'}}>
-                        {t.asignado_perfil?.nombre ? 'Asignada a ' + t.asignado_perfil.nombre : 'Sin asignar'}
-                        {t.completado_at ? ' · Completada ' + new Date(t.completado_at).toLocaleDateString('es-CO') : ''}
-                        {t.verificado_perfil?.nombre ? ' · Verificada por ' + t.verificado_perfil.nombre : ''}
-                      </div>
+                      <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.15rem'}}>{t.nombre}</div>
+                      {t.descripcion && <div style={{fontSize:'0.72rem',color:'#6B7280'}}>{t.descripcion}</div>}
                     </div>
                     <div style={{display:'flex',gap:'0.4rem',alignItems:'center',flexShrink:0}}>
-                      <span style={{fontSize:'0.7rem',fontWeight:'700',padding:'0.2rem 0.75rem',borderRadius:'20px',background:cfg.bg,color:cfg.color}}>
-                        {cfg.label}
-                      </span>
-                      {puedeMover && t.estado === 'pendiente' && (
-                        <button onClick={()=>cambiarEstado(t,'en_progreso')} disabled={actualizando===t.id} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                          {actualizando===t.id?'...':'Iniciar'}
-                        </button>
-                      )}
-                      {puedeMover && t.estado === 'en_progreso' && (
-                        <button onClick={()=>cambiarEstado(t,'completada')} disabled={actualizando===t.id} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                          {actualizando===t.id?'...':'Completar'}
-                        </button>
-                      )}
-                      {puedeVerificar && (
-                        <button onClick={()=>cambiarEstado(t,'verificada')} disabled={actualizando===t.id} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'6px',padding:'0.25rem 0.625rem',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                          {actualizando===t.id?'...':'Verificar'}
-                        </button>
-                      )}
+                      <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'0.15rem 0.625rem',borderRadius:'20px',background:cfg.bg,color:cfg.color}}>{cfg.label}</span>
+                      {puedeMover && t.estado === 'pendiente' && <button onClick={()=>cambiarEstado(t,'en_progreso')} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Iniciar</button>}
+                      {puedeMover && t.estado === 'en_progreso' && <button onClick={()=>cambiarEstado(t,'completada')} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Completar</button>}
+                      {puedeVerificar && <button onClick={()=>cambiarEstado(t,'verificada')} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Verificar</button>}
                     </div>
                   </div>
                 </div>
