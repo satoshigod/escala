@@ -230,74 +230,62 @@ export async function POST(request) {
   if (!proyecto_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
   // ── BOOTSTRAPPING: FUNDADOR ASUME ROL DE CONSTITUCIÓN SIN ESPECIALISTA ────
-  // Se llama desde /workspace/tareas cuando el fundador no tiene especialista
-  // aceptado para un rol de constitución. Las tareas se asignan al fundador
-  // con razon_creacion que indica que el fundador asumió el rol.
+  // Busca las tareas de constitución que ya existen sin asignar en el proyecto
+  // y las asigna al fundador. NO crea tareas nuevas — reasigna las existentes.
   if (body.inicializar_bootstrapping && asignado_a) {
     const rolTipo = body.rol_tipo // 'Abogado' o 'Contador'
     if (!rolTipo) return Response.json({ error: 'Falta rol_tipo' }, { status: 400 })
 
-    const { data: proy } = await supabase
-      .from('proyectos')
-      .select('pais')
-      .eq('id', proyecto_id)
-      .single()
-
-    const paisProyecto = proy?.pais
-
-    let tareasSource = []
-    if (paisProyecto) {
-      const { data: paisData } = await supabase
-        .from('paises_regulatorios')
-        .select('tareas')
-        .eq('nombre', paisProyecto)
-        .single()
-      tareasSource = paisData?.tareas || TAREAS_PAIS[paisProyecto] || []
-    }
-
-    const tareasDelRol = tareasSource.filter(t =>
-      (t.rol_nombre || '').toLowerCase() === rolTipo.toLowerCase()
-    )
-
-    if (tareasDelRol.length === 0) {
-      return Response.json({ tareas: [], mensaje: `Sin tareas para ${rolTipo} en ${paisProyecto}` }, { status: 200 })
-    }
-
-    // No duplicar — verificar por nombre en tareas del fundador
-    const { data: existentes } = await supabase
+    // Buscar tareas del rol sin asignar que sean de constitución
+    const { data: tareasExistentes, error: buscarError } = await supabase
       .from('tareas')
-      .select('nombre')
+      .select('id, nombre, razon_creacion')
       .eq('proyecto_id', proyecto_id)
-      .eq('asignado_a', asignado_a)
       .eq('rol_nombre', rolTipo)
+      .is('asignado_a', null)
 
-    const nombresExistentes = new Set((existentes || []).map(t => t.nombre))
-    const nuevas = tareasDelRol.filter(t => !nombresExistentes.has(t.nombre))
+    if (buscarError) return Response.json({ error: buscarError.message }, { status: 500 })
 
-    if (nuevas.length === 0) {
-      return Response.json({ tareas: [], ya_inicializado: true }, { status: 200 })
+    // Filtrar solo las de constitución (por razon_creacion o por nombre)
+    const NOMBRES_CONSTITUCION_ABOGADO = [
+      'constituir', 'camara de comercio', 'nit', 'dian', 'estatutos', 'pacto de socios',
+      'escritura', 'registro mercantil', 'rut', 'llc', 'srl', 'sas', 'igj', 'sunarp',
+      'sii', 'sat', 'rfc', 'operating agreement'
+    ]
+    const NOMBRES_CONSTITUCION_CONTADOR = [
+      'facturacion electronica', 'facturación electrónica', 'cuenta bancaria', 'regimen tributario',
+      'régimen tributario', 'plan de cuentas', 'declaracion de renta', 'declaración de renta',
+      'cfdi', 'afip', 'cuit', 'ruc', 'sunat', 'rut', 'inicio de actividades', 'iae', 'ein'
+    ]
+
+    const keywords = rolTipo === 'Abogado' ? NOMBRES_CONSTITUCION_ABOGADO : NOMBRES_CONSTITUCION_CONTADOR
+
+    const tareasConstitucion = (tareasExistentes || []).filter(t => {
+      const texto = (t.nombre + ' ' + (t.razon_creacion || '')).toLowerCase()
+      return keywords.some(k => texto.includes(k)) ||
+        (t.razon_creacion || '').toLowerCase().includes('regulatori') ||
+        (t.razon_creacion || '').toLowerCase().includes('constituci')
+    })
+
+    if (tareasConstitucion.length === 0) {
+      return Response.json({ tareas: [], mensaje: `No hay tareas de constitucion sin asignar para ${rolTipo}` }, { status: 200 })
     }
 
-    const tareasAInsertar = nuevas.map(t => ({
-      proyecto_id,
-      rol_nombre: rolTipo,
-      asignado_a,
-      nombre: t.nombre,
-      descripcion: t.descripcion || '',
-      categoria: t.categoria || 'Legal',
-      estado: 'pendiente',
-      creado_por: asignado_a,
-      razon_creacion: `Bootstrapping — Fundador asumio el rol de ${rolTipo} (${paisProyecto})`,
-    }))
-
-    const { data: insertadas, error: insertError } = await supabase
+    // Asignar las tareas existentes al fundador
+    const ids = tareasConstitucion.map(t => t.id)
+    const { data: actualizadas, error: updateError } = await supabase
       .from('tareas')
-      .insert(tareasAInsertar)
+      .update({
+        asignado_a,
+        razon_creacion: `Bootstrapping — Fundador asumio el rol de ${rolTipo}`,
+      })
+      .in('id', ids)
       .select('*')
 
-    if (insertError) return Response.json({ error: insertError.message }, { status: 500 })
-    return Response.json({ tareas: insertadas, tipo: 'bootstrapping', rol: rolTipo, pais: paisProyecto }, { status: 201 })
+    if (updateError) return Response.json({ error: updateError.message }, { status: 500 })
+    return Response.json({ tareas: actualizadas, tipo: 'bootstrapping', rol: rolTipo }, { status: 200 })
   }
+      .select('*')
 
   // ── AUTO-INICIALIZAR TAREAS DE CONSTITUCIÓN PARA UN ESPECIALISTA ──────────
   // Se llama cuando se acepta una postulación de abogado/contador de constitución
