@@ -286,7 +286,6 @@ export async function POST(request) {
     if (updateError) return Response.json({ error: updateError.message }, { status: 500 })
     return Response.json({ tareas: actualizadas, tipo: 'bootstrapping', rol: rolTipo }, { status: 200 })
   }
-      .select('*')
 
   // ── AUTO-INICIALIZAR TAREAS DE CONSTITUCIÓN PARA UN ESPECIALISTA ──────────
   // Se llama cuando se acepta una postulación de abogado/contador de constitución
