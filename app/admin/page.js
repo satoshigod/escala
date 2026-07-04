@@ -33,7 +33,7 @@ export default function Admin() {
   const [busquedaEsp, setBusquedaEsp] = useState('')
   const [espSeleccionada, setEspSeleccionada] = useState(null)
   const [rolForm, setRolForm] = useState({ valor_mercado: '', modalidad: 'equity', es_prioritario: false, descripcion: '' })
-  const [nuevaEspForm, setNuevaEspForm] = useState({ nombre: '', categoria: 'General', tipo_aporte: 'tiempo', descripcion: '', valor_mercado: '', modalidad: 'equity', es_prioritario: false })
+  const [contratos, setContratos] = useState([])
 
   const s = {
     input: { width:'100%', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:'8px', padding:'0.65rem 0.875rem', color:'#fff', fontSize:'0.875rem', outline:'none', boxSizing:'border-box', fontFamily:'Inter,sans-serif' },
@@ -69,10 +69,15 @@ export default function Admin() {
   }, [])
 
   async function cargarRolesYPostulaciones(proyecto_id) {
-    const rolesRes = await fetch('/api/roles?proyecto_id=' + proyecto_id)
+    const [rolesRes, contratosRes] = await Promise.all([
+      fetch('/api/roles?proyecto_id=' + proyecto_id),
+      fetch('/api/contratos?proyecto_id=' + proyecto_id),
+    ])
     const rolesData = await rolesRes.json()
+    const contratosData = await contratosRes.json()
     const todosRoles = rolesData.roles || []
     setRoles(todosRoles)
+    setContratos(contratosData.contratos || [])
 
     const posts = {}
     await Promise.all(todosRoles.map(async rol => {
@@ -254,7 +259,11 @@ export default function Admin() {
 
             {/* Tabs principales */}
             <div style={{display:'flex',gap:'4px',marginBottom:'1.5rem',background:'rgba(255,255,255,0.04)',borderRadius:'10px',padding:'4px',width:'fit-content'}}>
-              {[['postulaciones', `Postulaciones${pendientes > 0 ? ' ('+pendientes+')' : ''}`], ['roles', `Especialidades / Roles (${roles.length})`]].map(([t, label]) => (
+              {[
+                ['postulaciones', `Postulaciones${pendientes > 0 ? ' ('+pendientes+')' : ''}`],
+                ['roles', `Especialidades / Roles (${roles.length})`],
+                ['contratos', `Contratos${contratos.length > 0 ? ' ('+contratos.length+')' : ''}`],
+              ].map(([t, label]) => (
                 <button key={t} onClick={() => setTab(t)} style={{background: tab === t ? '#fff' : 'transparent', color: tab === t ? '#0D1B3E' : '#8FA3CC', border:'none', borderRadius:'7px', padding:'0.5rem 1.25rem', fontSize:'0.82rem', fontWeight: tab === t ? '700' : '400', cursor:'pointer', fontFamily:'Inter,sans-serif', transition:'all 0.15s'}}>
                   {label}
                 </button>
@@ -482,6 +491,113 @@ export default function Admin() {
                         {guardandoRol ? 'Creando...' : 'Crear y agregar al proyecto →'}
                       </button>
                     </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {tab === 'contratos' && (
+              <div>
+                <div style={{marginBottom:'1.5rem'}}>
+                  <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.3rem'}}>Contratos del proyecto</div>
+                  <div style={{fontSize:'0.8rem',color:'#8FA3CC'}}>Contratos generados con los especialistas aceptados. Descarga, firma fisicamente y confirma tu firma aqui.</div>
+                </div>
+
+                {contratos.length === 0 ? (
+                  <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
+                    <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>📄</div>
+                    <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Sin contratos todavia</div>
+                    <div style={{color:'#8FA3CC',fontSize:'0.85rem'}}>Los contratos se generan automaticamente cuando aceptas una postulacion.</div>
+                  </div>
+                ) : (
+                  <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
+                    {contratos.map(c => {
+                      const fundadorFirmo = c.firmado_fundador
+                      const profesionalFirmo = c.firmado_profesional
+                      const estadoLabel = c.estado === 'vigente' ? 'Vigente' : c.estado === 'firmado_parcial' ? 'Firma parcial' : 'Pendiente de firma'
+                      const estadoColor = c.estado === 'vigente' ? '#1D9E75' : c.estado === 'firmado_parcial' ? '#E8A020' : '#8FA3CC'
+                      const estadoBg = c.estado === 'vigente' ? 'rgba(29,158,117,0.1)' : c.estado === 'firmado_parcial' ? 'rgba(232,160,32,0.1)' : 'rgba(255,255,255,0.06)'
+                      const textoContrato = c.condiciones || c.contenido_json?.texto_pdf
+
+                      return (
+                        <div key={c.id} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'1rem',flexWrap:'wrap',gap:'0.5rem'}}>
+                            <div>
+                              <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>
+                                {c.perfil_profesional?.nombre || 'Especialista'}
+                              </div>
+                              <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>
+                                {c.roles?.nombre}{c.roles?.sub_especialidad ? ' - ' + c.roles.sub_especialidad : ''}
+                              </div>
+                              <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.2rem'}}>
+                                {c.modalidad === 'deuda_diferida' ? 'Riesgo Compartido' : c.modalidad === 'equity' ? 'Equity' : c.modalidad}
+                                {c.valor ? ' - $' + Number(c.valor).toLocaleString('es-CO') + ' COP' : ''}
+                              </div>
+                            </div>
+                            <span style={{fontSize:'0.7rem',fontWeight:'700',padding:'0.25rem 0.875rem',borderRadius:'20px',background:estadoBg,color:estadoColor}}>
+                              {estadoLabel}
+                            </span>
+                          </div>
+
+                          <div style={{display:'flex',gap:'2rem',marginBottom:'1rem',flexWrap:'wrap'}}>
+                            <div style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                              <span style={{fontSize:'1.1rem'}}>{fundadorFirmo ? '✅' : '⬜'}</span>
+                              <div>
+                                <div style={{fontSize:'0.72rem',fontWeight:'700',color:fundadorFirmo?'#1D9E75':'#fff'}}>Tu firma</div>
+                                <div style={{fontSize:'0.68rem',color:'#8FA3CC'}}>{fundadorFirmo ? 'Confirmada' : 'Pendiente'}</div>
+                              </div>
+                            </div>
+                            <div style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                              <span style={{fontSize:'1.1rem'}}>{profesionalFirmo ? '✅' : '⬜'}</span>
+                              <div>
+                                <div style={{fontSize:'0.72rem',fontWeight:'700',color:profesionalFirmo?'#1D9E75':'#fff'}}>{c.perfil_profesional?.nombre || 'Especialista'}</div>
+                                <div style={{fontSize:'0.68rem',color:'#8FA3CC'}}>{profesionalFirmo ? 'Confirmo su firma' : 'Pendiente de firma'}</div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
+                            {textoContrato && (
+                              <button onClick={() => {
+                                const blob = new Blob([textoContrato], {type:'text/plain;charset=utf-8'})
+                                const url = URL.createObjectURL(blob)
+                                const a = document.createElement('a')
+                                a.href = url
+                                a.download = 'Contrato_' + (c.perfil_profesional?.nombre || 'especialista').replace(/\s/g,'_') + '.txt'
+                                a.click()
+                                URL.revokeObjectURL(url)
+                              }} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                                Descargar contrato
+                              </button>
+                            )}
+                            {!fundadorFirmo && (
+                              <button onClick={async () => {
+                                const res = await fetch('/api/contratos', {
+                                  method: 'PATCH',
+                                  headers: {'Content-Type':'application/json'},
+                                  body: JSON.stringify({id: c.id, tipo: 'fundador'})
+                                })
+                                const data = await res.json()
+                                if (data.contrato) setContratos(prev => prev.map(x => x.id === c.id ? {...x, ...data.contrato} : x))
+                              }} style={{background:'#1D9E75',border:'none',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                                Confirmar mi firma
+                              </button>
+                            )}
+                            {fundadorFirmo && !profesionalFirmo && (
+                              <div style={{fontSize:'0.75rem',color:'#E8A020',display:'flex',alignItems:'center',gap:'0.4rem'}}>
+                                Esperando firma de {c.perfil_profesional?.nombre || 'el especialista'}
+                              </div>
+                            )}
+                          </div>
+
+                          {!fundadorFirmo && (
+                            <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.75rem',lineHeight:'1.5',borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:'0.75rem'}}>
+                              Descarga el contrato, firmalo fisicamente junto a {c.perfil_profesional?.nombre || 'el especialista'} y confirma tu firma aqui para que quede registrado en la plataforma.
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
                   </div>
                 )}
               </div>

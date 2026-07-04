@@ -536,9 +536,10 @@ export default function Workspace() {
                     <span style={{color:miContrato.firmado_profesional?'#1D9E75':'#8FA3CC'}}>{miContrato.firmado_profesional?'✓':'○'} Especialista firmó</span>
                   </div>
                   <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
-                    {miContrato.contenido_json?.texto_pdf && (
+                    {(miContrato.contenido_json?.texto_pdf || miContrato.condiciones) && (
                       <button onClick={() => {
-                        const blob = new Blob([miContrato.contenido_json.texto_pdf], {type:'text/plain;charset=utf-8'})
+                        const texto = miContrato.contenido_json?.texto_pdf || miContrato.condiciones
+                        const blob = new Blob([texto], {type:'text/plain;charset=utf-8'})
                         const url = URL.createObjectURL(blob)
                         const a = document.createElement('a'); a.href=url; a.download=`Contrato_${proyecto?.nombre}.txt`; a.click()
                         URL.revokeObjectURL(url)
