@@ -208,6 +208,8 @@ export default function Tareas() {
       setRolesConstitucionSinCubrir(prev => prev.filter(r => r.id !== rol.id))
     }
   }
+
+  async function cambiarEstado(tarea, nuevoEstado) {
     setActualizando(tarea.id)
     const res = await fetch('/api/tareas', {
       method: 'PATCH',
