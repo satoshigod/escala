@@ -41,7 +41,7 @@ export default function Postulaciones() {
     const res = await fetch('/api/desistir', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ postulacion_id: postulacion.id, usuario_id: usuario?.id })
+      body: JSON.stringify({ postulacion_id: postulacion.id, especialista_id: usuario?.id })
     })
     const data = await res.json()
     if (data.ok) {
