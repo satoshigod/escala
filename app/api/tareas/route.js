@@ -229,6 +229,76 @@ export async function POST(request) {
 
   if (!proyecto_id) return Response.json({ error: 'Falta proyecto_id' }, { status: 400 })
 
+  // ── BOOTSTRAPPING: FUNDADOR ASUME ROL DE CONSTITUCIÓN SIN ESPECIALISTA ────
+  // Se llama desde /workspace/tareas cuando el fundador no tiene especialista
+  // aceptado para un rol de constitución. Las tareas se asignan al fundador
+  // con razon_creacion que indica que el fundador asumió el rol.
+  if (body.inicializar_bootstrapping && asignado_a) {
+    const rolTipo = body.rol_tipo // 'Abogado' o 'Contador'
+    if (!rolTipo) return Response.json({ error: 'Falta rol_tipo' }, { status: 400 })
+
+    const { data: proy } = await supabase
+      .from('proyectos')
+      .select('pais')
+      .eq('id', proyecto_id)
+      .single()
+
+    const paisProyecto = proy?.pais
+
+    let tareasSource = []
+    if (paisProyecto) {
+      const { data: paisData } = await supabase
+        .from('paises_regulatorios')
+        .select('tareas')
+        .eq('nombre', paisProyecto)
+        .single()
+      tareasSource = paisData?.tareas || TAREAS_PAIS[paisProyecto] || []
+    }
+
+    const tareasDelRol = tareasSource.filter(t =>
+      (t.rol_nombre || '').toLowerCase() === rolTipo.toLowerCase()
+    )
+
+    if (tareasDelRol.length === 0) {
+      return Response.json({ tareas: [], mensaje: `Sin tareas para ${rolTipo} en ${paisProyecto}` }, { status: 200 })
+    }
+
+    // No duplicar — verificar por nombre en tareas del fundador
+    const { data: existentes } = await supabase
+      .from('tareas')
+      .select('nombre')
+      .eq('proyecto_id', proyecto_id)
+      .eq('asignado_a', asignado_a)
+      .eq('rol_nombre', rolTipo)
+
+    const nombresExistentes = new Set((existentes || []).map(t => t.nombre))
+    const nuevas = tareasDelRol.filter(t => !nombresExistentes.has(t.nombre))
+
+    if (nuevas.length === 0) {
+      return Response.json({ tareas: [], ya_inicializado: true }, { status: 200 })
+    }
+
+    const tareasAInsertar = nuevas.map(t => ({
+      proyecto_id,
+      rol_nombre: rolTipo,
+      asignado_a,
+      nombre: t.nombre,
+      descripcion: t.descripcion || '',
+      categoria: t.categoria || 'Legal',
+      estado: 'pendiente',
+      creado_por: asignado_a,
+      razon_creacion: `Bootstrapping — Fundador asumio el rol de ${rolTipo} (${paisProyecto})`,
+    }))
+
+    const { data: insertadas, error: insertError } = await supabase
+      .from('tareas')
+      .insert(tareasAInsertar)
+      .select('*')
+
+    if (insertError) return Response.json({ error: insertError.message }, { status: 500 })
+    return Response.json({ tareas: insertadas, tipo: 'bootstrapping', rol: rolTipo, pais: paisProyecto }, { status: 201 })
+  }
+
   // ── AUTO-INICIALIZAR TAREAS DE CONSTITUCIÓN PARA UN ESPECIALISTA ──────────
   // Se llama cuando se acepta una postulación de abogado/contador de constitución
   // y también al cargar /workspace/tareas si el especialista no tiene tareas aún.

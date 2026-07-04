@@ -45,6 +45,7 @@ export default function Tareas() {
   const [miembroInicializar, setMiembroInicializar] = useState('')
   const [creando, setCreando] = useState(false)
   const [verTodas, setVerTodas] = useState(false)
+  const [rolesConstitucionSinCubrir, setRolesConstitucionSinCubrir] = useState([]) // roles que el fundador puede asumir
 
   function getProyectoIdFromPath() {
     const parts = window.location.pathname.split('/').filter(Boolean)
@@ -151,12 +152,63 @@ export default function Tareas() {
       }
 
       setTareas(tareasActuales)
+
+      // ── BOOTSTRAPPING: detectar roles de constitución sin especialista ──
+      // Si el fundador no tiene nadie aceptado en abogado/contador de constitución,
+      // le ofrecemos asumir ese rol él mismo.
+      if (esFund) {
+        const sinCubrir = []
+        for (const rol of todosRoles) {
+          const textoRol = `${rol.nombre} ${rol.sub_especialidad || ''}`.toLowerCase()
+          const esConstitucion = /constituc/.test(textoRol.normalize('NFD').replace(/\p{Diacritic}/gu, ''))
+          if (!esConstitucion) continue
+
+          // Ver si hay alguien aceptado en ese rol específico
+          const hayEspecialista = equipoData.some(e => {
+            const rId = todosRoles.find(r => r.nombre === e.rol_nombre)?.id
+            return rId === rol.id
+          })
+          if (hayEspecialista) continue
+
+          const rolTipo = /abogado/i.test(rol.nombre) ? 'Abogado' : 'Contador'
+
+          // Ver si ya hay tareas de bootstrapping para este rol
+          const yaBootstrapped = tareasActuales.some(t =>
+            t.asignado_a === user.id &&
+            t.rol_nombre === rolTipo &&
+            (t.razon_creacion || '').includes('Bootstrapping')
+          )
+          if (!yaBootstrapped) sinCubrir.push({ ...rol, rolTipo })
+        }
+        setRolesConstitucionSinCubrir(sinCubrir)
+      }
+
       setCargando(false)
     }
     cargar()
   }, [])
 
-  async function cambiarEstado(tarea, nuevoEstado) {
+  async function asumiRol(rol) {
+    const pid = getProyectoIdFromPath()
+    const res = await fetch('/api/tareas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        proyecto_id: pid,
+        inicializar_bootstrapping: true,
+        rol_tipo: rol.rolTipo,
+        asignado_a: usuario?.id,
+        creado_por: usuario?.id,
+      })
+    })
+    const data = await res.json()
+    if (data.tareas?.length > 0) {
+      setTareas(t => [...t, ...data.tareas])
+      setRolesConstitucionSinCubrir(prev => prev.filter(r => r.id !== rol.id))
+    } else if (data.ya_inicializado) {
+      setRolesConstitucionSinCubrir(prev => prev.filter(r => r.id !== rol.id))
+    }
+  }
     setActualizando(tarea.id)
     const res = await fetch('/api/tareas', {
       method: 'PATCH',
@@ -307,6 +359,28 @@ export default function Tareas() {
           )}
         </div>
 
+        {rolesConstitucionSinCubrir.length > 0 && esFundador && (
+          <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.25rem',marginBottom:'1.5rem'}}>
+            <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#E8A020',marginBottom:'0.4rem'}}>Roles de constitucion sin especialista</div>
+            <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1rem',lineHeight:'1.6'}}>
+              No tienes especialista aceptado para estos roles. Puedes asumir tu mismo las tareas — quedan registradas y si despues llega el especialista complementa lo que falta.
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+              {rolesConstitucionSinCubrir.map(rol => (
+                <div key={rol.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',background:'rgba(255,255,255,0.03)',borderRadius:'8px',padding:'0.75rem 1rem'}}>
+                  <div>
+                    <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff'}}>{rol.nombre}{rol.sub_especialidad ? ' - ' + rol.sub_especialidad : ''}</div>
+                    <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'2px'}}>Sin especialista asignado - Bootstrapping disponible</div>
+                  </div>
+                  <button onClick={() => asumiRol(rol)} style={{background:'#E8A020',border:'none',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                    Asumir este rol
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {tareas.length > 0 && (
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'0.875rem 1.25rem',marginBottom:'1.5rem'}}>
             <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'6px'}}>
@@ -440,7 +514,10 @@ export default function Tareas() {
                         {t.rol_nombre && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#8FA3CC',letterSpacing:'0.06em',textTransform:'uppercase'}}>{t.rol_nombre}</span>}
                         {t.categoria && <span style={{fontSize:'0.62rem',padding:'1px 6px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{t.categoria}</span>}
                         {esMia && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75'}}>Mia</span>}
-                        {t.razon_creacion && t.razon_creacion.includes('Constituci') && (
+                        {t.razon_creacion && t.razon_creacion.includes('Bootstrapping') && (
+                          <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'1px 6px',borderRadius:'4px'}}>Bootstrapping</span>
+                        )}
+                        {t.razon_creacion && t.razon_creacion.includes('Constituci') && !t.razon_creacion.includes('Bootstrapping') && (
                           <span style={{fontSize:'0.62rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.1)',padding:'1px 6px',borderRadius:'4px'}}>Constitucion</span>
                         )}
                       </div>
