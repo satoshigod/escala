@@ -275,9 +275,22 @@ export default function Tareas() {
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
   const tareasAsignadasAMi = tareas.filter(t => t.asignado_a === usuario?.id)
   const [rolesAbiertos, setRolesAbiertos] = useState({})
+  const [segmentosAbiertos, setSegmentosAbiertos] = useState({})
 
   function toggleRol(rol) {
     setRolesAbiertos(prev => ({ ...prev, [rol]: !prev[rol] }))
+  }
+
+  function toggleSegmento(rol, segmento) {
+    const key = rol + '|||' + segmento
+    setSegmentosAbiertos(prev => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  // Extraer el segmento de la razon_creacion de una tarea
+  function getSegmento(tarea) {
+    const r = tarea.razon_creacion || ''
+    const match = r.match(/— (.+)$/)
+    return match ? match[1] : 'General'
   }
 
   const ROLES_REGULATORIOS = ['Abogado', 'Contador']
@@ -528,73 +541,95 @@ export default function Tareas() {
           <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
             {rolesTareas.filter(rol => tareasFiltradas.some(t => t.rol_nombre === rol)).map(rol => {
               const tareasDelRol = tareasFiltradas.filter(t => t.rol_nombre === rol)
-              const abierto = rolesAbiertos[rol] === true // cerrado por defecto
+              const rolAbierto = rolesAbiertos[rol] === true
               const completadas = tareasDelRol.filter(t => t.estado === 'completada' || t.estado === 'verificada').length
               const pct = tareasDelRol.length > 0 ? Math.round((completadas / tareasDelRol.length) * 100) : 0
               const hayMias = tareasDelRol.some(t => t.asignado_a === usuario?.id)
 
+              // Agrupar tareas por segmento
+              const porSegmento = {}
+              for (const t of tareasDelRol) {
+                const seg = getSegmento(t)
+                if (!porSegmento[seg]) porSegmento[seg] = []
+                porSegmento[seg].push(t)
+              }
+
               return (
                 <div key={rol} style={{background:'rgba(255,255,255,0.03)',border: hayMias ? '1px solid rgba(29,158,117,0.15)' : '1px solid rgba(255,255,255,0.07)',borderRadius:'12px',overflow:'hidden'}}>
+                  {/* Nivel 1 — Rol */}
                   <div onClick={() => toggleRol(rol)} style={{padding:'1rem 1.25rem',cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
-                    <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flex:1}}>
-                      <div>
-                        <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff'}}>{rol}</div>
-                        <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'2px'}}>{tareasDelRol.length} tareas · {pct}% completadas</div>
-                      </div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff'}}>{rol}</div>
+                      <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'2px'}}>{tareasDelRol.length} tareas · {pct}% completadas</div>
                     </div>
                     <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flexShrink:0}}>
                       <div style={{width:'80px',height:'4px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',overflow:'hidden'}}>
                         <div style={{height:'100%',width:pct+'%',background:'#1D9E75',borderRadius:'2px'}}></div>
                       </div>
-                      <span style={{color:'#8FA3CC',fontSize:'0.75rem'}}>{abierto ? '▲' : '▼'}</span>
+                      <span style={{color:'#8FA3CC',fontSize:'0.75rem'}}>{rolAbierto ? '▲' : '▼'}</span>
                     </div>
                   </div>
 
-                  {abierto && (
+                  {rolAbierto && (
                     <div style={{borderTop:'1px solid rgba(255,255,255,0.06)',padding:'0.5rem 0.75rem',display:'flex',flexDirection:'column',gap:'0.375rem'}}>
-                      {tareasDelRol.map(t => {
-                        const cfg = estadoConfig[t.estado] || estadoConfig.pendiente
-                        const esMia = t.asignado_a === usuario?.id
-                        const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
-                        const puedeMover = esMia || esFundador || esGerente
+                      {Object.entries(porSegmento).map(([segmento, tareasSegmento]) => {
+                        const segKey = rol + '|||' + segmento
+                        const segAbierto = segmentosAbiertos[segKey] === true
+                        const compSeg = tareasSegmento.filter(t => t.estado === 'completada' || t.estado === 'verificada').length
+                        const pctSeg = Math.round((compSeg / tareasSegmento.length) * 100)
 
                         return (
-                          <div key={t.id} style={{background: esMia ? 'rgba(29,158,117,0.04)' : 'rgba(255,255,255,0.02)', border: esMia ? '1px solid rgba(29,158,117,0.12)' : '1px solid rgba(255,255,255,0.05)', borderRadius:'8px', padding:'0.75rem 1rem'}}>
-                            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem',flexWrap:'wrap'}}>
+                          <div key={segmento} style={{background:'rgba(255,255,255,0.02)',border:'1px solid rgba(255,255,255,0.05)',borderRadius:'8px',overflow:'hidden',marginBottom:'0.25rem'}}>
+                            {/* Nivel 2 — Segmento */}
+                            <div onClick={() => toggleSegmento(rol, segmento)} style={{padding:'0.625rem 0.875rem',cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'0.75rem'}}>
                               <div style={{flex:1}}>
-                                <div style={{display:'flex',gap:'0.4rem',alignItems:'center',marginBottom:'0.25rem',flexWrap:'wrap'}}>
-                                  {t.categoria && <span style={{fontSize:'0.6rem',padding:'1px 5px',borderRadius:'4px',background:'rgba(255,255,255,0.06)',color:'#8FA3CC'}}>{t.categoria}</span>}
-                                  {esMia && <span style={{fontSize:'0.6rem',fontWeight:'700',color:'#1D9E75'}}>Mia</span>}
-                                  {t.razon_creacion && t.razon_creacion.includes('Bootstrapping') && (
-                                    <span style={{fontSize:'0.6rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'1px 5px',borderRadius:'4px'}}>Bootstrapping</span>
-                                  )}
-                                </div>
-                                <div style={{fontSize:'0.82rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.15rem'}}>{t.nombre}</div>
-                                {t.descripcion && <div style={{fontSize:'0.72rem',color:'#6B7280',lineHeight:'1.4'}}>{t.descripcion}</div>}
-                                <div style={{fontSize:'0.65rem',color:'#6B7280',marginTop:'0.25rem'}}>
-                                  {t.asignado_perfil?.nombre ? 'Asignada a ' + t.asignado_perfil.nombre : 'Sin asignar'}
-                                  {t.completado_at ? ' · Completada ' + new Date(t.completado_at).toLocaleDateString('es-CO') : ''}
-                                </div>
+                                <div style={{fontSize:'0.78rem',fontWeight:'600',color:'#8FA3CC'}}>{segmento}</div>
+                                <div style={{fontSize:'0.65rem',color:'#6B7280',marginTop:'1px'}}>{tareasSegmento.length} tareas · {pctSeg}% completadas</div>
                               </div>
-                              <div style={{display:'flex',gap:'0.4rem',alignItems:'center',flexShrink:0}}>
-                                <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'0.15rem 0.625rem',borderRadius:'20px',background:cfg.bg,color:cfg.color}}>{cfg.label}</span>
-                                {puedeMover && t.estado === 'pendiente' && (
-                                  <button onClick={()=>cambiarEstado(t,'en_progreso')} disabled={actualizando===t.id} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                                    {actualizando===t.id?'...':'Iniciar'}
-                                  </button>
-                                )}
-                                {puedeMover && t.estado === 'en_progreso' && (
-                                  <button onClick={()=>cambiarEstado(t,'completada')} disabled={actualizando===t.id} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                                    {actualizando===t.id?'...':'Completar'}
-                                  </button>
-                                )}
-                                {puedeVerificar && (
-                                  <button onClick={()=>cambiarEstado(t,'verificada')} disabled={actualizando===t.id} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                                    {actualizando===t.id?'...':'Verificar'}
-                                  </button>
-                                )}
+                              <div style={{display:'flex',alignItems:'center',gap:'0.5rem',flexShrink:0}}>
+                                <div style={{width:'50px',height:'3px',background:'rgba(255,255,255,0.06)',borderRadius:'2px',overflow:'hidden'}}>
+                                  <div style={{height:'100%',width:pctSeg+'%',background:'#1D9E75',borderRadius:'2px'}}></div>
+                                </div>
+                                <span style={{color:'#6B7280',fontSize:'0.68rem'}}>{segAbierto ? '▲' : '▼'}</span>
                               </div>
                             </div>
+
+                            {segAbierto && (
+                              <div style={{borderTop:'1px solid rgba(255,255,255,0.04)',padding:'0.375rem 0.5rem',display:'flex',flexDirection:'column',gap:'0.25rem'}}>
+                                {tareasSegmento.map(t => {
+                                  const cfg = estadoConfig[t.estado] || estadoConfig.pendiente
+                                  const esMia = t.asignado_a === usuario?.id
+                                  const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
+                                  const puedeMover = esMia || esFundador || esGerente
+
+                                  return (
+                                    <div key={t.id} style={{background: esMia ? 'rgba(29,158,117,0.04)' : 'rgba(255,255,255,0.02)', border: esMia ? '1px solid rgba(29,158,117,0.1)' : '1px solid rgba(255,255,255,0.04)', borderRadius:'6px', padding:'0.625rem 0.75rem'}}>
+                                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'0.75rem',flexWrap:'wrap'}}>
+                                        <div style={{flex:1}}>
+                                          <div style={{display:'flex',gap:'0.35rem',alignItems:'center',marginBottom:'0.2rem',flexWrap:'wrap'}}>
+                                            {t.categoria && <span style={{fontSize:'0.58rem',padding:'1px 4px',borderRadius:'3px',background:'rgba(255,255,255,0.06)',color:'#6B7280'}}>{t.categoria}</span>}
+                                            {esMia && <span style={{fontSize:'0.58rem',fontWeight:'700',color:'#1D9E75'}}>Mia</span>}
+                                            {(t.razon_creacion||'').includes('Bootstrapping') && <span style={{fontSize:'0.58rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'1px 4px',borderRadius:'3px'}}>Bootstrapping</span>}
+                                          </div>
+                                          <div style={{fontSize:'0.8rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.1rem'}}>{t.nombre}</div>
+                                          {t.descripcion && <div style={{fontSize:'0.7rem',color:'#6B7280',lineHeight:'1.4'}}>{t.descripcion}</div>}
+                                          <div style={{fontSize:'0.62rem',color:'#4B5563',marginTop:'0.2rem'}}>
+                                            {t.asignado_perfil?.nombre ? 'Asignada a ' + t.asignado_perfil.nombre : 'Sin asignar'}
+                                            {t.completado_at ? ' · ' + new Date(t.completado_at).toLocaleDateString('es-CO') : ''}
+                                          </div>
+                                        </div>
+                                        <div style={{display:'flex',gap:'0.35rem',alignItems:'center',flexShrink:0}}>
+                                          <span style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.12rem 0.5rem',borderRadius:'20px',background:cfg.bg,color:cfg.color,whiteSpace:'nowrap'}}>{cfg.label}</span>
+                                          {puedeMover && t.estado === 'pendiente' && <button onClick={()=>cambiarEstado(t,'en_progreso')} disabled={actualizando===t.id} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'5px',padding:'0.15rem 0.45rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>{actualizando===t.id?'...':'Iniciar'}</button>}
+                                          {puedeMover && t.estado === 'en_progreso' && <button onClick={()=>cambiarEstado(t,'completada')} disabled={actualizando===t.id} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'5px',padding:'0.15rem 0.45rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>{actualizando===t.id?'...':'Completar'}</button>}
+                                          {puedeVerificar && <button onClick={()=>cambiarEstado(t,'verificada')} disabled={actualizando===t.id} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'5px',padding:'0.15rem 0.45rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>{actualizando===t.id?'...':'Verificar'}</button>}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            )}
                           </div>
                         )
                       })}
