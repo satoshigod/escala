@@ -589,6 +589,22 @@ export default function Admin() {
                                 Descargar contrato
                               </button>
                             )}
+                            <button onClick={async () => {
+                              const res = await fetch('/api/contratos', {
+                                method: 'PUT',
+                                headers: {'Content-Type':'application/json'},
+                                body: JSON.stringify({id: c.id, fundador_id: usuario?.id})
+                              })
+                              const data = await res.json()
+                              if (data.contrato) {
+                                setContratos(prev => prev.map(x => x.id === c.id ? {...x, ...data.contrato, condiciones: data.contrato.condiciones} : x))
+                                alert('Contrato regenerado con el formato actualizado.')
+                              } else {
+                                alert('Error: ' + (data.error || 'intenta de nuevo'))
+                              }
+                            }} style={{background:'rgba(175,169,236,0.1)',border:'1px solid rgba(175,169,236,0.25)',color:'#AFA9EC',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                              Regenerar contrato
+                            </button>
                             {!fundadorFirmo && (
                               <button onClick={async () => {
                                 const res = await fetch('/api/contratos', {

@@ -170,3 +170,64 @@ export async function PATCH(request) {
   if (error) return Response.json({ error: error.message }, { status: 500 })
   return Response.json({ contrato: data })
 }
+
+// PUT — regenerar el texto del contrato existente con el generador actualizado
+export async function PUT(request) {
+  const body = await request.json()
+  const { id, fundador_id } = body
+
+  if (!id || !fundador_id) return Response.json({ error: 'Faltan campos: id y fundador_id' }, { status: 400 })
+
+  // Cargar el contrato con todos los datos relacionados
+  const { data: contrato, error: contratoError } = await supabase
+    .from('contratos')
+    .select('*, roles:rol_id(*, proyectos:proyecto_id(*)), perfil_profesional:profesional_id(*), perfil_fundador:fundador_id(*)')
+    .eq('id', id)
+    .single()
+
+  if (contratoError || !contrato) return Response.json({ error: 'Contrato no encontrado' }, { status: 404 })
+  if (contrato.fundador_id !== fundador_id) return Response.json({ error: 'No autorizado' }, { status: 403 })
+
+  const proyecto = contrato.roles?.proyectos
+  const profesional = contrato.perfil_profesional
+  const fundador = contrato.perfil_fundador
+  const rol = contrato.roles
+
+  if (!proyecto || !profesional || !fundador || !rol) {
+    return Response.json({ error: 'Faltan datos relacionados para regenerar el contrato' }, { status: 400 })
+  }
+
+  // Cargar tareas del pais para el rol
+  let pais_tareas = []
+  if (proyecto.pais && contrato.sub_especialidad) {
+    const { data: paisData } = await supabase
+      .from('paises_regulatorios')
+      .select('tareas')
+      .eq('nombre', proyecto.pais)
+      .single()
+
+    const todasTareas = paisData?.tareas || []
+    const rolNombre = (rol.nombre || '').toLowerCase()
+    const esAbogado = ['abogado', 'legal', 'juridico'].some(r => rolNombre.includes(r))
+    const esContador = ['contador', 'contable', 'contabilidad'].some(r => rolNombre.includes(r))
+    if (esAbogado) pais_tareas = todasTareas.filter(t => (t.rol_nombre || '').toLowerCase() === 'abogado')
+    if (esContador) pais_tareas = todasTareas.filter(t => (t.rol_nombre || '').toLowerCase() === 'contador')
+  }
+
+  // Regenerar con el generador actualizado
+  const contenido = generarContenidoContrato({ proyecto, profesional, fundador, rol, postulacion: {}, pais_tareas })
+  const textoPDF = generarTextoPDF(contenido)
+
+  const { data: actualizado, error: updateError } = await supabase
+    .from('contratos')
+    .update({
+      condiciones: textoPDF,
+      contenido_json: { ...contenido, texto_pdf: textoPDF },
+    })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (updateError) return Response.json({ error: updateError.message }, { status: 500 })
+  return Response.json({ contrato: actualizado, mensaje: 'Contrato regenerado exitosamente' })
+}
