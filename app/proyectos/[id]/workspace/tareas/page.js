@@ -159,20 +159,19 @@ export default function Tareas() {
       if (esFund) {
         const sinCubrir = []
         for (const rol of todosRoles) {
-          const textoRol = `${rol.nombre} ${rol.sub_especialidad || ''}`.toLowerCase()
-          const esConstitucion = /constituc/.test(textoRol.normalize('NFD').replace(/\p{Diacritic}/gu, ''))
-          if (!esConstitucion) continue
+          const textoRol = (rol.nombre + ' ' + (rol.sub_especialidad || '')).toLowerCase()
+          const esConstitucion = textoRol.includes('constituc') || textoRol.includes('constituci')
+          const esRolLegal = textoRol.includes('abogado') || textoRol.includes('contador') || textoRol.includes('legal') || textoRol.includes('contab')
+          if (!esConstitucion || !esRolLegal) continue
 
-          // Ver si hay alguien aceptado en ese rol específico
           const hayEspecialista = equipoData.some(e => {
             const rId = todosRoles.find(r => r.nombre === e.rol_nombre)?.id
             return rId === rol.id
           })
           if (hayEspecialista) continue
 
-          const rolTipo = /abogado/i.test(rol.nombre) ? 'Abogado' : 'Contador'
+          const rolTipo = (textoRol.includes('abogado') || textoRol.includes('legal')) ? 'Abogado' : 'Contador'
 
-          // Ver si ya hay tareas de bootstrapping para este rol
           const yaBootstrapped = tareasActuales.some(t =>
             t.asignado_a === user.id &&
             t.rol_nombre === rolTipo &&
