@@ -31,6 +31,8 @@ export default function Tareas() {
   const [equipo, setEquipo] = useState([])
   const [tareas, setTareas] = useState([])
   const [plantillas, setPlantillas] = useState({})
+  const [segmentos, setSegmentos] = useState({})
+  const [segmentoInicializar, setSegmentoInicializar] = useState('')
   const [cargando, setCargando] = useState(true)
   const [acceso, setAcceso] = useState(false)
   const [esFundador, setEsFundador] = useState(false)
@@ -127,6 +129,7 @@ export default function Tareas() {
       const tData = await tRes.json()
       let tareasActuales = tData.tareas || []
       setPlantillas(tData.plantillas || {})
+      setSegmentos(tData.segmentos || {})
 
       if (!esFund && rolEncontrado) {
         const rolTipo = detectarRolConstitucion(rolEncontrado.nombre, rolEncontrado.sub_especialidad)
@@ -256,7 +259,7 @@ export default function Tareas() {
     const res = await fetch('/api/tareas', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ proyecto_id: pid, rol_nombre: rolInicializar, asignado_a: miembroInicializar || null, creado_por: usuario?.id, inicializar: true })
+      body: JSON.stringify({ proyecto_id: pid, rol_nombre: rolInicializar, segmento: segmentoInicializar || null, asignado_a: miembroInicializar || null, creado_por: usuario?.id, inicializar: true })
     })
     const data = await res.json()
     if (!data.error) {
@@ -396,12 +399,21 @@ export default function Tareas() {
         {mostrarInicializar && (
           <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
             <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Cargar plantilla de tareas por rol</div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1rem'}}>
               <div>
                 <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-rol-inicial">Rol</label>
-                <select id="tk-rol-inicial" value={rolInicializar} onChange={e=>setRolInicializar(e.target.value)} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
+                <select id="tk-rol-inicial" value={rolInicializar} onChange={e=>{setRolInicializar(e.target.value);setSegmentoInicializar('')}} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box'}}>
                   <option value="">Selecciona un rol...</option>
-                  {Object.keys(plantillas).map(r => <option key={r} value={r}>{r} ({plantillas[r].length} tareas)</option>)}
+                  {Object.keys(segmentos).map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{display:'block',fontSize:'0.68rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.3rem'}} htmlFor="tk-segmento-inicial">Segmento / Especialidad</label>
+                <select id="tk-segmento-inicial" value={segmentoInicializar} onChange={e=>setSegmentoInicializar(e.target.value)} disabled={!rolInicializar} style={{width:'100%',background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif',boxSizing:'border-box',opacity:rolInicializar?1:0.5}}>
+                  <option value="">Todos los segmentos</option>
+                  {rolInicializar && Object.keys(segmentos[rolInicializar] || {}).map(s => (
+                    <option key={s} value={s}>{s} ({(segmentos[rolInicializar][s] || []).length} tareas)</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -412,6 +424,14 @@ export default function Tareas() {
                 </select>
               </div>
             </div>
+            {rolInicializar && (
+              <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'1rem'}}>
+                {segmentoInicializar
+                  ? `Se cargaran ${(segmentos[rolInicializar]?.[segmentoInicializar] || []).length} tareas de "${segmentoInicializar}"`
+                  : `Selecciona un segmento o deja en blanco para cargar el segmento principal de ${rolInicializar}`
+                }
+              </div>
+            )}
             <div style={{display:'flex',gap:'0.75rem'}}>
               <button onClick={() => {setMostrarInicializar(false);setRolInicializar('')}} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
               <button onClick={inicializarRol} disabled={!rolInicializar||creando} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.5rem',fontSize:'0.82rem',fontWeight:'700',cursor:rolInicializar?'pointer':'not-allowed',fontFamily:'Inter,sans-serif'}}>

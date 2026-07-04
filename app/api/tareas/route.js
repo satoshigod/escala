@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notificar } from '../../../lib/notificaciones/notificar'
+import { SEGMENTOS_ROLES, getTareasSegmento } from '../../../lib/segmentosRoles'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -214,7 +215,7 @@ export async function GET(request) {
     return Response.json({ tareas: data, plantillas: TAREAS_BASE, rolesCompatibles })
   }
 
-  return Response.json({ tareas: data, plantillas: TAREAS_BASE, tareas_pais: TAREAS_PAIS, tareas_industria: TAREAS_INDUSTRIA, categoria_por_rol: CATEGORIA_POR_ROL })
+  return Response.json({ tareas: data, plantillas: TAREAS_BASE, tareas_pais: TAREAS_PAIS, tareas_industria: TAREAS_INDUSTRIA, categoria_por_rol: CATEGORIA_POR_ROL, segmentos: SEGMENTOS_ROLES })
 }
 
 export async function POST(request) {
@@ -432,13 +433,37 @@ export async function POST(request) {
     return Response.json({ tareas: data, tipo: 'industria', industria }, { status: 201 })
   }
 
-  if (inicializar && rol_nombre && TAREAS_BASE[rol_nombre]) {
-    const tareas = TAREAS_BASE[rol_nombre].map(t => ({
+  if (inicializar && rol_nombre) {
+    // Usar segmento específico si viene (sub_especialidad), sino usar todas las tareas del rol
+    const segmento = body.segmento || sub_especialidad || null
+    let tareasSource = []
+
+    if (segmento && SEGMENTOS_ROLES[rol_nombre]?.[segmento]) {
+      // Cargar tareas del segmento específico
+      tareasSource = getTareasSegmento(rol_nombre, segmento)
+    } else if (SEGMENTOS_ROLES[rol_nombre]) {
+      // Sin segmento: cargar tareas del primer segmento del rol (el más general)
+      const primerSegmento = Object.keys(SEGMENTOS_ROLES[rol_nombre])[0]
+      tareasSource = getTareasSegmento(rol_nombre, primerSegmento)
+    } else if (TAREAS_BASE[rol_nombre]) {
+      // Fallback al sistema anterior para compatibilidad
+      tareasSource = TAREAS_BASE[rol_nombre]
+    }
+
+    if (tareasSource.length === 0) {
+      return Response.json({ error: 'No hay tareas definidas para este rol/segmento' }, { status: 400 })
+    }
+
+    const razon = segmento
+      ? `Tarea inicial del rol ${rol_nombre} — ${segmento}`
+      : `Tarea inicial del rol ${rol_nombre}`
+
+    const tareas = tareasSource.map(t => ({
       proyecto_id, rol_nombre,
       asignado_a: asignado_a || null,
       nombre: t.nombre, descripcion: t.descripcion, categoria: t.categoria,
       estado: 'pendiente', creado_por: creado_por || null,
-      razon_creacion: 'Tarea inicial del rol ' + rol_nombre
+      razon_creacion: razon
     }))
 
     const { data, error } = await supabase.from('tareas').insert(tareas).select('*, asignado_perfil:asignado_a ( nombre, email )')
@@ -449,7 +474,7 @@ export async function POST(request) {
 
     for (const tarea of data) {
       await registrarHistorial(tarea.id, proyecto_id, 'asignada', creado_por,
-        creadorNombre + ' asignó esta tarea a ' + (tarea.asignado_perfil?.nombre || 'sin asignar') + ' al cargar la plantilla de ' + rol_nombre)
+        creadorNombre + ' asignó esta tarea a ' + (tarea.asignado_perfil?.nombre || 'sin asignar') + ' al cargar la plantilla de ' + rol_nombre + (segmento ? ' — ' + segmento : ''))
     }
 
     if (asignado_a && data.length > 0) {
@@ -466,7 +491,7 @@ export async function POST(request) {
       }
     }
 
-    return Response.json({ tareas: data }, { status: 201 })
+    return Response.json({ tareas: data, segmento }, { status: 201 })
   }
 
   if (!nombre) return Response.json({ error: 'Falta nombre' }, { status: 400 })
