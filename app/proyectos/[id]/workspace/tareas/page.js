@@ -528,7 +528,7 @@ export default function Tareas() {
           <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
             {rolesTareas.filter(rol => tareasFiltradas.some(t => t.rol_nombre === rol)).map(rol => {
               const tareasDelRol = tareasFiltradas.filter(t => t.rol_nombre === rol)
-              const abierto = rolesAbiertos[rol] !== false // abierto por defecto
+              const abierto = rolesAbiertos[rol] === true // cerrado por defecto
               const completadas = tareasDelRol.filter(t => t.estado === 'completada' || t.estado === 'verificada').length
               const pct = tareasDelRol.length > 0 ? Math.round((completadas / tareasDelRol.length) * 100) : 0
               const hayMias = tareasDelRol.some(t => t.asignado_a === usuario?.id)
