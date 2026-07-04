@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { descargarContratoPDF } from '../../lib/generarPDF'
 
 const MODALIDADES = [
   { value: 'equity', label: 'Equity' },
@@ -559,33 +560,8 @@ export default function Admin() {
                           <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap'}}>
                             {textoContrato && (
                               <button onClick={async () => {
-                                const { jsPDF } = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
-                                const doc = new jsPDF({ unit: 'mm', format: 'a4' })
-                                const margin = 20
-                                const pageW = doc.internal.pageSize.getWidth() - margin * 2
-                                const lineH = 5.5
-                                let y = 20
-                                doc.setFont('helvetica', 'bold')
-                                doc.setFontSize(13)
-                                doc.setTextColor(15, 30, 60)
-                                doc.text('CONTRATO DE PRESTACION DE SERVICIOS', margin, y)
-                                y += 8
-                                doc.setFont('helvetica', 'normal')
-                                doc.setFontSize(9)
-                                doc.setTextColor(80, 80, 80)
-                                const lineas = textoContrato.split('\n')
-                                for (const linea of lineas) {
-                                  const wrapped = doc.splitTextToSize(linea || ' ', pageW)
-                                  for (const l of wrapped) {
-                                    if (y > 270) { doc.addPage(); y = 20 }
-                                    const esTitulo = /^[A-Z\s]{4,}$/.test(linea.trim()) && linea.trim().length > 3
-                                    if (esTitulo) { doc.setFont('helvetica', 'bold') } else { doc.setFont('helvetica', 'normal') }
-                                    doc.text(l, margin, y)
-                                    y += lineH
-                                  }
-                                }
                                 const nombre = (c.perfil_profesional?.nombre || 'especialista').replace(/\s/g,'_')
-                                doc.save('Contrato_' + nombre + '.pdf')
+                                await descargarContratoPDF(textoContrato, 'Contrato_' + nombre + '.pdf')
                               }} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.15)',color:'#fff',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
                                 Descargar contrato
                               </button>
