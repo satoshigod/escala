@@ -386,6 +386,40 @@ const fases = [
       { num: '22.4', nombre: 'QA: 4 tests automáticos (registrar, listar, verificar total, rechazar no autorizado)', done: true, valor: 600000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '23',
+    titulo: 'Workspace especialista — tareas, contratos y flujo de constitución',
+    estado: 'completa',
+    valor_total: 28500000,
+    valor_hecho: 28500000,
+    hitos: [
+      { num: '23.1', nombre: 'Tareas de constitución auto-inicializadas: cuando un abogado o contador de constitución entra al workspace por primera vez, sus tareas del país aparecen automáticamente en /workspace/tareas sin pasos adicionales', done: true, valor: 2800000, quien: 'Claude AI' },
+      { num: '23.2', nombre: 'Tab Constitución eliminada del workspace — las tareas de constitución se integran directamente en el plan de trabajo del especialista, sin destino separado ni botón extra', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '23.3', nombre: 'Fix crítico: supabase.auth.getUser() con SUPABASE_SECRET_KEY siempre devuelve null en server-side — corregido en /api/roles (POST, PATCH, DELETE) y /api/desistir para recibir fundador_id/especialista_id del body', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '23.4', nombre: 'Filtros de tareas corregidos para el especialista: Todas/Pendiente/En progreso/Completada/Verificada funcionan correctamente y siempre son visibles con botón "Ver todas" al filtrar', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '23.5', nombre: 'Tareas duplicadas eliminadas: el especialista ya no ve la misma tarea dos veces (una sin asignar y otra asignada). Solo aparecen las asignadas directamente', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '23.6', nombre: 'Modalidad legible en el workspace: "deuda_diferida" → "Riesgo Compartido", "equity" → "Equity" en la sección "Mi situación en este proyecto"', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '23.7', nombre: '"Retirarme del proyecto" — renombrado desde "Salir del proyecto" con advertencia clara de que es permanente e irreversible, color rojo, confirm con descripción completa de consecuencias', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '23.8', nombre: 'Contrato visible en workspace: sección en tab Resumen para el especialista con estado de firmas (fundador/profesional), botón Descargar PDF y botón Confirmar mi firma', done: true, valor: 1800000, quien: 'Claude AI' },
+      { num: '23.9', nombre: 'Tab Contratos en panel fundador (/admin): lista todos los contratos del proyecto con nombre del especialista, rol, modalidad, valor, estado de firmas visual (✅/⬜), Descargar PDF y Confirmar mi firma', done: true, valor: 2200000, quien: 'Claude AI' },
+      { num: '23.10', nombre: 'Generación automática de contrato al aceptar postulación: el admin ahora llama /api/contratos POST inmediatamente después de aceptar — sin pasos manuales del fundador', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '23.11', nombre: 'Contrato completo con 15 cláusulas legales: objeto, naturaleza del vínculo, plazo, valor, obligaciones de ambas partes, confidencialidad, propiedad intelectual, conflicto de interés, indemnidad laboral, cesión, modificaciones, terminación, ley aplicable, integridad del acuerdo — con número de contrato único', done: true, valor: 3500000, quien: 'Claude AI' },
+      { num: '23.12', nombre: 'Botón Regenerar contrato en admin: permite actualizar cualquier contrato existente con el generador actualizado sin tocar Supabase manualmente — endpoint PUT /api/contratos', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '23.13', nombre: 'PDF del contrato generado en el browser con iframe inline: sin librerías externas, sin popups bloqueados, con barra de herramientas y botón Guardar PDF que abre el diálogo de impresión', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '23.14', nombre: 'Fix: "Proyecto activo" en dashboard no aparece cuando eres fundador del mismo proyecto — evita que el fundador vea su propio proyecto listado dos veces', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '23.15', nombre: 'Botón Salir (cerrar sesión) agregado en todas las páginas que lo faltaban: /proyectos/[id], /postulaciones, /perfil/[id], /score, /carril, /admin, /workspace, /workspace/tareas, /workspace/chat', done: true, valor: 900000, quien: 'Claude AI' },
+      { num: '23.16', nombre: 'URL parsing robusto en página pública del proyecto: reemplaza window.location.pathname.split("/").pop() por getProyectoIdFromPath() que tolera trailing slash y query params', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '23.17', nombre: 'Roles unificados en /bienvenida y /onboarding: mismos textos, mismo orden, sin duplicados visuales. Flujo registro → /onboarding directo, eliminando /bienvenida como paso intermedio redundante', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '23.18', nombre: 'Sub-especialidad visible en tarjetas de roles en página pública del proyecto: "Constitución de empresas" aparece debajo de "Abogado" en verde', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '23.19', nombre: 'Descripción del rol auto-llenada al seleccionar sub-especialidad en el workspace del fundador — elimina el problema del placeholder "xxx" que aparecía en producción', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '23.20', nombre: 'Cascades de BD corregidos: ALTER TABLE con ON DELETE CASCADE/SET NULL en 23 foreign keys de 14 tablas — permite borrar usuarios desde Supabase Auth sin errores de FK', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '23.21', nombre: 'Función SQL eliminar_usuario_completo(uid): borra un usuario y todos sus datos relacionados en el orden correcto — para pruebas y administración sin tocar el código', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '23.22', nombre: 'Tabla contratos migrada: renombrada especialista_id → profesional_id, agregadas columnas postulacion_id, fundador_id, estado, firmado_fundador, firmado_profesional, contenido_json, sub_especialidad, fecha_firma_fundador, fecha_firma_profesional', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '23.23', nombre: 'GitHub push access configurado en el entorno de Claude AI con token PAT — permite commits y push directos sin intervención del fundador en el 90% de los cambios', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '23.24', nombre: 'Tab Presupuesto oculta para abogados y contadores de constitución — no les competen esas actividades', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '23.25', nombre: 'jsPDF instalado como dependencia npm: import local en vez de CDN externo, compatible con Next.js 16 y Turbopack', done: true, valor: 400000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
