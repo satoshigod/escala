@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { SEGMENTOS_ROLES } from '../../../lib/segmentosRoles'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -22,8 +23,7 @@ export async function GET(request) {
   return Response.json({ roles: data })
 }
 
-// POST — crear rol en un proyecto
-// El fundador_id viene del body (mismo patrón que /api/proyectos)
+// POST — crear rol en un proyecto y auto-inicializar todas sus tareas
 export async function POST(request) {
   const body = await request.json()
   const { proyecto_id, nombre, sub_especialidad, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario, estado, fundador_id } = body
@@ -49,14 +49,41 @@ export async function POST(request) {
     return Response.json({ error: 'Solo el fundador puede publicar roles' }, { status: 403 })
   }
 
-  const { data, error } = await supabase
+  // Crear el rol
+  const { data: rol, error } = await supabase
     .from('roles')
     .insert([{ proyecto_id, nombre, sub_especialidad: sub_especialidad || null, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario, estado: estado || 'abierto' }])
     .select()
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
-  return Response.json({ rol: data }, { status: 201 })
+
+  // Auto-inicializar TODAS las tareas de todos los segmentos del rol
+  const segmentosDelRol = SEGMENTOS_ROLES[nombre]
+  if (segmentosDelRol) {
+    const todasLasTareas = []
+    for (const [segmento, tareas] of Object.entries(segmentosDelRol)) {
+      for (const tarea of tareas) {
+        todasLasTareas.push({
+          proyecto_id,
+          rol_nombre: nombre,
+          asignado_a: null,
+          nombre: tarea.nombre,
+          descripcion: tarea.descripcion || '',
+          categoria: tarea.categoria || 'General',
+          estado: 'pendiente',
+          creado_por: fundador_id,
+          razon_creacion: `Tarea inicial del rol ${nombre} — ${segmento}`,
+        })
+      }
+    }
+
+    if (todasLasTareas.length > 0) {
+      await supabase.from('tareas').insert(todasLasTareas)
+    }
+  }
+
+  return Response.json({ rol, tareas_creadas: segmentosDelRol ? Object.values(segmentosDelRol).flat().length : 0 }, { status: 201 })
 }
 
 // PATCH — actualizar estado de un rol
