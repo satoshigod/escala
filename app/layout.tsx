@@ -27,6 +27,17 @@ export const metadata: Metadata = {
   },
 };
 
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Escala",
+  url: "https://escala.network",
+  sameAs: [
+    "https://www.facebook.com/profile.php?id=61591678262407",
+    "https://www.instagram.com/joinescala",
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -37,6 +48,12 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

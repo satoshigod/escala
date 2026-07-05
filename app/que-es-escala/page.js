@@ -1,5 +1,7 @@
 'use client'
 
+import RedesSociales from '@/components/RedesSociales'
+
 const PREGUNTAS = [
   {
     q: '¿Qué es Escala?',
@@ -78,6 +80,11 @@ export default function QueEsEscala() {
           </a>
         </div>
       </main>
+
+      <footer style={{borderTop:'1px solid rgba(255,255,255,0.08)',padding:'2rem 1.25rem',textAlign:'center'}}>
+        <RedesSociales />
+        <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginTop:'1rem'}}>© {new Date().getFullYear()} Escala Network</div>
+      </footer>
     </div>
   )
 }
