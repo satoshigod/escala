@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200">
+  <rect width="800" height="200" fill="#0B1628"/>
+  <!-- Isotipo centrado verticalmente -->
+  <!-- X = 26px para lockup horizontal -->
+  <rect x="60" y="114" width="78" height="26" fill="#1D9E75"/>
+  <rect x="86" y="88" width="52" height="52" fill="#1D9E75"/>
+  <circle cx="138" cy="75" r="13" fill="#1D9E75"/>
+  <!-- Wordmark -->
+  <text x="175" y="130" font-family="Inter,Arial,sans-serif" font-size="72" font-weight="800" fill="white" letter-spacing="-3">Esca<tspan fill="#1D9E75">la</tspan></text>
+</svg>

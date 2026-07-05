@@ -200,7 +200,7 @@ export default function Constitucion({ params }) {
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif'}}>
       <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <a href="/dashboard" style={{textDecoration:'none'}}><div style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff'}}>Esca<span style={{color:'#1D9E75'}}>la</span></div></a>
+        <a href="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center'}}><img src="/brand/isotipo.svg" alt="Escala" width="26" height="26" style={{display:"inline-block",verticalAlign:"middle",marginRight:"6px"}}/><span style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></span></a>
         <div style={{display:'flex',gap:'1rem',alignItems:'center'}}>
           <span style={{fontSize:'0.8rem',color:'#8FA3CC'}}>{proyecto?.nombre}</span>
           <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'3px 10px',borderRadius:'20px',background: proyecto?.estado_financiacion==='con_recursos'?'rgba(29,158,117,0.15)':'rgba(232,160,32,0.15)',color: proyecto?.estado_financiacion==='con_recursos'?'#1D9E75':'#E8A020'}}>

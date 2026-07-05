@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" width="1080" height="1080">
+  <rect width="1080" height="1080" fill="#0B1628"/>
+  <!-- X = 96px para 1080x1080 -->
+  <!-- Base: 3X=288, alto=96 -->
+  <!-- Peldaño: 2X=192, alto=144 -->
+  <!-- Punto: r=48, gap=32 -->
+  <rect x="396" y="696" width="288" height="96" fill="#1D9E75"/>
+  <rect x="492" y="552" width="192" height="148" fill="#1D9E75"/>
+  <circle cx="684" cy="504" r="48" fill="#1D9E75"/>
+</svg>

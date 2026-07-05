@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <!-- Fondo oscuro -->
+  <rect width="400" height="400" fill="#0B1628"/>
+  
+  <!-- ISOTIPO — Proporción áurea, ángulos 90°, gap respirado -->
+  <!-- Unidad base X = 36px -->
+  <!-- Base: 3X = 108px ancho, X = 36px alto — centrado en canvas -->
+  <!-- Peldaño: 2X = 72px ancho, 1.5X = 54px alto -->
+  <!-- Punto: radio = X/2 = 18px, gap = X/3 = 12px -->
+  
+  <!-- Base (escalón inferior) -->
+  <rect x="146" y="258" width="108" height="36" fill="#1D9E75"/>
+  
+  <!-- Peldaño (escalón superior) -->
+  <rect x="182" y="204" width="72" height="56" fill="#1D9E75"/>
+  
+  <!-- Punto (destino) — gap de 12px sobre el vértice del peldaño -->
+  <circle cx="254" cy="186" r="18" fill="#1D9E75"/>
+  
+</svg>
