@@ -420,6 +420,19 @@ const fases = [
       { num: '23.25', nombre: 'jsPDF instalado como dependencia npm: import local en vez de CDN externo, compatible con Next.js 16 y Turbopack sin errores de Content Security Policy', done: true, valor: 260000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '24',
+    titulo: 'Identidad visual y redes sociales',
+    estado: 'completa',
+    valor_total: 3250000,
+    valor_hecho: 3250000,
+    hitos: [
+      { num: '24.1', nombre: 'Identidad visual de Escala definida: isotipo (escalón + punto, proporciones áureas), paleta #0B1628 / #1D9E75 / #8FA3CC, tipografía Inter 800 — assets SVG generados en public/brand/ (isotipo, isotipo-blanco, isotipo-instagram, lockup, favicon, app-icon)', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
+      { num: '24.2', nombre: 'Logos actualizados en las 29 páginas del sitio: 13 HTML públicas y 16 páginas React del app router — favicon, app-icon y lockup consistentes en todo el sitio', done: true, valor: 650000, quien: 'Claude AI' },
+      { num: '24.3', nombre: 'Cuentas oficiales de Facebook e Instagram creadas y vinculadas: facebook.com/profile.php?id=61591678262407 · instagram.com/joinescala', done: true, valor: 200000, quien: 'Fundador' },
+      { num: '24.4', nombre: 'Redes sociales incorporadas al sitio: componente compartido components/RedesSociales.js, footer en 8 HTML públicos (index, casos, compensacion, faq, inversionistas, perfiles, por-que-existe, proteccion), footer en que-es-escala/page.js, JSON-LD Organization con sameAs en layout.tsx para SEO y verificación por Meta', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
