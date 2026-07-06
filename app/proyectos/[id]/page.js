@@ -21,23 +21,24 @@ export default function ProyectoDetalle() {
   useEffect(() => {
     async function cargar() {
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro?modo=login'; return }
-      setUsuario(user)
+      // No redirigir — visitantes sin cuenta pueden ver el proyecto
+      setUsuario(user || null)
       const parts = window.location.pathname.split('/').filter(Boolean)
       const proyectoIndex = parts.indexOf('proyectos')
       const pid = proyectoIndex !== -1 ? parts[proyectoIndex + 1] : null
 
-      const [r1, r2, r3, r4] = await Promise.all([
+      const peticiones = [
         fetch('/api/proyectos/' + pid),
         fetch('/api/roles?proyecto_id=' + pid),
         fetch('/api/hitos?proyecto_id=' + pid),
-        fetch('/api/postulaciones?postulante_id=' + user.id)
-      ])
+      ]
+      if (user) peticiones.push(fetch('/api/postulaciones?postulante_id=' + user.id))
 
-      const d1 = await r1.json()
-      const d2 = await r2.json()
-      const d3 = await r3.json()
-      const d4 = await r4.json()
+      const resultados = await Promise.all(peticiones)
+      const d1 = await resultados[0].json()
+      const d2 = await resultados[1].json()
+      const d3 = await resultados[2].json()
+      const d4 = user ? await resultados[3].json() : { postulaciones: [] }
 
       setProyecto(d1.proyecto || null)
       setRoles(d2.roles || [])
@@ -175,9 +176,15 @@ export default function ProyectoDetalle() {
                       <div style={{textAlign:'center',fontSize:'0.78rem',color:'#1D9E75',fontWeight:'700',padding:'0.6rem',background:'rgba(29,158,117,0.1)',borderRadius:'6px'}}>✅ Ya te postulaste</div>
                     ) : (
                       <>
-                        <button onClick={() => postularse(rol)} disabled={postulando===rol.id} style={{width:'100%',background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                          {postulando===rol.id ? 'Enviando...' : 'Postularme a este rol →'}
-                        </button>
+                        {usuario ? (
+                          <button onClick={() => postularse(rol)} disabled={postulando===rol.id} style={{width:'100%',background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                            {postulando===rol.id ? 'Enviando...' : 'Postularme a este rol →'}
+                          </button>
+                        ) : (
+                          <a href="/registro" style={{display:'block',width:'100%',background:'#E8A020',color:'#fff',borderRadius:'8px',padding:'0.7rem',fontSize:'0.82rem',fontWeight:'700',textAlign:'center',textDecoration:'none',boxSizing:'border-box'}}>
+                            Regístrate para postularte →
+                          </a>
+                        )}
                         {msgRol[rol.id] && <div style={{marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',textAlign:'center'}}>{msgRol[rol.id]}</div>}
                       </>
                     )}
@@ -215,9 +222,15 @@ export default function ProyectoDetalle() {
                         <div style={{textAlign:'center',fontSize:'0.78rem',color:'#1D9E75',fontWeight:'700',padding:'0.6rem',background:'rgba(29,158,117,0.1)',borderRadius:'6px'}}>✅ Ya te postulaste</div>
                       ) : (
                         <>
-                          <button onClick={() => postularse(rol)} disabled={postulando===rol.id} style={{width:'100%',background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                            {postulando===rol.id ? 'Enviando...' : 'Postularme →'}
-                          </button>
+                          {usuario ? (
+                            <button onClick={() => postularse(rol)} disabled={postulando===rol.id} style={{width:'100%',background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.7rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                              {postulando===rol.id ? 'Enviando...' : 'Postularme →'}
+                            </button>
+                          ) : (
+                            <a href="/registro" style={{display:'block',width:'100%',background:'#1D9E75',color:'#fff',borderRadius:'8px',padding:'0.7rem',fontSize:'0.82rem',fontWeight:'700',textAlign:'center',textDecoration:'none',boxSizing:'border-box'}}>
+                              Regístrate para postularte →
+                            </a>
+                          )}
                           {msgRol[rol.id] && <div style={{marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',textAlign:'center'}}>{msgRol[rol.id]}</div>}
                         </>
                       )
@@ -230,6 +243,18 @@ export default function ProyectoDetalle() {
             </div>
           )}
         </div>
+
+        {/* BANNER REGISTRO PARA VISITANTES */}
+        {!usuario && (
+          <div style={{background:'linear-gradient(135deg,rgba(29,158,117,0.15),rgba(83,74,183,0.1))',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'12px',padding:'1.5rem',textAlign:'center',marginBottom:'1.5rem'}}>
+            <div style={{fontSize:'1.25rem',marginBottom:'0.5rem'}}>👋</div>
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>¿Quieres participar en este proyecto?</div>
+            <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:'1rem'}}>Crea tu cuenta gratis en menos de 2 minutos y postúlate al rol que más encaje contigo.</div>
+            <a href="/registro" style={{display:'inline-block',background:'#1D9E75',color:'#fff',padding:'0.75rem 2rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>
+              Crear cuenta y postularme →
+            </a>
+          </div>
+        )}
 
         {/* CTA CONTACTO */}
         <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.5rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'1rem'}}>
