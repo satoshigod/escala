@@ -50,7 +50,7 @@ export default function Proyectos() {
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [creandoPais, setCreandoPais] = useState(false)
   const [form, setForm] = useState({
-    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mejorando_ia: false
+    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: ''
   })
 
   useEffect(() => {
@@ -82,30 +82,19 @@ export default function Proyectos() {
     })
   }
 
-  async function mejorarConIA() {
-    if (!form.descripcion || form.descripcion.length < 20) {
-      setMensaje('Escribe una descripción antes de mejorarla con IA')
-      return
-    }
-    setForm(f => ({ ...f, mejorando_ia: true }))
-    setMensaje('')
-    try {
-      const res = await fetch('/api/ia/mejorar-descripcion', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ descripcion: form.descripcion, nombre: form.nombre, sector: form.sector })
-      })
-      const data = await res.json()
-      if (data.descripcion) {
-        setForm(f => ({ ...f, descripcion: data.descripcion, mejorando_ia: false }))
-      } else {
-        setMensaje('No se pudo mejorar. Intenta de nuevo.')
-        setForm(f => ({ ...f, mejorando_ia: false }))
-      }
-    } catch {
-      setMensaje('Error al conectar con IA')
-      setForm(f => ({ ...f, mejorando_ia: false }))
-    }
+  function mejorarConIA() {
+    setForm(f => ({ ...f, mostrar_guia: !f.mostrar_guia }))
+  }
+
+  function construirDescripcion() {
+    const { guia_que, guia_problema, guia_quien } = form
+    if (!guia_que && !guia_problema && !guia_quien) return
+    const partes = []
+    if (guia_que) partes.push(guia_que.trim())
+    if (guia_problema) partes.push('Resuelve ' + guia_problema.trim().replace(/^resuelve\s+/i, ''))
+    if (guia_quien) partes.push('Dirigido a ' + guia_quien.trim().replace(/^dirigido a\s+/i, ''))
+    const descripcion = partes.join('. ') + '.'
+    setForm(f => ({ ...f, descripcion, mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '' }))
   }
 
   async function crearNuevoPais() {
@@ -195,7 +184,7 @@ export default function Proyectos() {
 
       setProyectos(p => [data.proyecto, ...p])
       setVista('lista')
-      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mejorando_ia: false })
+      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '' })
     }
     setEnviando(false)
   }
@@ -306,8 +295,8 @@ export default function Proyectos() {
 
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.4rem'}}>
               <label style={{...s.label,marginBottom:0}} htmlFor="py-descripcion">Descripción *</label>
-              <button type="button" onClick={mejorarConIA} disabled={form.mejorando_ia} style={{background:'rgba(29,158,117,0.15)',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'6px',padding:'0.3rem 0.7rem',fontSize:'0.72rem',fontWeight:'700',color:'#1D9E75',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
-                {form.mejorando_ia ? '⏳ Mejorando...' : '✨ Mejorar con IA'}
+              <button type="button" onClick={mejorarConIA} style={{background:'rgba(29,158,117,0.15)',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'6px',padding:'0.3rem 0.7rem',fontSize:'0.72rem',fontWeight:'700',color:'#1D9E75',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                {form.mostrar_guia ? '✕ Cerrar guía' : '✍️ Guía para escribir'}
               </button>
             </div>
             <textarea id="py-descripcion" style={s.textarea} value={form.descripcion} onChange={e => actualizar('descripcion', e.target.value)} placeholder="Ejemplo: VetApp es una plataforma para clínicas veterinarias en Colombia que automatiza la historia clínica de mascotas, recordatorios de vacunas y pagos. Resuelve el caos de los registros en papel que sufren el 80% de las clínicas pequeñas." rows={5} />
@@ -319,6 +308,25 @@ export default function Proyectos() {
               </span>
               <span style={{color:'#8FA3CC'}}>{form.descripcion.length} / 500</span>
             </div>
+
+            {form.mostrar_guia && (
+              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.25rem',marginBottom:'1.25rem'}}>
+                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',marginBottom:'1rem'}}>Responde estas 3 preguntas y armamos la descripción por ti:</div>
+
+                <label style={{...s.label}}>¿Qué hace exactamente tu proyecto?</label>
+                <input style={{...s.input,marginBottom:'0.75rem'}} value={form.guia_que} onChange={e => actualizar('guia_que', e.target.value)} placeholder='Ej: Vendemos galletas naturales para caballos hechas con ingredientes colombianos' />
+
+                <label style={{...s.label}}>¿Qué problema resuelve?</label>
+                <input style={{...s.input,marginBottom:'0.75rem'}} value={form.guia_problema} onChange={e => actualizar('guia_problema', e.target.value)} placeholder='Ej: No hay snacks saludables para caballos en el mercado colombiano' />
+
+                <label style={{...s.label}}>¿A quién va dirigido?</label>
+                <input style={{...s.input,marginBottom:'1rem'}} value={form.guia_quien} onChange={e => actualizar('guia_quien', e.target.value)} placeholder='Ej: Dueños de caballos, criaderos y clubes ecuestres' />
+
+                <button type="button" onClick={construirDescripcion} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                  Generar descripción →
+                </button>
+              </div>
+            )}
 
             <label style={s.label}>Tipo de proyecto *</label>
             <div style={s.tipoGrid}>
