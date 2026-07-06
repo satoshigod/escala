@@ -436,6 +436,7 @@ const fases = [
       { num: '24.7', nombre: 'Formulario de creación de proyectos mejorado: 5 niveles de avance en lenguaje universal (tarjetas), 3 modalidades de trabajo, 9 roles buscados seleccionables, botón ✨ Mejorar con IA via Claude API, 3 columnas nuevas en DB (nivel_avance, modalidad_trabajo, roles_buscados)', done: true, valor: 1200000, quien: 'Claude AI' },
       { num: '24.8', nombre: 'Validación de descripción de proyectos: mínimo 80 caracteres, contador en tiempo real (rojo/verde), placeholder con ejemplo real, mensajes de error específicos por campo, país obligatorio', done: true, valor: 260000, quien: 'Claude AI' },
       { num: '24.9', nombre: 'proyectos.html conectado a API real: script JS carga proyectos de Supabase dinámicamente, excluye los hardcodeados (Escala piloto, Ekivibe), muestra nivel de avance, roles buscados, ciudad, modalidad y progreso de equipo', done: true, valor: 390000, quien: 'Claude AI' },
+      { num: '24.10', nombre: 'Guía gratuita de descripción: reemplaza llamada a Claude API (con costo) por panel de 3 preguntas que el sistema concatena automáticamente en una descripción completa — sin costo, sin API externa', done: true, valor: 195000, quien: 'Claude AI' },
     ]
   },
 ]
