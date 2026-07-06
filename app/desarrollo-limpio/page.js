@@ -251,6 +251,18 @@ const fases = [
       { num: '15.10', nombre: 'Username personalizado Facebook — cambiar profile.php?id=... por facebook.com/EscalaNetwork una vez la página tenga 100 seguidores', done: false, valor: 1000000, quien: 'Fundador' },
     ]
   },
+  {
+    num: '16',
+    titulo: 'Notificaciones avanzadas',
+    estado: 'completa',
+    valor_total: 2500000,
+    valor_hecho: 2500000,
+    hitos: [
+      { num: '16.1', nombre: 'Preferencias por categoría de evento: 5 categorías (postulaciones, tareas, hitos, aportes, proyectos), toggles individuales por email y push, UI en /perfil/editar, API GET/PATCH /api/notificaciones/preferencias, motor notificar() respeta categoría además del toggle global', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '16.2', nombre: '/invitar migrado al motor central notificar(): si el invitado ya está en Escala recibe email + in_app, si no recibe solo email. Evento invitacion en el catálogo. Reemplaza llamada directa a /api/email', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '16.3', nombre: 'Notificaciones basadas en tiempo — Vercel Cron Job diario 9am UTC: tareas vencidas (avisa al asignado), hitos por vencer en 0-2 días (avisa al fundador), proyectos sin actividad 15+ días (avisa al fundador). Requiere CRON_SECRET en Vercel env vars', done: true, valor: 1200000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function DesarrolloLimpio() {
