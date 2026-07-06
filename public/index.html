@@ -873,7 +873,8 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
           +'</a>'
         +'</div>';
       }).join('');
-    })catch(function(e){ console.error('Error cargando proyectos:', e); });
+    })
+    .catch(function(e){ console.error('Error cargando proyectos:', e); });
 })();
 </script>
 
