@@ -442,6 +442,18 @@ const fases = [
       { num: '24.13', nombre: 'Proyectos públicos sin login: quita redirección forzada a registro en /proyectos/[id], visitantes previsual/izan el proyecto completo, botones de postulación se convierten en CTA de registro para no autenticados, banner de conversión visible', done: true, valor: 390000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '25',
+    titulo: 'Notificaciones avanzadas — preferencias, invitar y tiempo',
+    estado: 'completa',
+    valor_total: 2500000,
+    valor_hecho: 2500000,
+    hitos: [
+      { num: '25.1', nombre: 'Preferencias de notificación por categoría: 2 columnas nuevas en DB (categorias_email_desactivadas, categorias_push_desactivadas), motor notificar() verifica categoría además del toggle global, API GET/PATCH /api/notificaciones/preferencias, UI en /perfil/editar con toggles por categoría (postulaciones, tareas, hitos, aportes, proyectos)', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '25.2', nombre: '/invitar migrado al motor notificar(): nueva API /api/invitar/route.js, si el invitado ya está en Escala recibe email + in_app, si no está recibe solo email, evento invitacion agregado al catálogo', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '25.3', nombre: 'Notificaciones basadas en tiempo: Vercel Cron Job diario 9am UTC, 3 verificaciones: tareas vencidas (avisa al asignado), hitos por vencer en 0-2 días (avisa al fundador), proyectos sin actividad 15+ días (avisa al fundador). 4 eventos nuevos en el catálogo. Requiere CRON_SECRET en Vercel env vars', done: true, valor: 1200000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
