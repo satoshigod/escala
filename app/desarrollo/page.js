@@ -438,6 +438,7 @@ const fases = [
       { num: '24.9', nombre: 'proyectos.html conectado a API real: script JS carga proyectos de Supabase dinámicamente, excluye los hardcodeados (Escala piloto, Ekivibe), muestra nivel de avance, roles buscados, ciudad, modalidad y progreso de equipo', done: true, valor: 390000, quien: 'Claude AI' },
       { num: '24.10', nombre: 'Guía gratuita de descripción: reemplaza llamada a Claude API (con costo) por panel de 3 preguntas que el sistema concatena automáticamente en una descripción completa — sin costo, sin API externa', done: true, valor: 195000, quien: 'Claude AI' },
       { num: '24.11', nombre: 'Eliminar proyecto: fundador puede eliminar su proyecto si no hay postulaciones aceptadas — validación en API (ownership + estado postulaciones) y botón con confirmación de dos pasos en la UI', done: true, valor: 390000, quien: 'Claude AI' },
+      { num: '24.12', nombre: 'Home (index.html): nueva sección de proyectos reales dinámicos cargados desde /api/proyectos — muestra hasta 6 proyectos, excluye el piloto hardcodeado, CTA a publicar si no hay proyectos aún', done: true, valor: 260000, quien: 'Claude AI' },
     ]
   },
 ]
