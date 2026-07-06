@@ -17,6 +17,13 @@ export default function EditarPerfil() {
   const [guardando, setGuardando] = useState(false)
   const [mensaje, setMensaje] = useState('')
   const [nuevoReconocimiento, setNuevoReconocimiento] = useState('')
+  const [prefs, setPrefs] = useState({
+    email_activo: true,
+    push_activo: true,
+    categorias_email_desactivadas: [],
+    categorias_push_desactivadas: [],
+  })
+  const [guardandoPrefs, setGuardandoPrefs] = useState(false)
 
   const [form, setForm] = useState({
     nombre: '', ciudad: '', whatsapp: '', especialidad: '',
@@ -44,6 +51,15 @@ export default function EditarPerfil() {
         disponibilidad: data.usuario?.disponibilidad || '',
         reconocimientos: data.usuario?.reconocimientos || [],
       })
+      // Cargar preferencias de notificación
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        const prefRes = await fetch('/api/notificaciones/preferencias', {
+          headers: { authorization: 'Bearer ' + session.access_token }
+        })
+        const prefData = await prefRes.json()
+        if (prefData.preferencias) setPrefs(prefData.preferencias)
+      }
       setCargando(false)
     }
     cargar()
@@ -68,6 +84,33 @@ export default function EditarPerfil() {
 
   function quitarReconocimiento(i) {
     setForm(f => ({ ...f, reconocimientos: f.reconocimientos.filter((_, idx) => idx !== i) }))
+  }
+
+  async function guardarPrefs(nuevoPrefs) {
+    setGuardandoPrefs(true)
+    const { data: { session } } = await supabase.auth.getSession()
+    await fetch('/api/notificaciones/preferencias', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', authorization: 'Bearer ' + session.access_token },
+      body: JSON.stringify(nuevoPrefs)
+    })
+    setPrefs(nuevoPrefs)
+    setGuardandoPrefs(false)
+  }
+
+  function toggleCategoria(canal, categoria) {
+    const key = canal === 'email' ? 'categorias_email_desactivadas' : 'categorias_push_desactivadas'
+    const actual = prefs[key] || []
+    const nuevo = actual.includes(categoria)
+      ? actual.filter(c => c !== categoria)
+      : [...actual, categoria]
+    const nuevasPrefs = { ...prefs, [key]: nuevo }
+    guardarPrefs(nuevasPrefs)
+  }
+
+  function toggleGlobal(canal, valor) {
+    const key = canal === 'email' ? 'email_activo' : 'push_activo'
+    guardarPrefs({ ...prefs, [key]: valor })
   }
 
   async function guardar() {
@@ -188,6 +231,98 @@ export default function EditarPerfil() {
           <textarea id="pe-aporto" style={{...s.input,marginBottom:'1rem',minHeight:'70px',resize:'vertical'}} value={form.lo_que_aporto} onChange={e=>actualizar('lo_que_aporto',e.target.value)} />
           <label style={s.label} htmlFor="pe-busco">¿Qué buscas en Escala?</label>
           <textarea id="pe-busco" style={{...s.input,minHeight:'70px',resize:'vertical'}} value={form.lo_que_busco} onChange={e=>actualizar('lo_que_busco',e.target.value)} />
+        </div>
+
+
+        {/* SECCIÓN NOTIFICACIONES */}
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem',marginBottom:'1.5rem'}}>
+          <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.25rem'}}>Notificaciones</div>
+          <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'1rem'}}>Elige qué notificaciones quieres recibir por email ✉️ y push 🔔. Los cambios se guardan al instante.</div>
+
+          {/* Toggles globales */}
+          <div style={{display:'flex',gap:'0.75rem',marginBottom:'1rem'}}>
+            <button onClick={()=>toggleGlobal('email',!prefs.email_activo)} style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.3rem 0.8rem',borderRadius:'8px',border:'1px solid rgba(255,255,255,0.1)',cursor:'pointer',fontFamily:'Inter,sans-serif',background:prefs.email_activo ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.05)',color:prefs.email_activo ? '#1D9E75' : '#8FA3CC'}}>
+              ✉️ Email global: {prefs.email_activo ? 'activo' : 'desactivado'}
+            </button>
+            <button onClick={()=>toggleGlobal('push',!prefs.push_activo)} style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.3rem 0.8rem',borderRadius:'8px',border:'1px solid rgba(255,255,255,0.1)',cursor:'pointer',fontFamily:'Inter,sans-serif',background:prefs.push_activo ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.05)',color:prefs.push_activo ? '#1D9E75' : '#8FA3CC'}}>
+              🔔 Push global: {prefs.push_activo ? 'activo' : 'desactivado'}
+            </button>
+          </div>
+
+          {/* Por categoría */}
+          <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.5rem'}}>Por categoría (cuando el global está activo):</div>
+          
+              <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
+                <div>
+                  <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.1rem'}}>Postulaciones</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Cuando te aceptan, rechazan o llega una nueva postulación a tu proyecto</div>
+                </div>
+                <div style={{display:'flex',gap:'0.5rem',flexShrink:0}}>
+                  <button onClick={()=>toggleCategoria('email','postulaciones')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_email_desactivadas||[]).includes('postulaciones') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_email_desactivadas||[]).includes('postulaciones') ? '#8FA3CC' : '#1D9E75'}}>
+                    ✉️ {(prefs.categorias_email_desactivadas||[]).includes('postulaciones') ? 'off' : 'on'}
+                  </button>
+                  <button onClick={()=>toggleCategoria('push','postulaciones')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_push_desactivadas||[]).includes('postulaciones') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_push_desactivadas||[]).includes('postulaciones') ? '#8FA3CC' : '#1D9E75'}}>
+                    🔔 {(prefs.categorias_push_desactivadas||[]).includes('postulaciones') ? 'off' : 'on'}
+                  </button>
+                </div>
+              </div>
+              <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
+                <div>
+                  <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.1rem'}}>Tareas</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Cuando te asignan, completan o verifican una tarea</div>
+                </div>
+                <div style={{display:'flex',gap:'0.5rem',flexShrink:0}}>
+                  <button onClick={()=>toggleCategoria('email','tareas')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_email_desactivadas||[]).includes('tareas') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_email_desactivadas||[]).includes('tareas') ? '#8FA3CC' : '#1D9E75'}}>
+                    ✉️ {(prefs.categorias_email_desactivadas||[]).includes('tareas') ? 'off' : 'on'}
+                  </button>
+                  <button onClick={()=>toggleCategoria('push','tareas')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_push_desactivadas||[]).includes('tareas') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_push_desactivadas||[]).includes('tareas') ? '#8FA3CC' : '#1D9E75'}}>
+                    🔔 {(prefs.categorias_push_desactivadas||[]).includes('tareas') ? 'off' : 'on'}
+                  </button>
+                </div>
+              </div>
+              <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
+                <div>
+                  <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.1rem'}}>Hitos</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Cuando se completa un hito en tus proyectos</div>
+                </div>
+                <div style={{display:'flex',gap:'0.5rem',flexShrink:0}}>
+                  <button onClick={()=>toggleCategoria('email','hitos')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_email_desactivadas||[]).includes('hitos') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_email_desactivadas||[]).includes('hitos') ? '#8FA3CC' : '#1D9E75'}}>
+                    ✉️ {(prefs.categorias_email_desactivadas||[]).includes('hitos') ? 'off' : 'on'}
+                  </button>
+                  <button onClick={()=>toggleCategoria('push','hitos')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_push_desactivadas||[]).includes('hitos') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_push_desactivadas||[]).includes('hitos') ? '#8FA3CC' : '#1D9E75'}}>
+                    🔔 {(prefs.categorias_push_desactivadas||[]).includes('hitos') ? 'off' : 'on'}
+                  </button>
+                </div>
+              </div>
+              <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
+                <div>
+                  <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.1rem'}}>Aportes</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Cuando se registra o verifica un aporte</div>
+                </div>
+                <div style={{display:'flex',gap:'0.5rem',flexShrink:0}}>
+                  <button onClick={()=>toggleCategoria('email','aportes')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_email_desactivadas||[]).includes('aportes') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_email_desactivadas||[]).includes('aportes') ? '#8FA3CC' : '#1D9E75'}}>
+                    ✉️ {(prefs.categorias_email_desactivadas||[]).includes('aportes') ? 'off' : 'on'}
+                  </button>
+                  <button onClick={()=>toggleCategoria('push','aportes')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_push_desactivadas||[]).includes('aportes') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_push_desactivadas||[]).includes('aportes') ? '#8FA3CC' : '#1D9E75'}}>
+                    🔔 {(prefs.categorias_push_desactivadas||[]).includes('aportes') ? 'off' : 'on'}
+                  </button>
+                </div>
+              </div>
+              <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
+                <div>
+                  <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.1rem'}}>Proyectos</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Actividad general de tus proyectos</div>
+                </div>
+                <div style={{display:'flex',gap:'0.5rem',flexShrink:0}}>
+                  <button onClick={()=>toggleCategoria('email','proyectos')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_email_desactivadas||[]).includes('proyectos') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_email_desactivadas||[]).includes('proyectos') ? '#8FA3CC' : '#1D9E75'}}>
+                    ✉️ {(prefs.categorias_email_desactivadas||[]).includes('proyectos') ? 'off' : 'on'}
+                  </button>
+                  <button onClick={()=>toggleCategoria('push','proyectos')}" style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_push_desactivadas||[]).includes('proyectos') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_push_desactivadas||[]).includes('proyectos') ? '#8FA3CC' : '#1D9E75'}}>
+                    🔔 {(prefs.categorias_push_desactivadas||[]).includes('proyectos') ? 'off' : 'on'}
+                  </button>
+                </div>
+              </div>
+          {guardandoPrefs && <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'0.5rem'}}>Guardando...</div>}
         </div>
 
         {mensaje && (

@@ -73,26 +73,24 @@ export default function Invitar() {
       } catch (e) { /* si falla la búsqueda, el correo igual sale */ }
     }
 
-    const res = await fetch('/api/email', {
+    const res = await fetch('/api/invitar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        tipo: 'invitacion',
-        destinatario: form.email,
-        datos: {
-          nombre_invitado: form.nombre,
-          proyecto_nombre: proyecto?.nombre || 'Escala',
-          rol_nombre: rol?.nombre || 'un rol',
-          mensaje_personal: form.mensaje,
-          proyecto_url: 'https://escala.network/proyectos/' + proyectoSel,
-          registro_url: 'https://escala.network/registro'
-        }
+        email: form.email,
+        nombre: form.nombre,
+        proyecto_id: proyectoSel,
+        proyecto_nombre: proyecto?.nombre || 'Escala',
+        rol_id: form.rol_id,
+        rol_nombre: rol?.nombre || 'un rol',
+        mensaje: form.mensaje,
+        fundador_nombre: usuario?.user_metadata?.nombre || 'El fundador',
       })
     })
     const data = await res.json()
 
     if (data.ok) {
-      setResultado({ ok: true, msg: ofertaCreada
+      setResultado({ ok: true, msg: (ofertaCreada || data.usuario_registrado)
         ? '✓ ' + form.nombre + ' ya está en Escala — le llegó la oferta a su bandeja y también el correo.'
         : 'Invitación enviada a ' + form.email })
       setForm(f => ({ ...f, email: '', nombre: '', mensaje: '' }))
