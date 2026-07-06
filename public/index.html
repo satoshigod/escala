@@ -596,7 +596,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   </div>
 </section>
 
-<section style="background:#F8FAFB;padding:4rem 0;" id="proyectos-activos">
+<section style="background:#F8FAFB;padding:4rem 0;border-bottom:1px solid #E5E7EB;" id="proyectos-activos">
 <div class="container">
   <span class="ey">En este momento en Escala</span>
   <h2 class="ttl">Proyectos reales buscando equipo</h2>
@@ -784,7 +784,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
 
 <script>
 (function() {
-  var FIJOS = ['f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf'];
+  var FIJOS = []; // Todos los proyectos activos aparecen
   var EMOJI = {Tecnología:'💻',Salud:'🏥',Educación:'📚',Agro:'🌱',Alimentos:'🍽️',Moda:'👗',Comercio:'🛒',Construcción:'🏗️',Servicios:'⚙️',Otro:'🚀'};
   var NIVEL = {tengo_la_idea:'💡 Idea',ya_empece:'🔧 Iniciado',tengo_clientes:'🤝 Con clientes',necesito_crecer:'📈 Creciendo',quiero_transformar:'🔄 Transformación'};
   fetch('/api/proyectos')
