@@ -268,21 +268,64 @@ footer .logo span{color:var(--green);}
       </div>
     </a>
 
-    <div class="coming-card">
-      <div class="cs-icon">💡</div>
-      <div class="cs-title">Tu proyecto de creación aquí</div>
-      <div class="cs-sub">Publica tu idea y encuentra el equipo que necesitas para construirla.</div>
-    </div>
+    <!-- PROYECTOS REALES DE LA PLATAFORMA -->
+    <div id="proyectos-dinamicos"></div>
 
-    <div class="coming-card">
-      <div class="cs-icon">🚀</div>
-      <div class="cs-title">Próximamente</div>
-      <div class="cs-sub">Los primeros proyectos externos se están incorporando.</div>
+    <div class="coming-card" id="card-publicar">
+      <div class="cs-icon">💡</div>
+      <div class="cs-title">¿Tienes un proyecto?</div>
+      <div class="cs-sub">Publica tu idea y encuentra el equipo que necesitas.</div>
+      <a href="/registro" style="margin-top:1rem;display:inline-block;background:var(--green);color:#fff;padding:0.6rem 1.25rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Publicar mi proyecto →</a>
     </div>
 
   </div>
 </div>
 </section>
+
+<script>
+(async function() {
+  var FIJOS = ['f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf'];
+  var NIVEL = {tengo_la_idea:'💡 Idea',ya_empece:'🔧 Iniciado',tengo_clientes:'🤝 Con clientes',necesito_crecer:'📈 Creciendo',quiero_transformar:'🔄 Transformación'};
+  var MODAL = {remoto:'🌐 Remoto',presencial:'📍 Presencial',hibrido:'🔀 Híbrido'};
+  var EMOJI = {Tecnología:'💻',Salud:'🏥',Educación:'📚',Agro:'🌱',Alimentos:'🍽️',Moda:'👗',Comercio:'🛒',Construcción:'🏗️',Servicios:'⚙️'};
+  try {
+    var res = await fetch('/api/proyectos');
+    var data = await res.json();
+    var proyectos = (data.proyectos || []).filter(function(p){ return !FIJOS.includes(p.id); });
+    var cont = document.getElementById('proyectos-dinamicos');
+    if (!cont || proyectos.length === 0) return;
+    cont.innerHTML = proyectos.map(function(p) {
+      var roles = p.roles || [];
+      var abiertos = roles.filter(function(r){ return r.estado === 'abierto'; }).length;
+      var tags = (p.roles_buscados || []).slice(0,4).map(function(r){ return '<span class="role-tag role-open">'+r+'</span>'; }).join('');
+      var pct = roles.length > 0 ? Math.round(((roles.length - abiertos) / roles.length) * 100) : 0;
+      var desc = p.descripcion ? (p.descripcion.length > 120 ? p.descripcion.substring(0,120)+'...' : p.descripcion) : '';
+      return '<a href="/proyectos/'+p.id+'" class="proyecto-card" data-cat="creacion" style="text-decoration:none;display:block;">'+
+        '<div class="card-top">'+
+          '<div class="card-badges">'+
+            '<span class="cbadge b-activo">Activo</span>'+
+            (p.sector ? '<span class="cbadge" style="background:#EEF2FF;color:#3730A3;">'+p.sector+'</span>' : '')+
+            (NIVEL[p.nivel_avance] ? '<span class="cbadge" style="background:#F0FDF4;color:#166534;">'+NIVEL[p.nivel_avance]+'</span>' : '')+
+          '</div>'+
+          '<div class="card-logo" style="background:#F0FDF4;font-size:1.4rem;display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:10px;margin-bottom:0.75rem;">'+(EMOJI[p.sector]||'🚀')+'</div>'+
+          '<div class="card-name">'+p.nombre+'</div>'+
+          '<div class="card-tagline" style="font-size:0.82rem;color:var(--gray-600);line-height:1.5;margin-bottom:0.75rem;">'+desc+'</div>'+
+          (tags ? '<div class="roles-needed">'+tags+'</div>' : '')+
+          (roles.length > 0 ? '<div class="progress-wrap"><div class="progress-label"><span>Equipo formado</span><span>'+(roles.length-abiertos)+' / '+roles.length+'</span></div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div></div>' : '')+
+        '</div>'+
+        '<div class="card-bottom">'+
+          '<div class="card-meta">'+
+            '<div><div class="meta-val">'+abiertos+'</div><div class="meta-label">Roles abiertos</div></div>'+
+            (p.ciudad ? '<div><div class="meta-val" style="font-size:0.85rem;">'+p.ciudad+'</div><div class="meta-label">Ciudad</div></div>' : '')+
+            (MODAL[p.modalidad_trabajo] ? '<div><div class="meta-val" style="font-size:0.75rem;">'+MODAL[p.modalidad_trabajo]+'</div><div class="meta-label">Modalidad</div></div>' : '')+
+          '</div>'+
+          '<div class="card-action">Ver proyecto →</div>'+
+        '</div>'+
+      '</a>';
+    }).join('');
+  } catch(e) { console.error('Error cargando proyectos:', e); }
+})();
+</script>
 
 <!-- TIPO B: TRANSFORMACIÓN -->
 <section class="seccion-transformacion" id="sec-transformacion">
