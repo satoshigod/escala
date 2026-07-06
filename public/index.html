@@ -862,18 +862,32 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
         var paisTag = p.pais ? '<span class="tag-tip" data-tip="Las tareas regulatorias de '+p.pais+' se cargan automáticamente — constitución, impuestos y obligaciones legales específicas de ese país." style="position:relative;display:inline-block;font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);margin-bottom:0.5rem;margin-left:0;cursor:default;font-weight:600;">'+bandera+' '+p.pais+'</span>' : '';
         var ciudadStr = p.ciudad ? ' · '+p.ciudad : '';
 
+        // Estructura fija: todos los tags en orden fijo, altura consistente
+        var nivelFallback = nivelTag || '<span style="display:inline-block;font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:20px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);font-weight:600;">Sin etapa</span>';
+
         return '<a href="/proyectos/'+p.id+'" style="text-decoration:none;display:block;background:#fff;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;transition:all 0.2s;">'
-          +'<div style="background:#0A1530;padding:1.25rem;">'
-            +'<div style="font-size:1.4rem;margin-bottom:0.5rem;">'+(EMOJI[p.sector]||'🚀')+'</div>'
-            +'<div style="margin-bottom:0.5rem;">'+nivelTag+finTag+tipoTag+'</div>'
-            +'<div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">'+p.nombre+'</div>'
+          // HEADER OSCURO — altura fija con flex column
+          +'<div style="background:#0A1530;padding:1.25rem;min-height:200px;display:flex;flex-direction:column;">'
+            // Fila 1: emoji sector
+            +'<div style="font-size:1.3rem;margin-bottom:0.75rem;">'+(EMOJI[p.sector]||'🚀')+'</div>'
+            // Fila 2: tags en una línea, siempre los mismos 3
+            +'<div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.75rem;">'
+              +nivelFallback
+              +finTag
+              +tipoTag
+            +'</div>'
+            // Fila 3: nombre del proyecto
+            +'<div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;flex:1;">'+p.nombre+'</div>'
+            // Fila 4: sector · ciudad
             +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-bottom:0.5rem;">'+(p.sector||'')+ciudadStr+'</div>'
-            +(paisTag?'<div>'+paisTag+'</div>':'')
+            // Fila 5: país con bandera (siempre presente o placeholder)
+            +'<div>'+(paisTag||'<span style="font-size:0.68rem;color:rgba(255,255,255,0.25);">🌐 País no especificado</span>')+'</div>'
           +'</div>'
-          +'<div style="padding:1.25rem;">'
-            +'<div style="font-size:0.78rem;color:#6B7280;line-height:1.6;margin-bottom:0.75rem;">'+desc+'</div>'
-            +(tags?'<div style="margin-bottom:0.75rem;">'+tags+'</div>':'')
-            +'<div style="display:flex;justify-content:space-between;align-items:center;padding-top:0.75rem;border-top:1px solid #F3F4F6;">'
+          // CUERPO BLANCO — altura fija con flex column
+          +'<div style="padding:1.25rem;display:flex;flex-direction:column;min-height:180px;">'
+            +'<div style="font-size:0.78rem;color:#6B7280;line-height:1.6;margin-bottom:0.75rem;flex:1;">'+desc+'</div>'
+            +(tags?'<div style="margin-bottom:0.75rem;">'+tags+'</div>':'<div style="margin-bottom:0.75rem;height:1.5rem;"></div>')
+            +'<div style="display:flex;justify-content:space-between;align-items:center;padding-top:0.75rem;border-top:1px solid #F3F4F6;margin-top:auto;">'
               +'<span style="font-size:0.75rem;color:#6B7280;">'+abiertos+' rol'+(abiertos!==1?'es':'')+(abiertos!==1?' abiertos':' abierto')+'</span>'
               +'<span style="font-size:0.78rem;font-weight:700;color:#1D9E75;">Ver proyecto →</span>'
             +'</div>'
