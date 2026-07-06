@@ -8,6 +8,17 @@ const supabase = createClient(
 export async function GET(request, context) {
   const params = await context.params
   const id = params.id
+  const { searchParams } = new URL(request.url)
+
+  // Modo rápido: solo verificar si tiene postulaciones aceptadas
+  if (searchParams.get('check_equipo')) {
+    const { data: roles } = await supabase.from('roles').select('id').eq('proyecto_id', id)
+    if (!roles || roles.length === 0) return Response.json({ tiene_equipo: false })
+    const rolIds = roles.map(r => r.id)
+    const { data: aceptadas } = await supabase
+      .from('postulaciones').select('id').in('rol_id', rolIds).eq('estado', 'aceptada').limit(1)
+    return Response.json({ tiene_equipo: !!(aceptadas && aceptadas.length > 0) })
+  }
 
   const { data, error } = await supabase
     .from('proyectos')

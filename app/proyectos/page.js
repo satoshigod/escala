@@ -46,6 +46,7 @@ export default function Proyectos() {
   const [enviando, setEnviando] = useState(false)
   const [eliminando, setEliminando] = useState(null)
   const [confirmarEliminar, setConfirmarEliminar] = useState(null)
+  const [proyectosConEquipo, setProyectosConEquipo] = useState({}) // { [id]: true/false }
   const [mensaje, setMensaje] = useState('')
   const [paisesDB, setPaisesDB] = useState([])
   const [nuevoPaisNombre, setNuevoPaisNombre] = useState('')
@@ -66,8 +67,21 @@ export default function Proyectos() {
       ])
       const data = await pRes.json()
       const pData = await paisRes.json()
-      setProyectos(data.proyectos || [])
+      const ps = data.proyectos || []
+      setProyectos(ps)
       setPaisesDB(pData.paises || [])
+      // Para cada proyecto del usuario, verificar si tiene postulaciones aceptadas
+      if (user) {
+        const miosIds = ps.filter(p => p.fundador_id === user.id).map(p => p.id)
+        const checks = await Promise.all(miosIds.map(async pid => {
+          try {
+            const r = await fetch(`/api/proyectos/${pid}?check_equipo=1&fundador_id=${user.id}`)
+            const d = await r.json()
+            return [pid, d.tiene_equipo || false]
+          } catch { return [pid, false] }
+        }))
+        setProyectosConEquipo(Object.fromEntries(checks))
+      }
       setCargando(false)
     }
     cargar()
@@ -303,10 +317,7 @@ export default function Proyectos() {
                       <div style={s.cardDesc}>{p.descripcion}</div>
                       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'0.5rem'}}>
                         <span style={s.cardBadge}>● {p.estado}</span>
-                        {p.fundador_id === usuario?.id && (() => {
-                          const tieneEquipo = (p.roles || []).some(r => r.estado !== 'abierto')
-                          return !tieneEquipo
-                        })() && (
+                        {p.fundador_id === usuario?.id && !proyectosConEquipo[p.id] && (
                           confirmarEliminar === p.id ? (
                             <div style={{display:'flex',gap:'0.4rem',alignItems:'center'}}>
                               <span style={{fontSize:'0.72rem',color:'#E85A20'}}>¿Eliminar?</span>
