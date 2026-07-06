@@ -36,7 +36,7 @@ export async function GET(request) {
 // POST — crear nuevo proyecto
 export async function POST(request) {
   const body = await request.json()
-  const { nombre, descripcion, tipo, sector, ciudad, fundador_id, industria, pais, estado, estado_financiacion } = body
+  const { nombre, descripcion, tipo, sector, ciudad, fundador_id, industria, pais, estado, estado_financiacion, nivel_avance, modalidad_trabajo, roles_buscados } = body
 
   if (!nombre || !descripcion || !tipo || !fundador_id) {
     return Response.json({ error: 'Faltan campos requeridos' }, { status: 400 })
@@ -44,7 +44,7 @@ export async function POST(request) {
 
   const { data, error } = await supabase
     .from('proyectos')
-    .insert([{ nombre, descripcion, tipo, sector, ciudad, fundador_id, industria: industria || null, pais: pais || null, estado: estado || 'activo', estado_financiacion: estado_financiacion || 'riesgo_compartido' }])
+    .insert([{ nombre, descripcion, tipo, sector, ciudad, fundador_id, industria: industria || null, pais: pais || null, estado: estado || 'activo', estado_financiacion: estado_financiacion || 'riesgo_compartido', nivel_avance: nivel_avance || null, modalidad_trabajo: modalidad_trabajo || null, roles_buscados: roles_buscados || [] }])
     .select()
     .single()
 

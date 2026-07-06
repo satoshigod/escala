@@ -4,6 +4,32 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const sectores = ['Tecnología','Salud','Educación','Agro','Comercio','Servicios','Construcción','Alimentos','Moda','Otro']
+
+const NIVELES_AVANCE = [
+  { id: 'tengo_la_idea',      emoji: '💡', label: 'Tengo la idea',      desc: 'Sé qué quiero hacer pero aún no he empezado' },
+  { id: 'ya_empece',          emoji: '🔧', label: 'Ya empecé',          desc: 'Tengo algo funcionando, aunque sea pequeño' },
+  { id: 'tengo_clientes',     emoji: '🤝', label: 'Tengo clientes',     desc: 'Ya hay personas pagando o usando lo que ofrezco' },
+  { id: 'necesito_crecer',    emoji: '📈', label: 'Necesito crecer',    desc: 'El negocio funciona pero me falta capital o equipo' },
+  { id: 'quiero_transformar', emoji: '🔄', label: 'Quiero transformar', desc: 'Tengo una empresa y necesito cambiar algo' },
+]
+
+const MODALIDADES = [
+  { id: 'remoto',     emoji: '🌐', label: 'Remoto' },
+  { id: 'presencial', emoji: '📍', label: 'Presencial' },
+  { id: 'hibrido',    emoji: '🔀', label: 'Híbrido' },
+]
+
+const ROLES_DISPONIBLES = [
+  { id: 'Capitalista',    emoji: '💰' },
+  { id: 'Cofundador',     emoji: '🤝' },
+  { id: 'Desarrollador',  emoji: '💻' },
+  { id: 'Diseñador',      emoji: '🎨' },
+  { id: 'Contador',       emoji: '📊' },
+  { id: 'Abogado',        emoji: '⚖️' },
+  { id: 'Marketing',      emoji: '📣' },
+  { id: 'Ventas',         emoji: '🎯' },
+  { id: 'Otro',           emoji: '➕' },
+]
 const INDUSTRIAS_LIST = ['Restaurante','Retail','Servicios Profesionales','Tecnología','Comercio Electrónico']
 const PAISES_LIST = [
   { nombre: 'Colombia', bandera: '🇨🇴' }, { nombre: 'México', bandera: '🇲🇽' },
@@ -24,7 +50,7 @@ export default function Proyectos() {
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [creandoPais, setCreandoPais] = useState(false)
   const [form, setForm] = useState({
-    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido'
+    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mejorando_ia: false
   })
 
   useEffect(() => {
@@ -47,6 +73,39 @@ export default function Proyectos() {
 
   function actualizar(campo, valor) {
     setForm(f => ({ ...f, [campo]: valor }))
+  }
+
+  function toggleRol(rol) {
+    setForm(f => {
+      const ya = f.roles_buscados.includes(rol)
+      return { ...f, roles_buscados: ya ? f.roles_buscados.filter(r => r !== rol) : [...f.roles_buscados, rol] }
+    })
+  }
+
+  async function mejorarConIA() {
+    if (!form.descripcion || form.descripcion.length < 20) {
+      setMensaje('Escribe una descripción antes de mejorarla con IA')
+      return
+    }
+    setForm(f => ({ ...f, mejorando_ia: true }))
+    setMensaje('')
+    try {
+      const res = await fetch('/api/ia/mejorar-descripcion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ descripcion: form.descripcion, nombre: form.nombre, sector: form.sector })
+      })
+      const data = await res.json()
+      if (data.descripcion) {
+        setForm(f => ({ ...f, descripcion: data.descripcion, mejorando_ia: false }))
+      } else {
+        setMensaje('No se pudo mejorar. Intenta de nuevo.')
+        setForm(f => ({ ...f, mejorando_ia: false }))
+      }
+    } catch {
+      setMensaje('Error al conectar con IA')
+      setForm(f => ({ ...f, mejorando_ia: false }))
+    }
   }
 
   async function crearNuevoPais() {
@@ -120,7 +179,7 @@ export default function Proyectos() {
 
       setProyectos(p => [data.proyecto, ...p])
       setVista('lista')
-      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '' })
+      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mejorando_ia: false })
     }
     setEnviando(false)
   }
@@ -229,7 +288,12 @@ export default function Proyectos() {
             <label style={s.label} htmlFor="py-nombre">Nombre del proyecto *</label>
             <input id="py-nombre" style={s.input} value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} placeholder="Ej: VetApp, Ekivibe, POS Restaurantes..." />
 
-            <label style={s.label} htmlFor="py-descripcion">Descripción *</label>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.4rem'}}>
+              <label style={{...s.label,marginBottom:0}} htmlFor="py-descripcion">Descripción *</label>
+              <button type="button" onClick={mejorarConIA} disabled={form.mejorando_ia} style={{background:'rgba(29,158,117,0.15)',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'6px',padding:'0.3rem 0.7rem',fontSize:'0.72rem',fontWeight:'700',color:'#1D9E75',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                {form.mejorando_ia ? '⏳ Mejorando...' : '✨ Mejorar con IA'}
+              </button>
+            </div>
             <textarea id="py-descripcion" style={s.textarea} value={form.descripcion} onChange={e => actualizar('descripcion', e.target.value)} placeholder="¿Qué es el proyecto? ¿Qué problema resuelve? ¿En qué etapa está?" />
 
             <label style={s.label}>Tipo de proyecto *</label>
@@ -294,6 +358,52 @@ export default function Proyectos() {
                 </select>
                 {form.industria && <div style={{fontSize:'0.7rem',color:'#E8A020',marginTop:'-0.75rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas comerciales de {form.industria} al crear</div>}
               </div>
+            </div>
+
+            {/* NIVEL DE AVANCE */}
+            <label style={s.label}>¿En qué etapa está tu proyecto? *</label>
+            <div style={{display:'flex',flexDirection:'column',gap:'0.5rem',marginBottom:'1.25rem'}}>
+              {NIVELES_AVANCE.map(n => (
+                <div key={n.id}
+                  onClick={() => actualizar('nivel_avance', n.id)}
+                  style={{display:'flex',alignItems:'center',gap:'0.875rem',padding:'0.875rem 1rem',borderRadius:'10px',border:`1px solid ${form.nivel_avance === n.id ? '#1D9E75' : 'rgba(255,255,255,0.1)'}`,background:form.nivel_avance === n.id ? 'rgba(29,158,117,0.12)' : 'rgba(255,255,255,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
+                  <span style={{fontSize:'1.25rem'}}>{n.emoji}</span>
+                  <div>
+                    <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff'}}>{n.label}</div>
+                    <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>{n.desc}</div>
+                  </div>
+                  {form.nivel_avance === n.id && <span style={{marginLeft:'auto',color:'#1D9E75',fontSize:'1rem'}}>✓</span>}
+                </div>
+              ))}
+            </div>
+
+            {/* MODALIDAD */}
+            <label style={s.label}>Modalidad de trabajo</label>
+            <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.25rem',flexWrap:'wrap'}}>
+              {MODALIDADES.map(m => (
+                <div key={m.id}
+                  onClick={() => actualizar('modalidad_trabajo', form.modalidad_trabajo === m.id ? '' : m.id)}
+                  style={{flex:1,minWidth:'90px',textAlign:'center',padding:'0.75rem 0.5rem',borderRadius:'10px',border:`1px solid ${form.modalidad_trabajo === m.id ? '#1D9E75' : 'rgba(255,255,255,0.1)'}`,background:form.modalidad_trabajo === m.id ? 'rgba(29,158,117,0.12)' : 'rgba(255,255,255,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
+                  <div style={{fontSize:'1.25rem',marginBottom:'0.25rem'}}>{m.emoji}</div>
+                  <div style={{fontSize:'0.8rem',fontWeight:'600',color: form.modalidad_trabajo === m.id ? '#1D9E75' : '#fff'}}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* ROLES BUSCADOS */}
+            <label style={s.label}>¿Qué perfiles necesitas? (elige los que apliquen)</label>
+            <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem',marginBottom:'1.5rem'}}>
+              {ROLES_DISPONIBLES.map(r => {
+                const sel = form.roles_buscados.includes(r.id)
+                return (
+                  <div key={r.id}
+                    onClick={() => toggleRol(r.id)}
+                    style={{display:'flex',alignItems:'center',gap:'0.4rem',padding:'0.5rem 0.875rem',borderRadius:'20px',border:`1px solid ${sel ? '#1D9E75' : 'rgba(255,255,255,0.12)'}`,background:sel ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.04)',cursor:'pointer',fontSize:'0.82rem',fontWeight: sel ? '700' : '400',color: sel ? '#1D9E75' : '#C8D4E8',transition:'all 0.15s'}}>
+                    <span>{r.emoji}</span> {r.id}
+                    {sel && <span style={{fontSize:'0.75rem'}}>✓</span>}
+                  </div>
+                )
+              })}
             </div>
 
             {mensaje && <div style={s.error}>{mensaje}</div>}
