@@ -538,6 +538,15 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
 @media(prefers-reduced-motion:reduce){.fu,.fu2,.fu3{animation:none;}}
 
 
+.pg-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;align-items:start;}
+@media(max-width:640px){.pg-wrap{grid-template-columns:1fr;}}
+@media(min-width:900px){.pg-wrap{grid-template-columns:repeat(3,1fr);}}
+.pg-card{border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
+.pg-header{padding:1.25rem;display:flex;flex-direction:column;height:200px;box-sizing:border-box;}
+.pg-body{padding:1.25rem;background:#fff;display:flex;flex-direction:column;}
+.pg-desc{font-size:0.78rem;color:#6B7280;line-height:1.6;margin-bottom:0.75rem;min-height:4.5rem;}
+.pg-roles{display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.75rem;min-height:1.8rem;}
+.pg-footer{display:flex;justify-content:space-between;padding-top:0.75rem;border-top:1px solid #F3F4F6;margin-top:auto;}
 /* Tooltips en tags de proyecto */
 .tag-tip { position: relative; }
 .tag-tip::after {
@@ -626,7 +635,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <span class="ey">En este momento en Escala</span>
   <h2 class="ttl ttl-w">Proyectos reales buscando equipo</h2>
   <p class="sub" style="color:#8FA3CC;">Proyectos publicados por fundadores reales. Si ves algo que encaja con lo que puedes aportar, regístrate y postúlate.</p>
-  <div class="casos-grid" id="home-proyectos-grid" style="margin-top:2rem;">
+  <div class="pg-wrap" id="home-proyectos-grid" style="margin-top:2rem;">
     <div style="grid-column:1/-1;text-align:center;color:var(--g5);font-size:0.875rem;padding:2rem;">Cargando proyectos...</div>
   </div>
   <div class="tc mt2">
@@ -831,43 +840,45 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
         var desc = p.descripcion ? (p.descripcion.length > 120 ? p.descripcion.substring(0,120)+'...' : p.descripcion) : '';
         var esEscala = p.id === 'f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf';
 
-        var TS = 'display:inline-block;font-size:0.62rem;font-weight:700;padding:0.22rem 0.6rem;border-radius:20px;white-space:nowrap;cursor:default;line-height:1.4;';
+        var TS = 'font-size:0.62rem;font-weight:700;padding:0.22rem 0.6rem;border-radius:20px;white-space:nowrap;';
         var NTIPS = {tengo_la_idea:'El fundador tiene la idea clara pero no ha empezado.',ya_empece:'Ya hay algo funcionando.',tengo_clientes:'Ya hay personas pagando.',necesito_crecer:'El negocio funciona pero necesita crecer.',quiero_transformar:'Empresa que necesita transformarse.'};
         var nLabel = NIVEL[p.nivel_avance] || '· Sin etapa';
-        var nivelTag = '<span class="tag-tip" data-tip="'+(NTIPS[p.nivel_avance]||'')+'" style="position:relative;'+TS+'background:#D1FAE5;color:#065F46;">'+nLabel+'</span>';
-        var fLabel = p.estado_financiacion === 'con_recursos' ? '💵 Con recursos' : '🤝 Riesgo compartido';
-        var finTag = '<span class="tag-tip" data-tip="'+(p.estado_financiacion==='con_recursos'?'Hay fondos reales.':'Sin fondos, pago diferido.')+'" style="position:relative;'+TS+(p.estado_financiacion==='con_recursos'?'background:#FEF3C7;color:#78350F;':'background:#EDE9FE;color:#4C1D95;')+'">'+fLabel+'</span>';
-        var tLabel = p.tipo === 'A' ? '🚀 Empresa nueva' : '🔄 Transformación';
-        var tipoTag = '<span class="tag-tip" data-tip="'+(p.tipo==='A'?'Empresa desde cero.':'Empresa existente.')+'" style="position:relative;'+TS+'background:#DCFCE7;color:#166534;">'+tLabel+'</span>';
-        var BF = {Colombia:'🇨🇴',México:'🇲🇽',Perú:'🇵🇪',Chile:'🇨🇱',Argentina:'🇦🇷',España:'🇪🇸','Estados Unidos':'🇺🇸'};
-        var paisTag = p.pais ? '<span class="tag-tip" data-tip="Tareas regulatorias de '+p.pais+' cargadas automáticamente." style="position:relative;'+TS+'background:rgba(255,255,255,0.15);color:#fff;">'+(BF[p.pais]||'🌐')+' '+p.pais+'</span>' : '';
+        var nivelTag = '<span class="tag-tip" data-tip="'+(NTIPS[p.nivel_avance]||'')+'" style="position:relative;display:inline-block;'+TS+'background:#D1FAE5;color:#065F46;">'+nLabel+'</span>';
+        var fLabel = p.estado_financiacion === 'con_recursos' ? '&#128181; Con recursos' : '&#129309; Riesgo compartido';
+        var finTag = '<span class="tag-tip" data-tip="'+(p.estado_financiacion==='con_recursos'?'Hay fondos reales.':'Sin fondos, pago diferido.')+'" style="position:relative;display:inline-block;'+TS+(p.estado_financiacion==='con_recursos'?'background:#FEF3C7;color:#78350F;':'background:#EDE9FE;color:#4C1D95;')+'">'+fLabel+'</span>';
+        var tLabel = p.tipo === 'A' ? '&#128640; Empresa nueva' : '&#128260; Transformación';
+        var tipoTag = '<span class="tag-tip" data-tip="'+(p.tipo==='A'?'Empresa desde cero.':'Empresa existente.')+'" style="position:relative;display:inline-block;'+TS+'background:#DCFCE7;color:#166534;">'+tLabel+'</span>';
+        var BF = {Colombia:'&#127464;&#127476;',México:'&#127474;&#127485;',Perú:'&#127477;&#127466;',Chile:'&#127464;&#127473;',Argentina:'&#127462;&#127479;',España:'&#127466;&#127480;','Estados Unidos':'&#127482;&#127480;'};
+        var paisTag = p.pais ? '<span class="tag-tip" data-tip="Tareas de '+p.pais+' cargadas automáticamente." style="position:relative;display:inline-block;'+TS+'background:rgba(255,255,255,0.15);color:#fff;">'+(BF[p.pais]||'&#127760;')+' '+p.pais+'</span>' : '';
         var tags = (p.roles_buscados||[]).slice(0,3).map(function(r){
-          return '<span style="'+TS+'background:#EEF2FF;color:#3730A3;">'+r+'</span>';
+          return '<span style="display:inline-block;'+TS+'background:#EEF2FF;color:#3730A3;">'+r+'</span>';
         }).join('');
 
         var border = esEscala ? '2px solid #D4AF37' : '1px solid #E5E7EB';
-        var shadow = esEscala ? 'box-shadow:0 0 0 1px rgba(212,175,55,0.2),0 8px 24px rgba(212,175,55,0.1);' : '';
+        var shadow = esEscala ? 'box-shadow:0 0 0 1px rgba(212,175,55,0.15);' : '';
         var hbg = esEscala ? 'background:linear-gradient(160deg,#0d1e3a,#1a1200);' : 'background:#0A1530;';
-        var badge = esEscala ? '<div style="position:absolute;top:-1.2rem;left:0;right:0;text-align:left;padding-left:0.25rem;"><span style="font-size:0.6rem;font-weight:800;letter-spacing:0.1em;color:#D4AF37;text-transform:uppercase;">⭐ Proyecto fundador · Escala Network</span></div>' : '';
+        var badge = esEscala
+          ? '<div style="height:1.4rem;display:flex;align-items:center;margin-bottom:0;"><span style="font-size:0.6rem;font-weight:700;letter-spacing:0.08em;color:#D4AF37;text-transform:uppercase;">&#11088; Proyecto fundador &middot; Escala Network</span></div>'
+          : '<div style="height:1.4rem;visibility:hidden;font-size:0.6rem;">&middot;</div>';
 
-        return '<div style="position:relative;padding-top:'+(esEscala?'1.5rem':'0')+';">'
+        return '<div style="display:flex;flex-direction:column;">'
           +badge
-          +'<a href="/proyectos/'+p.id+'" class="proj-card-inner" style="text-decoration:none;border:'+border+';border-radius:14px;overflow:hidden;'+shadow+'">'
-            +'<div class="proj-card-header" style="'+hbg+'">'
-              +'<div style="font-size:1.2rem;margin-bottom:0.5rem;">'+(EMOJI[p.sector]||'🚀')+'</div>'
-              +'<div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.6rem;">'
+          +'<a href="/proyectos/'+p.id+'" class="pg-card" style="text-decoration:none;border:'+border+';'+shadow+'">'
+            +'<div class="pg-header" style="'+hbg+'">'
+              +'<div style="font-size:1.1rem;margin-bottom:0.5rem;">'+(EMOJI[p.sector]||'&#128640;')+'</div>'
+              +'<div style="display:flex;gap:0.3rem;flex-wrap:nowrap;margin-bottom:0.6rem;">'
                 +nivelTag+finTag+tipoTag
               +'</div>'
-              +'<div style="font-size:0.95rem;font-weight:800;color:#fff;margin-bottom:0.2rem;flex:1;">'+p.nombre+'</div>'
-              +'<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:0.4rem;">'+(p.sector||'')+(p.ciudad?' · '+p.ciudad:'')+'</div>'
-              +'<div>'+(paisTag||'')+'</div>'
+              +'<div style="font-size:0.95rem;font-weight:800;color:#fff;margin-bottom:0.2rem;">'+p.nombre+'</div>'
+              +'<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:0.4rem;">'+(p.sector||'')+(p.ciudad?' &middot; '+p.ciudad:'')+'</div>'
+              +'<div style="margin-top:auto;">'+(paisTag||'')+'</div>'
             +'</div>'
-            +'<div class="proj-card-body">'
-              +'<div style="font-size:0.78rem;color:#6B7280;line-height:1.6;margin-bottom:0.75rem;flex:1;">'+desc+'</div>'
-              +(tags?'<div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.75rem;">'+tags+'</div>':'<div style="margin-bottom:0.75rem;min-height:1.8rem;"></div>')
-              +'<div style="display:flex;justify-content:space-between;align-items:center;padding-top:0.75rem;border-top:1px solid #F3F4F6;margin-top:auto;">'
+            +'<div class="pg-body">'
+              +'<div class="pg-desc">'+desc+'</div>'
+              +'<div class="pg-roles">'+(tags||'')+'</div>'
+              +'<div class="pg-footer">'
                 +'<span style="font-size:0.75rem;color:#6B7280;">'+abiertos+' rol'+(abiertos!==1?'es':'')+(abiertos!==1?' abiertos':' abierto')+'</span>'
-                +'<span style="font-size:0.78rem;font-weight:700;color:#1D9E75;">Ver proyecto →</span>'
+                +'<span style="font-size:0.78rem;font-weight:700;color:#1D9E75;">Ver proyecto &#8594;</span>'
               +'</div>'
             +'</div>'
           +'</a>'
