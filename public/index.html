@@ -825,37 +825,71 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
         grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:3rem 1rem;"><div style="font-size:2rem;margin-bottom:0.75rem;">🚀</div><div style="font-size:0.95rem;color:var(--g5);margin-bottom:1rem;">Sé el primero en publicar tu proyecto.</div><a href="/registro" style="display:inline-block;background:var(--green);color:#fff;padding:0.6rem 1.5rem;border-radius:8px;font-size:0.875rem;font-weight:700;text-decoration:none;">Publicar proyecto →</a></div>';
         return;
       }
-      var BADGE_H = 29; // altura del badge en px para compensar en otras tarjetas
       grid.innerHTML = proyectos.map(function(p) {
         var roles = p.roles || [];
         var abiertos = roles.filter(function(r){ return r.estado === 'abierto'; }).length;
         var desc = p.descripcion ? (p.descripcion.length > 120 ? p.descripcion.substring(0,120)+'...' : p.descripcion) : '';
         var esEscala = p.id === 'f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf';
 
-        // Estilo base uniforme para TODOS los tags
-        var TS = 'position:relative;display:inline-block;font-size:0.65rem;padding:0.25rem 0.65rem;border-radius:20px;font-weight:700;white-space:nowrap;cursor:default;';
+        // Estilo único para TODOS los tags — ovalados, mismo tamaño, texto legible
+        var TS = 'display:inline-block;font-size:0.62rem;font-weight:700;padding:0.22rem 0.6rem;border-radius:20px;white-space:nowrap;cursor:default;line-height:1.4;';
 
-        // Tags de estado
+        // Tag nivel
         var NTIPS = {tengo_la_idea:'El fundador tiene la idea clara pero no ha empezado.',ya_empece:'Ya hay algo funcionando: prototipo o primeras ventas.',tengo_clientes:'Ya hay personas pagando o usando el producto.',necesito_crecer:'El negocio funciona pero necesita capital o equipo.',quiero_transformar:'Empresa existente que necesita transformarse.'};
         var nLabel = NIVEL[p.nivel_avance] || '· Sin etapa';
-        var nivelTag = '<span class="tag-tip" data-tip="'+(NTIPS[p.nivel_avance]||'')+'" style="'+TS+'background:#F0FDF4;color:#166534;">'+nLabel+'</span>';
+        var nivelTag = '<span class="tag-tip" data-tip="'+(NTIPS[p.nivel_avance]||'')+'" style="position:relative;'+TS+'background:#D1FAE5;color:#065F46;">'+nLabel+'</span>';
 
+        // Tag financiación
         var fLabel = p.estado_financiacion === 'con_recursos' ? '💵 Con recursos' : '🤝 Riesgo compartido';
         var fTip = p.estado_financiacion === 'con_recursos' ? 'Hay fondos reales para pagar en efectivo.' : 'Sin fondos. El pago queda como acciones o deuda registrada.';
-        var finTag = '<span class="tag-tip" data-tip="'+fTip+'" style="'+TS+(p.estado_financiacion==='con_recursos'?'background:#FEF3C7;color:#92400E;':'background:#EDE9FE;color:#5B21B6;')+'">'+fLabel+'</span>';
+        var finTag = '<span class="tag-tip" data-tip="'+fTip+'" style="position:relative;'+TS+(p.estado_financiacion==='con_recursos'?'background:#FEF3C7;color:#78350F;':'background:#EDE9FE;color:#4C1D95;')+'">'+fLabel+'</span>';
 
+        // Tag tipo
         var tLabel = p.tipo === 'A' ? '🚀 Empresa nueva' : '🔄 Transformación';
         var tTip = p.tipo === 'A' ? 'Se construye una empresa desde cero.' : 'Empresa existente que necesita un especialista.';
-        var tipoTag = '<span class="tag-tip" data-tip="'+tTip+'" style="'+TS+'background:rgba(29,158,117,0.15);color:#1D9E75;">'+tLabel+'</span>';
+        var tipoTag = '<span class="tag-tip" data-tip="'+tTip+'" style="position:relative;'+TS+'background:#DCFCE7;color:#166534;">'+tLabel+'</span>';
 
-        // País
+        // Tag país
         var BF = {Colombia:'🇨🇴',México:'🇲🇽',Perú:'🇵🇪',Chile:'🇨🇱',Argentina:'🇦🇷',España:'🇪🇸','Estados Unidos':'🇺🇸'};
-        var paisTag = p.pais ? '<span class="tag-tip" data-tip="Las tareas de constitución e impuestos de '+p.pais+' se cargan automáticamente." style="'+TS+'background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);">'+(BF[p.pais]||'🌐')+' '+p.pais+'</span>' : '';
+        var paisTag = p.pais ? '<span class="tag-tip" data-tip="Las tareas de constitución e impuestos de '+p.pais+' se cargan automáticamente." style="position:relative;'+TS+'background:rgba(255,255,255,0.15);color:#fff;">'+(BF[p.pais]||'🌐')+' '+p.pais+'</span>' : '';
 
-        // Roles buscados
+        // Roles buscados — mismo estilo ovalado
         var tags = (p.roles_buscados||[]).slice(0,3).map(function(r){
           return '<span style="'+TS+'background:#EEF2FF;color:#3730A3;">'+r+'</span>';
         }).join('');
+
+        var cardBorder = esEscala ? '2px solid #D4AF37' : '1px solid #E5E7EB';
+        var cardShadow = esEscala ? 'box-shadow:0 0 0 1px rgba(212,175,55,0.2),0 8px 24px rgba(212,175,55,0.1);' : '';
+        var headerBg = esEscala ? 'background:linear-gradient(160deg,#0d1e3a,#1a1200);' : 'background:#0A1530;';
+
+        // Badge encima — texto flotante para Escala, div invisible para los demás
+        var topLabel = esEscala
+          ? '<div style="padding:0.3rem 0 0.4rem;text-align:center;"><span style="font-size:0.6rem;font-weight:800;letter-spacing:0.1em;color:#D4AF37;text-transform:uppercase;">⭐ Proyecto fundador · Escala Network</span></div>'
+          : '<div style="padding:0.3rem 0 0.4rem;opacity:0;user-select:none;font-size:0.6rem;">·</div>';
+
+        return '<div style="display:flex;flex-direction:column;">'
+          +topLabel
+          +'<a href="/proyectos/'+p.id+'" style="text-decoration:none;display:flex;flex-direction:column;flex:1;background:#fff;border:'+cardBorder+';border-radius:14px;overflow:hidden;transition:all 0.2s;'+cardShadow+'">'
+            +'<div style="'+headerBg+'padding:1.25rem;display:flex;flex-direction:column;">'
+              +'<div style="font-size:1.2rem;margin-bottom:0.6rem;">'+(EMOJI[p.sector]||'🚀')+'</div>'
+              +'<div style="display:flex;gap:0.3rem;margin-bottom:0.6rem;flex-wrap:nowrap;">'
+                +nivelTag+finTag+tipoTag
+              +'</div>'
+              +'<div style="font-size:0.95rem;font-weight:800;color:#fff;margin-bottom:0.2rem;">'+p.nombre+'</div>'
+              +'<div style="font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:0.4rem;">'+(p.sector||'')+(p.ciudad?' · '+p.ciudad:'')+'</div>'
+              +'<div>'+(paisTag||'')+'</div>'
+            +'</div>'
+            +'<div style="padding:1.25rem;display:flex;flex-direction:column;flex:1;">'
+              +'<div style="font-size:0.78rem;color:#6B7280;line-height:1.6;margin-bottom:0.75rem;flex:1;">'+desc+'</div>'
+              +(tags?'<div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-bottom:0.75rem;">'+tags+'</div>':'<div style="margin-bottom:0.75rem;min-height:1.8rem;"></div>')
+              +'<div style="display:flex;justify-content:space-between;align-items:center;padding-top:0.75rem;border-top:1px solid #F3F4F6;margin-top:auto;">'
+                +'<span style="font-size:0.75rem;color:#6B7280;">'+abiertos+' rol'+(abiertos!==1?'es':'')+(abiertos!==1?' abiertos':' abierto')+'</span>'
+                +'<span style="font-size:0.78rem;font-weight:700;color:#1D9E75;">Ver proyecto →</span>'
+              +'</div>'
+            +'</div>'
+          +'</a>'
+        +'</div>';
+      }).join('');
 
         var cardBorder = esEscala ? '2px solid #D4AF37' : '1px solid #E5E7EB';
         var cardShadow = esEscala ? 'box-shadow:0 0 0 1px rgba(212,175,55,0.2),0 8px 24px rgba(212,175,55,0.1);' : '';
