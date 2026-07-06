@@ -19,12 +19,42 @@ export async function GET(request, context) {
   return Response.json({ proyecto: data })
 }
 
-// DELETE — eliminar proyecto y todo lo asociado (roles, postulaciones, tareas, historial, hitos, aportes, mensajes)
+// DELETE — eliminar proyecto solo si el usuario es el fundador y no hay postulaciones aceptadas
 export async function DELETE(request, context) {
   const params = await context.params
   const id = params.id
 
   if (!id) return Response.json({ error: 'Falta el id del proyecto' }, { status: 400 })
+
+  // Verificar que quien elimina es el fundador
+  const { searchParams } = new URL(request.url)
+  const fundador_id = searchParams.get('fundador_id')
+  if (!fundador_id) return Response.json({ error: 'Se requiere fundador_id' }, { status: 400 })
+
+  // Verificar que el proyecto existe y pertenece al fundador
+  const { data: proyecto, error: errorProyecto } = await supabase
+    .from('proyectos')
+    .select('id, fundador_id')
+    .eq('id', id)
+    .single()
+
+  if (errorProyecto || !proyecto) return Response.json({ error: 'Proyecto no encontrado' }, { status: 404 })
+  if (proyecto.fundador_id !== fundador_id) return Response.json({ error: 'Solo el fundador puede eliminar este proyecto' }, { status: 403 })
+
+  // Verificar que no haya postulaciones aceptadas en ningún rol
+  const { data: rolesConAceptados } = await supabase
+    .from('roles')
+    .select('id, postulaciones!inner(id, estado)')
+    .eq('proyecto_id', id)
+    .eq('postulaciones.estado', 'aceptada')
+    .limit(1)
+
+  if (rolesConAceptados && rolesConAceptados.length > 0) {
+    return Response.json({
+      error: 'No puedes eliminar este proyecto — ya hay personas aceptadas en algún rol. Si quieres cancelarlo, contáctanos.',
+      codigo: 'tiene_aceptados'
+    }, { status: 409 })
+  }
 
   try {
     // Borrar historial de tareas del proyecto

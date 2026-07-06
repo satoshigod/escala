@@ -44,6 +44,8 @@ export default function Proyectos() {
   const [vista, setVista] = useState('lista')
   const [cargando, setCargando] = useState(true)
   const [enviando, setEnviando] = useState(false)
+  const [eliminando, setEliminando] = useState(null)
+  const [confirmarEliminar, setConfirmarEliminar] = useState(null)
   const [mensaje, setMensaje] = useState('')
   const [paisesDB, setPaisesDB] = useState([])
   const [nuevoPaisNombre, setNuevoPaisNombre] = useState('')
@@ -120,6 +122,29 @@ export default function Proyectos() {
       alert('Error de conexión: ' + e.message)
     }
     setCreandoPais(false)
+  }
+
+  async function eliminarProyecto(proyectoId) {
+    setEliminando(proyectoId)
+    try {
+      const res = await fetch(`/api/proyectos/${proyectoId}?fundador_id=${usuario.id}`, {
+        method: 'DELETE'
+      })
+      const data = await res.json()
+      if (data.error) {
+        if (data.codigo === 'tiene_aceptados') {
+          alert('No puedes eliminar este proyecto — ya hay personas aceptadas en algún rol.')
+        } else {
+          alert('Error: ' + data.error)
+        }
+      } else {
+        setProyectos(prev => prev.filter(p => p.id !== proyectoId))
+      }
+    } catch (e) {
+      alert('Error de conexión: ' + e.message)
+    }
+    setEliminando(null)
+    setConfirmarEliminar(null)
   }
 
   async function publicar() {
@@ -268,15 +293,34 @@ export default function Proyectos() {
             ) : (
               <div style={s.grid}>
                 {proyectos.map(p => (
-                  <div key={p.id} style={s.card} onClick={() => window.location.href="/proyectos/"+p.id} onMouseOver={e=>e.currentTarget.style.cursor="pointer"}>
-                    <div style={s.cardTop}>
+                  <div key={p.id} style={s.card}>
+                    <div style={{...s.cardTop, cursor:'pointer'}} onClick={() => window.location.href="/proyectos/"+p.id}>
                       <div style={s.cardTipo}>Tipo {p.tipo} — {p.tipo === 'A' ? 'Creación' : 'Transformación'}</div>
                       <div style={s.cardNombre}>{p.nombre}</div>
                       <div style={s.cardSector}>{p.sector} · {p.ciudad}</div>
                     </div>
                     <div style={s.cardBody}>
                       <div style={s.cardDesc}>{p.descripcion}</div>
-                      <span style={s.cardBadge}>● {p.estado}</span>
+                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'0.5rem'}}>
+                        <span style={s.cardBadge}>● {p.estado}</span>
+                        {p.fundador_id === usuario?.id && (
+                          confirmarEliminar === p.id ? (
+                            <div style={{display:'flex',gap:'0.4rem',alignItems:'center'}}>
+                              <span style={{fontSize:'0.72rem',color:'#E85A20'}}>¿Eliminar?</span>
+                              <button onClick={e => { e.stopPropagation(); eliminarProyecto(p.id) }} disabled={eliminando===p.id} style={{background:'#E85A20',color:'#fff',border:'none',borderRadius:'6px',padding:'0.25rem 0.6rem',fontSize:'0.72rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                                {eliminando===p.id ? '...' : 'Sí, eliminar'}
+                              </button>
+                              <button onClick={e => { e.stopPropagation(); setConfirmarEliminar(null) }} style={{background:'rgba(255,255,255,0.08)',color:'#8FA3CC',border:'none',borderRadius:'6px',padding:'0.25rem 0.6rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                                Cancelar
+                              </button>
+                            </div>
+                          ) : (
+                            <button onClick={e => { e.stopPropagation(); setConfirmarEliminar(p.id) }} style={{background:'none',color:'#E85A20',border:'1px solid rgba(232,90,32,0.25)',borderRadius:'6px',padding:'0.25rem 0.6rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif',opacity:'0.7'}}>
+                              Eliminar
+                            </button>
+                          )
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
