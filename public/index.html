@@ -543,9 +543,9 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
 .tag-tip::after {
   content: attr(data-tip);
   position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
+  top: calc(100% + 8px);
+  left: 0;
+  transform: none;
   background: #1a1a2e;
   color: #fff;
   font-size: 0.72rem;
@@ -558,8 +558,8 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s;
-  z-index: 100;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
 }
 .tag-tip:hover::after { opacity: 1; }
 </style>
@@ -856,15 +856,19 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
           : 'Empresa ya existente que necesita resolver una brecha específica con un especialista.';
         var tipoTag = '<span class="tag-tip" data-tip="'+tipoTip+'" style="position:relative;display:inline-block;font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:20px;background:rgba(29,158,117,0.1);color:#1D9E75;margin-bottom:0.5rem;margin-left:0.25rem;cursor:default;font-weight:600;">'+tipoLabel+'</span>';
 
-        // Ubicación
-        var ubicacion = [p.pais, p.ciudad].filter(Boolean).join(' · ');
+        // País con bandera y tooltip
+        var BANDERAS = {Colombia:'🇨🇴',México:'🇲🇽',Perú:'🇵🇪',Chile:'🇨🇱',Argentina:'🇦🇷',España:'🇪🇸','Estados Unidos':'🇺🇸'};
+        var bandera = p.pais ? (BANDERAS[p.pais] || '🌐') : '';
+        var paisTag = p.pais ? '<span class="tag-tip" data-tip="Las tareas regulatorias de '+p.pais+' se cargan automáticamente — constitución, impuestos y obligaciones legales específicas de ese país." style="position:relative;display:inline-block;font-size:0.68rem;padding:0.2rem 0.6rem;border-radius:20px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);margin-bottom:0.5rem;margin-left:0;cursor:default;font-weight:600;">'+bandera+' '+p.pais+'</span>' : '';
+        var ciudadStr = p.ciudad ? ' · '+p.ciudad : '';
 
         return '<a href="/proyectos/'+p.id+'" style="text-decoration:none;display:block;background:#fff;border:1px solid #E5E7EB;border-radius:14px;overflow:hidden;transition:all 0.2s;">'
           +'<div style="background:#0A1530;padding:1.25rem;">'
             +'<div style="font-size:1.4rem;margin-bottom:0.5rem;">'+(EMOJI[p.sector]||'🚀')+'</div>'
             +'<div style="margin-bottom:0.5rem;">'+nivelTag+finTag+tipoTag+'</div>'
             +'<div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">'+p.nombre+'</div>'
-            +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.45);">'+(p.sector||'')+(ubicacion?' · '+ubicacion:'')+'</div>'
+            +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.45);margin-bottom:0.5rem;">'+(p.sector||'')+ciudadStr+'</div>'
+            +(paisTag?'<div>'+paisTag+'</div>':'')
           +'</div>'
           +'<div style="padding:1.25rem;">'
             +'<div style="font-size:0.78rem;color:#6B7280;line-height:1.6;margin-bottom:0.75rem;">'+desc+'</div>'
