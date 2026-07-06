@@ -134,8 +134,24 @@ export default function Proyectos() {
   }
 
   async function publicar() {
-    if (!form.nombre || !form.descripcion || !form.sector) {
-      setMensaje('Completa nombre, descripción y sector')
+    if (!form.nombre.trim()) {
+      setMensaje('El nombre del proyecto es obligatorio')
+      return
+    }
+    if (!form.descripcion.trim()) {
+      setMensaje('La descripción es obligatoria — explica qué hace tu proyecto')
+      return
+    }
+    if (form.descripcion.trim().length < 80) {
+      setMensaje('La descripción es muy corta. Explica qué hace el proyecto, qué problema resuelve y a quién va dirigido. Mínimo 80 caracteres.')
+      return
+    }
+    if (!form.sector) {
+      setMensaje('Selecciona el sector del proyecto')
+      return
+    }
+    if (!form.pais) {
+      setMensaje('El país es obligatorio — define dónde opera el proyecto')
       return
     }
     setEnviando(true)
@@ -294,7 +310,15 @@ export default function Proyectos() {
                 {form.mejorando_ia ? '⏳ Mejorando...' : '✨ Mejorar con IA'}
               </button>
             </div>
-            <textarea id="py-descripcion" style={s.textarea} value={form.descripcion} onChange={e => actualizar('descripcion', e.target.value)} placeholder="¿Qué es el proyecto? ¿Qué problema resuelve? ¿En qué etapa está?" />
+            <textarea id="py-descripcion" style={s.textarea} value={form.descripcion} onChange={e => actualizar('descripcion', e.target.value)} placeholder="Ejemplo: VetApp es una plataforma para clínicas veterinarias en Colombia que automatiza la historia clínica de mascotas, recordatorios de vacunas y pagos. Resuelve el caos de los registros en papel que sufren el 80% de las clínicas pequeñas." rows={5} />
+            <div style={{fontSize:'0.72rem',marginTop:'-1rem',marginBottom:'1.25rem',display:'flex',justifyContent:'space-between'}}>
+              <span style={{color: form.descripcion.length < 80 ? '#E85A20' : '#1D9E75'}}>
+                {form.descripcion.length < 80
+                  ? `Muy corta — faltan ${80 - form.descripcion.length} caracteres mínimo`
+                  : `✓ Buena longitud (${form.descripcion.length} caracteres)`}
+              </span>
+              <span style={{color:'#8FA3CC'}}>{form.descripcion.length} / 500</span>
+            </div>
 
             <label style={s.label}>Tipo de proyecto *</label>
             <div style={s.tipoGrid}>
