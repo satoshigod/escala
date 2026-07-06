@@ -303,7 +303,10 @@ export default function Proyectos() {
                       <div style={s.cardDesc}>{p.descripcion}</div>
                       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'0.5rem'}}>
                         <span style={s.cardBadge}>● {p.estado}</span>
-                        {p.fundador_id === usuario?.id && (
+                        {p.fundador_id === usuario?.id && (() => {
+                          const tieneEquipo = (p.roles || []).some(r => r.estado !== 'abierto')
+                          return !tieneEquipo
+                        })() && (
                           confirmarEliminar === p.id ? (
                             <div style={{display:'flex',gap:'0.4rem',alignItems:'center'}}>
                               <span style={{fontSize:'0.72rem',color:'#E85A20'}}>¿Eliminar?</span>
