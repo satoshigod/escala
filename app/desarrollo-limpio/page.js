@@ -182,7 +182,7 @@ const fases = [
       { num: '11.6', nombre: 'Correos de autenticación — registro y recuperación de contraseña con dominio propio vía SMTP', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
       { num: '11.7', nombre: 'Canal SMS — pendiente (Twilio o Sinch)', done: false, valor: 1500000, quien: 'Desarrollador' },
       { num: '11.8', nombre: 'Canal WhatsApp — pendiente (API Meta vía Twilio o 360Dialog)', done: false, valor: 2000000, quien: 'Desarrollador' },
-      { num: '11.9', nombre: 'Notificaciones basadas en tiempo — pendiente (Vercel Cron Jobs)', done: false, valor: 1200000, quien: 'Desarrollador' },
+      { num: '11.9', nombre: 'Notificaciones basadas en tiempo — Vercel Cron Job diario 9am UTC, 3 verificaciones: tareas vencidas, hitos por vencer, proyectos sin actividad ↑ completado Fase 16', done: true, valor: 1200000, quien: 'Claude AI' },
       { num: '11.10', nombre: 'Resto del catálogo 229 eventos — se cablean a medida que cada módulo se construye', done: false, valor: 6000000, quien: 'Desarrollador' },
     ]
   },
