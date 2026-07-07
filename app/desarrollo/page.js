@@ -480,7 +480,19 @@ const fases = [
       { num: '27.4', nombre: 'miembro_se_retiro cableado en /api/desistir', done: true, valor: 200000, quien: 'Claude AI' },
       { num: '27.5', nombre: 'primera_venta cableado en /api/ingresos — detecta primer ingreso y notifica', done: true, valor: 200000, quien: 'Claude AI' },
       { num: '27.6', nombre: 'impulso_recibido + nueva API /api/impulsos (GET/POST) — notifica al fundador, otorga logro al Ángel', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '27.7', nombre: 'mensaje_recibido — pendiente: chat usa Realtime sin API route, requiere trigger de DB', done: false, valor: 200000, quien: 'Desarrollador' },
+      { num: '27.7', nombre: 'mensaje_recibido — trigger PostgreSQL con pg_net + API /api/notificaciones/mensaje, notifica a todos los miembros del proyecto excepto el autor. Requiere correr el SQL del migration en Supabase', done: true, valor: 200000, quien: 'Claude AI' },
+    ]
+  },
+  {
+    num: '28',
+    titulo: 'Eventos adicionales — score, niveles y estado de proyectos',
+    estado: 'completa',
+    valor_total: 1200000,
+    valor_hecho: 1200000,
+    hitos: [
+      { num: '28.1', nombre: 'score_subio: se dispara cuando el score sube 5+ puntos al recalcular en /api/score', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '28.2', nombre: 'nivel_alcanzado: notifica cuando el usuario cruza 25, 50, 75 o 100 puntos en el Score', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '28.3', nombre: 'proyecto_actualizado + proyecto_completado: PATCH /api/proyectos con validación de ownership, notifica al equipo completo al completar, otorga logro primer_proyecto_completado', done: true, valor: 600000, quien: 'Claude AI' },
     ]
   },
 ]

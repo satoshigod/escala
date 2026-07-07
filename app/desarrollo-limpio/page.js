@@ -286,7 +286,18 @@ const fases = [
       { num: '18.1', nombre: 'contrato_generado + contrato_vigente: notifica al profesional cuando el contrato está listo y cuando ambas partes firman', done: true, valor: 400000, quien: 'Claude AI' },
       { num: '18.2', nombre: 'hito_creado, aporte_rechazado, miembro_se_retiro, primera_venta: 4 eventos cableados en sus APIs respectivas sin construir módulos nuevos', done: true, valor: 800000, quien: 'Claude AI' },
       { num: '18.3', nombre: 'impulso_recibido + API /api/impulsos (GET/POST): los Ángeles de Impulso ahora tienen API propia que notifica al fundador y otorga logro automático', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '18.4', nombre: 'mensaje_recibido — pendiente: requiere trigger de DB o webhook ya que el chat usa Realtime sin pasar por API route', done: false, valor: 200000, quien: 'Desarrollador' },
+      { num: '18.4', nombre: 'mensaje_recibido — trigger PostgreSQL (pg_net) + API /api/notificaciones/mensaje. Notifica a todos los miembros del proyecto excepto el autor. Activar corriendo el SQL del migration en Supabase', done: true, valor: 200000, quien: 'Claude AI' },
+    ]
+  },
+  {
+    num: '19',
+    titulo: 'Score, niveles y ciclo de vida de proyectos',
+    estado: 'completa',
+    valor_total: 1200000,
+    valor_hecho: 1200000,
+    hitos: [
+      { num: '19.1', nombre: 'score_subio y nivel_alcanzado: notificaciones automáticas cuando el Score sube 5+ puntos o cruza umbrales de 25/50/75/100 pts', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '19.2', nombre: 'PATCH /api/proyectos: editar proyecto (proyecto_actualizado) y marcar como completado (proyecto_completado) con notificación a todo el equipo y logro automático', done: true, valor: 600000, quien: 'Claude AI' },
     ]
   },
 ]
