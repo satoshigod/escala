@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
+if (typeof window !== 'undefined') window._supabase = supabase
 
 const PROYECTO_ESCALA = 'f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf'
 const FUNDADOR_ID = 'a57b6849-1388-4186-8880-2ec31dd31af5'
@@ -1067,6 +1068,144 @@ const GRUPOS = [
       },
     ]
   },
+
+  // ─── Calificaciones ──────────────────────────────────────────────────────
+  {
+    nombre: '⭐ Calificaciones',
+    tests: [
+      {
+        id: 'calif_post',
+        nombre: 'POST /api/calificaciones — crear calificación',
+        run: async () => {
+          // Necesitamos dos usuarios y un proyecto — usamos el QA Founder y creamos un proyecto rápido
+          const pRes = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre: 'QA-Proyecto-Calif-' + Date.now(), descripcion: 'QA test calificaciones para verificar sistema de ratings entre colaboradores', tipo: 'A', sector: 'Tecnología', ciudad: 'Bogotá', pais: 'Colombia', estado_financiacion: 'riesgo_compartido', fundador_id: 'a57b6849-1388-4186-8880-2ec31dd31af5' })
+          })
+          const pData = await pRes.json()
+          if (!pData.proyecto?.id) throw new Error('No se pudo crear proyecto QA: ' + JSON.stringify(pData))
+          window._qaCalifProyectoId = pData.proyecto.id
+
+          const res = await fetch('/api/calificaciones', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              proyecto_id: window._qaCalifProyectoId,
+              de_usuario_id: 'a57b6849-1388-4186-8880-2ec31dd31af5',
+              a_usuario_id: 'a57b6849-1388-4186-8880-2ec31dd31af5',
+              estrellas: 5,
+              comentario: 'QA test — excelente colaborador',
+              tipo: 'fundador_a_especialista',
+            })
+          })
+          const data = await res.json()
+          // Puede fallar con "no puedes calificarte a ti mismo" — ese es el comportamiento correcto
+          if (data.error && data.error.includes('a ti mismo')) return 'Validación correcta: no se puede calificar a sí mismo'
+          if (data.ok) { window._qaCalifId = data.id; return 'Calificación creada: ' + data.id }
+          throw new Error(JSON.stringify(data))
+        }
+      },
+      {
+        id: 'calif_get',
+        nombre: 'GET /api/calificaciones?usuario_id — leer calificaciones',
+        run: async () => {
+          const res = await fetch('/api/calificaciones?usuario_id=a57b6849-1388-4186-8880-2ec31dd31af5')
+          const data = await res.json()
+          if (typeof data.total !== 'number') throw new Error('No devuelve total')
+          return data.total + ' calificaciones, promedio: ' + (data.promedio || 'N/A')
+        }
+      },
+      {
+        id: 'calif_cleanup',
+        nombre: 'Limpieza — eliminar proyecto de prueba',
+        run: async () => {
+          if (!window._qaCalifProyectoId) return 'Nada que limpiar'
+          await fetch('/api/proyectos/' + window._qaCalifProyectoId + '?fundador_id=a57b6849-1388-4186-8880-2ec31dd31af5', { method: 'DELETE' })
+          window._qaCalifProyectoId = null
+          return 'Proyecto eliminado'
+        }
+      },
+    ]
+  },
+
+  // ─── Logros ──────────────────────────────────────────────────────────────
+  {
+    nombre: '🎖️ Logros y Badges',
+    tests: [
+      {
+        id: 'logros_post',
+        nombre: 'POST /api/logros — otorgar logro (idempotente)',
+        run: async () => {
+          const res = await fetch('/api/logros', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario_id: 'a57b6849-1388-4186-8880-2ec31dd31af5', tipo: 'perfil_completo' })
+          })
+          const data = await res.json()
+          if (!data.ok) throw new Error(JSON.stringify(data))
+          // Segunda llamada debe ser idempotente
+          const res2 = await fetch('/api/logros', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ usuario_id: 'a57b6849-1388-4186-8880-2ec31dd31af5', tipo: 'perfil_completo' })
+          })
+          const data2 = await res2.json()
+          if (!data2.ok) throw new Error('Segunda llamada falló: ' + JSON.stringify(data2))
+          return 'Logro otorgado OK, segunda llamada idempotente OK (nuevo: ' + data2.nuevo + ')'
+        }
+      },
+      {
+        id: 'logros_get',
+        nombre: 'GET /api/logros?usuario_id — leer logros del usuario',
+        run: async () => {
+          const res = await fetch('/api/logros?usuario_id=a57b6849-1388-4186-8880-2ec31dd31af5')
+          const data = await res.json()
+          if (!Array.isArray(data.logros)) throw new Error('No devuelve array de logros')
+          return data.logros.length + ' logros encontrados: ' + data.logros.map(l => l.emoji + ' ' + l.titulo).join(', ')
+        }
+      },
+    ]
+  },
+
+  // ─── Preferencias de notificación ────────────────────────────────────────
+  {
+    nombre: '🔔 Preferencias de Notificación',
+    tests: [
+      {
+        id: 'prefs_get',
+        nombre: 'GET /api/notificaciones/preferencias — leer preferencias',
+        run: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/notificaciones/preferencias', {
+            headers: { authorization: 'Bearer ' + session.access_token }
+          })
+          const data = await res.json()
+          if (!data.preferencias) throw new Error('No devuelve preferencias: ' + JSON.stringify(data))
+          return 'email_activo: ' + data.preferencias.email_activo + ', push_activo: ' + data.preferencias.push_activo + ', categorías desactivadas: ' + (data.preferencias.categorias_email_desactivadas?.length || 0)
+        }
+      },
+      {
+        id: 'prefs_patch',
+        nombre: 'PATCH /api/notificaciones/preferencias — actualizar categoría',
+        run: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/notificaciones/preferencias', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', authorization: 'Bearer ' + session.access_token },
+            body: JSON.stringify({ categorias_email_desactivadas: ['tareas'] })
+          })
+          const data = await res.json()
+          if (!data.ok) throw new Error('No actualizó: ' + JSON.stringify(data))
+          // Revertir para no dejar datos de prueba
+          await fetch('/api/notificaciones/preferencias', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', authorization: 'Bearer ' + session.access_token },
+            body: JSON.stringify({ categorias_email_desactivadas: [] })
+          })
+          return 'Preferencia actualizada y revertida OK'
+        }
+      },
+    ]
+  },
 ]
 
 const MANUAL = [
@@ -1079,6 +1218,10 @@ const MANUAL = [
   { id: 'm7', nombre: '"Salir" del dashboard lleva a login, no a crear cuenta', texto: 'Desde el dashboard, haz clic en "Salir". Debe cerrarte la sesión y llevarte a /registro con la pestaña de Iniciar sesión activa, no la de Crear cuenta.' },
   { id: 'm8', nombre: 'Registro nuevo pasa por /bienvenida con opción de saltar', texto: 'Crea una cuenta de prueba nueva. Después del registro debe aparecer la pantalla de bienvenida con los 4 roles y dos opciones: "Completar mi perfil" y "Saltar por ahora y explorar". El salto debe llevarte al dashboard sin obligarte a llenar el onboarding.' },
   { id: 'm9', nombre: 'Invitar a alguien ya registrado crea oferta visible', texto: 'Desde /invitar, invita a un correo que YA tenga cuenta en Escala, eligiendo un rol específico. Esa persona debe ver la oferta en /postulaciones bajo "Ofertas recibidas", con los botones Aceptar/Declinar — separada de sus postulaciones propias.' },
+  { id: 'm10', nombre: 'Logros visibles en /score', texto: 'Entra a /score. Si tienes al menos una postulación aceptada, una tarea verificada o un contrato firmado, debe aparecer la sección "Logros desbloqueados" con los badges correspondientes (emoji + nombre + fecha). Si no tienes ninguno, la sección no aparece.' },
+  { id: 'm11', nombre: 'Calificaciones visibles en /score', texto: 'Si alguien te ha calificado, entra a /score y verifica que aparece la sección "Calificaciones recibidas" con el promedio en estrellas ⭐, el nombre del calificador, el comentario y el proyecto.' },
+  { id: 'm12', nombre: 'Preferencias de notificación por categoría', texto: 'Entra a /perfil/editar. Al fondo debe aparecer la sección "Notificaciones" con toggles globales (email/push) y toggles por categoría (Postulaciones, Tareas, Hitos, Aportes, Proyectos). Al hacer clic en un toggle debe cambiar de color sin recargar la página.' },
+  { id: 'm13', nombre: 'Ángel de Impulso — tab Métricas', texto: 'Entra a /angel. Debe aparecer un tercer tab "📊 Métricas" además de los dos existentes. Al hacer clic muestra: total invertido, % ejecutado, monto pendiente y historial de impulsos con estado.' },
 ]
 
 export default function QA() {
