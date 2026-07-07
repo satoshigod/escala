@@ -1166,6 +1166,61 @@ const GRUPOS = [
     ]
   },
 
+  // ─── Nuevos eventos cableados ────────────────────────────────────────────
+  {
+    nombre: '📡 Eventos Nuevos (Fase 27)',
+    tests: [
+      {
+        id: 'impulsos_post',
+        nombre: 'POST /api/impulsos — registrar impulso',
+        run: async () => {
+          const res = await fetch('/api/impulsos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: PROYECTO_ESCALA, angel_id: FUNDADOR_ID, descripcion: 'QA test impulso', valor: 1000 })
+          })
+          const data = await res.json()
+          if (!data.impulso?.id) throw new Error(JSON.stringify(data))
+          window._qaImpulsoId = data.impulso.id
+          return 'Impulso creado: ' + data.impulso.id
+        }
+      },
+      {
+        id: 'impulsos_get',
+        nombre: 'GET /api/impulsos?angel_id — historial del ángel',
+        run: async () => {
+          const res = await fetch('/api/impulsos?angel_id=' + FUNDADOR_ID)
+          const data = await res.json()
+          if (!Array.isArray(data.impulsos)) throw new Error('No devuelve array: ' + JSON.stringify(data))
+          return data.impulsos.length + ' impulsos encontrados'
+        }
+      },
+      {
+        id: 'mensaje_trigger',
+        nombre: 'POST /api/notificaciones/mensaje — trigger de chat',
+        run: async () => {
+          const res = await fetch('/api/notificaciones/mensaje', {
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'x-supabase-trigger': 'internal' },
+            body: JSON.stringify({ mensaje_id: 'qa-test', proyecto_id: PROYECTO_ESCALA, autor_id: FUNDADOR_ID, contenido: 'QA test mensaje de prueba' })
+          })
+          const data = await res.json()
+          if (!data.ok && !data.error) throw new Error(JSON.stringify(data))
+          if (data.ok) return 'Trigger OK — notificados: ' + (data.notificados || 0) + ' miembros'
+          return 'Sin miembros que notificar (esperado en proyecto sin equipo): ' + data.error
+        }
+      },
+      {
+        id: 'contratos_api_get',
+        nombre: 'GET /api/contratos?proyecto_id — listar contratos',
+        run: async () => {
+          const res = await fetch('/api/contratos?proyecto_id=' + PROYECTO_ESCALA)
+          const data = await res.json()
+          if (!Array.isArray(data.contratos)) throw new Error('No devuelve array: ' + JSON.stringify(data))
+          return data.contratos.length + ' contratos en proyecto Escala'
+        }
+      },
+    ]
+  },
+
   // ─── Preferencias de notificación ────────────────────────────────────────
   {
     nombre: '🔔 Preferencias de Notificación',
@@ -1224,12 +1279,23 @@ const MANUAL = [
   { id: 'm11', nombre: 'Calificaciones visibles en /score', texto: 'Si alguien te ha calificado, entra a /score y verifica que aparece la sección "Calificaciones recibidas" con el promedio en estrellas ⭐, el nombre del calificador, el comentario y el proyecto.' },
   { id: 'm12', nombre: 'Preferencias de notificación por categoría', texto: 'Entra a /perfil/editar. Al fondo debe aparecer la sección "Notificaciones" con toggles globales (email/push) y toggles por categoría (Postulaciones, Tareas, Hitos, Aportes, Proyectos). Al hacer clic en un toggle debe cambiar de color sin recargar la página.' },
   { id: 'm13', nombre: 'Ángel de Impulso — tab Métricas', texto: 'Entra a /angel. Debe aparecer un tercer tab "📊 Métricas" además de los dos existentes. Al hacer clic muestra: total invertido, % ejecutado, monto pendiente y historial de impulsos con estado.' },
+  { id: 'm14', nombre: 'Contrato — notificación al profesional', texto: 'Acepta una postulación en un proyecto. El profesional debe recibir una notificación in_app y email diciendo que su contrato está listo para firmar. Verifica en /dashboard → campanita.' },
+  { id: 'm15', nombre: 'Ambas firmas → contrato vigente', texto: 'Firma el contrato como fundador y como especialista. Al firmar el segundo, ambas partes deben recibir una notificación "Contrato vigente — ambas partes firmaron".' },
+  { id: 'm16', nombre: 'Primera venta notifica al fundador', texto: 'Registra un ingreso en /ingresos de un proyecto que no tiene ingresos previos. El fundador debe recibir notificación "¡Primera venta registrada!" con el monto.' },
+  { id: 'm17', nombre: 'Mensaje de chat notifica a miembros', texto: 'Desde el workspace de un proyecto con al menos 2 miembros, envía un mensaje en el chat. Los otros miembros deben recibir notificación push e in_app. Verifica en la campanita del dashboard.' },
+  { id: 'm18', nombre: 'Retiro del proyecto notifica al fundador', texto: 'Desde /carril o el workspace, usa el botón Retirarme del proyecto. El fundador debe recibir notificación informando que el especialista se retiró y el rol está disponible de nuevo.' },
 ]
 
 export default function QA() {
   const [resultados, setResultados] = useState({})
+  const [corriendoGrupo, setCorriendoGrupo] = useState(null)
   const [corriendoTodo, setCorriendoTodo] = useState(false)
   const [manualChecks, setManualChecks] = useState({})
+  const [grupoActivo, setGrupoActivo] = useState(null) // null = todos
+  const [seccion, setSeccion] = useState('auto') // 'auto' | 'manual'
+
+  const colorEstado = { ok: '#1D9E75', error: '#D85A30', corriendo: '#E8A020' }
+  const iconoEstado = { ok: '✓', error: '✕', corriendo: '⟳' }
 
   async function correrTest(test) {
     setResultados(prev => ({ ...prev, [test.id]: { estado: 'corriendo' } }))
@@ -1241,12 +1307,17 @@ export default function QA() {
     }
   }
 
+  async function correrGrupo(grupo) {
+    setCorriendoGrupo(grupo.nombre)
+    for (const test of grupo.tests) await correrTest(test)
+    setCorriendoGrupo(null)
+  }
+
   async function correrTodo() {
     setCorriendoTodo(true)
+    setGrupoActivo(null)
     for (const grupo of GRUPOS) {
-      for (const test of grupo.tests) {
-        await correrTest(test)
-      }
+      for (const test of grupo.tests) await correrTest(test)
     }
     setCorriendoTodo(false)
   }
@@ -1254,85 +1325,140 @@ export default function QA() {
   const totalTests = GRUPOS.reduce((s, g) => s + g.tests.length, 0)
   const okCount = Object.values(resultados).filter(r => r.estado === 'ok').length
   const errorCount = Object.values(resultados).filter(r => r.estado === 'error').length
-
-  const colorEstado = { ok: '#1D9E75', error: '#D85A30', corriendo: '#E8A020' }
-  const iconoEstado = { ok: '✓', error: '✕', corriendo: '...' }
+  const manualOk = Object.values(manualChecks).filter(Boolean).length
+  const gruposVisibles = grupoActivo ? GRUPOS.filter(g => g.nombre === grupoActivo) : GRUPOS
 
   return (
-    <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',color:'#fff',padding:'2rem 1.25rem'}}>
-      <div style={{maxWidth:'900px',margin:'0 auto'}}>
-        <div style={{marginBottom:'2rem'}}>
-          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Control de calidad</div>
-          <div style={{fontSize:'1.75rem',fontWeight:'900',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>QA automático de Escala</div>
-          <div style={{fontSize:'0.85rem',color:'#8FA3CC'}}>Prueba todas las APIs del sistema sin navegar manualmente. Resultados en tiempo real.</div>
-        </div>
+    <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',color:'#fff',display:'flex',flexDirection:'column'}}>
 
-        <div style={{display:'flex',gap:'1rem',alignItems:'center',marginBottom:'2rem',flexWrap:'wrap'}}>
-          <button onClick={correrTodo} disabled={corriendoTodo} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.875rem 1.75rem',fontSize:'0.9rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-            {corriendoTodo ? 'Corriendo todas las pruebas...' : '▶ Correr todas las pruebas (' + totalTests + ')'}
-          </button>
-          {Object.keys(resultados).length > 0 && (
-            <div style={{display:'flex',gap:'1rem',fontSize:'0.85rem'}}>
-              <span style={{color:'#1D9E75',fontWeight:'700'}}>✓ {okCount} OK</span>
-              <span style={{color:'#D85A30',fontWeight:'700'}}>✕ {errorCount} fallos</span>
-            </div>
+      {/* NAV */}
+      <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
+        <a href="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center',gap:'6px'}}>
+          <img src="/brand/isotipo.svg" alt="Escala" width="24" height="24"/>
+          <span style={{fontSize:'1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></span>
+        </a>
+        <div style={{display:'flex',gap:'1rem',fontSize:'0.78rem'}}>
+          <span style={{color:'#1D9E75',fontWeight:'700'}}>✓ {okCount}/{totalTests}</span>
+          {errorCount > 0 && <span style={{color:'#D85A30',fontWeight:'700'}}>✕ {errorCount} fallos</span>}
+          <span style={{color:'#8FA3CC'}}>✋ {manualOk}/{MANUAL.length} manual</span>
+        </div>
+      </nav>
+
+      <div style={{display:'flex',flex:1,overflow:'hidden'}}>
+
+        {/* SIDEBAR */}
+        <div style={{width:'220px',flexShrink:0,borderRight:'1px solid rgba(255,255,255,0.08)',background:'rgba(0,0,0,0.2)',padding:'1rem 0',overflowY:'auto'}}>
+          {/* Sección selector */}
+          <div style={{display:'flex',gap:'0',margin:'0 0.75rem 1rem',borderRadius:'8px',overflow:'hidden',border:'1px solid rgba(255,255,255,0.08)'}}>
+            {['auto','manual'].map(s => (
+              <button key={s} onClick={() => setSeccion(s)} style={{flex:1,background:seccion===s ? '#1D9E75' : 'transparent',color:seccion===s ? '#fff' : '#8FA3CC',border:'none',padding:'0.4rem',fontSize:'0.7rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',textTransform:'uppercase',letterSpacing:'0.05em'}}>
+                {s === 'auto' ? '⚡ Auto' : '✋ Manual'}
+              </button>
+            ))}
+          </div>
+
+          {seccion === 'auto' && (
+            <>
+              <button onClick={() => setGrupoActivo(null)} style={{width:'100%',textAlign:'left',padding:'0.5rem 1rem',background:!grupoActivo ? 'rgba(29,158,117,0.15)' : 'transparent',border:'none',color:!grupoActivo ? '#1D9E75' : '#8FA3CC',fontSize:'0.75rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',borderLeft: !grupoActivo ? '3px solid #1D9E75' : '3px solid transparent'}}>
+                📋 Todos ({totalTests})
+              </button>
+              {GRUPOS.map(g => {
+                const gOk = g.tests.filter(t => resultados[t.id]?.estado === 'ok').length
+                const gErr = g.tests.filter(t => resultados[t.id]?.estado === 'error').length
+                const activo = grupoActivo === g.nombre
+                return (
+                  <button key={g.nombre} onClick={() => setGrupoActivo(g.nombre)} style={{width:'100%',textAlign:'left',padding:'0.45rem 1rem',background: activo ? 'rgba(29,158,117,0.12)' : 'transparent',border:'none',color: activo ? '#fff' : '#8FA3CC',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif',borderLeft: activo ? '3px solid #1D9E75' : '3px solid transparent',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <span style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',flex:1}}>{g.nombre}</span>
+                    <span style={{flexShrink:0,fontSize:'0.65rem',marginLeft:'0.25rem',color: gErr > 0 ? '#D85A30' : gOk === g.tests.length ? '#1D9E75' : '#6B7280'}}>
+                      {gErr > 0 ? '✕'+gErr : gOk > 0 ? '✓'+gOk : g.tests.length}
+                    </span>
+                  </button>
+                )
+              })}
+            </>
           )}
         </div>
 
-        {GRUPOS.map(grupo => (
-          <div key={grupo.nombre} style={{marginBottom:'1.5rem'}}>
-            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem',paddingBottom:'0.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>{grupo.nombre}</div>
-            <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
-              {grupo.tests.map(test => {
-                const r = resultados[test.id]
-                return (
-                  <div key={test.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'0.875rem 1.25rem',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
-                    <div style={{flex:1,minWidth:'200px'}}>
-                      <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.2rem'}}>{test.nombre}</div>
-                      {r && (
-                        <div style={{fontSize:'0.72rem',color: r.estado==='error' ? '#D85A30' : '#8FA3CC'}}>{r.mensaje}</div>
-                      )}
-                    </div>
-                    <div style={{display:'flex',gap:'0.75rem',alignItems:'center',flexShrink:0}}>
-                      {r && (
-                        <span style={{fontSize:'0.78rem',fontWeight:'700',color:colorEstado[r.estado]}}>
-                          {iconoEstado[r.estado]} {r.estado === 'corriendo' ? 'Corriendo' : r.estado === 'ok' ? 'OK' : 'Error'}
-                        </span>
-                      )}
-                      <button onClick={() => correrTest(test)} disabled={r?.estado==='corriendo'} style={{background:'rgba(29,158,117,0.1)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>
-                        {r?.estado === 'corriendo' ? '...' : '▶ Probar'}
-                      </button>
-                    </div>
+        {/* CONTENIDO PRINCIPAL */}
+        <div style={{flex:1,overflowY:'auto',padding:'1.5rem'}}>
+
+          {seccion === 'auto' && (
+            <>
+              {/* Header con botones de acción */}
+              <div style={{display:'flex',gap:'0.75rem',alignItems:'center',marginBottom:'1.5rem',flexWrap:'wrap'}}>
+                <button onClick={correrTodo} disabled={corriendoTodo} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                  {corriendoTodo ? '⟳ Corriendo todo...' : '▶ Correr todos (' + totalTests + ')'}
+                </button>
+                {grupoActivo && (
+                  <button onClick={() => correrGrupo(GRUPOS.find(g => g.nombre === grupoActivo))} disabled={!!corriendoGrupo} style={{background:'rgba(29,158,117,0.15)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                    {corriendoGrupo ? '⟳ Corriendo...' : '▶ Correr este grupo'}
+                  </button>
+                )}
+                {Object.keys(resultados).length > 0 && (
+                  <button onClick={() => setResultados({})} style={{background:'rgba(255,255,255,0.05)',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'8px',padding:'0.6rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                    Limpiar resultados
+                  </button>
+                )}
+              </div>
+
+              {/* Grupos de tests */}
+              {gruposVisibles.map(grupo => (
+                <div key={grupo.nombre} style={{marginBottom:'2rem'}}>
+                  <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'0.75rem',paddingBottom:'0.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+                    <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff'}}>{grupo.nombre}</div>
+                    <button onClick={() => correrGrupo(grupo)} disabled={corriendoGrupo === grupo.nombre} style={{background:'rgba(29,158,117,0.1)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'6px',padding:'0.25rem 0.75rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'700'}}>
+                      {corriendoGrupo === grupo.nombre ? '⟳' : '▶ Correr grupo'}
+                    </button>
                   </div>
-                )
-              })}
-            </div>
-          </div>
-        ))}
-
-        <div style={{marginTop:'2rem',background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'12px',padding:'1.5rem'}}>
-          <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.4rem'}}>
-            <span style={{fontSize:'1rem'}}>✋</span>
-            <div style={{fontSize:'0.95rem',fontWeight:'800',color:'#fff'}}>Verificación manual — no automatizable</div>
-          </div>
-          <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1.25rem',lineHeight:'1.6'}}>
-            Esto NO se prueba solo. Son interacciones de navegador (teclado, clics, navegación) sin ninguna respuesta de API que un fetch pueda revisar — un test automático aquí daría un falso ✓ verde. Márcalos tú mismo después de probarlos a mano.
-          </div>
-          <div style={{display:'flex',flexDirection:'column',gap:'0.625rem'}}>
-            {MANUAL.map(item => (
-              <label key={item.id} style={{display:'flex',gap:'0.75rem',alignItems:'flex-start',cursor:'pointer',padding:'0.75rem',borderRadius:'8px',background: manualChecks[item.id] ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.03)',border: manualChecks[item.id] ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(255,255,255,0.06)'}}>
-                <input type="checkbox" checked={!!manualChecks[item.id]} onChange={() => setManualChecks(prev => ({ ...prev, [item.id]: !prev[item.id] }))} style={{marginTop:'0.2rem',flexShrink:0,width:'16px',height:'16px',accentColor:'#1D9E75'}} />
-                <div>
-                  <div style={{fontSize:'0.82rem',fontWeight:'700',color: manualChecks[item.id] ? '#1D9E75' : '#fff'}}>{item.nombre}</div>
-                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginTop:'0.15rem',lineHeight:'1.5'}}>{item.texto}</div>
+                  <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
+                    {grupo.tests.map(test => {
+                      const r = resultados[test.id]
+                      return (
+                        <div key={test.id} style={{background:'rgba(255,255,255,0.04)',border:`1px solid ${r?.estado === 'error' ? 'rgba(216,90,48,0.3)' : r?.estado === 'ok' ? 'rgba(29,158,117,0.2)' : 'rgba(255,255,255,0.08)'}`,borderRadius:'10px',padding:'0.75rem 1rem',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontSize:'0.8rem',fontWeight:'600',color:'#fff',marginBottom: r ? '0.2rem' : 0}}>{test.nombre}</div>
+                            {r && <div style={{fontSize:'0.7rem',color: r.estado==='error' ? '#D85A30' : '#8FA3CC',wordBreak:'break-word'}}>{r.mensaje}</div>}
+                          </div>
+                          <div style={{display:'flex',gap:'0.5rem',alignItems:'center',flexShrink:0}}>
+                            {r && <span style={{fontSize:'0.75rem',fontWeight:'700',color:colorEstado[r.estado]}}>{iconoEstado[r.estado]} {r.estado === 'ok' ? 'OK' : r.estado === 'error' ? 'Error' : ''}</span>}
+                            <button onClick={() => correrTest(test)} disabled={r?.estado==='corriendo'} style={{background:'rgba(29,158,117,0.1)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.3rem 0.75rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600',whiteSpace:'nowrap'}}>
+                              {r?.estado === 'corriendo' ? '⟳' : '▶ Probar'}
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
-              </label>
-            ))}
-          </div>
-        </div>
+              ))}
 
-        <div style={{marginTop:'2rem',padding:'1.25rem',background:'rgba(255,255,255,0.04)',borderRadius:'12px',fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6'}}>
-          <strong style={{color:'#fff'}}>Nota:</strong> esta página crea y elimina datos de prueba automáticamente para no ensuciar la base de datos real. Los proyectos y países de prueba llevan el prefijo "QA-" y se limpian solos cuando es posible.
+              <div style={{padding:'1rem',background:'rgba(255,255,255,0.03)',borderRadius:'10px',fontSize:'0.72rem',color:'#6B7280',lineHeight:'1.6',marginTop:'1rem'}}>
+                <strong style={{color:'#8FA3CC'}}>Nota:</strong> los tests crean datos con prefijo QA- y los limpian solos. Corre primero el Setup de cada grupo antes de los tests que dependen de él.
+              </div>
+            </>
+          )}
+
+          {seccion === 'manual' && (
+            <>
+              <div style={{marginBottom:'1.5rem'}}>
+                <div style={{fontSize:'1rem',fontWeight:'800',color:'#fff',marginBottom:'0.3rem'}}>✋ Verificación manual</div>
+                <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6'}}>
+                  Estas pruebas requieren interacción real en el navegador. Márcalas tú mismo después de verificarlas. <strong style={{color:'#E8A020'}}>{manualOk}/{MANUAL.length} completadas.</strong>
+                </div>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                {MANUAL.map(item => (
+                  <label key={item.id} style={{display:'flex',gap:'0.75rem',alignItems:'flex-start',cursor:'pointer',padding:'0.875rem',borderRadius:'10px',background: manualChecks[item.id] ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.03)',border: manualChecks[item.id] ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(255,255,255,0.07)',transition:'all 0.15s'}}>
+                    <input type="checkbox" checked={!!manualChecks[item.id]} onChange={() => setManualChecks(prev => ({ ...prev, [item.id]: !prev[item.id] }))} style={{marginTop:'0.2rem',flexShrink:0,width:'16px',height:'16px',accentColor:'#1D9E75'}} />
+                    <div>
+                      <div style={{fontSize:'0.82rem',fontWeight:'700',color: manualChecks[item.id] ? '#1D9E75' : '#fff',marginBottom:'0.2rem'}}>{item.nombre}</div>
+                      <div style={{fontSize:'0.74rem',color:'#8FA3CC',lineHeight:'1.55'}}>{item.texto}</div>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
