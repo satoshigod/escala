@@ -17,7 +17,7 @@ export async function GET(request) {
 
   const { data, error } = await supabase
     .from('deuda_pendiente')
-    .select('*, perfiles:beneficiario_id ( nombre, email )')
+    .select('*, perfiles!deuda_beneficiario_id_fkey ( nombre, email )')
     .eq('proyecto_id', proyecto_id)
     .order('resuelta', { ascending: true })
     .order('valor', { ascending: true })
@@ -41,7 +41,7 @@ export async function PATCH(request) {
     .from('deuda_pendiente')
     .update({ resuelta: true, resuelta_como, resuelta_por: resuelta_por || null, resuelta_en: new Date().toISOString() })
     .eq('id', id)
-    .select('*, perfiles:beneficiario_id ( nombre, email ), proyectos:proyecto_id ( nombre )')
+    .select('*, perfiles!deuda_beneficiario_id_fkey ( nombre, email ), proyectos!deuda_proyecto_id_fkey ( nombre )')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })

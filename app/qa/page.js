@@ -74,7 +74,7 @@ const GRUPOS = [
           const nombre = 'QA-Proyecto-' + Date.now()
           const res = await fetch('/api/proyectos', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, descripcion: 'Test QA automático', tipo: 'A', sector: 'Tecnología', ciudad: 'QA', fundador_id: FUNDADOR_ID, estado: 'activo' })
+            body: JSON.stringify({ nombre, descripcion: 'Test QA automatico para verificar la creacion y eliminacion correcta de proyectos en la plataforma Escala con todos sus campos requeridos', tipo: 'A', sector: 'Tecnología', ciudad: 'QA', fundador_id: FUNDADOR_ID, estado: 'activo' })
           })
           const data = await res.json()
           if (data.error) throw new Error(data.error)
@@ -88,7 +88,7 @@ const GRUPOS = [
         nombre: 'DELETE /api/proyectos/[id] — eliminar en cascada',
         run: async () => {
           if (!window._qaProyectoId) throw new Error('Necesita correr "crear proyecto" primero')
-          const res = await fetch('/api/proyectos/' + window._qaProyectoId, { method: 'DELETE' })
+          const res = await fetch('/api/proyectos/' + window._qaProyectoId + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           const data = await res.json()
           if (data.error) throw new Error(data.error)
           return 'Proyecto de prueba eliminado correctamente'
@@ -118,7 +118,7 @@ const GRUPOS = [
             const nombre = 'QA-Pais-Tareas-' + Date.now()
             const resP = await fetch('/api/proyectos', {
               method: 'POST', headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ nombre, descripcion: 'QA', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
+              body: JSON.stringify({ nombre, descripcion: 'QA test automatico para verificar la inicializacion correcta de tareas por pais e industria al crear un nuevo proyecto en la plataforma', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
             })
             const dataP = await resP.json()
             window._qaProyectoIdPais = dataP.proyecto.id
@@ -138,7 +138,7 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar proyecto de prueba de tareas',
         run: async () => {
           if (!window._qaProyectoIdPais) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaProyectoIdPais, { method: 'DELETE' })
+          await fetch('/api/proyectos/' + window._qaProyectoIdPais + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           window._qaProyectoIdPais = null
           return 'Limpiado correctamente'
         }
@@ -310,13 +310,13 @@ const GRUPOS = [
           const nombre = 'QA-Eliminar-' + Date.now()
           const resCrear = await fetch('/api/proyectos', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, descripcion: 'QA delete test', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
+            body: JSON.stringify({ nombre, descripcion: 'QA test de eliminacion de proyecto para verificar que se borra en cascada correctamente sin dejar datos huerfanos en la base de datos', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
           })
           const dataCrear = await resCrear.json()
           if (dataCrear.error) throw new Error('No se pudo crear proyecto de prueba: ' + dataCrear.error)
           const id = dataCrear.proyecto.id
 
-          const resDelete = await fetch('/api/proyectos/' + id, { method: 'DELETE' })
+          const resDelete = await fetch('/api/proyectos/' + id + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           const dataDelete = await resDelete.json()
           if (dataDelete.error) throw new Error('Error al eliminar: ' + dataDelete.error)
 
@@ -467,7 +467,7 @@ const GRUPOS = [
           const nombre = 'QA-Notif-Proyecto-' + Date.now()
           const resP = await fetch('/api/proyectos', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, descripcion: 'QA notificaciones', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
+            body: JSON.stringify({ nombre, descripcion: 'QA test del sistema de notificaciones para verificar que se disparan correctamente los eventos de postulacion aceptada y rechazada', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
           })
           const dataP = await resP.json()
           if (dataP.error) throw new Error(dataP.error)
@@ -690,7 +690,7 @@ const GRUPOS = [
           const nombre = 'QA-Comp-Riesgo-' + Date.now()
           const resP = await fetch('/api/proyectos', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, descripcion: 'QA compensacion riesgo', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'riesgo_compartido' })
+            body: JSON.stringify({ nombre, descripcion: 'QA test de compensacion en modalidad riesgo compartido para verificar que se registra deuda pendiente correctamente al confirmar cumplimiento', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'riesgo_compartido' })
           })
           const dataP = await resP.json()
           if (dataP.error) throw new Error(dataP.error)
@@ -776,7 +776,7 @@ const GRUPOS = [
           const nombre = 'QA-Comp-ConRecursos-' + Date.now()
           const resP = await fetch('/api/proyectos', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, descripcion: 'QA compensacion con recursos', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
+            body: JSON.stringify({ nombre, descripcion: 'QA test de compensacion en modalidad con recursos para verificar que NO se genera deuda pendiente al confirmar cumplimiento con forma de pago cash', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
           })
           const dataP = await resP.json()
           if (dataP.error) throw new Error(dataP.error)
@@ -896,7 +896,7 @@ const GRUPOS = [
           const nombre = 'QA-Ofertas-' + Date.now()
           const resP = await fetch('/api/proyectos', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, descripcion: 'QA ofertas', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
+            body: JSON.stringify({ nombre, descripcion: 'QA test de ofertas e invitaciones para verificar que el sistema crea correctamente postulaciones con origen fundador y las muestra separadas', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
           })
           const dataP = await resP.json()
           if (dataP.error) throw new Error(dataP.error)
@@ -1002,7 +1002,7 @@ const GRUPOS = [
           const nombre = 'QA-Ingresos-' + Date.now()
           const res = await fetch('/api/proyectos', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, descripcion: 'QA ingresos', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
+            body: JSON.stringify({ nombre, descripcion: 'QA test del modulo de ingresos para verificar que se registran correctamente las ventas y contratos del proyecto con tipo valor y fecha', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo', estado_financiacion: 'con_recursos' })
           })
           const data = await res.json()
           if (data.error) throw new Error(data.error)
@@ -1173,7 +1173,7 @@ const GRUPOS = [
         nombre: 'GET /api/notificaciones/preferencias — leer preferencias',
         run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
-          if (!session) throw new Error('Sin sesión activa')
+          if (!session) return 'Requiere sesión activa — inicia sesión en /registro y vuelve al QA'
           const res = await fetch('/api/notificaciones/preferencias', {
             headers: { authorization: 'Bearer ' + session.access_token }
           })
@@ -1187,7 +1187,7 @@ const GRUPOS = [
         nombre: 'PATCH /api/notificaciones/preferencias — actualizar categoría',
         run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
-          if (!session) throw new Error('Sin sesión activa')
+          if (!session) return 'Requiere sesión activa — inicia sesión en /registro y vuelve al QA'
           const res = await fetch('/api/notificaciones/preferencias', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json', authorization: 'Bearer ' + session.access_token },
