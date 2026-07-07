@@ -69,3 +69,72 @@ export async function POST(request) {
 
   return Response.json({ proyecto: data }, { status: 201 })
 }
+
+// PATCH — actualizar datos del proyecto o marcarlo como completado
+export async function PATCH(request) {
+  try {
+    const body = await request.json()
+    const { id, fundador_id, estado, nombre, descripcion, sector, ciudad, pais, industria, nivel_avance, modalidad_trabajo, roles_buscados } = body
+
+    if (!id || !fundador_id) return Response.json({ error: 'Faltan id y fundador_id' }, { status: 400 })
+
+    // Verificar ownership
+    const { data: proyecto, error: projError } = await supabase
+      .from('proyectos').select('fundador_id, nombre, estado').eq('id', id).single()
+
+    if (projError || !proyecto) return Response.json({ error: 'Proyecto no encontrado' }, { status: 404 })
+    if (proyecto.fundador_id !== fundador_id) return Response.json({ error: 'Solo el fundador puede editar este proyecto' }, { status: 403 })
+
+    // Construir campos a actualizar
+    const updates = {}
+    if (nombre) updates.nombre = nombre
+    if (descripcion) updates.descripcion = descripcion
+    if (sector) updates.sector = sector
+    if (ciudad) updates.ciudad = ciudad
+    if (pais) updates.pais = pais
+    if (industria) updates.industria = industria
+    if (nivel_avance) updates.nivel_avance = nivel_avance
+    if (modalidad_trabajo) updates.modalidad_trabajo = modalidad_trabajo
+    if (roles_buscados) updates.roles_buscados = roles_buscados
+    if (estado) updates.estado = estado
+
+    const { data, error } = await supabase
+      .from('proyectos').update(updates).eq('id', id).select().single()
+
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+
+    // Notificar según el tipo de cambio
+    const { data: fundador } = await supabase.from('perfiles').select('nombre, email').eq('id', fundador_id).single()
+    const dest = { id: fundador_id, email: fundador?.email, nombre: fundador?.nombre }
+
+    if (estado === 'completado' && proyecto.estado !== 'completado') {
+      // Notificar a todo el equipo
+      const { data: miembros } = await supabase
+        .from('postulaciones')
+        .select('postulante_id, perfiles!postulaciones_postulante_id_fkey(id, email, nombre)')
+        .eq('estado', 'aceptada')
+      
+      const todos = [dest, ...(miembros || []).map(m => m.perfiles).filter(p => p?.email && p.id !== fundador_id)]
+      await Promise.allSettled(todos.map(d =>
+        notificar('proyecto_completado', d, { proyecto_nombre: data.nombre, proyecto_id: id })
+      ))
+
+      // Logro: primer proyecto completado para cada miembro
+      const { otorgarLogro } = await import('@/lib/logros')
+      await Promise.allSettled(todos.map(d =>
+        otorgarLogro(supabase, d.id, 'primer_proyecto_completado', id)
+      ))
+
+    } else if (Object.keys(updates).some(k => k !== 'estado')) {
+      // Actualización de datos — notificar solo al fundador
+      await notificar('proyecto_actualizado', dest, {
+        proyecto_nombre: data.nombre,
+        proyecto_id: id,
+      }).catch(() => {})
+    }
+
+    return Response.json({ proyecto: data })
+  } catch(e) {
+    return Response.json({ error: e.message }, { status: 500 })
+  }
+}

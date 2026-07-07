@@ -596,6 +596,12 @@ export async function PATCH(request) {
 
       // Logro: primera tarea verificada
       otorgarLogro(supabase, data.asignado_a, 'primera_tarea_verificada', tareaAnterior.data?.proyecto_id).catch(() => {})
+
+      // Recalcular score y notificar si subió (lo hace /api/score internamente)
+      fetch(process.env.NEXT_PUBLIC_SUPABASE_URL?.split('.supabase')[0] + '/api/score', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ perfil_id: data.asignado_a })
+      }).catch(() => {})
     }
   }
 
