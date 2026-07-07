@@ -276,6 +276,19 @@ const fases = [
       { num: '17.4', nombre: '/score ampliado: logros desbloqueados con emoji/fecha y calificaciones recibidas con promedio ⭐', done: true, valor: 500000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '18',
+    titulo: 'Eventos del catálogo — módulos existentes',
+    estado: 'completa',
+    valor_total: 1800000,
+    valor_hecho: 1800000,
+    hitos: [
+      { num: '18.1', nombre: 'contrato_generado + contrato_vigente: notifica al profesional cuando el contrato está listo y cuando ambas partes firman', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '18.2', nombre: 'hito_creado, aporte_rechazado, miembro_se_retiro, primera_venta: 4 eventos cableados en sus APIs respectivas sin construir módulos nuevos', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '18.3', nombre: 'impulso_recibido + API /api/impulsos (GET/POST): los Ángeles de Impulso ahora tienen API propia que notifica al fundador y otorga logro automático', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '18.4', nombre: 'mensaje_recibido — pendiente: requiere trigger de DB o webhook ya que el chat usa Realtime sin pasar por API route', done: false, valor: 200000, quien: 'Desarrollador' },
+    ]
+  },
 ]
 
 export default function DesarrolloLimpio() {

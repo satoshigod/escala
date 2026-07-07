@@ -467,6 +467,22 @@ const fases = [
       { num: '26.4', nombre: '/score actualizado: sección de logros desbloqueados y sección de calificaciones recibidas con promedio ⭐, cargados desde sus APIs respectivas', done: true, valor: 500000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '27',
+    titulo: 'Eventos del catálogo — 8 nuevos cableados',
+    estado: 'completa',
+    valor_total: 1800000,
+    valor_hecho: 1800000,
+    hitos: [
+      { num: '27.1', nombre: 'contrato_generado y contrato_vigente cableados en /api/contratos', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '27.2', nombre: 'hito_creado cableado en /api/hitos', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '27.3', nombre: 'aporte_rechazado cableado en /api/aportes', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '27.4', nombre: 'miembro_se_retiro cableado en /api/desistir', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '27.5', nombre: 'primera_venta cableado en /api/ingresos — detecta primer ingreso y notifica', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: '27.6', nombre: 'impulso_recibido + nueva API /api/impulsos (GET/POST) — notifica al fundador, otorga logro al Ángel', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '27.7', nombre: 'mensaje_recibido — pendiente: chat usa Realtime sin API route, requiere trigger de DB', done: false, valor: 200000, quien: 'Desarrollador' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
