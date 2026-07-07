@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notificar } from '../../../lib/notificaciones/notificar'
+import { otorgarLogro } from '@/lib/logros'
 import { SEGMENTOS_ROLES, getTareasSegmento } from '../../../lib/segmentosRoles'
 
 const supabase = createClient(
@@ -594,15 +595,7 @@ export async function PATCH(request) {
       }
 
       // Logro: primera tarea verificada
-      fetch(BASE_URL + '/api/logros', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          usuario_id: data.asignado_a,
-          tipo: 'primera_tarea_verificada',
-          proyecto_id: tareaAnterior.data?.proyecto_id,
-        })
-      }).catch(() => {})
+      otorgarLogro(supabase, data.asignado_a, 'primera_tarea_verificada', tareaAnterior.data?.proyecto_id).catch(() => {})
     }
   }
 

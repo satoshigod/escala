@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notificar } from '../../../lib/notificaciones/notificar'
+import { otorgarLogro } from '@/lib/logros'
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
@@ -128,15 +129,7 @@ export async function PATCH(request) {
       }
 
       // Otorgar logro: primera postulación aceptada
-      fetch(BASE_URL + '/api/logros', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          usuario_id: data.postulante_id,
-          tipo: 'primera_postulacion_aceptada',
-          proyecto_id,
-        })
-      }).catch(() => {})
+      otorgarLogro(supabase, data.postulante_id, 'primera_postulacion_aceptada', proyecto_id).catch(() => {})
     }
   } catch (e) {
     console.error('Error notificando cambio de postulacion:', e)
