@@ -168,6 +168,16 @@ export async function PATCH(request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // Logro: primer contrato firmado (para el profesional cuando firma)
+  if (tipo === 'profesional' && data?.profesional_id) {
+    fetch(process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('.supabase.co', '') + '/api/logros', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario_id: data.profesional_id, tipo: 'primer_contrato_firmado' })
+    }).catch(() => {})
+  }
+
   return Response.json({ contrato: data })
 }
 

@@ -11,6 +11,7 @@ export default function Angel() {
   const [financiando, setFinanciando] = useState(null)
   const [msgHito, setMsgHito] = useState({})
   const [tab, setTab] = useState('explorar')
+  const [logrosOtorgado, setLogrosOtorgado] = useState(false)
 
   useEffect(() => {
     async function cargar() {
@@ -36,6 +37,15 @@ export default function Angel() {
       const impulData = await impulRes.json().catch(() => ({ impulsos: [] }))
       setMisImpulsos(impulData.impulsos || [])
 
+      // Otorgar logro si tiene impulsos
+      if (impulData.impulsos?.length > 0 && !logrosOtorgado) {
+        fetch('/api/logros', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario_id: user.id, tipo: 'primer_impulso' })
+        }).catch(() => {})
+        setLogrosOtorgado(true)
+      }
       setCargando(false)
     }
     cargar()
@@ -106,9 +116,13 @@ export default function Angel() {
         </div>
 
         <div style={{display:'flex',gap:'0',marginBottom:'1.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
-          {['explorar','mis_impulsos'].map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{background:'none',border:'none',borderBottom: tab===t ? '2px solid #E8A020' : '2px solid transparent',color: tab===t ? '#fff' : '#8FA3CC',padding:'0.5rem 1.25rem',fontSize:'0.85rem',fontWeight: tab===t ? '600' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',marginBottom:'-1px'}}>
-              {t === 'explorar' ? `Hitos disponibles (${hitosDisponibles.length})` : `Mis impulsos (${misImpulsos.length})`}
+          {[
+            { id: 'explorar', label: `Hitos disponibles (${hitosDisponibles.length})` },
+            { id: 'mis_impulsos', label: `Mis impulsos (${misImpulsos.length})` },
+            { id: 'metricas', label: '📊 Métricas' },
+          ].map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)} style={{background:'none',border:'none',borderBottom: tab===t.id ? '2px solid #E8A020' : '2px solid transparent',color: tab===t.id ? '#fff' : '#8FA3CC',padding:'0.5rem 1.25rem',fontSize:'0.85rem',fontWeight: tab===t.id ? '600' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',marginBottom:'-1px'}}>
+              {t.label}
             </button>
           ))}
         </div>
@@ -149,6 +163,61 @@ export default function Angel() {
             </div>
           )
         )}
+
+        {tab === 'metricas' && (() => {
+          const totalInvertido = misImpulsos.reduce((s, i) => s + (i.valor || 0), 0)
+          const ejecutados = misImpulsos.filter(i => i.ejecutado)
+          const pendientes = misImpulsos.filter(i => !i.ejecutado)
+          const pctEjecutado = misImpulsos.length > 0 ? Math.round((ejecutados.length / misImpulsos.length) * 100) : 0
+          const fmt = v => '$' + v.toLocaleString('es-CO')
+          return (
+            <div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'1rem',marginBottom:'1.5rem'}}>
+                <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.25rem'}}>
+                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{fmt(totalInvertido)}</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Total invertido en hitos</div>
+                </div>
+                <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.25rem'}}>
+                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{pctEjecutado}%</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Hitos ejecutados ({ejecutados.length} de {misImpulsos.length})</div>
+                </div>
+                <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff'}}>{misImpulsos.length}</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Total de impulsos</div>
+                </div>
+                <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{fmt(pendientes.reduce((s,i)=>s+(i.valor||0),0))}</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Pendiente de ejecución</div>
+                </div>
+              </div>
+
+              {misImpulsos.length > 0 && (
+                <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+                  <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Historial de impulsos</div>
+                  {misImpulsos.map(imp => (
+                    <div key={imp.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
+                      <div>
+                        <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff'}}>{imp.hitos?.nombre || imp.descripcion}</div>
+                        <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{imp.proyectos?.nombre || 'Proyecto'}</div>
+                      </div>
+                      <div style={{textAlign:'right',flexShrink:0}}>
+                        <div style={{fontFamily:'monospace',fontSize:'0.875rem',fontWeight:'700',color:'#E8A020'}}>{fmt(imp.valor)}</div>
+                        <div style={{fontSize:'0.68rem',color:imp.ejecutado ? '#1D9E75' : '#8FA3CC',marginTop:'0.1rem'}}>{imp.ejecutado ? '✓ Ejecutado' : '⏳ Pendiente'}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {misImpulsos.length === 0 && (
+                <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
+                  <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📊</div>
+                  <div style={{fontSize:'0.875rem',color:'#8FA3CC'}}>Tus métricas aparecerán aquí cuando hagas tu primer impulso.</div>
+                </div>
+              )}
+            </div>
+          )
+        })()}
 
         {tab === 'mis_impulsos' && (
           misImpulsos.length === 0 ? (

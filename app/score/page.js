@@ -15,6 +15,9 @@ export default function Score() {
   const [enviando, setEnviando] = useState(false)
   const [mensaje, setMensaje] = useState('')
   const [verExplicacion, setVerExplicacion] = useState(false)
+  const [logros, setLogros] = useState([])
+  const [calificaciones, setCalificaciones] = useState([])
+  const [promedioCalif, setPromedioCalif] = useState(null)
 
   useEffect(() => {
     async function cargar() {
@@ -36,6 +39,17 @@ export default function Score() {
       setPostulaciones(postData.postulaciones || [])
       setTareasVerificadas(tareasRes.count || 0)
       setAportesValidados(aportesRes.count || 0)
+      // Logros y calificaciones
+      const [logrosRes, califRes] = await Promise.all([
+        fetch('/api/logros?usuario_id=' + user.id),
+        fetch('/api/calificaciones?usuario_id=' + user.id),
+      ])
+      const logrosData = await logrosRes.json()
+      const califData = await califRes.json()
+      setLogros(logrosData.logros || [])
+      setCalificaciones(califData.calificaciones || [])
+      setPromedioCalif(califData.promedio)
+
       setCargando(false)
     }
     cargar()
@@ -159,6 +173,52 @@ export default function Score() {
               <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>Completa tu perfil para subir puntos inmediatamente.</div>
             </div>
             <a href="/onboarding" style={{background:'#1D9E75',color:'#fff',padding:'0.6rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700',whiteSpace:'nowrap'}}>Completar perfil →</a>
+          </div>
+        )}
+
+        {/* LOGROS */}
+        {logros.length > 0 && (
+          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'2rem'}}>
+            <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Logros desbloqueados</div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:'0.75rem'}}>
+              {logros.map(l => (
+                <div key={l.tipo} title={l.desc} style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(255,255,255,0.05)',border:`1px solid ${l.color}33`,borderRadius:'10px',padding:'0.5rem 0.875rem'}}>
+                  <span style={{fontSize:'1.1rem'}}>{l.emoji}</span>
+                  <div>
+                    <div style={{fontSize:'0.75rem',fontWeight:'700',color:'#fff'}}>{l.titulo}</div>
+                    <div style={{fontSize:'0.65rem',color:'#8FA3CC'}}>{new Date(l.created_at).toLocaleDateString('es-CO',{month:'short',year:'numeric'})}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* CALIFICACIONES RECIBIDAS */}
+        {calificaciones.length > 0 && (
+          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'2rem'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1rem'}}>
+              <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff'}}>Calificaciones recibidas</div>
+              {promedioCalif && (
+                <div style={{display:'flex',alignItems:'center',gap:'0.4rem'}}>
+                  <span style={{fontSize:'1.1rem'}}>⭐</span>
+                  <span style={{fontSize:'1rem',fontWeight:'800',color:'#D4AF37'}}>{promedioCalif}</span>
+                  <span style={{fontSize:'0.72rem',color:'#8FA3CC'}}>/ 5</span>
+                </div>
+              )}
+            </div>
+            {calificaciones.slice(0,5).map(c => (
+              <div key={c.id} style={{padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem'}}>
+                <div>
+                  <div style={{fontSize:'0.78rem',fontWeight:'600',color:'#fff',marginBottom:'0.15rem'}}>
+                    {'⭐'.repeat(c.estrellas)} <span style={{color:'#8FA3CC',fontWeight:'400'}}>— {c.perfiles?.nombre || 'Colaborador'}</span>
+                  </div>
+                  {c.comentario && <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>{c.comentario}</div>}
+                  <div style={{fontSize:'0.68rem',color:'#6B7280',marginTop:'0.2rem'}}>{c.proyectos?.nombre}</div>
+                </div>
+                <div style={{fontSize:'0.68rem',color:'#6B7280',flexShrink:0}}>{new Date(c.created_at).toLocaleDateString('es-CO',{month:'short',year:'numeric'})}</div>
+              </div>
+            ))}
           </div>
         )}
 

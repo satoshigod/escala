@@ -126,6 +126,17 @@ export async function PATCH(request) {
       } catch (e) {
         console.error('Error generando contrato:', e.message)
       }
+
+      // Otorgar logro: primera postulación aceptada
+      fetch(BASE_URL + '/api/logros', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuario_id: data.postulante_id,
+          tipo: 'primera_postulacion_aceptada',
+          proyecto_id,
+        })
+      }).catch(() => {})
     }
   } catch (e) {
     console.error('Error notificando cambio de postulacion:', e)

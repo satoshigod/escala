@@ -592,6 +592,17 @@ export async function PATCH(request) {
       } catch (e) {
         console.error('Error recalculando score:', e)
       }
+
+      // Logro: primera tarea verificada
+      fetch(BASE_URL + '/api/logros', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          usuario_id: data.asignado_a,
+          tipo: 'primera_tarea_verificada',
+          proyecto_id: tareaAnterior.data?.proyecto_id,
+        })
+      }).catch(() => {})
     }
   }
 
