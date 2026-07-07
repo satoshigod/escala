@@ -454,6 +454,19 @@ const fases = [
       { num: '25.3', nombre: 'Notificaciones basadas en tiempo: Vercel Cron Job diario 9am UTC, 3 verificaciones: tareas vencidas (avisa al asignado), hitos por vencer en 0-2 días (avisa al fundador), proyectos sin actividad 15+ días (avisa al fundador). 4 eventos nuevos en el catálogo. Requiere CRON_SECRET en Vercel env vars', done: true, valor: 1200000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '26',
+    titulo: 'Calificaciones, logros y Ángel mejorado',
+    estado: 'completa',
+    valor_total: 4200000,
+    valor_hecho: 4200000,
+    hitos: [
+      { num: '26.1', nombre: 'Sistema de calificaciones: tabla calificaciones con RLS (escritura propia, lectura pública), API GET/POST /api/calificaciones, promedio y listado en /score, notificación al calificado via motor central', done: true, valor: 1400000, quien: 'Claude AI' },
+      { num: '26.2', nombre: 'Sistema de logros/badges: tabla logros_usuario, API idempotente /api/logros, 8 tipos de logro, otorgados automáticamente al aceptar postulación, verificar tarea, firmar contrato y primer impulso. Visibles en /score con emoji y fecha', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '26.3', nombre: 'Panel Ángel de Impulso mejorado: nuevo tab Métricas con total invertido, % ejecutado, monto pendiente y historial con estado de ejecución por hito', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '26.4', nombre: '/score actualizado: sección de logros desbloqueados y sección de calificaciones recibidas con promedio ⭐, cargados desde sus APIs respectivas', done: true, valor: 500000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {
