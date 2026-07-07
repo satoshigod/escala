@@ -94,5 +94,18 @@ export async function PATCH(request) {
     }
   }
 
+  // Notificar si el aporte fue rechazado (validado=false)
+  if (validado === false && data?.aportante_id) {
+    try {
+      const { notificar } = await import('@/lib/notificaciones/notificar')
+      const { data: perfil } = await supabase.from('perfiles').select('email, nombre').eq('id', data.aportante_id).single()
+      const { data: proyecto } = await supabase.from('proyectos').select('nombre').eq('id', data.proyecto_id).single()
+      if (perfil?.email) {
+        await notificar('aporte_rechazado', { id: data.aportante_id, email: perfil.email, nombre: perfil.nombre }, {
+          proyecto_nombre: proyecto?.nombre || 'el proyecto', proyecto_id: data.proyecto_id,
+        })
+      }
+    } catch(e) {}
+  }
   return Response.json({ aporte: data })
 }

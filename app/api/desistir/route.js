@@ -17,7 +17,7 @@ export async function POST(request) {
 
   const { data: post, error: postError } = await supabase
     .from('postulaciones')
-    .select('*, roles:rol_id(id)')
+    .select('*, roles:rol_id(id, nombre, proyecto_id)')
     .eq('id', postulacion_id)
     .single()
 
@@ -45,5 +45,25 @@ export async function POST(request) {
       .eq('id', post.roles.id)
   }
 
+  // Notificar al fundador
+  try {
+    const { notificar } = await import('@/lib/notificaciones/notificar')
+    const { data: proyecto } = await supabase
+      .from('proyectos')
+      .select('nombre, fundador_id, perfiles!proyectos_fundador_id_fkey(email, nombre)')
+      .eq('id', post.roles?.proyecto_id || '')
+      .single()
+    const { data: esp } = await supabase.from('perfiles').select('nombre').eq('id', especialista_id).single()
+    if (proyecto?.perfiles?.email) {
+      await notificar('miembro_se_retiro', {
+        id: proyecto.fundador_id, email: proyecto.perfiles.email, nombre: proyecto.perfiles.nombre,
+      }, {
+        miembro_nombre: esp?.nombre || 'Un miembro',
+        rol_nombre: post.roles?.nombre || 'su rol',
+        proyecto_nombre: proyecto.nombre,
+        proyecto_id: post.roles?.proyecto_id,
+      })
+    }
+  } catch(e) {}
   return Response.json({ ok: true, mensaje: 'Te retiraste del rol. El contrato quedó registrado como cancelado y el rol vuelve a estar disponible.' })
 }

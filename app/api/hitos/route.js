@@ -41,6 +41,15 @@ export async function POST(request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+    // Notificar al equipo del proyecto
+  try {
+    const { data: proyecto } = await supabase.from('proyectos').select('nombre, fundador_id, perfiles!proyectos_fundador_id_fkey(email, nombre)').eq('id', hito.proyecto_id).single()
+    if (proyecto?.perfiles?.email) {
+      await notificar('hito_creado', { id: proyecto.fundador_id, email: proyecto.perfiles.email, nombre: proyecto.perfiles.nombre }, {
+        hito_nombre: hito.nombre, proyecto_nombre: proyecto.nombre, proyecto_id: hito.proyecto_id
+      })
+    }
+  } catch(e) {}
   return Response.json({ hito: data }, { status: 201 })
 }
 

@@ -76,6 +76,27 @@ export async function POST(request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // Verificar si es el primer ingreso del proyecto y notificar
+  try {
+    const { notificar } = await import('@/lib/notificaciones/notificar')
+    const { count } = await supabase.from('ingresos').select('id', { count: 'exact', head: true }).eq('proyecto_id', proyecto_id)
+    if (count === 1) { // Es el primero
+      const { data: proyecto } = await supabase.from('proyectos').select('nombre, fundador_id, perfiles!proyectos_fundador_id_fkey(email, nombre)').eq('id', proyecto_id).single()
+      if (proyecto?.perfiles?.email) {
+        await notificar('primera_venta', {
+          id: proyecto.fundador_id,
+          email: proyecto.perfiles.email,
+          nombre: proyecto.perfiles.nombre,
+        }, {
+          proyecto_nombre: proyecto.nombre,
+          proyecto_id,
+          valor_formateado: '$' + Number(data.valor || 0).toLocaleString('es-CO'),
+        })
+      }
+    }
+  } catch(e) {}
+
   return Response.json({ ingreso: data })
 }
 

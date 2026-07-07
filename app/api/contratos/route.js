@@ -128,6 +128,20 @@ export async function POST(request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // Notificar al profesional que tiene contrato listo para firmar
+  if (contrato?.profesional_id && post?.perfiles?.email) {
+    await notificar('contrato_generado', {
+      id: contrato.profesional_id,
+      email: post.perfiles.email,
+      nombre: post.perfiles.nombre,
+    }, {
+      rol_nombre: post.roles?.nombre || 'tu rol',
+      proyecto_nombre: post.roles?.proyectos?.nombre || 'el proyecto',
+      proyecto_id: post.roles?.proyecto_id,
+    }).catch(() => {})
+  }
+
   return Response.json({ contrato, existia: false }, { status: 201 })
 }
 
@@ -168,6 +182,18 @@ export async function PATCH(request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // Notificar si ambas partes firmaron
+  if (ambosFirmaron && data?.fundador_id && data?.profesional_id) {
+    const [perfF, perfP, proj] = await Promise.all([
+      supabase.from('perfiles').select('email, nombre').eq('id', data.fundador_id).single(),
+      supabase.from('perfiles').select('email, nombre').eq('id', data.profesional_id).single(),
+      supabase.from('proyectos').select('nombre').eq('id', data.roles?.proyecto_id || '').single(),
+    ])
+    const datosEvento = { proyecto_nombre: proj.data?.nombre || 'el proyecto', proyecto_id: data.roles?.proyecto_id }
+    if (perfF.data?.email) await notificar('contrato_vigente', { id: data.fundador_id, email: perfF.data.email, nombre: perfF.data.nombre }, datosEvento).catch(() => {})
+    if (perfP.data?.email) await notificar('contrato_vigente', { id: data.profesional_id, email: perfP.data.email, nombre: perfP.data.nombre }, datosEvento).catch(() => {})
+  }
 
   // Logro: primer contrato firmado (para el profesional cuando firma)
   if (tipo === 'profesional' && data?.profesional_id) {
