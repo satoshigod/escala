@@ -190,6 +190,7 @@ const fases = [
   },
   {
     num: '14',
+    estado: 'completa',
     titulo: 'Cobertura completa del documento consolidado',
     estado: 'progreso',
     valor_total: 19300000,
@@ -249,22 +250,18 @@ const fases = [
   {
     num: '07',
     titulo: 'Contratos digitales y documentos legales',
-    estado: 'pendiente',
+    estado: 'progreso',
     valor_total: 8000000,
     valor_hecho: 0,
     hitos: [
-      { num: '7.1', nombre: 'Plantillas legales base (abogado + desarrollador)', done: false, valor: 1400000, quien: 'Abogado + Desarrollador' },
-      { num: '7.2', nombre: 'Motor de generación automática de contratos', done: false, valor: 2000000, quien: 'Desarrollador' },
-      { num: '7.3', nombre: 'Integración de firma digital (DocuSign/HelloSign)', done: false, valor: 2500000, quien: 'Desarrollador' },
-      { num: '7.4', nombre: 'Expediente digital del proyecto exportable a PDF', done: false, valor: 2100000, quien: 'Desarrollador' },
+      { num: '7.1', nombre: 'Plantillas legales base — Contrato Marco + Anexo de Alcance + Instrumento de Deuda Diferida. 15 cláusulas legales colombianas generadas automáticamente ↑ completado Fase 23', done: true, valor: 1400000, quien: 'Abogado + Desarrollador' },
+      { num: '7.2', nombre: 'Motor de generación automática de contratos — se genera al aceptar una postulación, PDF inline sin librerías externas, Modalidad A y B ↑ completado Fase 23', done: true, valor: 2000000, quien: 'Desarrollador' },
+      { num: '7.3', nombre: 'Firma digital integrada (DocuSign/HelloSign) — pendiente, requiere contratar servicio', done: false, valor: 2500000, quien: 'Desarrollador' },
+      { num: '7.4', nombre: 'Expediente digital del proyecto — contratos visibles en workspace con estado de firma de ambas partes ↑ completado Fase 23', done: true, valor: 2100000, quien: 'Desarrollador' },
     ]
   },
   {
-    num: '08',
-    titulo: 'Mejoras de plataforma y escala',
-    estado: 'pendiente',
-    valor_total: 6000000,
-    valor_hecho: 4000000,
+    `00000,
     hitos: [
       { num: '8.1', nombre: 'Notificaciones en tiempo real — toast + indicador de conexión vía Supabase Realtime en dashboard', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
       { num: '8.2', nombre: 'Subida de archivos y evidencias de aportes — UI completa con preview en /aportes', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
@@ -335,7 +332,7 @@ const fases = [
   {
     num: '20',
     titulo: 'Navegación intuitiva — auditoría y fixes',
-    estado: 'progreso',
+    estado: 'completa',
     valor_total: 9900000,
     valor_hecho: 9900000,
     hitos: [
