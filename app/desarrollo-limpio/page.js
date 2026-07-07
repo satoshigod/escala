@@ -239,7 +239,7 @@ const fases = [
     valor_total: 16000000,
     valor_hecho: 0,
     hitos: [
-      { num: '15.1', nombre: 'Email infrastructure — actualizar código de Resend del sandbox domain al dominio custom (mail.escala.network), verificar que correos transaccionales salen del dominio correcto', done: false, valor: 500000, quien: 'Desarrollador + Fundador' },
+      { num: '15.1', nombre: 'Email infrastructure — correos transaccionales operativos desde mail.escala.network con DKIM/SPF/DMARC verificado en Resend. Confirmado en producción por el fundador', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
       { num: '15.2', nombre: 'Meta Business Verification — completar verificación del negocio para mover la app de publicación de modo desarrollo a producción. Requiere RUT o Cámara de Comercio de Escala', done: false, valor: 500000, quien: 'Fundador' },
       { num: '15.3', nombre: 'Integración Wompi — pagos en Colombia', done: false, valor: 2500000, quien: 'Desarrollador' },
       { num: '15.4', nombre: 'Facturación electrónica DIAN', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
