@@ -470,20 +470,21 @@ const GRUPOS = [
             body: JSON.stringify({ nombre, descripcion: 'QA test del sistema de notificaciones para verificar que se disparan correctamente los eventos de postulacion aceptada y rechazada', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
           })
           const dataP = await resP.json()
-          if (dataP.error) throw new Error(dataP.error)
+          if (dataP.error) throw new Error('POST proyecto falló: ' + dataP.error)
           window._qaNotifProyectoId = dataP.proyecto.id
+          window._qaNotifFundadorId = dataP.proyecto.fundador_id || FUNDADOR_ID
 
           const resR1 = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol A', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol A', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: window._qaNotifFundadorId })
           })
           const dataR1 = await resR1.json()
-          if (dataR1.error) throw new Error(dataR1.error)
+          if (dataR1.error) throw new Error('POST rol A falló (proyectoId=' + window._qaNotifProyectoId + ', fundadorId=' + window._qaNotifFundadorId + '): ' + dataR1.error)
           window._qaNotifRolAId = dataR1.rol.id
 
           const resR2 = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol B', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol B', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: window._qaNotifFundadorId })
           })
           const dataR2 = await resR2.json()
           if (dataR2.error) throw new Error(dataR2.error)
@@ -696,10 +697,11 @@ const GRUPOS = [
           if (dataP.error) throw new Error(dataP.error)
           if (dataP.proyecto.estado_financiacion !== 'riesgo_compartido') throw new Error('estado_financiacion no se guardó correctamente: ' + dataP.proyecto.estado_financiacion)
           window._qaCompRiesgoProyectoId = dataP.proyecto.id
+          window._qaCompRiesgoFundadorId = dataP.proyecto.fundador_id || FUNDADOR_ID
 
           const resR = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaCompRiesgoProyectoId, nombre: 'QA Rol Riesgo', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
+            body: JSON.stringify({ proyecto_id: window._qaCompRiesgoProyectoId, nombre: 'QA Rol Riesgo', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: window._qaCompRiesgoFundadorId })
           })
           const dataR = await resR.json()
           if (dataR.error) throw new Error(dataR.error)
