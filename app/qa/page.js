@@ -475,7 +475,7 @@ const GRUPOS = [
 
           const resR1 = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol A', tipo_aporte: 'tiempo', modalidad: 'equity' })
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol A', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
           })
           const dataR1 = await resR1.json()
           if (dataR1.error) throw new Error(dataR1.error)
@@ -483,7 +483,7 @@ const GRUPOS = [
 
           const resR2 = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol B', tipo_aporte: 'tiempo', modalidad: 'equity' })
+            body: JSON.stringify({ proyecto_id: window._qaNotifProyectoId, nombre: 'QA Rol B', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
           })
           const dataR2 = await resR2.json()
           if (dataR2.error) throw new Error(dataR2.error)
@@ -699,7 +699,7 @@ const GRUPOS = [
 
           const resR = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaCompRiesgoProyectoId, nombre: 'QA Rol Riesgo', tipo_aporte: 'tiempo', modalidad: 'equity' })
+            body: JSON.stringify({ proyecto_id: window._qaCompRiesgoProyectoId, nombre: 'QA Rol Riesgo', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
           })
           const dataR = await resR.json()
           if (dataR.error) throw new Error(dataR.error)
@@ -785,7 +785,7 @@ const GRUPOS = [
 
           const resR = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaCompRecProyectoId, nombre: 'QA Rol Con Recursos', tipo_aporte: 'tiempo', modalidad: 'equity' })
+            body: JSON.stringify({ proyecto_id: window._qaCompRecProyectoId, nombre: 'QA Rol Con Recursos', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
           })
           const dataR = await resR.json()
           if (dataR.error) throw new Error(dataR.error)
@@ -833,7 +833,7 @@ const GRUPOS = [
         run: async () => {
           const resR = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaCompRecProyectoId, nombre: 'QA Rol No Cumplio', tipo_aporte: 'tiempo', modalidad: 'equity' })
+            body: JSON.stringify({ proyecto_id: window._qaCompRecProyectoId, nombre: 'QA Rol No Cumplio', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
           })
           const dataR = await resR.json()
           if (dataR.error) throw new Error(dataR.error)
@@ -904,7 +904,7 @@ const GRUPOS = [
 
           const resR = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaOfertasProyectoId, nombre: 'QA Rol Oferta', tipo_aporte: 'tiempo', modalidad: 'equity' })
+            body: JSON.stringify({ proyecto_id: window._qaOfertasProyectoId, nombre: 'QA Rol Oferta', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
           })
           const dataR = await resR.json()
           if (dataR.error) throw new Error(dataR.error)
@@ -964,7 +964,7 @@ const GRUPOS = [
           if (!window._qaOfertasRolId) throw new Error('Corre primero el Setup')
           const resR = await fetch('/api/roles', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ proyecto_id: window._qaOfertasProyectoId, nombre: 'QA Rol Normal', tipo_aporte: 'tiempo', modalidad: 'equity' })
+            body: JSON.stringify({ proyecto_id: window._qaOfertasProyectoId, nombre: 'QA Rol Normal', tipo_aporte: 'tiempo', modalidad: 'equity', fundador_id: FUNDADOR_ID })
           })
           const dataR = await resR.json()
           if (dataR.error) throw new Error(dataR.error)
