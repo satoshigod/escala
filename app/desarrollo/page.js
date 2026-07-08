@@ -624,6 +624,20 @@ const fases = [
       { num: '37.4', nombre: 'Tarjetas de proyecto: 1 CTA visible + overflow. Lista compacta cuando hay más de 3 proyectos', done: false, valor: 1000000, quien: 'Claude AI' },
       { num: '37.5', nombre: 'Sidebar: accionables vs informativos diferenciados visualmente. Score con mayor prominencia', done: false, valor: 700000, quien: 'Claude AI' },
     ]
+  },
+  {
+    num: '38',
+    titulo: 'SEO — Infraestructura, Search Console y landing pages',
+    estado: 'completa',
+    valor_total: 6000000,
+    valor_hecho: 5500000,
+    hitos: [
+      { num: '38.1', nombre: 'robots.txt, sitemap.ts dinámico (proyectos + perfiles), metadata global con 3 JSON-LD schemas', done: true, valor: 1600000, quien: 'Claude AI' },
+      { num: '38.2', nombre: 'Metadata dinámica en /proyectos/[id], /perfil/[id], /buscar, /directorio, /que-es-escala — wrappers de servidor', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: '38.3', nombre: 'Imagen OG 1200x630px, verificación Google Search Console, sitemap enviado a Google', done: true, valor: 700000, quien: 'Claude AI + Ivan' },
+      { num: '38.4', nombre: '4 landing pages SEO: /buscar-cofundador, /crear-empresa, /startup-colombia, /startup-mexico. H1 semántico, JSON-LD, FAQ, enlazado interno', done: true, valor: 2700000, quien: 'Claude AI' },
+      { num: '38.5', nombre: 'Pendiente (Fase 2): /angel-investor, /buscar-cto, /startup-chile, blog 100 artículos, hreflang, SEO programático', done: false, valor: 500000, quien: 'Claude AI' },
+    ]
   }
 ]
 

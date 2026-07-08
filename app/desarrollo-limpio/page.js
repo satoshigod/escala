@@ -431,6 +431,27 @@ const fases = [
       { num: '28.4', nombre: 'Sidebar: separar accionables (mensajes sin leer, postulaciones pendientes) de informativos (aportes, roles). Score con tamaño mayor. Sin eliminar ningún indicador', done: false, valor: 700000, quien: 'Claude AI' },
       { num: '28.5', nombre: 'Wallet widget: mostrar los 3 saldos (disponible, comprometido, pendiente de entrada) en vez de solo el disponible', done: false, valor: 500000, quien: 'Claude AI' },
     ]
+  },
+  {
+    num: '29',
+    titulo: 'SEO — Infraestructura y primeras landing pages',
+    estado: 'completa',
+    valor_total: 6000000,
+    valor_hecho: 6000000,
+    hitos: [
+      { num: '29.1', nombre: 'robots.txt: Allow en páginas públicas, Disallow en 20+ páginas privadas (dashboard, wallet, admin, qa, etc.) — apunta a /sitemap.xml', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '29.2', nombre: 'sitemap.ts dinámico: páginas estáticas con prioridad, proyectos activos (hasta 500) y perfiles públicos (hasta 1000) con fecha real. Servido automáticamente en /sitemap.xml por Next.js', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '29.3', nombre: 'Metadata global mejorada: título con template "%s | Escala", description 160 chars, keywords, robots avanzados, OpenGraph completo, Twitter Cards, canonical. 3 JSON-LD: Organization + WebSite (SearchAction) + SoftwareApplication', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '29.4', nombre: 'Metadata dinámica: /proyectos/[id] y /perfil/[id] tienen título y descripción propios del proyecto/perfil. Wrappers de servidor sobre componentes cliente', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '29.5', nombre: 'Metadata en /buscar, /directorio y /que-es-escala: wrappers de servidor con título, descripción, OG, Twitter Cards y canonical propios', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '29.6', nombre: 'Imagen OG 1200x630px (og-default.png): fondo oscuro, isotipo, wordmark, tagline, 6 propuestas de valor, 7 países, URL escala.network', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '29.7', nombre: 'Verificación Google Search Console: archivo googledbbb597d067f7ab4.html en /public. Sitemap enviado a Google', done: true, valor: 200000, quien: 'Ivan + Claude AI' },
+      { num: '29.8', nombre: 'Landing /buscar-cofundador: H1 semántico, FAQ, HowTo, JSON-LD WebPage+Service, footer con enlazado interno. Keywords: buscar cofundador (800/mes), encontrar cofundador startup', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '29.9', nombre: 'Landing /crear-empresa: JSON-LD HowTo Schema con 4 pasos, 7 países con enlaces internos. Keywords: crear empresa (8,000-12,000/mes), crear startup sin capital', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '29.10', nombre: 'Landing /startup-colombia: SEO local Colombia, ciudades (Bogotá, Medellín, Cali), FAQ específico de SAS y emprendimiento colombiano. Keywords: crear startup colombia (2,000/mes)', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '29.11', nombre: 'Landing /startup-mexico: SEO local México, ciudades (CDMX, Monterrey, Guadalajara), FAQ específico de SAPI. Keywords: crear startup mexico (3,000/mes)', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '29.12', nombre: 'Pendiente: /angel-investor, /buscar-cto, /startup-chile, blog (100 artículos), hreflang 7 países, SEO programático por ciudad/industria. Se construyen a medida que lleguen primeros usuarios', done: false, valor: 500000, quien: 'Claude AI' },
+    ]
   }
 ]
 
