@@ -767,7 +767,7 @@ export default function Dashboard() {
             )}
 
             {/* Proyectos disponibles — al fondo para fundadores, arriba para especialistas */}
-            {esFundador && (
+            {esFundador && todosProyectos.filter(p => p.fundador_id !== usuario?.id).length > 0 && (
               <div>
                 <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Proyectos disponibles</div>
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:'0.75rem'}}>
