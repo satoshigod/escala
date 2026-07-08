@@ -610,7 +610,21 @@ const fases = [
       { num: '36.3', nombre: 'Escala for Teams: plan empresarial para compañías que quieran usar Escala para gestionar proyectos internos y proveedores externos — prerequisito: Fase 25.5 (multi-tenant)', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   }
-
+,
+  {
+    num: '37',
+    titulo: 'Rediseño del dashboard — reorganización sin eliminar funcionalidades',
+    estado: 'pendiente',
+    valor_total: 3500000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '37.1', nombre: 'Auditoría profunda del dashboard: análisis de frecuencia de uso por módulo, jerarquía visual, flujo de trabajo por etapa del usuario y escalabilidad con 10/30/100 proyectos', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
+      { num: '37.2', nombre: 'Bandeja de trabajo a ancho completo antes del grid — hoy oculta en grid con wallet y acciones sin relación', done: false, valor: 800000, quien: 'Claude AI' },
+      { num: '37.3', nombre: 'Proyectos disponibles condicional por rol (sube para especialistas, queda al fondo para fundadores)', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: '37.4', nombre: 'Tarjetas de proyecto: 1 CTA visible + overflow. Lista compacta cuando hay más de 3 proyectos', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: '37.5', nombre: 'Sidebar: accionables vs informativos diferenciados visualmente. Score con mayor prominencia', done: false, valor: 700000, quien: 'Claude AI' },
+    ]
+  }
 ]
 
 export default function Desarrollo() {

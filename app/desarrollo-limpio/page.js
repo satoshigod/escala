@@ -417,7 +417,21 @@ const fases = [
       { num: '27.3', nombre: 'Escala for Teams: plan empresarial para compañías que quieran usar Escala para gestionar proyectos internos y proveedores externos — prerequisito: Fase 25.5 (multi-tenant)', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
     ]
   }
-
+,
+  {
+    num: '28',
+    titulo: 'Rediseño del dashboard — reorganización sin eliminar funcionalidades',
+    estado: 'pendiente',
+    valor_total: 3500000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '28.1', nombre: 'Bandeja de trabajo sube a ancho completo antes del grid de 2 columnas — hoy está oculta compartiendo espacio con wallet y acciones rápidas sin relación entre sí', done: false, valor: 800000, quien: 'Claude AI' },
+      { num: '28.2', nombre: 'Proyectos disponibles condicional por rol: sube a posición 6 para especialistas, permanece al fondo para fundadores. Variables esFundador y postulacionActiva ya existen', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: '28.3', nombre: 'Tarjetas de proyecto: 1 CTA visible (Workspace) + menú overflow para los otros 3 (Publicar rol, Hitos, Aportes). Si hay más de 3 proyectos: vista de lista compacta con filtro por estado', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: '28.4', nombre: 'Sidebar: separar accionables (mensajes sin leer, postulaciones pendientes) de informativos (aportes, roles). Score con tamaño mayor. Sin eliminar ningún indicador', done: false, valor: 700000, quien: 'Claude AI' },
+      { num: '28.5', nombre: 'Wallet widget: mostrar los 3 saldos (disponible, comprometido, pendiente de entrada) en vez de solo el disponible', done: false, valor: 500000, quien: 'Claude AI' },
+    ]
+  }
 ]
 
 export default function DesarrolloLimpio() {
