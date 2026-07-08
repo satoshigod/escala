@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import NavApp from '@/components/NavApp'
 import { supabase } from '../../../lib/supabase'
 
 const IDIOMAS_DISPONIBLES = ['Español', 'Inglés', 'Portugués', 'Francés', 'Alemán', 'Italiano', 'Mandarín', 'Otro']
@@ -140,10 +141,7 @@ export default function EditarPerfil() {
 
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',color:'#fff'}}>
-      <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <a href="/dashboard" style={{textDecoration:'none',fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></a>
-        <a href={'/perfil/'+usuario?.id} style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Ver mi perfil público →</a>
-      </nav>
+      <NavApp paginaActual="perfil-editar" />
 
       <main style={{maxWidth:'640px',margin:'0 auto',padding:'2rem 1.25rem 4rem'}}>
         <div style={{marginBottom:'2rem'}}>

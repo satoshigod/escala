@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 
 function BarraMetrica({ valor, max, color = '#1D9E75', altura = 80 }) {
@@ -140,10 +141,7 @@ export default function Metricas() {
 
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',color:'#fff'}}>
-      <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <a href="/dashboard" style={{textDecoration:'none',fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></a>
-        <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>← Dashboard</a>
-      </nav>
+      <NavApp paginaActual="metricas" />
 
       <main style={{maxWidth:'1100px',margin:'0 auto',padding:'2rem 1.25rem'}}>
         <div style={{marginBottom:'2rem'}}>

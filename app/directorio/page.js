@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 
 const roles = ['todos', 'especialista', 'ejecutor', 'ideador', 'capitalista', 'angel', 'mentor', 'empresa']
@@ -93,17 +94,7 @@ export default function Directorio() {
 
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif'}}>
-      <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <a href="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center'}}><img src="/brand/isotipo.svg" alt="Escala" width="26" height="26" style={{display:"inline-block",verticalAlign:"middle",marginRight:"6px"}}/><span style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></span></a>
-        <div style={{display:'flex',gap:'1.5rem'}}>
-          <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
-          <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
-          <div style={{display:'flex',gap:'0',background:'rgba(255,255,255,0.06)',borderRadius:'8px',overflow:'hidden'}}>
-            <a href="/directorio" style={{color:'#fff',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none',padding:'0.35rem 0.875rem',background:'rgba(29,158,117,0.2)'}}>👥 Especialistas</a>
-            <a href="/buscar" style={{color:'#8FA3CC',fontSize:'0.78rem',fontWeight:'600',textDecoration:'none',padding:'0.35rem 0.875rem'}}>🚀 Proyectos</a>
-          </div>
-        </div>
-      </nav>
+      <NavApp paginaActual="directorio" />
 
       <main style={{maxWidth:'1000px',margin:'0 auto',padding:'2rem 1.25rem'}}>
         <div style={{marginBottom:'2rem'}}>

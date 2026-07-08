@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 
 const sectores = ['Tecnología','Salud','Educación','Agro','Comercio','Servicios','Construcción','Alimentos','Moda','Otro']
@@ -277,14 +278,7 @@ export default function Proyectos() {
 
   return (
     <div style={s.wrap}>
-      <nav style={s.nav}>
-        <a href="/dashboard" style={{textDecoration:'none'}}><div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div></a>
-        <div style={s.navLinks}>
-          <a href="/dashboard" style={s.navLink}>Dashboard</a>
-          <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Hitos</a><a href="/proyectos" style={s.navLinkAct}>Proyectos</a>
-          <a href="/registro" style={s.navLink}>Salir</a>
-        </div>
-      </nav>
+      <NavApp paginaActual="proyectos" />
 
       <main style={s.main}>
         {vista === 'lista' && (
