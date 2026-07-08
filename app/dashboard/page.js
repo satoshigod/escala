@@ -622,7 +622,7 @@ export default function Dashboard() {
                   Nada pendiente por ahora — vas al día.
                 </div>
               ) : (
-                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:'0.4rem'}}>
+                <div style={{display:bandeja.length >= 4 ? 'grid' : 'flex', gridTemplateColumns:bandeja.length >= 4 ? 'repeat(auto-fill,minmax(280px,1fr))' : undefined, flexDirection:bandeja.length < 4 ? 'column' : undefined, gap:'0.4rem'}}>
                   {bandeja.slice(0,6).map((item,i) => (
                     <a key={i} href={item.href} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem',background:'rgba(83,74,183,0.06)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'9px',padding:'0.7rem 1rem',textDecoration:'none'}}>
                       <div style={{fontSize:'0.8rem',color:'#fff',lineHeight:'1.35'}}>{item.texto}</div>
@@ -690,11 +690,13 @@ export default function Dashboard() {
                         {tareasDelProyecto > 0 && (
                           <div style={{fontSize:'0.7rem',color:'#AFA9EC',marginBottom:'0.75rem'}}>⚠ {tareasDelProyecto} tarea{tareasDelProyecto!==1?'s':''} pendiente{tareasDelProyecto!==1?'s':''}</div>
                         )}
-                        <div style={{display:'flex',gap:'0.4rem',flexWrap:'wrap'}}>
-                          <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.7rem',borderRadius:'6px',textDecoration:'none'}}>Workspace</a>
-                          <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{fontSize:'0.7rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.15)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Roles</a>
-                          <a href="/hitos" style={{fontSize:'0.7rem',fontWeight:'600',color:'rgba(255,255,255,0.45)',background:'rgba(255,255,255,0.04)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Hitos</a>
-                          <a href="/aportes" style={{fontSize:'0.7rem',fontWeight:'600',color:'rgba(255,255,255,0.45)',background:'rgba(255,255,255,0.04)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Aportes</a>
+                        <div style={{display:'flex',gap:'0.5rem',alignItems:'center',flexWrap:'wrap'}}>
+                          <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.75rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.35rem 0.875rem',borderRadius:'6px',textDecoration:'none'}}>Ir al workspace →</a>
+                          <div style={{display:'flex',gap:'0.3rem'}}>
+                            <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)',padding:'0.25rem 0.5rem',borderRadius:'5px',textDecoration:'none',background:'rgba(255,255,255,0.04)'}}>Roles</a>
+                            <a href="/hitos" style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)',padding:'0.25rem 0.5rem',borderRadius:'5px',textDecoration:'none',background:'rgba(255,255,255,0.04)'}}>Hitos</a>
+                            <a href="/aportes" style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)',padding:'0.25rem 0.5rem',borderRadius:'5px',textDecoration:'none',background:'rgba(255,255,255,0.04)'}}>Aportes</a>
+                          </div>
                         </div>
                       </div>
                     )
@@ -764,7 +766,7 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Proyectos disponibles — solo para fundadores al fondo */}
+            {/* Proyectos disponibles — al fondo para fundadores, arriba para especialistas */}
             {esFundador && (
               <div>
                 <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Proyectos disponibles</div>
