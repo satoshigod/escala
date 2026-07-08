@@ -13,17 +13,50 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Escala — Convierte tu idea en empresa",
-  description: "Escala conecta fundadores con especialistas que aportan su tiempo y conocimiento a cambio de participación diferida. La infraestructura para crear empresas reales.",
+  title: {
+    default: "Escala — Crea tu empresa con el equipo correcto",
+    template: "%s | Escala",
+  },
+  description: "Escala es la plataforma para crear empresas reales. Conecta fundadores con cofundadores, especialistas, inversores y mentores. Publica tu proyecto, forma tu equipo y ejecuta sin capital inicial.",
+  keywords: [
+    "crear empresa", "cofundador", "buscar cofundador", "crear startup",
+    "encontrar inversionistas", "especialistas para startups", "plataforma emprendimiento",
+    "crear empresa Colombia", "crear empresa México", "startup latinoamerica",
+    "buscar socio de negocios", "encontrar CTO", "levantar inversión",
+  ],
+  authors: [{ name: "Escala", url: "https://escala.network" }],
+  creator: "Escala Network",
+  publisher: "Escala Network",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
+  },
   icons: {
     icon: "/brand/favicon.svg",
     apple: "/brand/app-icon.svg",
   },
   openGraph: {
-    title: "Escala",
-    description: "Convierte tu idea en empresa con el equipo correcto.",
-    images: ["/brand/isotipo-instagram.svg"],
+    title: "Escala — Crea tu empresa con el equipo correcto",
+    description: "La plataforma para crear empresas reales. Conecta con cofundadores, especialistas e inversores en Colombia, México, Chile y más.",
+    url: "https://escala.network",
     siteName: "Escala",
+    images: [{ url: "https://escala.network/brand/og-default.png", width: 1200, height: 630, alt: "Escala — Plataforma para crear empresas" }],
+    locale: "es_CO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Escala — Crea tu empresa con el equipo correcto",
+    description: "La plataforma para crear empresas reales. Cofundadores, especialistas e inversores en un solo lugar.",
+    images: ["https://escala.network/brand/og-default.png"],
+    creator: "@joinescala",
+  },
+  alternates: {
+    canonical: "https://escala.network",
+  },
+  verification: {
+    google: "REEMPLAZAR_CON_TU_CODIGO_GOOGLE_SEARCH_CONSOLE",
   },
 };
 
@@ -31,11 +64,45 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Escala",
+  alternateName: "Escala Network",
   url: "https://escala.network",
+  logo: "https://escala.network/brand/favicon.svg",
+  description: "Plataforma para crear empresas reales. Conecta fundadores con cofundadores, especialistas, inversores y mentores en Latinoamérica y España.",
+  foundingDate: "2026",
+  areaServed: ["CO", "MX", "CL", "AR", "PE", "EC", "ES"],
   sameAs: [
     "https://www.facebook.com/profile.php?id=61591678262407",
     "https://www.instagram.com/joinescala",
   ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    availableLanguage: "Spanish",
+  },
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Escala",
+  url: "https://escala.network",
+  description: "Plataforma para crear empresas con cofundadores, especialistas e inversores",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate: "https://escala.network/buscar?q={search_term_string}" },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const softwareJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Escala",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web, iOS, Android",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  description: "Software para crear y gestionar empresas. Conecta con cofundadores, especialistas e inversores.",
+  url: "https://escala.network",
 };
 
 export default function RootLayout({
@@ -49,10 +116,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }} />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

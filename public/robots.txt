@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+Allow: /proyectos
+Allow: /directorio
+Allow: /buscar
+Allow: /que-es-escala
+Allow: /registro
+
+# Páginas privadas — no indexar
+Disallow: /dashboard
+Disallow: /workspace
+Disallow: /admin
+Disallow: /admin-escala
+Disallow: /admin/financiero
+Disallow: /perfil/editar
+Disallow: /postulaciones
+Disallow: /aportes
+Disallow: /hitos
+Disallow: /ingresos
+Disallow: /carril
+Disallow: /metricas
+Disallow: /score
+Disallow: /angel
+Disallow: /invitar
+Disallow: /calendario
+Disallow: /mis-contratos
+Disallow: /onboarding
+Disallow: /bienvenida
+Disallow: /wallet
+Disallow: /qa
+Disallow: /desarrollo
+Disallow: /desarrollo-limpio
+Disallow: /comercial
+
+Sitemap: https://escala.network/sitemap.xml
