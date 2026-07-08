@@ -104,8 +104,8 @@ const fases = [
       { num: '6.1', nombre: 'Modelo de compensación — Modalidad A (recursos en efectivo) y Modalidad B (riesgo compartido: deuda diferida o equity). Toggle al crear proyecto, visible en workspace y contratos', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
       { num: '6.2', nombre: 'Deuda pendiente — registro por especialista, resolución selectiva (cash o acciones) en /carril', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
       { num: '6.3', nombre: 'Panel Ángel de Impulso — explorar hitos, financiar, historial de retorno', done: true, valor: 0, quien: 'Claude AI + Fundador' },
-      { num: '6.4', nombre: 'Integración Wompi (pagos Colombia) — pendiente', done: false, valor: 2500000, quien: 'Desarrollador' },
-      { num: '6.5', nombre: 'Facturación electrónica DIAN — pendiente', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
+      { num: '6.4', nombre: 'Integración Wompi (pagos Colombia) — ver Fase 15', done: false, valor: 0, quien: 'Desarrollador' },
+      { num: '6.5', nombre: 'Facturación electrónica DIAN — ver Fase 15', done: false, valor: 0, quien: 'Desarrollador + Contador' },
     ]
   },
   {
@@ -180,8 +180,8 @@ const fases = [
       { num: '11.4', nombre: 'Centro de notificaciones en Dashboard — feed persistente, marcar leída/todas, realtime', done: true, valor: 1800000, quien: 'Claude AI + Fundador' },
       { num: '11.5', nombre: 'Dominio de correo propio — mail.escala.network verificado con DKIM/SPF/DMARC en Resend', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
       { num: '11.6', nombre: 'Correos de autenticación — registro y recuperación de contraseña con dominio propio vía SMTP', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
-      { num: '11.7', nombre: 'Canal SMS — pendiente (Twilio o Sinch)', done: false, valor: 1500000, quien: 'Desarrollador' },
-      { num: '11.8', nombre: 'Canal WhatsApp — pendiente (API Meta vía Twilio o 360Dialog)', done: false, valor: 2000000, quien: 'Desarrollador' },
+      { num: '11.7', nombre: 'Canal SMS — ver Fase 15', done: false, valor: 0, quien: 'Desarrollador' },
+      { num: '11.8', nombre: 'Canal WhatsApp — ver Fase 15', done: false, valor: 0, quien: 'Desarrollador' },
       { num: '11.9', nombre: 'Notificaciones basadas en tiempo — Vercel Cron Job diario 9am UTC, 3 verificaciones: tareas vencidas, hitos por vencer, proyectos sin actividad ↑ completado Fase 16', done: true, valor: 1200000, quien: 'Claude AI' },
       { num: '11.10', nombre: 'Resto del catálogo 229 eventos — se cablean a medida que cada módulo se construye', done: false, valor: 6000000, quien: 'Desarrollador' },
     ]
@@ -245,7 +245,7 @@ const fases = [
       { num: '15.4', nombre: 'Facturación electrónica DIAN', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
       { num: '15.5', nombre: 'Canal SMS — Twilio o Sinch', done: false, valor: 1500000, quien: 'Desarrollador' },
       { num: '15.6', nombre: 'Canal WhatsApp API oficial Meta', done: false, valor: 2000000, quien: 'Desarrollador' },
-      { num: '15.7', nombre: 'Notificaciones basadas en tiempo — Vercel Cron Jobs', done: false, valor: 1200000, quien: 'Desarrollador' },
+      { num: '15.7', nombre: 'Notificaciones basadas en tiempo — Vercel Cron Job diario 9am UTC ↑ completado Fase 16', done: true, valor: 1200000, quien: 'Claude AI' },
       { num: '15.8', nombre: 'Contratos — firma digital DocuSign/HelloSign', done: false, valor: 2500000, quien: 'Desarrollador' },
       { num: '15.9', nombre: 'App móvil — React Native o PWA', done: false, valor: 2000000, quien: 'Desarrollador' },
       { num: '15.10', nombre: 'Username personalizado Facebook — cambiar profile.php?id=... por facebook.com/EscalaNetwork una vez la página tenga 100 seguidores', done: false, valor: 1000000, quien: 'Fundador' },
