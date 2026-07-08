@@ -93,7 +93,9 @@ export default function Angel() {
       <main style={{maxWidth:'900px',margin:'0 auto',padding:'2rem 1.25rem'}}>
         <div style={{marginBottom:'2rem'}}>
           <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#E8A020',marginBottom:'0.4rem'}}>Rol especial</div>
+          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#E8A020',marginBottom:'0.3rem'}}>Financiamiento por hitos</div>
           <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>🌟 Ángel de Impulso</div>
+          <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginTop:'0.3rem',lineHeight:'1.6'}}>Financia hitos específicos de proyectos en Escala. A cambio recibes un retorno proporcional cuando el proyecto genere ingresos — sin intervenir en las decisiones del equipo.</div>
           <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginTop:'0.3rem',maxWidth:'580px'}}>Financia un hito específico sin esperar equity ni devolución. Tu aporte queda rastreado con fecha y evidencia. Recibes acceso al expediente del proyecto y prioridad en rondas futuras.</div>
         </div>
 

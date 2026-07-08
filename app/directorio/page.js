@@ -98,7 +98,10 @@ export default function Directorio() {
         <div style={{display:'flex',gap:'1.5rem'}}>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
           <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
-          <a href="/directorio" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Directorio</a>
+          <div style={{display:'flex',gap:'0',background:'rgba(255,255,255,0.06)',borderRadius:'8px',overflow:'hidden'}}>
+            <a href="/directorio" style={{color:'#fff',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none',padding:'0.35rem 0.875rem',background:'rgba(29,158,117,0.2)'}}>👥 Especialistas</a>
+            <a href="/buscar" style={{color:'#8FA3CC',fontSize:'0.78rem',fontWeight:'600',textDecoration:'none',padding:'0.35rem 0.875rem'}}>🚀 Proyectos</a>
+          </div>
         </div>
       </nav>
 

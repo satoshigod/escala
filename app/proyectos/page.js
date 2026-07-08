@@ -53,7 +53,7 @@ export default function Proyectos() {
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [creandoPais, setCreandoPais] = useState(false)
   const [form, setForm] = useState({
-    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: ''
+    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', paso: 1
   })
 
   useEffect(() => {
@@ -345,7 +345,17 @@ export default function Proyectos() {
 
         {vista === 'nuevo' && (
           <div style={s.form}>
-            <div style={s.formTitle}>Publicar proyecto en Escala</div>
+            {/* Indicador de pasos */}
+            <div style={{display:'flex',gap:'0.5rem',alignItems:'center',marginBottom:'1.25rem'}}>
+              {[1,2].map(p => (
+                <div key={p} style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                  <div style={{width:'28px',height:'28px',borderRadius:'50%',background:form.paso >= p ? '#1D9E75' : 'rgba(255,255,255,0.1)',color:form.paso >= p ? '#fff' : '#8FA3CC',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.78rem',fontWeight:'700'}}>{form.paso > p ? '✓' : p}</div>
+                  <span style={{fontSize:'0.75rem',color:form.paso >= p ? '#fff' : '#6B7280',fontWeight:form.paso === p ? '700' : '400'}}>{p === 1 ? 'Lo básico' : 'El equipo'}</span>
+                  {p < 2 && <div style={{width:'24px',height:'1px',background:'rgba(255,255,255,0.15)'}}></div>}
+                </div>
+              ))}
+            </div>
+            <div style={s.formTitle}>{form.paso === 1 ? 'Cuéntanos sobre tu proyecto' : '¿Qué perfiles necesitas?'}</div>
             <div style={s.formSub}>Define tu proyecto y lo que necesitas. Aparecerá en el directorio para que especialistas y capitalistas puedan postularse.</div>
 
             <label style={s.label} htmlFor="py-nombre">Nombre del proyecto *</label>
@@ -499,10 +509,27 @@ export default function Proyectos() {
             {mensaje && <div style={s.error}>{mensaje}</div>}
 
             <div style={s.btnRow}>
-              <button style={s.btnCancel} onClick={() => { setVista('lista'); setMensaje('') }}>Cancelar</button>
-              <button style={s.btn} onClick={publicar} disabled={enviando}>
-                {enviando ? 'Publicando...' : 'Publicar proyecto →'}
+              <button style={s.btnCancel} onClick={() => {
+                if (form.paso === 2) { actualizar('paso', 1); setMensaje('') }
+                else { setVista('lista'); setMensaje('') }
+              }}>
+                {form.paso === 2 ? '← Atrás' : 'Cancelar'}
               </button>
+              {form.paso === 1 ? (
+                <button style={s.btn} onClick={() => {
+                  if (!form.nombre.trim()) { setMensaje('El nombre del proyecto es obligatorio'); return }
+                  if (!form.descripcion.trim() || form.descripcion.trim().length < 80) { setMensaje('La descripción debe tener al menos 80 caracteres'); return }
+                  if (!form.sector) { setMensaje('Selecciona el sector del proyecto'); return }
+                  setMensaje('')
+                  actualizar('paso', 2)
+                }}>
+                  Siguiente: el equipo →
+                </button>
+              ) : (
+                <button style={s.btn} onClick={publicar} disabled={enviando}>
+                  {enviando ? 'Publicando...' : 'Publicar proyecto →'}
+                </button>
+              )}
             </div>
           </div>
         )}

@@ -649,7 +649,7 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
-                <a href="/admin" style={{display:'inline-block',marginTop:'0.6rem',fontSize:'0.74rem',color:'#E8A020',fontWeight:'600',textDecoration:'none'}}>Ver panel completo →</a>
+                <a href="/mis-contratos" style={{display:'inline-block',marginTop:'0.6rem',fontSize:'0.74rem',color:'#E8A020',fontWeight:'600',textDecoration:'none'}}>Ver panel completo →</a>
               </div>
             )}
 
@@ -691,7 +691,7 @@ export default function Dashboard() {
               <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Escala Score →</div>
             </a>
             {esFundador && (
-              <a href="/admin" style={{textDecoration:'none',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
+              <a href="/mis-contratos" style={{textDecoration:'none',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>{recibidasPendientes}</div>
                 <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones por revisar →</div>
               </a>
@@ -721,7 +721,7 @@ export default function Dashboard() {
                 <a href="/perfil/editar" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>✏️ Editar mi perfil</a>
                 <a href="/calendario" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📅 Calendario</a>
                 <a href="/metricas" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📊 Métricas</a>
-                <a href="/carril" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>🛤️ Cumplimiento y pago</a>
+                <a href="/carril" style={{fontSize:'0.74rem',color:'#E8A020',textDecoration:'none',padding:'0.3rem 0',fontWeight:'600'}} title="Confirmar cumplimiento y definir forma de pago">⚡ Cumplimiento y pago</a>
                 <a href="/postulaciones" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📋 Postulaciones</a>
                 {primerProyectoFundado && <a href={'/p/'+primerProyectoFundado.id} target="_blank" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>🔗 Link público</a>}
               </div>

@@ -51,6 +51,7 @@ export default function Metricas() {
   const [hitos, setHitos] = useState([])
   const [tareas, setTareas] = useState([])
   const [cargando, setCargando] = useState(true)
+  const [errorMsg, setErrorMsg] = useState('')
   const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null)
 
   useEffect(() => {
@@ -126,6 +127,15 @@ export default function Metricas() {
   const totalValor = aportes.reduce((s, a) => s + (a.valor || 0), 0)
   const participaciones = postulaciones.filter(p => p.estado === 'aceptada').length
 
+  if (errorMsg) return (
+    <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'Inter,sans-serif'}}>
+      <div style={{color:'#D85A30',fontSize:'0.9rem',textAlign:'center'}}>
+        <div style={{fontSize:'2rem',marginBottom:'1rem'}}>⚠️</div>
+        <div>{errorMsg}</div>
+        <button onClick={() => window.location.reload()} style={{marginTop:'1rem',background:'rgba(255,255,255,0.1)',border:'none',color:'#fff',padding:'0.5rem 1rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Reintentar</button>
+      </div>
+    </div>
+  )
   if (cargando) return <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>Cargando...</div>
 
   return (
