@@ -6,7 +6,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { registrarAuditoria, obtenerOCrearWallet, tasaDelDia } from '@/lib/financiero/ledger'
-import { v4 as uuidv4 } from 'uuid'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
