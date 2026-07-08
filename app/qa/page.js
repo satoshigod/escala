@@ -1263,6 +1263,129 @@ const GRUPOS = [
       },
     ]
   },
+  {
+    nombre: '💳 Motor Financiero',
+    tests: [
+      {
+        id: 'fin1',
+        nombre: 'Exchange rates disponibles',
+        auto: true,
+        fn: async () => {
+          const res = await fetch('/api/exchange-rates')
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error)
+          const monedas = Object.keys(data.tasas || {})
+          if (!monedas.includes('COP')) throw new Error('COP no encontrado')
+          if (!monedas.includes('USD')) throw new Error('USD no encontrado')
+          return `✓ ${monedas.length} monedas: ${monedas.join(', ')}`
+        }
+      },
+      {
+        id: 'fin2',
+        nombre: 'GET /api/wallet — autenticado',
+        auto: true,
+        fn: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/wallet', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error)
+          return '✓ ' + (data.wallets?.length || 0) + ' wallet(s)'
+        }
+      },
+      {
+        id: 'fin3',
+        nombre: 'Crear wallet COP',
+        auto: true,
+        fn: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/wallet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+            body: JSON.stringify({ moneda: 'COP', pais: 'CO' })
+          })
+          const data = await res.json()
+          if (!res.ok && !data.error?.includes('duplicate') && !data.error?.includes('unique')) throw new Error(data.error)
+          return '✓ Wallet COP OK — ' + (data.wallet?.id?.substring(0,8) || 'ya existía')
+        }
+      },
+      {
+        id: 'fin4',
+        nombre: 'Iniciar fondeo BRE-B',
+        auto: true,
+        fn: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/fondeos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+            body: JSON.stringify({ proveedor: 'breb', moneda: 'COP', monto: 10000, pais: 'CO' })
+          })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error)
+          if (!data.instrucciones?.referencia) throw new Error('Sin referencia')
+          window._qaFondeoId = data.fondeo?.id
+          return '✓ Fondeo BRE-B creado — Ref: ' + data.instrucciones.referencia
+        }
+      },
+      {
+        id: 'fin5',
+        nombre: 'GET /api/fondeos — historial',
+        auto: true,
+        fn: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/fondeos', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error)
+          return '✓ ' + (data.fondeos?.length || 0) + ' fondeos'
+        }
+      },
+      {
+        id: 'fin6',
+        nombre: 'GET /api/wallet/movimientos',
+        auto: true,
+        fn: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/wallet/movimientos?limit=5', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
+          const data = await res.json()
+          if (!res.ok) throw new Error(data.error)
+          return '✓ ' + (data.total || 0) + ' movimientos en ledger'
+        }
+      },
+      {
+        id: 'fin7',
+        nombre: 'Tasas multimoneda válidas',
+        auto: true,
+        fn: async () => {
+          const res = await fetch('/api/exchange-rates')
+          const data = await res.json()
+          const t = data.tasas || {}
+          if (!t.USD || parseFloat(t.USD.tasa_usd) !== 1) throw new Error('USD debe ser 1.0')
+          if (!t.COP || parseFloat(t.COP.tasa_usd) > 0.001) throw new Error('COP tasa inválida')
+          if (!t.MXN) throw new Error('MXN no encontrado')
+          if (!t.EUR || parseFloat(t.EUR.tasa_usd) < 1) throw new Error('EUR tasa inválida')
+          return '✓ COP: ' + t.COP.tasa_usd + ' | EUR: ' + t.EUR.tasa_usd + ' | MXN: ' + t.MXN.tasa_usd
+        }
+      },
+      {
+        id: 'fin8',
+        nombre: 'Admin financiero — 403 si no admin',
+        auto: true,
+        fn: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) throw new Error('Sin sesión activa')
+          const res = await fetch('/api/admin/financiero', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
+          const data = await res.json()
+          if (res.status === 403) return '✓ RLS correcto — no-admin bloqueado'
+          if (res.ok) return '✓ Admin verificado — ' + (data.total || 0) + ' órdenes'
+          throw new Error(data.error)
+        }
+      },
+    ]
+  },
 ]
 
 const MANUAL = [

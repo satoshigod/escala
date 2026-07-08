@@ -509,7 +509,24 @@ const fases = [
       { num: '29.4', nombre: 'Formulario de proyectos dividido en 2 pasos: Paso 1 (básico: nombre, descripción, sector, ciudad, país) → Paso 2 (equipo: nivel, modalidad, roles)', done: true, valor: 800000, quien: 'Claude AI' },
       { num: '29.5', nombre: '/carril más visible en dashboard con color ámbar y emoji ⚡. Enlace a /desarrollo-limpio visible desde /desarrollo. coming.html y desarrollo.html obsoletos eliminados', done: true, valor: 700000, quien: 'Claude AI' },
     ]
-  },
+  },,
+  {
+    num: '30',
+    titulo: 'Motor Financiero — Wallets, Ledger, Fondeos y Pagos',
+    estado: 'progreso',
+    valor_total: 18000000,
+    valor_hecho: 12000000,
+    hitos: [
+      { num: '30.1', nombre: 'Arquitectura financiera diseñada: SQL multimoneda, ledger de doble partida, motor independiente con puente de eventos hacia motor Escala', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: '30.2', nombre: 'SQL: exchange_rates (9 monedas vs USD), wallets (uno por usuario+moneda), ledger_entries (inmutable, doble partida), fondeos, payment_requests (9 estados), financial_audit (inmutable)', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: '30.3', nombre: 'lib/financiero/ledger.js: motor central con registrarMovimiento() + idempotencia, calcularSaldo() siempre desde ledger, tasaDelDia(), registrarAuditoria()', done: true, valor: 2500000, quien: 'Claude AI' },
+      { num: '30.4', nombre: '7 APIs: /api/wallet, /api/wallet/movimientos, /api/fondeos + /webhook (HMAC), /api/pagos, /api/admin/financiero, /api/exchange-rates', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: '30.5', nombre: '13 eventos financieros agregados al catálogo — catálogo pasa de 31 a 44 eventos. Wallet críticos no desactivables por el usuario', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '30.6', nombre: 'Páginas: /wallet (módulo independiente, topbar propio "Escala · Finanzas"), /wallet/fondear (flujo 3 pasos BRE-B/Binance), /admin/financiero (KPIs + tabla + modal acciones)', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: '30.7', nombre: 'Widget wallet en dashboard de Escala — acceso rápido sin mezclar módulos', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '30.8', nombre: 'Pendiente: correr SQL, configurar webhooks, /wallet/movimientos, /wallet/pagos/solicitar, QA tests', done: false, valor: 4500000, quien: 'Ivan + Claude AI' },
+    ]
+  }
 ]
 
 export default function Desarrollo() {

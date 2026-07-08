@@ -312,7 +312,28 @@ const fases = [
       { num: '20.3', nombre: 'UX mejorada: formulario de proyectos en 2 pasos, /carril visible en dashboard, texto introductorio en /score y /angel, manejo de error en /metricas', done: true, valor: 1200000, quien: 'Claude AI' },
       { num: '20.4', nombre: 'Limpieza: coming.html y desarrollo.html obsoletos eliminados, /admin-escala es la única ruta de administración de plataforma', done: true, valor: 700000, quien: 'Claude AI' },
     ]
-  },
+  },,
+  {
+    num: '21',
+    titulo: 'Motor Financiero — Wallets, Ledger y Pagos',
+    estado: 'progreso',
+    valor_total: 18000000,
+    valor_hecho: 12000000,
+    hitos: [
+      { num: '21.1', nombre: 'SQL completo: exchange_rates, wallets, ledger_entries (doble partida), fondeos, payment_requests, financial_audit — 9 monedas (COP MXN CLP ARS PEN USD EUR USDT USDC), RLS en todas las tablas', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: '21.2', nombre: 'Motor central lib/financiero/ledger.js: registrarMovimiento() idempotente, calcularSaldo() siempre desde ledger, tasaDelDia(), obtenerOCrearWallet(), registrarAuditoria() — equivalente a notificar() para el ledger', done: true, valor: 2500000, quien: 'Claude AI' },
+      { num: '21.3', nombre: 'APIs: /api/wallet, /api/wallet/movimientos, /api/fondeos, /api/fondeos/webhook (HMAC-SHA256), /api/pagos, /api/admin/financiero (aprobar/rechazar/ejecutar/reversar), /api/exchange-rates', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: '21.4', nombre: '13 eventos financieros conectados al motor notificar(): fondeo_iniciado/completado/fallido, pago_solicitado/aprobado/rechazado/ejecutado/reversado, wallet_fondeo_acreditado/debito_ejecutado (críticas — no desactivables)', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '21.5', nombre: 'Puente Motor Financiero → Motor Escala: pago ejecutado dispara cumplimiento_confirmado, primer pago dispara primera_venta, hito financiado dispara impulso_recibido', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: '21.6', nombre: 'Páginas: /wallet (módulo independiente con topbar propio), /wallet/fondear (3 pasos: método → monto → instrucciones BRE-B/Binance), /admin/financiero (panel admin con KPIs y acciones)', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: '21.7', nombre: 'Widget de acceso rápido al wallet en el dashboard general de Escala (saldo + Fondear + Ir a finanzas)', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '21.8', nombre: '/wallet/movimientos — historial completo paginado con filtros por tipo', done: false, valor: 1000000, quien: 'Desarrollador' },
+      { num: '21.9', nombre: '/wallet/pagos/solicitar — formulario de solicitud de pago vinculado a hitos', done: false, valor: 1000000, quien: 'Desarrollador' },
+      { num: '21.10', nombre: 'Correr SQL en Supabase: 20260708_motor_financiero.sql', done: false, valor: 0, quien: 'Ivan' },
+      { num: '21.11', nombre: 'Variables de entorno en Vercel: BREB_WEBHOOK_SECRET, BINANCE_WEBHOOK_SECRET', done: false, valor: 0, quien: 'Ivan' },
+      { num: '21.12', nombre: 'Tests QA del motor financiero: wallet, fondeos, pagos, admin', done: false, valor: 1500000, quien: 'Claude AI' },
+    ]
+  }
 ]
 
 export default function DesarrolloLimpio() {

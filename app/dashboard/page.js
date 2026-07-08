@@ -565,6 +565,16 @@ export default function Dashboard() {
                 )}
               </div>
 
+              {/* Widget wallet — acceso rápido al módulo financiero */}
+              <div style={{background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'10px',padding:'12px',marginBottom:'12px'}}>
+                <div style={{fontSize:'10px',color:'rgba(255,255,255,0.35)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'6px'}}>💼 Wallet</div>
+                <div style={{fontSize:'15px',fontWeight:'600',color:'#fff',marginBottom:'10px'}} id="dash-wallet-saldo">Cargando...</div>
+                <div style={{display:'flex',gap:'6px'}}>
+                  <a href="/wallet/fondear" style={{flex:1,padding:'6px',background:'rgba(29,158,117,0.2)',color:'#5DCAA5',borderRadius:'6px',fontSize:'11px',fontWeight:'600',textDecoration:'none',textAlign:'center'}}>⬇️ Fondear</a>
+                  <a href="/wallet" style={{flex:1,padding:'6px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.5)',borderRadius:'6px',fontSize:'11px',textDecoration:'none',textAlign:'center'}}>Ver →</a>
+                </div>
+              </div>
+
               <div>
                 <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem'}}>Acciones rápidas</div>
                 <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
