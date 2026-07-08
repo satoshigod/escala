@@ -496,6 +496,20 @@ const fases = [
       { num: '28.3', nombre: 'proyecto_actualizado + proyecto_completado: PATCH /api/proyectos con validación de ownership, notifica al equipo completo al completar, otorga logro primer_proyecto_completado', done: true, valor: 600000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '29',
+    titulo: 'Auditoría UX — 11 correcciones',
+    estado: 'completa',
+    valor_total: 3200000,
+    valor_hecho: 3200000,
+    hitos: [
+      { num: '29.1', nombre: 'NavApp — componente nav compartido para 14 páginas, elimina 14 navs copiados. Cualquier cambio en el nav ahora aplica en toda la app desde un solo archivo', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '29.2', nombre: '/p/[id] eliminado (redirige a /proyectos/[id]), /admin renombrado a /mis-contratos (evita confusión con /admin-escala), /admin redirige automáticamente', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: '29.3', nombre: '/metricas con manejo de error y botón reintentar. /directorio y /buscar vinculados con tabs 👥/🚀. /score y /angel con texto introductorio explicativo', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '29.4', nombre: 'Formulario de proyectos dividido en 2 pasos: Paso 1 (básico: nombre, descripción, sector, ciudad, país) → Paso 2 (equipo: nivel, modalidad, roles)', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '29.5', nombre: '/carril más visible en dashboard con color ámbar y emoji ⚡. Enlace a /desarrollo-limpio visible desde /desarrollo. coming.html y desarrollo.html obsoletos eliminados', done: true, valor: 700000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function Desarrollo() {

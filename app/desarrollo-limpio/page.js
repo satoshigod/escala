@@ -300,6 +300,19 @@ const fases = [
       { num: '19.2', nombre: 'PATCH /api/proyectos: editar proyecto (proyecto_actualizado) y marcar como completado (proyecto_completado) con notificación a todo el equipo y logro automático', done: true, valor: 600000, quien: 'Claude AI' },
     ]
   },
+  {
+    num: '20',
+    titulo: 'Auditoría UX y correcciones de navegación',
+    estado: 'completa',
+    valor_total: 3200000,
+    valor_hecho: 3200000,
+    hitos: [
+      { num: '20.1', nombre: 'NavApp — componente nav compartido en components/NavApp.js, aplicado en 14 páginas. Un solo punto de mantenimiento para toda la navegación de la app', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '20.2', nombre: 'Rutas limpias: /p/[id] redirige a /proyectos/[id], /admin redirige a /mis-contratos, tabs en /directorio y /buscar, enlace visible a /desarrollo-limpio', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '20.3', nombre: 'UX mejorada: formulario de proyectos en 2 pasos, /carril visible en dashboard, texto introductorio en /score y /angel, manejo de error en /metricas', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '20.4', nombre: 'Limpieza: coming.html y desarrollo.html obsoletos eliminados, /admin-escala es la única ruta de administración de plataforma', done: true, valor: 700000, quien: 'Claude AI' },
+    ]
+  },
 ]
 
 export default function DesarrolloLimpio() {
