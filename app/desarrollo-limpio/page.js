@@ -333,7 +333,91 @@ const fases = [
       { num: '21.11', nombre: 'Variables de entorno en Vercel: BREB_WEBHOOK_SECRET, BINANCE_WEBHOOK_SECRET', done: false, valor: 0, quien: 'Ivan' },
       { num: '21.12', nombre: 'Tests QA del motor financiero: wallet, fondeos, pagos, admin', done: false, valor: 1500000, quien: 'Claude AI' },
     ]
+  },
+  {
+    num: '22',
+    titulo: 'Enterprise Graph — Auditoría y diseño arquitectónico',
+    estado: 'pendiente',
+    valor_total: 8000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '22.1', nombre: 'Auditoría completa: 39 páginas, 41 APIs, 27 tablas, 15 módulos lib — mapear deuda técnica, inconsistencias y brechas vs visión Enterprise Graph', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '22.2', nombre: 'Diseño del Enterprise Graph: nodos (Persona, Empresa, Idea, Proyecto, Equipo, Capital, Contribución, Activo, Documento, Servicio, Evento, Conocimiento) y todas sus aristas con semántica y peso', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '22.3', nombre: 'Trust Graph: reputación calculada desde historial, contratos, pagos, cumplimiento, proyectos, resultados, referencias, aportes, experiencia e impacto — no solo conteo de tareas', done: false, valor: 1500000, quien: 'Claude AI' },
+      { num: '22.4', nombre: 'Diseño de la capa de IA sobre el grafo: búsqueda semántica de cofundadores e inversores, formación automática de equipos, detección de riesgos, recomendación de alianzas estratégicas', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '22.5', nombre: 'Roadmap 20 años: 6 fases desde MVP actual hasta infraestructura mundial — mapa de expansión por país, vertical y segmento de mercado', done: false, valor: 1000000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
+    num: '23',
+    titulo: 'Deuda técnica crítica — hallazgos de auditoría',
+    estado: 'pendiente',
+    valor_total: 6000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '23.1', nombre: 'Modelo relacional plano → preparación para grafo: tabla entity_relationships con tipo de relación, peso y dirección. Reemplazar FKs implícitas por aristas explícitas con semántica', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: '23.2', nombre: 'Score actual (simple contador) → Score del grafo: reputación calculada desde centralidad en el grafo. PageRank-like sobre contribuciones verificadas, no solo completitud de tareas', done: false, valor: 1500000, quien: 'Claude AI' },
+      { num: '23.3', nombre: 'Contratos estáticos → Contratos vivos: vincular contratos a hitos, pagos y evidencias en tiempo real. Estado del contrato derivado del estado real de sus componentes', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: '23.4', nombre: 'Roles sin expertise graph: tabla expertise_nodes con skills verificadas, endorsements entre pares y niveles de profundidad — base para matching inteligente de equipos', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: '23.5', nombre: 'i18n real: next-intl en todas las páginas, detección de país por IP, moneda y proveedor de pago automáticos según país del usuario — hoy solo hay soporte parcial en el motor financiero', done: false, valor: 500000, quien: 'Claude AI' },
+    ]
+  },
+  {
+    num: '24',
+    titulo: 'Escala Intelligence Layer — IA sobre el grafo',
+    estado: 'pendiente',
+    valor_total: 12000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '24.1', nombre: 'Embeddings de perfiles: vectorizar perfil de cada usuario (skills, historial, proyectos, reputación) con OpenAI text-embedding-3. Almacenar en pgvector (Supabase) para búsqueda semántica', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: '24.2', nombre: 'Matching de cofundadores y especialistas: dado un proyecto, encontrar los 5 perfiles más compatibles por skills complementarias, disponibilidad, historial y posición en el Trust Graph', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: '24.3', nombre: 'Generación de contratos con IA: dado proyecto + rol + términos negociados, generar contrato completo con cláusulas específicas al contexto — reemplazar la plantilla estática actual', done: false, valor: 1500000, quien: 'Claude AI' },
+      { num: '24.4', nombre: 'Detección de riesgos: identificar proyectos con alta probabilidad de abandono (sin actividad, hitos sin cumplir, conflictos sin resolver) y alertar proactivamente a fundadores e inversores', done: false, valor: 1500000, quien: 'Claude AI' },
+      { num: '24.5', nombre: 'Assistant sobre el grafo: chat que responde preguntas complejas del ecosistema usando el grafo como contexto ("¿quién tiene experiencia en fintech en Chile con más de 3 proyectos completados?")', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: '24.6', nombre: 'Valoración de contribuciones: dado el historial de un especialista en un proyecto, estimar el valor de mercado de su contribución usando comparables del grafo — base para negociación de equity', done: false, valor: 2000000, quien: 'Claude AI' },
+    ]
+  },
+  {
+    num: '25',
+    titulo: 'Escalabilidad y arquitectura enterprise',
+    estado: 'pendiente',
+    valor_total: 10000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '25.1', nombre: 'React Server Components: migrar las 5 páginas más críticas (dashboard, proyectos, workspace, score, carril) de fetch() client-side a RSC — eliminar waterfalls de datos y mejorar TTI', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: '25.2', nombre: 'Rate limiting global: Vercel Edge Middleware en todas las APIs — 100 req/min por IP, 1000/min por usuario autenticado. Bloquear automáticamente abuso de webhooks', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: '25.3', nombre: 'Caché de lectura: Upstash Redis para cachear tasas de cambio, catálogos y scores. TTL 5 min para datos frecuentes — reducir carga en Supabase en picos de tráfico', done: false, valor: 1500000, quien: 'Claude AI' },
+      { num: '25.4', nombre: 'Observabilidad: Sentry para errores frontend y API, Vercel Analytics para performance, alertas automáticas si error rate > 1% o latencia P95 > 2s', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: '25.5', nombre: 'Multi-tenant: tabla organizations, separación de datos por organización, modelo white-label para que empresas tengan su propia instancia de Escala — prerequisito para Escala for Teams', done: false, valor: 4500000, quien: 'Claude AI + Fundador' },
+    ]
+  },
+  {
+    num: '26',
+    titulo: 'Expansión internacional — proveedores de pago por país',
+    estado: 'pendiente',
+    valor_total: 15000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '26.1', nombre: 'SPEI (México): integración con PSP mexicano para fondeos en MXN — equivalente a BRE-B Colombia. El motor financiero ya tiene proveedor_pago enum con spei', done: false, valor: 3000000, quien: 'Desarrollador + Contratar proveedor' },
+      { num: '26.2', nombre: 'Khipu / Fintoc (Chile): integración para fondeos en CLP', done: false, valor: 3000000, quien: 'Desarrollador + Contratar proveedor' },
+      { num: '26.3', nombre: 'Wompi (Colombia): PSE + tarjetas débito/crédito para Colombia', done: false, valor: 2500000, quien: 'Desarrollador + Contratar Wompi' },
+      { num: '26.4', nombre: 'Stripe (Internacional): USD/EUR para España, Ecuador y usuarios internacionales', done: false, valor: 2500000, quien: 'Desarrollador + Contratar Stripe' },
+      { num: '26.5', nombre: 'Facturación electrónica por país: DIAN (Colombia), SAT (México), SII (Chile) — cada uno requiere contratar proveedor de facturación electrónica certificado', done: false, valor: 4000000, quien: 'Desarrollador + Contador + Contratar proveedor' },
+    ]
+  },
+  {
+    num: '27',
+    titulo: 'Monetización — modelo de ingresos de Escala',
+    estado: 'pendiente',
+    valor_total: 5000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '27.1', nombre: 'Comisión por transacción: cobrar 2-4% sobre cada pago ejecutado en el motor financiero — campo comision_escala ya existe en el ledger, solo falta activarlo en el flujo de ejecución', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
+      { num: '27.2', nombre: 'Suscripción Pro: plan de pago para fundadores con más de 3 proyectos activos — acceso a IA matching, contratos ilimitados, analytics avanzados y soporte prioritario', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
+      { num: '27.3', nombre: 'Escala for Teams: plan empresarial para compañías que quieran usar Escala para gestionar proyectos internos y proveedores externos — prerequisito: Fase 25.5 (multi-tenant)', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
+    ]
   }
+
 ]
 
 export default function DesarrolloLimpio() {
