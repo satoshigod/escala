@@ -1270,7 +1270,7 @@ const GRUPOS = [
         id: 'rutas1',
         nombre: 'Verificar páginas principales (no 404)',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const rutasPrincipales = [
             '/dashboard', '/proyectos', '/postulaciones', '/directorio', '/buscar',
             '/score', '/angel', '/carril', '/hitos', '/aportes', '/ingresos',
@@ -1289,7 +1289,7 @@ const GRUPOS = [
         id: 'rutas2',
         nombre: 'Verificar páginas del módulo financiero (no 404)',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const rutasWallet = [
             '/wallet', '/wallet/fondear', '/wallet/movimientos',
             '/wallet/pagos', '/wallet/pagos/solicitar', '/admin/financiero',
@@ -1307,7 +1307,7 @@ const GRUPOS = [
         id: 'rutas3',
         nombre: 'Verificar redireccionamientos: /admin → /mis-contratos',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const res = await fetch('/admin', { redirect: 'follow' })
           if (res.url?.includes('/mis-contratos') || res.url?.includes('/registro')) {
             return '✓ /admin redirige correctamente'
@@ -1319,7 +1319,7 @@ const GRUPOS = [
         id: 'rutas4',
         nombre: 'Verificar redireccionamientos: /p/[id] → /proyectos/[id]',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const res = await fetch('/p/test-id', { redirect: 'follow' })
           if (res.status === 404) return '✓ /p/[id] redirige (Next.js maneja la redirección client-side)'
           return '✓ /p/[id] responde — ' + res.status
@@ -1329,7 +1329,7 @@ const GRUPOS = [
         id: 'rutas5',
         nombre: 'APIs del motor financiero responden',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const apis = ['/api/exchange-rates', '/api/wallet', '/api/fondeos', '/api/pagos']
           const errores = []
           const { data: { session } } = await window._supabase.auth.getSession()
@@ -1352,7 +1352,7 @@ const GRUPOS = [
         id: 'fin1',
         nombre: 'Exchange rates disponibles',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const res = await fetch('/api/exchange-rates')
           const data = await res.json()
           if (!res.ok) throw new Error(data.error)
@@ -1366,7 +1366,7 @@ const GRUPOS = [
         id: 'fin2',
         nombre: 'GET /api/wallet — autenticado',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
           if (!session) throw new Error('Sin sesión activa')
           const res = await fetch('/api/wallet', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
@@ -1379,7 +1379,7 @@ const GRUPOS = [
         id: 'fin3',
         nombre: 'Crear wallet COP',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
           if (!session) throw new Error('Sin sesión activa')
           const res = await fetch('/api/wallet', {
@@ -1396,7 +1396,7 @@ const GRUPOS = [
         id: 'fin4',
         nombre: 'Iniciar fondeo BRE-B',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
           if (!session) throw new Error('Sin sesión activa')
           const res = await fetch('/api/fondeos', {
@@ -1415,7 +1415,7 @@ const GRUPOS = [
         id: 'fin5',
         nombre: 'GET /api/fondeos — historial',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
           if (!session) throw new Error('Sin sesión activa')
           const res = await fetch('/api/fondeos', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
@@ -1428,7 +1428,7 @@ const GRUPOS = [
         id: 'fin6',
         nombre: 'GET /api/wallet/movimientos',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
           if (!session) throw new Error('Sin sesión activa')
           const res = await fetch('/api/wallet/movimientos?limit=5', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
@@ -1441,7 +1441,7 @@ const GRUPOS = [
         id: 'fin7',
         nombre: 'Tasas multimoneda válidas',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const res = await fetch('/api/exchange-rates')
           const data = await res.json()
           const t = data.tasas || {}
@@ -1456,7 +1456,7 @@ const GRUPOS = [
         id: 'fin9',
         nombre: 'Verificar rutas del módulo financiero (no 404)',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const rutas = ['/wallet', '/wallet/fondear', '/wallet/movimientos', '/wallet/pagos', '/wallet/pagos/solicitar', '/admin/financiero']
           const errores = []
           for (const ruta of rutas) {
@@ -1475,7 +1475,7 @@ const GRUPOS = [
         id: 'fin8',
         nombre: 'Admin financiero — 403 si no admin',
         auto: true,
-        fn: async () => {
+        run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
           if (!session) throw new Error('Sin sesión activa')
           const res = await fetch('/api/admin/financiero', { headers: { 'Authorization': 'Bearer ' + session.access_token } })
