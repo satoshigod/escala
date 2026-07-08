@@ -183,7 +183,7 @@ const fases = [
       { num: '11.7', nombre: 'Canal SMS — ver Fase 15', done: false, valor: 0, quien: 'Desarrollador' },
       { num: '11.8', nombre: 'Canal WhatsApp — ver Fase 15', done: false, valor: 0, quien: 'Desarrollador' },
       { num: '11.9', nombre: 'Notificaciones basadas en tiempo — Vercel Cron Job diario 9am UTC, 3 verificaciones: tareas vencidas, hitos por vencer, proyectos sin actividad ↑ completado Fase 16', done: true, valor: 1200000, quien: 'Claude AI' },
-      { num: '11.10', nombre: 'Resto del catálogo 229 eventos — se cablean a medida que cada módulo se construye', done: false, valor: 6000000, quien: 'Desarrollador' },
+      { num: '11.10', nombre: 'Eventos de módulos futuros — marketplace, votaciones, rondas de inversión, liquidación y comunidad. Se cablean cuando esos módulos se construyan. Los módulos existentes hoy tienen sus notificaciones completas (30 eventos activos)', done: false, valor: 6000000, quien: 'Desarrollador' },
     ]
   },
   {
