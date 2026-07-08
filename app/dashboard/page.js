@@ -16,6 +16,15 @@ function WalletWidgetSidebar() {
   const [activo, setActivo] = useState(true)
 
   useEffect(() => {
+    setActivo(true)
+  }, [])
+
+  if (!activo) return null
+
+  const [walletData, setWalletData] = useState(null)
+
+  useEffect(() => {
+    if (!activo) return
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) return
       fetch('/api/wallet', { headers: { 'Authorization': `Bearer ${session.access_token}` } })
@@ -23,24 +32,44 @@ function WalletWidgetSidebar() {
         .then(d => {
           if (d.error) { setActivo(false); return }
           if (d.wallets?.length) {
-            setSaldo(d.wallets[0].saldo_disponible)
-            setMoneda(d.wallets[0].moneda)
+            const w = d.wallets[0]
+            setSaldo(w.saldo_disponible)
+            setMoneda(w.moneda)
+            setWalletData(w)
           } else {
             setSaldo(0)
           }
         })
         .catch(() => setActivo(false))
     })
-  }, [])
-
-  if (!activo) return null
+  }, [activo])
 
   return (
     <div style={{background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'10px',padding:'12px',marginBottom:'12px'}}>
-      <div style={{fontSize:'10px',color:'rgba(255,255,255,0.35)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'6px'}}>💼 Wallet</div>
-      <div style={{fontSize:'15px',fontWeight:'600',color:'#fff',marginBottom:'10px'}}>
-        {saldo === null ? '...' : `${moneda} ${parseFloat(saldo).toLocaleString('es-CO')}`}
-      </div>
+      <div style={{fontSize:'10px',color:'rgba(255,255,255,0.35)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>💼 Wallet</div>
+      {walletData ? (
+        <>
+          <div style={{marginBottom:'8px'}}>
+            <div style={{fontSize:'15px',fontWeight:'600',color:'#fff',lineHeight:1,marginBottom:'6px'}}>
+              {moneda} {parseFloat(walletData.saldo_disponible || 0).toLocaleString('es-CO')}
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'4px'}}>
+              <div>
+                <div style={{fontSize:'9px',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.04em'}}>Comprometido</div>
+                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',fontFamily:'monospace'}}>{moneda} {parseFloat(walletData.saldo_comprometido || 0).toLocaleString('es-CO')}</div>
+              </div>
+              <div>
+                <div style={{fontSize:'9px',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.04em'}}>Pendiente</div>
+                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',fontFamily:'monospace'}}>{moneda} {parseFloat(walletData.saldo_pendiente || 0).toLocaleString('es-CO')}</div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div style={{fontSize:'15px',fontWeight:'600',color:'#fff',marginBottom:'8px'}}>
+          {saldo === null ? '...' : `${moneda} ${parseFloat(saldo).toLocaleString('es-CO')}`}
+        </div>
+      )}
       <div style={{display:'flex',gap:'6px'}}>
         <a href="/wallet/fondear" style={{flex:1,padding:'6px',background:'rgba(29,158,117,0.2)',color:'#5DCAA5',borderRadius:'6px',fontSize:'11px',fontWeight:'600',textDecoration:'none',textAlign:'center'}}>⬇️ Fondear</a>
         <a href="/wallet" style={{flex:1,padding:'6px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.5)',borderRadius:'6px',fontSize:'11px',textDecoration:'none',textAlign:'center'}}>Ver →</a>
@@ -580,56 +609,76 @@ export default function Dashboard() {
 
           {/* COLUMNA PRINCIPAL */}
           <div>
-            {/* ZONA 2 — BANDEJA DE TRABAJO + ACCIONES RÁPIDAS, lado a lado */}
-            <div style={{display:'grid',gridTemplateColumns:'1.6fr 1fr',gap:'1rem',marginBottom:'1.75rem',alignItems:'start'}}>
-              <div>
-                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem',display:'flex',alignItems:'center',gap:'0.5rem'}}>
-                  <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#AFA9EC',display:'inline-block'}}></span>
-                  Bandeja de trabajo
-                  {bandeja.length > 0 && <span style={{fontSize:'0.65rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.15)',padding:'0.1rem 0.45rem',borderRadius:'10px'}}>{bandeja.length}</span>}
-                </div>
-                {bandeja.length === 0 ? (
-                  <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px',padding:'1.5rem',textAlign:'center',fontSize:'0.78rem',color:'#8FA3CC'}}>
-                    Nada pendiente por ahora — vas al día.
-                  </div>
-                ) : (
-                  <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
-                    {bandeja.slice(0,5).map((item,i) => (
-                      <a key={i} href={item.href} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem',background:'rgba(83,74,183,0.06)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'9px',padding:'0.7rem 1rem',textDecoration:'none'}}>
-                        <div style={{fontSize:'0.8rem',color:'#fff',lineHeight:'1.35'}}>{item.texto}</div>
-                        <div style={{fontSize:'0.72rem',color:'#AFA9EC',flexShrink:0}}>→</div>
-                      </a>
-                    ))}
-                  </div>
-                )}
+            {/* ZONA 2 — BANDEJA DE TRABAJO: ancho completo, eje del dashboard */}
+            <div style={{marginBottom:'1.5rem'}}>
+              <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem',display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#AFA9EC',display:'inline-block'}}></span>
+                Bandeja de trabajo
+                {bandeja.length > 0 && <span style={{fontSize:'0.65rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.15)',padding:'0.1rem 0.45rem',borderRadius:'10px'}}>{bandeja.length}</span>}
+                {bandeja.length > 5 && <a href="/hitos" style={{fontSize:'0.7rem',color:'#8FA3CC',marginLeft:'auto',textDecoration:'none'}}>Ver todas →</a>}
               </div>
-
-              {/* Widget wallet — acceso rápido al módulo financiero */}
-              <WalletWidgetSidebar />
-
-              <div>
-                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.75rem'}}>Acciones rápidas</div>
-                <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
-                  {acciones.slice(0,8).map((a,i) => (
-                    <a key={i} href={a.href} style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'9px',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#fff'}}>
-                      <span>{a.icon}</span>{a.label}
+              {bandeja.length === 0 ? (
+                <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px',padding:'1.25rem',textAlign:'center',fontSize:'0.78rem',color:'#8FA3CC'}}>
+                  Nada pendiente por ahora — vas al día.
+                </div>
+              ) : (
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(280px,1fr))',gap:'0.4rem'}}>
+                  {bandeja.slice(0,6).map((item,i) => (
+                    <a key={i} href={item.href} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem',background:'rgba(83,74,183,0.06)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'9px',padding:'0.7rem 1rem',textDecoration:'none'}}>
+                      <div style={{fontSize:'0.8rem',color:'#fff',lineHeight:'1.35'}}>{item.texto}</div>
+                      <div style={{fontSize:'0.72rem',color:'#AFA9EC',flexShrink:0}}>→</div>
                     </a>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
 
             {/* ZONA 3 — MIS PROYECTOS como tarjetas accionables */}
             <div style={{marginBottom:'1.75rem'}}>
               <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Mis proyectos</div>
               {misProyectos.length === 0 ? (
-                <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(232,160,32,0.2)',borderRadius:'12px',padding:'2rem',textAlign:'center'}}>
-                  <div style={{fontSize:'1.5rem',marginBottom:'0.5rem'}}>⚙️</div>
-                  <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.3rem',fontSize:'0.9rem'}}>Aún no has publicado ningún proyecto</div>
-                  <div style={{color:'#8FA3CC',fontSize:'0.78rem',marginBottom:'1rem'}}>Publica tu primer proyecto y arma equipo sin necesidad de capital.</div>
-                  <a href="/proyectos" style={{background:'#E8A020',color:'#fff',padding:'0.6rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.8rem',fontWeight:'700',display:'inline-block'}}>+ Publicar mi primer proyecto</a>
+                <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center'}}>
+                  {misPostulaciones.length === 0 ? (
+                    <>
+                      <div style={{fontSize:'1.5rem',marginBottom:'0.5rem'}}>🚀</div>
+                      <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.3rem',fontSize:'0.9rem'}}>¿Tienes una idea? Publícala</div>
+                      <div style={{color:'#8FA3CC',fontSize:'0.78rem',marginBottom:'1rem'}}>Arma equipo sin necesidad de capital inicial.</div>
+                      <a href="/proyectos" style={{background:'#E8A020',color:'#fff',padding:'0.6rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.8rem',fontWeight:'700',display:'inline-block',marginRight:'0.5rem'}}>+ Crear proyecto</a>
+                      <a href="/buscar" style={{background:'rgba(255,255,255,0.08)',color:'#8FA3CC',padding:'0.6rem 1rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.78rem',display:'inline-block'}}>Explorar proyectos</a>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{fontSize:'1.5rem',marginBottom:'0.5rem'}}>🔍</div>
+                      <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.3rem',fontSize:'0.9rem'}}>Encuentra tu próximo proyecto</div>
+                      <div style={{color:'#8FA3CC',fontSize:'0.78rem',marginBottom:'1rem'}}>Postúlate a proyectos que necesiten tu especialidad.</div>
+                      <a href="/buscar" style={{background:'#534AB7',color:'#fff',padding:'0.6rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.8rem',fontWeight:'700',display:'inline-block'}}>Explorar proyectos →</a>
+                    </>
+                  )}
+                </div>
+              ) : misProyectos.length > 3 ? (
+                /* Lista compacta para 4+ proyectos */
+                <div style={{display:'flex',flexDirection:'column',gap:'0.4rem'}}>
+                  {misProyectos.map(p => {
+                    const tareasDelProyecto = bandeja.filter(b => b.href?.includes(p.id) && b.tipo === 'tarea_pendiente').length
+                    return (
+                      <div key={p.id} style={{background:'rgba(232,160,32,0.04)',border:'1px solid rgba(232,160,32,0.15)',borderRadius:'10px',padding:'0.75rem 1rem',display:'flex',alignItems:'center',gap:'1rem',justifyContent:'space-between'}}>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontSize:'0.62rem',fontWeight:'700',color:'#E8A020',letterSpacing:'0.05em',textTransform:'uppercase',marginBottom:'0.15rem'}}>Tipo {p.tipo} · {p.estado}</div>
+                          <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.nombre}</div>
+                          {tareasDelProyecto > 0 && <div style={{fontSize:'0.68rem',color:'#AFA9EC',marginTop:'0.1rem'}}>⚠ {tareasDelProyecto} pendiente{tareasDelProyecto!==1?'s':''}</div>}
+                        </div>
+                        <div style={{display:'flex',gap:'0.4rem',flexShrink:0}}>
+                          <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',textDecoration:'none'}}>Workspace</a>
+                          <div style={{position:'relative',display:'inline-block'}} title={'Publicar rol · Hitos · Aportes'}>
+                            <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',color:'#8FA3CC',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>···</a>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               ) : (
+                /* Tarjetas para 1-3 proyectos */
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:'0.875rem'}}>
                   {misProyectos.map(p => {
                     const tareasDelProyecto = bandeja.filter(b => b.href?.includes(p.id) && b.tipo === 'tarea_pendiente').length
@@ -643,9 +692,9 @@ export default function Dashboard() {
                         )}
                         <div style={{display:'flex',gap:'0.4rem',flexWrap:'wrap'}}>
                           <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.7rem',borderRadius:'6px',textDecoration:'none'}}>Workspace</a>
-                          <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#534AB7',padding:'0.3rem 0.7rem',borderRadius:'6px',textDecoration:'none'}}>Publicar rol</a>
-                          <a href="/hitos" style={{fontSize:'0.7rem',fontWeight:'600',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Hitos</a>
-                          <a href="/aportes" style={{fontSize:'0.7rem',fontWeight:'600',color:'#AFA3EC',background:'rgba(83,74,183,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Aportes</a>
+                          <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{fontSize:'0.7rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.15)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Roles</a>
+                          <a href="/hitos" style={{fontSize:'0.7rem',fontWeight:'600',color:'rgba(255,255,255,0.45)',background:'rgba(255,255,255,0.04)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Hitos</a>
+                          <a href="/aportes" style={{fontSize:'0.7rem',fontWeight:'600',color:'rgba(255,255,255,0.45)',background:'rgba(255,255,255,0.04)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>Aportes</a>
                         </div>
                       </div>
                     )
@@ -661,6 +710,26 @@ export default function Dashboard() {
                 <div style={{fontSize:'1rem',fontWeight:'800',color:'#fff',marginBottom:'0.25rem'}}>{proyectoActivo.nombre}</div>
                 <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'0.85rem'}}>{rolActivo ? 'Rol aceptado: ' + rolActivo : 'Tienes un rol aceptado en este proyecto.'}</div>
                 <a href={'/proyectos/'+proyectoActivo.id+'/workspace'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.65rem 0.95rem',borderRadius:'10px',textDecoration:'none',display:'inline-block'}}>Ir al workspace</a>
+              </div>
+            )}
+
+            {/* Proyectos disponibles — para especialistas sube aquí (posición prioritaria) */}
+            {!esFundador && todosProyectos.filter(p => p.fundador_id !== usuario?.id).length > 0 && (
+              <div style={{marginBottom:'1.75rem'}}>
+                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Proyectos disponibles</div>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:'0.75rem'}}>
+                  {todosProyectos.filter(p => p.fundador_id !== usuario?.id).slice(0,3).map(p => (
+                    <a key={p.id} href={'/proyectos/'+p.id} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1rem',display:'block'}}>
+                      <div style={{fontSize:'0.6rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Tipo {p.tipo}</div>
+                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
+                      <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{p.sector} · {p.ciudad}</div>
+                    </a>
+                  ))}
+                  <a href="/buscar" style={{textDecoration:'none',background:'rgba(255,255,255,0.02)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px',padding:'1rem',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',minHeight:'90px'}}>
+                    <div style={{fontSize:'1.25rem',marginBottom:'0.3rem'}}>+</div>
+                    <div style={{fontSize:'0.72rem',color:'#8FA3CC',fontWeight:'600'}}>Ver todos</div>
+                  </a>
+                </div>
               </div>
             )}
             {esFundador && postulacionesRecibidas.length > 0 && (
@@ -695,75 +764,113 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Proyectos disponibles para postularse */}
-            <div>
-              <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Proyectos disponibles</div>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:'0.75rem'}}>
-                {todosProyectos.filter(p => p.fundador_id !== usuario?.id).slice(0,3).map(p => (
-                  <a key={p.id} href={'/proyectos/'+p.id} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1rem',display:'block'}}>
-                    <div style={{fontSize:'0.6rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Tipo {p.tipo}</div>
-                    <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
-                    <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{p.sector} · {p.ciudad}</div>
+            {/* Proyectos disponibles — solo para fundadores al fondo */}
+            {esFundador && (
+              <div>
+                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Proyectos disponibles</div>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:'0.75rem'}}>
+                  {todosProyectos.filter(p => p.fundador_id !== usuario?.id).slice(0,3).map(p => (
+                    <a key={p.id} href={'/proyectos/'+p.id} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1rem',display:'block'}}>
+                      <div style={{fontSize:'0.6rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Tipo {p.tipo}</div>
+                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
+                      <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{p.sector} · {p.ciudad}</div>
+                    </a>
+                  ))}
+                  <a href="/buscar" style={{textDecoration:'none',background:'rgba(255,255,255,0.02)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px',padding:'1rem',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',minHeight:'90px'}}>
+                    <div style={{fontSize:'1.25rem',marginBottom:'0.3rem'}}>+</div>
+                    <div style={{fontSize:'0.72rem',color:'#8FA3CC',fontWeight:'600'}}>Ver todos</div>
                   </a>
-                ))}
-                <a href="/buscar" style={{textDecoration:'none',background:'rgba(255,255,255,0.02)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px',padding:'1rem',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',minHeight:'90px'}}>
-                  <div style={{fontSize:'1.25rem',marginBottom:'0.3rem'}}>+</div>
-                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',fontWeight:'600'}}>Ver todos</div>
-                </a>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* ZONA 4 — SIDEBAR: indicadores compactos */}
+          {/* ZONA 4 — SIDEBAR: accionables → score → informativos → wallet → acciones */}
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
-            <a href="/postulaciones" style={{textDecoration:'none',background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-              <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#AFA9EC'}}>{misPostulaciones.length}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones enviadas →</div>
-            </a>
-            <a href="/postulaciones" style={{textDecoration:'none',background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-              <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>{postAceptadas}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Roles aceptados →</div>
-            </a>
-            <a href="/aportes" style={{textDecoration:'none',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-              <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>${totalAportes.toLocaleString()}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Aportes totales →</div>
-            </a>
-            <a href="/score" style={{textDecoration:'none',background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-              <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#AFA9EC'}}>{perfil?.escala_score || 0}</div>
-              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Escala Score →</div>
-            </a>
-            {esFundador && (
-              <a href="/mis-contratos" style={{textDecoration:'none',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-                <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>{recibidasPendientes}</div>
-                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Postulaciones por revisar →</div>
-              </a>
-            )}
-            {esFundador && (
-              <a href="/ingresos" style={{textDecoration:'none',background:'rgba(29,158,117,0.05)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-                <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>${totalIngresos.toLocaleString()}</div>
-                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Ingresos del proyecto →</div>
-              </a>
-            )}
-            {mensajesNoLeidos > 0 && primerProyectoFundado && (
-              <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem',cursor:'pointer'}} onClick={() => window.location.href='/proyectos/'+primerProyectoFundado.id+'/workspace/chat'}>
-                <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>{mensajesNoLeidos}</div>
-                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Mensajes sin leer →</div>
+
+            {/* Accionables — requieren atención hoy */}
+            {(mensajesNoLeidos > 0 || recibidasPendientes > 0) && (
+              <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem',display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#E8A020',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.25rem'}}>Requieren acción</div>
+                {mensajesNoLeidos > 0 && primerProyectoFundado && (
+                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer'}} onClick={() => window.location.href='/proyectos/'+primerProyectoFundado.id+'/workspace/chat'}>
+                    <div style={{fontSize:'0.78rem',color:'#fff'}}>💬 Mensajes sin leer</div>
+                    <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color:'#E8A020'}}>{mensajesNoLeidos}</div>
+                  </div>
+                )}
+                {recibidasPendientes > 0 && (
+                  <a href="/mis-contratos" style={{display:'flex',justifyContent:'space-between',alignItems:'center',textDecoration:'none'}}>
+                    <div style={{fontSize:'0.78rem',color:'#fff'}}>👤 Postulaciones pendientes</div>
+                    <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color:'#E8A020'}}>{recibidasPendientes}</div>
+                  </a>
+                )}
               </div>
             )}
-            {proyectosFinalizados.length > 0 && (
-              <a href="/proyectos" style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-                <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>{proyectosFinalizados.length}</div>
-                <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.15rem'}}>Proyectos finalizados →</div>
-              </a>
-            )}
 
-            <div style={{borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'0.875rem',marginTop:'0.25rem'}}>
-              <div style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',marginBottom:'0.6rem'}}>Más accesos</div>
-              <div style={{display:'flex',flexDirection:'column',gap:'0.3rem'}}>
+            {/* Score — activo reputacional, mayor prominencia */}
+            <a href="/score" style={{textDecoration:'none',background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'12px',padding:'1rem',display:'block'}}>
+              <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#AFA9EC',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.3rem'}}>Escala Score</div>
+              <div style={{fontFamily:'monospace',fontSize:'1.8rem',fontWeight:'700',color:'#AFA9EC',lineHeight:1}}>{perfil?.escala_score || 0}</div>
+              <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Tu reputación verificable →</div>
+            </a>
+
+            {/* Wallet — acceso rápido al módulo financiero */}
+            <WalletWidgetSidebar />
+
+            {/* Informativos — contexto, no urgencia */}
+            <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'12px',padding:'0.875rem',display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+              <div style={{fontSize:'0.68rem',fontWeight:'700',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.25rem'}}>Métricas</div>
+              <a href="/postulaciones" style={{display:'flex',justifyContent:'space-between',alignItems:'center',textDecoration:'none'}}>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Postulaciones enviadas</div>
+                <div style={{fontFamily:'monospace',fontSize:'0.95rem',fontWeight:'700',color:'#AFA9EC'}}>{misPostulaciones.length}</div>
+              </a>
+              <a href="/postulaciones" style={{display:'flex',justifyContent:'space-between',alignItems:'center',textDecoration:'none'}}>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Roles aceptados</div>
+                <div style={{fontFamily:'monospace',fontSize:'0.95rem',fontWeight:'700',color:'#1D9E75'}}>{postAceptadas}</div>
+              </a>
+              <a href="/aportes" style={{display:'flex',justifyContent:'space-between',alignItems:'center',textDecoration:'none'}}>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Aportes totales</div>
+                <div style={{fontFamily:'monospace',fontSize:'0.95rem',fontWeight:'700',color:'#fff'}}>${totalAportes.toLocaleString()}</div>
+              </a>
+              {esFundador && (
+                <a href="/ingresos" style={{display:'flex',justifyContent:'space-between',alignItems:'center',textDecoration:'none'}}>
+                  <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Ingresos del proyecto</div>
+                  <div style={{fontFamily:'monospace',fontSize:'0.95rem',fontWeight:'700',color:'#1D9E75'}}>${totalIngresos.toLocaleString()}</div>
+                </a>
+              )}
+              {proyectosFinalizados.length > 0 && (
+                <a href="/proyectos" style={{display:'flex',justifyContent:'space-between',alignItems:'center',textDecoration:'none'}}>
+                  <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Proyectos finalizados</div>
+                  <div style={{fontFamily:'monospace',fontSize:'0.95rem',fontWeight:'700',color:'#fff'}}>{proyectosFinalizados.length}</div>
+                </a>
+              )}
+            </div>
+
+            {/* Acciones rápidas — 2 niveles */}
+            <div style={{borderTop:'1px solid rgba(255,255,255,0.08)',paddingTop:'0.875rem'}}>
+              <div style={{fontSize:'0.68rem',fontWeight:'700',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.6rem'}}>Acciones</div>
+              {/* Primarias */}
+              <div style={{display:'flex',flexDirection:'column',gap:'0.35rem',marginBottom:'0.5rem'}}>
+                <a href="/proyectos" style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'8px',padding:'0.55rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#fff',fontWeight:'600'}}>
+                  🚀 Crear proyecto
+                </a>
+                <a href="/directorio" style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(83,74,183,0.08)',border:'1px solid rgba(83,74,183,0.2)',borderRadius:'8px',padding:'0.55rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#fff',fontWeight:'600'}}>
+                  🔍 Buscar especialista
+                </a>
+                <a href="/carril" style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'8px',padding:'0.55rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#E8A020',fontWeight:'600'}}>
+                  ⚡ Cumplimiento y pago
+                </a>
+              </div>
+              {/* Secundarias */}
+              <div style={{display:'flex',flexDirection:'column',gap:'0.25rem'}}>
+                {acciones.filter(a => !['Crear proyecto','Buscar especialista'].includes(a.label)).map((a,i) => (
+                  <a key={i} href={a.href} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.3rem 0',textDecoration:'none',fontSize:'0.74rem',color:'#8FA3CC'}}>
+                    <span>{a.icon}</span>{a.label}
+                  </a>
+                ))}
                 <a href="/perfil/editar" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>✏️ Editar mi perfil</a>
                 <a href="/calendario" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📅 Calendario</a>
                 <a href="/metricas" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📊 Métricas</a>
-                <a href="/carril" style={{fontSize:'0.74rem',color:'#E8A020',textDecoration:'none',padding:'0.3rem 0',fontWeight:'600'}} title="Confirmar cumplimiento y definir forma de pago">⚡ Cumplimiento y pago</a>
                 <a href="/postulaciones" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>📋 Postulaciones</a>
                 {primerProyectoFundado && <a href={'/p/'+primerProyectoFundado.id} target="_blank" style={{fontSize:'0.74rem',color:'#8FA3CC',textDecoration:'none',padding:'0.3rem 0'}}>🔗 Link público</a>}
               </div>
