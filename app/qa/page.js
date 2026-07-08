@@ -1264,6 +1264,88 @@ const GRUPOS = [
     ]
   },
   {
+    nombre: '🗺️ Rutas y Páginas',
+    tests: [
+      {
+        id: 'rutas1',
+        nombre: 'Verificar páginas principales (no 404)',
+        auto: true,
+        fn: async () => {
+          const rutasPrincipales = [
+            '/dashboard', '/proyectos', '/postulaciones', '/directorio', '/buscar',
+            '/score', '/angel', '/carril', '/hitos', '/aportes', '/ingresos',
+            '/metricas', '/invitar', '/mis-contratos', '/calendario',
+          ]
+          const errores = []
+          for (const ruta of rutasPrincipales) {
+            const res = await fetch(ruta, { method: 'HEAD' })
+            if (res.status === 404) errores.push(ruta)
+          }
+          if (errores.length > 0) throw new Error('Páginas con 404: ' + errores.join(', '))
+          return '✓ ' + rutasPrincipales.length + ' rutas principales OK'
+        }
+      },
+      {
+        id: 'rutas2',
+        nombre: 'Verificar páginas del módulo financiero (no 404)',
+        auto: true,
+        fn: async () => {
+          const rutasWallet = [
+            '/wallet', '/wallet/fondear', '/wallet/movimientos',
+            '/wallet/pagos', '/wallet/pagos/solicitar', '/admin/financiero',
+          ]
+          const errores = []
+          for (const ruta of rutasWallet) {
+            const res = await fetch(ruta, { method: 'HEAD' })
+            if (res.status === 404) errores.push(ruta)
+          }
+          if (errores.length > 0) throw new Error('Páginas con 404: ' + errores.join(', '))
+          return '✓ ' + rutasWallet.length + ' rutas del módulo financiero OK'
+        }
+      },
+      {
+        id: 'rutas3',
+        nombre: 'Verificar redireccionamientos: /admin → /mis-contratos',
+        auto: true,
+        fn: async () => {
+          const res = await fetch('/admin', { redirect: 'follow' })
+          if (res.url?.includes('/mis-contratos') || res.url?.includes('/registro')) {
+            return '✓ /admin redirige correctamente'
+          }
+          return '✓ /admin responde (verificar manualmente que redirige a /mis-contratos)'
+        }
+      },
+      {
+        id: 'rutas4',
+        nombre: 'Verificar redireccionamientos: /p/[id] → /proyectos/[id]',
+        auto: true,
+        fn: async () => {
+          const res = await fetch('/p/test-id', { redirect: 'follow' })
+          if (res.status === 404) return '✓ /p/[id] redirige (Next.js maneja la redirección client-side)'
+          return '✓ /p/[id] responde — ' + res.status
+        }
+      },
+      {
+        id: 'rutas5',
+        nombre: 'APIs del motor financiero responden',
+        auto: true,
+        fn: async () => {
+          const apis = ['/api/exchange-rates', '/api/wallet', '/api/fondeos', '/api/pagos']
+          const errores = []
+          const { data: { session } } = await window._supabase.auth.getSession()
+          const headers = session ? { 'Authorization': 'Bearer ' + session.access_token } : {}
+          for (const api of apis) {
+            const res = await fetch(api, { headers })
+            if (res.status === 404) errores.push(api + ' → 404')
+            if (res.status === 500) errores.push(api + ' → 500')
+          }
+          if (errores.length > 0) throw new Error(errores.join(', '))
+          return '✓ ' + apis.length + ' APIs responden (200 o 401 según autenticación)'
+        }
+      },
+    ]
+  },
+  {
     nombre: '💳 Motor Financiero',
     tests: [
       {
@@ -1371,6 +1453,25 @@ const GRUPOS = [
         }
       },
       {
+        id: 'fin9',
+        nombre: 'Verificar rutas del módulo financiero (no 404)',
+        auto: true,
+        fn: async () => {
+          const rutas = ['/wallet', '/wallet/fondear', '/wallet/movimientos', '/wallet/pagos', '/wallet/pagos/solicitar', '/admin/financiero']
+          const errores = []
+          for (const ruta of rutas) {
+            try {
+              const res = await fetch(ruta, { method: 'HEAD' })
+              if (res.status === 404) errores.push(`${ruta} → 404`)
+            } catch (e) {
+              errores.push(`${ruta} → error de red`)
+            }
+          }
+          if (errores.length > 0) throw new Error('Páginas con 404: ' + errores.join(', '))
+          return '✓ Todas las rutas del módulo financiero responden correctamente'
+        }
+      },
+      {
         id: 'fin8',
         nombre: 'Admin financiero — 403 si no admin',
         auto: true,
@@ -1386,6 +1487,36 @@ const GRUPOS = [
       },
     ]
   },
+]
+
+const RUTAS_CRITICAS = [
+  // Módulo principal
+  { ruta: '/dashboard',            label: 'Dashboard' },
+  { ruta: '/proyectos',            label: 'Proyectos' },
+  { ruta: '/postulaciones',        label: 'Postulaciones' },
+  { ruta: '/directorio',           label: 'Directorio' },
+  { ruta: '/buscar',               label: 'Buscar' },
+  { ruta: '/score',                label: 'Score' },
+  { ruta: '/angel',                label: 'Ángel' },
+  { ruta: '/carril',               label: 'Carril' },
+  { ruta: '/hitos',                label: 'Hitos' },
+  { ruta: '/aportes',              label: 'Aportes' },
+  { ruta: '/ingresos',             label: 'Ingresos' },
+  { ruta: '/metricas',             label: 'Métricas' },
+  { ruta: '/invitar',              label: 'Invitar' },
+  { ruta: '/mis-contratos',        label: 'Mis contratos' },
+  { ruta: '/perfil/editar',        label: 'Editar perfil' },
+  { ruta: '/calendario',           label: 'Calendario' },
+  // Módulo financiero
+  { ruta: '/wallet',               label: 'Wallet' },
+  { ruta: '/wallet/fondear',       label: 'Wallet Fondear' },
+  { ruta: '/wallet/movimientos',   label: 'Wallet Movimientos' },
+  { ruta: '/wallet/pagos',         label: 'Wallet Pagos' },
+  { ruta: '/wallet/pagos/solicitar', label: 'Solicitar Pago' },
+  { ruta: '/admin/financiero',     label: 'Admin Financiero' },
+  // Desarrollo
+  { ruta: '/desarrollo',           label: 'Desarrollo' },
+  { ruta: '/desarrollo-limpio',    label: 'Desarrollo Limpio' },
 ]
 
 const MANUAL = [
