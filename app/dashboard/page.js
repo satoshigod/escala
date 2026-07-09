@@ -11,68 +11,56 @@ const COLOR_RGB = {
 }
 
 function WalletWidgetSidebar() {
-  const [saldo, setSaldo] = useState(null)
-  const [moneda, setMoneda] = useState('COP')
   const [activo, setActivo] = useState(true)
-
-  useEffect(() => {
-    setActivo(true)
-  }, [])
-
-  if (!activo) return null
-
   const [walletData, setWalletData] = useState(null)
+  const [moneda, setMoneda] = useState('COP')
 
   useEffect(() => {
-    if (!activo) return
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) return
       fetch('/api/wallet', { headers: { 'Authorization': `Bearer ${session.access_token}` } })
         .then(r => r.json())
         .then(d => {
-          if (d.error) { setActivo(false); return }
-          if (d.wallets?.length) {
-            const w = d.wallets[0]
-            setSaldo(w.saldo_disponible)
-            setMoneda(w.moneda)
-            setWalletData(w)
-          } else {
-            setSaldo(0)
-          }
+          if (d.error || !d.wallets?.length) { setActivo(false); return }
+          const w = d.wallets[0]
+          setMoneda(w.moneda)
+          setWalletData(w)
         })
         .catch(() => setActivo(false))
     })
-  }, [activo])
+  }, [])
+
+  if (!activo) return null
+
+  const fmt = (v) => parseFloat(v || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 })
 
   return (
-    <div style={{background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'10px',padding:'12px',marginBottom:'12px'}}>
-      <div style={{fontSize:'10px',color:'rgba(255,255,255,0.35)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'8px'}}>💼 Wallet</div>
+    <div style={{background:'rgba(29,158,117,0.05)',border:'1px solid rgba(29,158,117,0.15)',borderRadius:'12px',padding:'0.875rem'}}>
+      <div style={{fontSize:'0.65rem',fontWeight:'700',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.625rem'}}>Wallet</div>
       {walletData ? (
         <>
-          <div style={{marginBottom:'8px'}}>
-            <div style={{fontSize:'15px',fontWeight:'600',color:'#fff',lineHeight:1,marginBottom:'6px'}}>
-              {moneda} {parseFloat(walletData.saldo_disponible || 0).toLocaleString('es-CO')}
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0',marginBottom:'0.75rem',background:'rgba(255,255,255,0.04)',borderRadius:'8px',overflow:'hidden',border:'1px solid rgba(255,255,255,0.06)'}}>
+            <div style={{padding:'0.5rem 0.625rem',textAlign:'center'}}>
+              <div style={{fontSize:'0.62rem',color:'#6B7280',marginBottom:'2px'}}>Disponible</div>
+              <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#1D9E75',fontFamily:'monospace'}}>{fmt(walletData.saldo_disponible)}</div>
             </div>
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'4px'}}>
-              <div>
-                <div style={{fontSize:'9px',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.04em'}}>Comprometido</div>
-                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',fontFamily:'monospace'}}>{moneda} {parseFloat(walletData.saldo_comprometido || 0).toLocaleString('es-CO')}</div>
-              </div>
-              <div>
-                <div style={{fontSize:'9px',color:'rgba(255,255,255,0.3)',textTransform:'uppercase',letterSpacing:'0.04em'}}>Pendiente</div>
-                <div style={{fontSize:'11px',color:'rgba(255,255,255,0.5)',fontFamily:'monospace'}}>{moneda} {parseFloat(walletData.saldo_pendiente || 0).toLocaleString('es-CO')}</div>
-              </div>
+            <div style={{padding:'0.5rem 0.625rem',textAlign:'center',borderLeft:'1px solid rgba(255,255,255,0.06)',borderRight:'1px solid rgba(255,255,255,0.06)'}}>
+              <div style={{fontSize:'0.62rem',color:'#6B7280',marginBottom:'2px'}}>Comprometido</div>
+              <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#E8A020',fontFamily:'monospace'}}>{fmt(walletData.saldo_comprometido)}</div>
+            </div>
+            <div style={{padding:'0.5rem 0.625rem',textAlign:'center'}}>
+              <div style={{fontSize:'0.62rem',color:'#6B7280',marginBottom:'2px'}}>Pendiente</div>
+              <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#AFA9EC',fontFamily:'monospace'}}>{fmt(walletData.saldo_pendiente)}</div>
             </div>
           </div>
+          <div style={{fontSize:'0.62rem',color:'#4B5563',marginBottom:'0.625rem',textAlign:'center'}}>{moneda}</div>
         </>
       ) : (
-        <div style={{fontSize:'15px',fontWeight:'600',color:'#fff',marginBottom:'8px'}}>
-          {saldo === null ? '...' : `${moneda} ${parseFloat(saldo).toLocaleString('es-CO')}`}
-        </div>
+        <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:'0.75rem'}}>Cargando...</div>
       )}
-      <div style={{display:'flex',gap:'6px'}}>
-        <a href="/wallet/fondear" style={{flex:1,padding:'6px',background:'rgba(29,158,117,0.2)',color:'#5DCAA5',borderRadius:'6px',fontSize:'11px',fontWeight:'600',textDecoration:'none',textAlign:'center'}}>⬇️ Fondear</a>
-        <a href="/wallet" style={{flex:1,padding:'6px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.08)',color:'rgba(255,255,255,0.5)',borderRadius:'6px',fontSize:'11px',textDecoration:'none',textAlign:'center'}}>Ver →</a>
+      <div style={{display:'flex',gap:'0.4rem'}}>
+        <a href="/wallet/fondear" style={{flex:1,padding:'0.4rem',background:'rgba(29,158,117,0.15)',color:'#1D9E75',borderRadius:'6px',fontSize:'0.72rem',fontWeight:'600',textDecoration:'none',textAlign:'center'}}>Fondear</a>
+        <a href="/wallet" style={{flex:1,padding:'0.4rem',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',color:'#8FA3CC',borderRadius:'6px',fontSize:'0.72rem',textDecoration:'none',textAlign:'center'}}>Ver →</a>
       </div>
     </div>
   )
@@ -845,11 +833,16 @@ export default function Dashboard() {
                           <div style={{fontSize:'0.7rem',color:'#AFA9EC',marginBottom:'0.75rem'}}>⚠ {tareasDelProyecto} tarea{tareasDelProyecto!==1?'s':''} pendiente{tareasDelProyecto!==1?'s':''}</div>
                         )}
                         <div style={{display:'flex',gap:'0.5rem',alignItems:'center',flexWrap:'wrap'}}>
-                          <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.75rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.35rem 0.875rem',borderRadius:'6px',textDecoration:'none'}}>Ir al workspace →</a>
-                          <div style={{display:'flex',gap:'0.3rem'}}>
-                            <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)',padding:'0.25rem 0.5rem',borderRadius:'5px',textDecoration:'none',background:'rgba(255,255,255,0.04)'}}>Roles</a>
-                            <a href="/hitos" style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)',padding:'0.25rem 0.5rem',borderRadius:'5px',textDecoration:'none',background:'rgba(255,255,255,0.04)'}}>Hitos</a>
-                            <a href="/aportes" style={{fontSize:'0.68rem',color:'rgba(255,255,255,0.4)',padding:'0.25rem 0.5rem',borderRadius:'5px',textDecoration:'none',background:'rgba(255,255,255,0.04)'}}>Aportes</a>
+                          <a href={'/proyectos/'+p.id+'/workspace'} style={{flex:1,fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.4rem 0.875rem',borderRadius:'6px',textDecoration:'none',textAlign:'center'}}>Workspace →</a>
+                          <div style={{position:'relative'}}>
+                            <details style={{listStyle:'none'}}>
+                              <summary style={{cursor:'pointer',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'6px',padding:'0.4rem 0.5rem',fontSize:'0.82rem',color:'#8FA3CC',listStyle:'none',userSelect:'none'}}>···</summary>
+                              <div style={{position:'absolute',right:0,top:'calc(100% + 4px)',background:'#15234a',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'8px',minWidth:'160px',zIndex:10,overflow:'hidden'}}>
+                                <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🧩 Publicar rol</a>
+                                <a href="/hitos" style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🎯 Ver hitos</a>
+                                <a href="/aportes" style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8'}}>💰 Mis aportes</a>
+                              </div>
+                            </details>
                           </div>
                         </div>
                       </div>
@@ -957,23 +950,32 @@ export default function Dashboard() {
             )}
           </div>
 
-          {/* ZONA 4 — SIDEBAR: accionables → score → informativos → wallet → acciones */}
+          {/* ZONA 4 — SIDEBAR: accionables → score → wallet → informativos */}
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
 
             {/* Accionables — requieren atención hoy */}
-            {(mensajesNoLeidos > 0 || recibidasPendientes > 0) && (
-              <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem',display:'flex',flexDirection:'column',gap:'0.5rem'}}>
-                <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#E8A020',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.25rem'}}>Requieren acción</div>
+            {(mensajesNoLeidos > 0 || recibidasPendientes > 0 || contadores.tareas_por_verificar > 0) && (
+              <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem',display:'flex',flexDirection:'column',gap:'0.4rem'}}>
+                <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#E8A020',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.25rem'}}>Para hacer ahora</div>
+                {contadores.tareas_por_verificar > 0 && (
+                  <a href={bandeja.find(b => b.tipo === 'tarea_por_verificar')?.href || '/proyectos'} style={{display:'flex',alignItems:'center',gap:'0.6rem',textDecoration:'none',padding:'0.4rem 0.5rem',borderRadius:'6px',background:'rgba(232,160,32,0.08)'}}>
+                    <span style={{fontSize:'0.8rem'}}>✅</span>
+                    <div style={{flex:1,fontSize:'0.78rem',color:'#fff'}}>{contadores.tareas_por_verificar} tarea{contadores.tareas_por_verificar > 1 ? 's' : ''} por verificar</div>
+                    <span style={{fontSize:'0.75rem',color:'#E8A020',fontWeight:'700'}}>→</span>
+                  </a>
+                )}
                 {mensajesNoLeidos > 0 && primerProyectoFundado && (
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',cursor:'pointer'}} onClick={() => window.location.href='/proyectos/'+primerProyectoFundado.id+'/workspace/chat'}>
-                    <div style={{fontSize:'0.78rem',color:'#fff'}}>💬 Mensajes sin leer</div>
-                    <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color:'#E8A020'}}>{mensajesNoLeidos}</div>
-                  </div>
+                  <a href={'/proyectos/'+primerProyectoFundado.id+'/workspace/chat'} style={{display:'flex',alignItems:'center',gap:'0.6rem',textDecoration:'none',padding:'0.4rem 0.5rem',borderRadius:'6px',background:'rgba(232,160,32,0.08)'}}>
+                    <span style={{fontSize:'0.8rem'}}>💬</span>
+                    <div style={{flex:1,fontSize:'0.78rem',color:'#fff'}}>{mensajesNoLeidos} mensaje{mensajesNoLeidos > 1 ? 's' : ''} sin leer</div>
+                    <span style={{fontSize:'0.75rem',color:'#E8A020',fontWeight:'700'}}>{mensajesNoLeidos}</span>
+                  </a>
                 )}
                 {recibidasPendientes > 0 && (
-                  <a href="/mis-contratos" style={{display:'flex',justifyContent:'space-between',alignItems:'center',textDecoration:'none'}}>
-                    <div style={{fontSize:'0.78rem',color:'#fff'}}>👤 Postulaciones pendientes</div>
-                    <div style={{fontFamily:'monospace',fontSize:'1rem',fontWeight:'700',color:'#E8A020'}}>{recibidasPendientes}</div>
+                  <a href="/mis-contratos" style={{display:'flex',alignItems:'center',gap:'0.6rem',textDecoration:'none',padding:'0.4rem 0.5rem',borderRadius:'6px',background:'rgba(232,160,32,0.08)'}}>
+                    <span style={{fontSize:'0.8rem'}}>👤</span>
+                    <div style={{flex:1,fontSize:'0.78rem',color:'#fff'}}>{recibidasPendientes} postulación{recibidasPendientes > 1 ? 'es' : ''} pendiente{recibidasPendientes > 1 ? 's' : ''}</div>
+                    <span style={{fontSize:'0.75rem',color:'#E8A020',fontWeight:'700'}}>{recibidasPendientes}</span>
                   </a>
                 )}
               </div>

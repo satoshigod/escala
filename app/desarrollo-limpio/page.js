@@ -470,9 +470,22 @@ const fases = [
       { num: '30.8', nombre: 'Mejora proyectos disponibles en dashboard: lista vertical con contexto, detector de match especialidad↔roles_buscados, badge "Encaja con tu perfil", CTA por proyecto.', done: true, valor: 500000, quien: 'Claude AI' },
       { num: '30.9', nombre: 'Fix deploy Vercel: Deploy Hook configurado (claude-deploy, branch main). Commit vacío de trigger como flujo estándar de sesión.', done: true, valor: 300000, quien: 'Claude AI + Ivan' },
       { num: '30.10', nombre: '6 builds fallidos Turbopack: wrapper {toastNuevo && (} eliminado al insertar tour onboarding. Todos los deploys desde tour dashboard hasta roadmap completo fallaron. Fix commit 9f9a011. Pendiente: verificacion JSX estricta pre-deploy.', done: true, valor: 0, quien: 'Claude AI' },
-      { num: '30.11', nombre: 'Pendiente: duplicados Gerente de Proyecto (plantilla cargada dos veces) — investigar y corregir.', done: false, valor: 600000, quien: 'Claude AI' },
+      { num: '30.11', nombre: 'Fix duplicados Gerente de Proyecto: handler inicializar+rol_nombre ahora filtra por nombres existentes antes de insertar, evita duplicar si la plantilla se carga dos veces.', done: true, valor: 600000, quien: 'Claude AI' },
       { num: '30.12', nombre: 'SEO Tier 1 ejecutado: 4 landing pages nuevas (/contador-publico-colombia, /abogado-startups-colombia, /startup-chile, /crear-empresa-sin-capital), sitemap actualizado con 7 URLs nuevas, robots.txt con Allow explicito. PLAN_SEO.md en el repo con plan completo 6 meses.', done: true, valor: 2500000, quien: 'Claude AI' },
-      { num: '30.13', nombre: 'PENDIENTE SEO Tier 2: /desarrollador-startup-colombia, /startup-bogota, /startup-medellin, /angel-investor, /buscar-cto. Blog primeros 10 articulos (ver PLAN_SEO.md). Reddit, LinkedIn, Product Hunt launch. Meta: primeros clics organicos en Search Console en 4-8 semanas.', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: '30.13', nombre: 'SEO Tier 2 ejecutado: /desarrollador-startup-colombia, /startup-bogota, /startup-medellin, /startup-santiago, /angel-investor, /buscar-cto. Blog 4 articulos: historia-de-escala, participacion-diferida, constituir-sas-colombia, startup-sin-dinero. Sitemap 23 URLs. /seo dashboard de seguimiento.', done: true, valor: 3000000, quien: 'Claude AI + Ivan' },
+    ]
+  },
+  {
+    titulo: 'Dashboard redesign — sidebar, tarjetas y wallet',
+    estado: 'progreso',
+    valor_total: 4000000,
+    valor_hecho: 500000,
+    hitos: [
+      { num: '31.1', nombre: 'OG image nueva fondo blanco/navy split + favicon.ico 16/32/48px generado con isotipo real. WhatsApp cache busting con ?v=3.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '31.2', nombre: 'Tarjetas de proyecto: 1 CTA Workspace visible + boton 3 puntos (overflow) con opciones secundarias (Publicar rol, Ver hitos, Mis aportes). Lista compacta para 4+ proyectos.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: '31.3', nombre: 'Sidebar rediseñado: 3 secciones — Para hacer ahora (accionables con color warning + flecha), Tu perfil (Score prominente), Wallet (3 saldos: disponible, comprometido, pendiente). Diferenciacion visual urgente vs informativo.', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '31.4', nombre: 'Wallet widget: 3 saldos visibles en vez de solo el disponible. Comprometido y pendiente de entrada ya existen en el ledger.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '31.5', nombre: 'PENDIENTE IVAN: correr 20260708_motor_financiero.sql en Supabase, configurar BREB_WEBHOOK_SECRET y BINANCE_WEBHOOK_SECRET en Vercel, /wallet/movimientos y /wallet/pagos/solicitar, QA del motor financiero.', done: false, valor: 500000, quien: 'Ivan + Claude AI' },
     ]
   }
 ]
