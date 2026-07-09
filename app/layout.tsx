@@ -33,15 +33,22 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
   icons: {
-    icon: "/brand/favicon.svg",
-    apple: "/brand/app-icon.svg",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/brand/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      { url: "/brand/app-icon.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
   },
   openGraph: {
     title: "Escala — Crea tu empresa con el equipo correcto",
     description: "La plataforma para crear empresas reales. Conecta con cofundadores, especialistas e inversores en Colombia, México, Chile y más.",
     url: "https://escala.network",
     siteName: "Escala",
-    images: [{ url: "https://escala.network/brand/og-default.png", width: 1200, height: 630, alt: "Escala — Plataforma para crear empresas" }],
+    images: [{ url: "https://escala.network/brand/og-default.png?v=2", width: 1200, height: 630, alt: "Escala — Plataforma para crear empresas" }],
     locale: "es_CO",
     type: "website",
   },
