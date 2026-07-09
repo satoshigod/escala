@@ -106,6 +106,7 @@ export default function Dashboard() {
   const [proyectosFinalizados, setProyectosFinalizados] = useState([])
   const [vistaSugerida, setVistaSugerida] = useState('especialista')
   const [notifPanelAbierto, setNotifPanelAbierto] = useState(false)
+  const [tourInicioPaso, setTourInicioPaso] = useState(null) // null = inactivo
 
   useEffect(() => {
     async function cargar() {
@@ -147,6 +148,14 @@ export default function Dashboard() {
       setProyectosFinalizados(data.proyectosFinalizados || [])
       setVistaSugerida(data.vistaSugerida || 'especialista')
       setVista(data.vistaSugerida || 'resumen')
+
+      // Tour de primeros pasos — solo primera vez que entra al dashboard
+      const rolPrincipal = data.perfil?.rol_principal || 'especialista'
+      const tourKey = 'escala_tour_inicio_' + user.id
+      if (!localStorage.getItem(tourKey)) {
+        setTourInicioPaso(0)
+      }
+
       setCargando(false)
     }
     cargar()
@@ -303,9 +312,125 @@ export default function Dashboard() {
     ...(perfil?.es_admin ? [{ icon: '🛠️', label: 'Admin Escala', href: '/admin-escala' }] : []),
   ]
 
+  // ── TOUR DE PRIMEROS PASOS ────────────────────────────────────────────
+  const esFundadorTour = misProyectos.length > 0 || ['ideador','capitalista','empresa'].includes(perfil?.rol_principal)
+
+  const TOUR_INICIO_PASOS = esFundadorTour ? [
+    {
+      titulo: '👋 Hola, ' + (perfil?.nombre?.split(' ')[0] || 'bienvenido') + '!',
+      texto: 'Bienvenido a Escala. Eres fundador — aquí puedes crear tu proyecto, armar un equipo y hacer crecer tu empresa sin necesitar capital inicial para contratar.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: '🚀 Crea tu primer proyecto',
+      texto: 'El primer paso es publicar tu proyecto. Cuéntale al mundo qué estás construyendo, en qué industria y qué necesitas. Aparecerás en el directorio de proyectos.',
+      accion: 'Crear proyecto →',
+      href: '/proyectos',
+    },
+    {
+      titulo: '🧩 Publica roles para tu equipo',
+      texto: 'Desde el workspace de tu proyecto, publica los roles que necesitas — un abogado, un contador, un desarrollador. Los especialistas se postulan y tú eliges a quién aceptar.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: '🔍 Busca especialistas en el directorio',
+      texto: 'También puedes ir al directorio, filtrar por especialidad, revisar el Escala Score de cada persona y contactarla directamente para invitarla a tu proyecto.',
+      accion: 'Ver directorio →',
+      href: '/directorio',
+    },
+    {
+      titulo: '✅ ¡Todo listo!',
+      texto: 'Ya sabes cómo funciona. Empieza publicando tu proyecto — el equipo viene solo cuando el proyecto está visible.',
+      accion: 'Ir a crear proyecto →',
+      href: '/proyectos',
+      esFinal: true,
+    },
+  ] : [
+    {
+      titulo: '👋 Hola, ' + (perfil?.nombre?.split(' ')[0] || 'bienvenido') + '!',
+      texto: 'Bienvenido a Escala. Eres especialista — aquí puedes convertir tu conocimiento y tiempo en participación real en empresas que están construyendo algo.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: '👤 Completa tu perfil',
+      texto: 'Los fundadores revisan tu perfil antes de aceptarte. Asegúrate de tener tu especialidad, ciudad, lo que aportas y tu disponibilidad bien definidos.',
+      accion: 'Completar perfil →',
+      href: '/perfil/editar',
+    },
+    {
+      titulo: '🔍 Busca proyectos para unirte',
+      texto: 'En el directorio de proyectos puedes filtrar por industria, país y tipo de rol. Encuentra uno que se alinee con lo que sabes hacer.',
+      accion: 'Explorar proyectos →',
+      href: '/buscar',
+    },
+    {
+      titulo: '📩 Postúlate a un rol',
+      texto: 'Cuando encuentres un proyecto que te interese, entra al detalle y postúlate al rol que más encaje con tu perfil. El fundador revisará tu postulación y te responderá.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: '✅ ¡Listo para empezar!',
+      texto: 'Una vez aceptado en un proyecto, tendrás acceso al workspace con tus tareas, el chat del equipo y el registro de tus aportes.',
+      accion: 'Buscar proyectos →',
+      href: '/buscar',
+      esFinal: true,
+    },
+  ]
+
+  function cerrarTourInicio() {
+    localStorage.setItem('escala_tour_inicio_' + usuario?.id, '1')
+    setTourInicioPaso(null)
+  }
+
+  function avanzarTourInicio() {
+    const paso = TOUR_INICIO_PASOS[tourInicioPaso]
+    if (paso?.href) {
+      cerrarTourInicio()
+      window.location.href = paso.href
+      return
+    }
+    if (tourInicioPaso >= TOUR_INICIO_PASOS.length - 1) {
+      cerrarTourInicio()
+      return
+    }
+    setTourInicioPaso(p => p + 1)
+  }
+
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif'}}>
-      {toastNuevo && (
+
+      {/* TOUR PRIMEROS PASOS */}
+      {tourInicioPaso !== null && TOUR_INICIO_PASOS[tourInicioPaso] && (
+        <>
+          <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:2000,backdropFilter:'blur(3px)'}} onClick={cerrarTourInicio}></div>
+          <div style={{position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:2001,background:'#15234a',border:'1px solid rgba(29,158,117,0.35)',borderRadius:'18px',padding:'2rem',maxWidth:'440px',width:'calc(100vw - 2rem)',boxShadow:'0 24px 64px rgba(0,0,0,0.7)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1rem'}}>
+              <span style={{fontSize:'0.65rem',fontWeight:'700',letterSpacing:'0.08em',textTransform:'uppercase',color:'#1D9E75'}}>
+                Paso {tourInicioPaso + 1} de {TOUR_INICIO_PASOS.length}
+              </span>
+              <button onClick={cerrarTourInicio} style={{background:'none',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'1rem',padding:0,lineHeight:1}}>✕</button>
+            </div>
+            <div style={{height:'3px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',marginBottom:'1.5rem',overflow:'hidden'}}>
+              <div style={{height:'100%',width:((tourInicioPaso+1)/TOUR_INICIO_PASOS.length*100)+'%',background: TOUR_INICIO_PASOS[tourInicioPaso].esFinal ? '#1D9E75' : '#4A90D9',borderRadius:'2px',transition:'width 0.35s ease'}}></div>
+            </div>
+            <div style={{fontSize:'1.15rem',fontWeight:'800',color:'#fff',marginBottom:'0.75rem',lineHeight:'1.3'}}>
+              {TOUR_INICIO_PASOS[tourInicioPaso].titulo}
+            </div>
+            <div style={{fontSize:'0.875rem',color:'#C8D4E8',lineHeight:'1.75',marginBottom:'1.75rem'}}>
+              {TOUR_INICIO_PASOS[tourInicioPaso].texto}
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <button onClick={cerrarTourInicio} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                Saltar
+              </button>
+              <button onClick={avanzarTourInicio} style={{background: TOUR_INICIO_PASOS[tourInicioPaso].esFinal ? '#1D9E75' : '#4A90D9',color:'#fff',border:'none',borderRadius:'10px',padding:'0.7rem 1.5rem',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',transition:'background 0.2s'}}>
+                {TOUR_INICIO_PASOS[tourInicioPaso].accion}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
         <div onClick={() => { setNotifPanelAbierto(true); setToastNuevo(null) }} style={{
           position:'fixed', top:'20px', right:'20px', zIndex:1000,
           background:'#15234a', border:'1px solid rgba(232,160,32,0.4)', borderRadius:'12px',
