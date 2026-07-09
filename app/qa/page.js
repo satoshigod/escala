@@ -328,6 +328,109 @@ const GRUPOS = [
     ]
   },
   {
+    nombre: '🌐 Landing pages SEO y Blog',
+    tests: [
+      {
+        id: 'seo_landing_contador',
+        nombre: 'GET /contador-publico-colombia — carga correctamente',
+        run: async () => {
+          const res = await fetch('/contador-publico-colombia')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          const html = await res.text()
+          if (!html.includes('Contador')) throw new Error('No contiene contenido esperado')
+          return 'OK — página carga con status ' + res.status
+        }
+      },
+      {
+        id: 'seo_landing_abogado',
+        nombre: 'GET /abogado-startups-colombia — carga correctamente',
+        run: async () => {
+          const res = await fetch('/abogado-startups-colombia')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          return 'OK — status ' + res.status
+        }
+      },
+      {
+        id: 'seo_landing_desarrollador',
+        nombre: 'GET /desarrollador-startup-colombia — carga correctamente',
+        run: async () => {
+          const res = await fetch('/desarrollador-startup-colombia')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          return 'OK — status ' + res.status
+        }
+      },
+      {
+        id: 'seo_landing_chile',
+        nombre: 'GET /startup-chile — carga correctamente',
+        run: async () => {
+          const res = await fetch('/startup-chile')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          return 'OK — status ' + res.status
+        }
+      },
+      {
+        id: 'seo_landing_bogota',
+        nombre: 'GET /startup-bogota — carga correctamente',
+        run: async () => {
+          const res = await fetch('/startup-bogota')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          return 'OK — status ' + res.status
+        }
+      },
+      {
+        id: 'seo_landing_angel',
+        nombre: 'GET /angel-investor — carga correctamente',
+        run: async () => {
+          const res = await fetch('/angel-investor')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          return 'OK — status ' + res.status
+        }
+      },
+      {
+        id: 'seo_blog_index',
+        nombre: 'GET /blog — índice del blog carga',
+        run: async () => {
+          const res = await fetch('/blog')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          const html = await res.text()
+          if (!html.includes('historia-de-escala')) throw new Error('No contiene links a artículos')
+          return 'OK — índice carga con artículos'
+        }
+      },
+      {
+        id: 'seo_blog_historia',
+        nombre: 'GET /blog/historia-de-escala — artículo carga',
+        run: async () => {
+          const res = await fetch('/blog/historia-de-escala')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          return 'OK — status ' + res.status
+        }
+      },
+      {
+        id: 'seo_sitemap',
+        nombre: 'GET /sitemap.xml — contiene 20+ URLs',
+        run: async () => {
+          const res = await fetch('/sitemap.xml')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          const xml = await res.text()
+          const count = (xml.match(/<loc>/g) || []).length
+          if (count < 20) throw new Error('Solo ' + count + ' URLs en el sitemap (esperaba 20+)')
+          return count + ' URLs en el sitemap'
+        }
+      },
+      {
+        id: 'seo_documentos_api',
+        nombre: 'GET /api/documentos — lista documentos del proyecto ESCALA',
+        run: async () => {
+          const res = await fetch('/api/documentos?proyecto_id=' + PROYECTO_ESCALA)
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return (data.documentos || []).length + ' documentos, ' + Object.keys(data.por_categoria || {}).length + ' categorías'
+        }
+      },
+    ]
+  },
+  {
     nombre: '👤 Usuarios',
     tests: [
       {
@@ -1720,6 +1823,18 @@ const MANUAL = [
   { id: 'm16', nombre: 'Primera venta notifica al fundador', texto: 'Registra un ingreso en /ingresos de un proyecto que no tiene ingresos previos. El fundador debe recibir notificación "¡Primera venta registrada!" con el monto.' },
   { id: 'm17', nombre: 'Mensaje de chat notifica a miembros', texto: 'Desde el workspace de un proyecto con al menos 2 miembros, envía un mensaje en el chat. Los otros miembros deben recibir notificación push e in_app. Verifica en la campanita del dashboard.' },
   { id: 'm18', nombre: 'Retiro del proyecto notifica al fundador', texto: 'Desde /carril o el workspace, usa el botón Retirarme del proyecto. El fundador debe recibir notificación informando que el especialista se retiró y el rol está disponible de nuevo.' },
+  { id: 'm19', nombre: 'Tour onboarding dashboard — especialista primera vez', texto: 'Crea una cuenta nueva como especialista. Al entrar al dashboard por primera vez debe aparecer el tour de 5 pasos con overlay oscuro: Bienvenida → Completar perfil → Qué son los proyectos → Cómo funcionan los roles → Buscar proyectos. El botón "Saltar" debe cerrarlo. No debe volver a aparecer al recargar.' },
+  { id: 'm20', nombre: 'Tour onboarding dashboard — fundador primera vez', texto: 'Crea una cuenta nueva como fundador/ideador. Al entrar al dashboard debe aparecer el tour de 5 pasos: Bienvenida → Crear proyecto → Publicar roles → Directorio → CTA crear proyecto. Los pasos con href deben navegar al hacer clic. Paso final en verde.' },
+  { id: 'm21', nombre: 'Tour onboarding workspace — especialista', texto: 'Como especialista aceptado en un proyecto, entra al workspace por primera vez. Debe aparecer el tour de 5 pasos: Bienvenida → Tareas → Chat → Aportes → Ir a tareas. El tour NO debe aparecer para el fundador. No vuelve al recargar.' },
+  { id: 'm22', nombre: 'Hilo de tarea — mensaje automático al completar', texto: 'Como especialista, marca una tarea como "En progreso" y luego "Completada". Debe aparecer automáticamente un mensaje del sistema en el hilo de esa tarea invitando a adjuntar documentos. El botón 💬 debe aparecer en la tarea y abrir ese hilo.' },
+  { id: 'm23', nombre: 'Hilo de tarea — adjuntar documento y ver en Documentación', texto: 'En el hilo de una tarea completada, adjunta un PDF o imagen. Debe aparecer en el chat del hilo Y en /workspace/documentos bajo la categoría correcta (ej. Contador → Contabilidad y Tributario).' },
+  { id: 'm24', nombre: 'Banner de verificación pendiente en dashboard', texto: 'Cuando hay tareas con estado "completada" en tus proyectos, el dashboard del fundador debe mostrar un banner amarillo pulsante "Hay X tareas completadas esperando tu verificación" con link directo al hilo. Al hacer clic debe abrir /workspace/tareas?tarea=ID con el hilo abierto.' },
+  { id: 'm25', nombre: 'Notificaciones como dropdown', texto: 'Haz clic en la campanita 🔔 del nav. Debe abrirse un panel de 360px anclado debajo (no ocupar toda la pantalla). Debe cerrarse al hacer clic afuera o en la X. Si hay notificaciones sin leer, debe mostrar el contador en rojo sobre la campanita.' },
+  { id: 'm26', nombre: 'Badges contador — subir Tarjeta Profesional', texto: 'Como contador colombiano, entra a /perfil/editar. Al final debe aparecer la sección "Documentos profesionales — Contador (Colombia)" con dos uploaders: Tarjeta Profesional y Certificado JCC. Al subir uno, el Score debe subir y el badge debe aparecer en /score.' },
+  { id: 'm27', nombre: 'Landing pages SEO — accesibles y con metadata', texto: 'Entra a /contador-publico-colombia, /abogado-startups-colombia, /startup-chile, /startup-bogota, /startup-medellin, /desarrollador-startup-colombia, /angel-investor, /buscar-cto, /crear-empresa-sin-capital. Cada una debe cargar, tener nav con logo "Escala" y link a /registro.' },
+  { id: 'm28', nombre: 'Blog — índice y artículos', texto: 'Entra a /blog. Debe mostrar el artículo "La historia de Escala" como destacado y los otros 3 en grid. Los links a /blog/historia-de-escala, /blog/que-es-la-participacion-diferida, etc. deben cargar sus artículos correctamente.' },
+  { id: 'm29', nombre: 'Dashboard tarjetas de proyecto — 1 CTA + overflow', texto: 'En el dashboard, las tarjetas de tus proyectos deben tener un solo botón verde "Workspace →" y un botón "···" que al hacer clic muestra un menú con Publicar rol, Ver hitos y Mis aportes.' },
+  { id: 'm30', nombre: 'Dashboard sidebar — 3 saldos del wallet', texto: 'En el sidebar del dashboard, el widget del Wallet debe mostrar 3 saldos en un grid: Disponible (verde), Comprometido (amarillo) y Pendiente (púrpura). No solo el disponible.' },
 ]
 
 export default function QA() {
