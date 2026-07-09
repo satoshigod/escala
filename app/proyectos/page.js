@@ -795,9 +795,21 @@ export default function Proyectos() {
             {form.escenario === 'local_comercial' ? (
               <WizardLocalComercial
                 onCancelar={() => { actualizar('escenario', ''); setVista('nuevo') }}
-                onPublicar={(datosLocal) => {
-                  // TODO: guardar proyecto tipo local_comercial
-                  alert('Wizard completado. Guardado próximamente.')
+                onPublicar={async (datosLocal) => {
+                  try {
+                    const { data: { session } } = await supabase.auth.getSession()
+                    if (!session) { alert('Sesión expirada. Vuelve a iniciar sesión.'); return }
+                    const res = await fetch('/api/local-comercial', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+                      body: JSON.stringify(datosLocal),
+                    })
+                    const data = await res.json()
+                    if (!res.ok) throw new Error(data.error || 'Error al guardar')
+                    window.location.href = `/proyectos/local-en-verificacion?id=${data.proyecto_id}&capital=${data.capital_total}`
+                  } catch (err) {
+                    alert('Error: ' + err.message)
+                  }
                 }}
               />
             ) : (
