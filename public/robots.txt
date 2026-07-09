@@ -8,10 +8,17 @@ Allow: /registro
 Allow: /startup-colombia
 Allow: /startup-mexico
 Allow: /startup-chile
+Allow: /startup-bogota
+Allow: /startup-medellin
+Allow: /startup-santiago
 Allow: /buscar-cofundador
+Allow: /buscar-cto
 Allow: /contador-publico-colombia
 Allow: /abogado-startups-colombia
+Allow: /desarrollador-startup-colombia
 Allow: /crear-empresa-sin-capital
+Allow: /angel-investor
+Allow: /blog
 
 # Páginas privadas — no indexar
 Disallow: /dashboard

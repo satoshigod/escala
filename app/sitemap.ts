@@ -24,12 +24,24 @@ export default async function sitemap() {
     { url: `${BASE_URL}/startup-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${BASE_URL}/startup-mexico`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${BASE_URL}/startup-chile`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/startup-bogota`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/startup-medellin`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/startup-santiago`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
     // Landing pages SEO — especialistas
     { url: `${BASE_URL}/contador-publico-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${BASE_URL}/abogado-startups-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/desarrollador-startup-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${BASE_URL}/buscar-cofundador`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
-    // Landing pages SEO — modelo
+    { url: `${BASE_URL}/buscar-cto`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    // Landing pages SEO — modelo e inversión
     { url: `${BASE_URL}/crear-empresa-sin-capital`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/angel-investor`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    // Blog
+    { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/blog/historia-de-escala`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/que-es-la-participacion-diferida`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/como-constituir-una-empresa-sas-en-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/como-crear-una-startup-sin-dinero`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
   ]
 
   // Proyectos públicos
