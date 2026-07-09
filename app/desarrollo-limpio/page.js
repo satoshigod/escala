@@ -452,6 +452,20 @@ const fases = [
       { num: '29.11', nombre: 'Landing /startup-mexico: SEO local México, ciudades (CDMX, Monterrey, Guadalajara), FAQ específico de SAPI. Keywords: crear startup mexico (3,000/mes)', done: true, valor: 500000, quien: 'Claude AI' },
       { num: '29.12', nombre: 'Pendiente: /angel-investor, /buscar-cto, /startup-chile, blog (100 artículos), hreflang 7 países, SEO programático por ciudad/industria. Se construyen a medida que lleguen primeros usuarios', done: false, valor: 500000, quien: 'Claude AI' },
     ]
+  },
+  {
+    titulo: 'Flujo de verificación, onboarding guiado y badges de certificación',
+    estado: 'completa',
+    valor_total: 12400000,
+    valor_hecho: 12400000,
+    items: [
+      { num: '30.1', nombre: 'Fix bug: tareas de constitución duplicadas al inicializar especialista. Reasigna existentes en vez de crear copias. SQL de limpieza aplicado en producción.', done: true, valor: 2100000, quien: 'Claude AI' },
+      { num: '30.2', nombre: 'Hilo de conversación por tarea: mensajes separados por tarea_id. Al completar/verificar, mensaje automático del sistema abre el hilo. Adjuntos se indexan en documentos_proyecto por categoría. Nueva pestaña Documentación en workspace.', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: '30.3', nombre: 'Banner de verificación pendiente en dashboard del fundador con link directo al hilo (?tarea=ID). Notificaciones como dropdown anclado (patrón Slack/Notion).', done: true, valor: 1400000, quien: 'Claude AI' },
+      { num: '30.4', nombre: 'Badges de certificación contador colombiano (Tarjeta Profesional JCC + Certificado de Vigencia). Sección de documentos en perfil editar y perfil público. Email incentivo + Cron Job semanal lunes 10am.', done: true, valor: 2500000, quien: 'Claude AI' },
+      { num: '30.5', nombre: 'Tour onboarding dashboard (5 pasos, 2 variantes: Fundador / Especialista) y tour onboarding workspace (5 pasos para especialistas). Ambos con overlay, barra de progreso y localStorage para mostrar solo una vez.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: '30.6', nombre: 'Mejora sección Proyectos disponibles: detector de match especialidad↔roles_buscados, badge "Encaja con tu perfil", lista vertical con más contexto.', done: true, valor: 400000, quien: 'Claude AI' },
+    ]
   }
 ]
 

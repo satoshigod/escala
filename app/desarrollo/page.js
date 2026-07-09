@@ -638,6 +638,25 @@ const fases = [
       { num: '38.4', nombre: '4 landing pages SEO: /buscar-cofundador, /crear-empresa, /startup-colombia, /startup-mexico. H1 semántico, JSON-LD, FAQ, enlazado interno', done: true, valor: 2700000, quien: 'Claude AI' },
       { num: '38.5', nombre: 'Pendiente (Fase 2): /angel-investor, /buscar-cto, /startup-chile, blog 100 artículos, hreflang, SEO programático', done: false, valor: 500000, quien: 'Claude AI' },
     ]
+  },
+  {
+    titulo: 'Flujo de verificación, onboarding guiado y badges de certificación',
+    estado: 'completa',
+    valor_total: 12400000,
+    valor_hecho: 12400000,
+    items: [
+      { num: '39.1', nombre: 'Fix bug crítico: tareas de constitución se duplicaban al inicializar especialista (abogado/contador). inicializar_constitucion ahora reasigna tareas existentes sin asignar en vez de crear copias. Migración SQL para limpiar duplicados ya existentes en producción.', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '39.2', nombre: 'Fix getSegmento(): tareas "Constitución de empresas — Colombia" se clasificaban bajo segmento "Colombia" en vez de "Constitución de empresas". Ahora cualquier razon_creacion que contenga "constituc" cae al segmento correcto.', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '39.3', nombre: 'Hilo de conversación por tarea: columnas tarea_id, adjuntos, es_sistema en tabla mensajes. Chat general y hilos de tareas separados (filtro por tarea_id). Al completar/verificar una tarea se inserta mensaje automático del sistema en el hilo.', done: true, valor: 1800000, quien: 'Claude AI' },
+      { num: '39.4', nombre: 'Documentación segmentada del proyecto: tabla documentos_proyecto con RLS. Los adjuntos en hilos de tareas se indexan automáticamente por categoría (Contador→Contabilidad y Tributario, Abogado→Legal, etc.). Nueva pestaña Documentación en el workspace.', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '39.5', nombre: 'Banner de verificación pendiente en dashboard del fundador: antes solo existía la campanita. Ahora aparece un banner visible con punto pulsante cuando hay tareas completadas esperando verificación, con link directo al hilo de esa tarea (?tarea=ID).', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '39.6', nombre: 'Notificaciones como dropdown: la campanita ahora abre un panel de 360px anclado debajo del ícono (patrón Slack/Notion) en vez de reemplazar toda la pantalla del dashboard. Se cierra al hacer click afuera.', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '39.7', nombre: 'Badges de certificación para Contador colombiano: cert_tarjeta_profesional y cert_jcc. Sección "Documentos profesionales" en /perfil/editar para subir Tarjeta Profesional JCC y Certificado de Vigencia. Auto-otorga badge y recalcula Score. Visibles en perfil público.', done: true, valor: 1800000, quien: 'Claude AI' },
+      { num: '39.8', nombre: 'Email incentivo para contadores sin documentos: plantilla incentivo_cert_contador + Cron Job semanal (lunes 10am UTC) que busca contadores colombianos sin cert_tarjeta_profesional_url ni cert_jcc_url y les envía el correo motivacional.', done: true, valor: 700000, quien: 'Claude AI' },
+      { num: '39.9', nombre: 'Tour onboarding dashboard (primeros pasos): modal interactivo 5 pasos con overlay y barra de progreso. Dos variantes según rol — Fundador (crear proyecto → roles → directorio) y Especialista (qué son los proyectos → roles disponibles → postularse). localStorage para mostrar solo una vez.', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: '39.10', nombre: 'Tour onboarding workspace: 5 pasos guiados para especialistas que entran al workspace por primera vez. Explica tareas, hilo de verificación, aportes. Solo aparece la primera vez (localStorage).', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '39.11', nombre: 'Mejora sección "Proyectos disponibles" para especialistas en dashboard: lista vertical con país/sector/industria, detector de match con especialidad del usuario (badge "Encaja con tu perfil" + borde verde), CTA "Ver roles" por proyecto, acceso al buscador avanzado.', done: true, valor: 400000, quien: 'Claude AI' },
+    ]
   }
 ]
 
