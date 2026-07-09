@@ -16,6 +16,7 @@ Allow: /crear-empresa-sin-capital
 # Páginas privadas — no indexar
 Disallow: /dashboard
 Disallow: /workspace
+Disallow: /seo
 Disallow: /admin
 Disallow: /admin-escala
 Disallow: /admin/financiero
