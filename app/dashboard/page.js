@@ -105,6 +105,7 @@ export default function Dashboard() {
   const [reenviado, setReenviado] = useState(false)
   const [proyectosFinalizados, setProyectosFinalizados] = useState([])
   const [vistaSugerida, setVistaSugerida] = useState('especialista')
+  const [notifPanelAbierto, setNotifPanelAbierto] = useState(false)
 
   useEffect(() => {
     async function cargar() {
@@ -305,7 +306,7 @@ export default function Dashboard() {
   return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif'}}>
       {toastNuevo && (
-        <div onClick={() => { setVista('notificaciones'); setToastNuevo(null) }} style={{
+        <div onClick={() => { setNotifPanelAbierto(true); setToastNuevo(null) }} style={{
           position:'fixed', top:'20px', right:'20px', zIndex:1000,
           background:'#15234a', border:'1px solid rgba(232,160,32,0.4)', borderRadius:'12px',
           padding:'1rem 1.25rem', maxWidth:'340px', boxShadow:'0 8px 30px rgba(0,0,0,0.4)',
@@ -333,10 +334,63 @@ export default function Dashboard() {
         <div style={{display:'flex',alignItems:'center',gap:'1.25rem'}}>
           <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
           <a href="/score" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mi Score</a>
-          <button onClick={() => setVista(vista==='notificaciones'?'resumen':'notificaciones')} style={{background:'transparent',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'1.05rem',position:'relative',padding:0}}>
-            🔔
-            {(notificaciones.filter(n=>!n.leido).length + mensajesNoLeidos) > 0 && <span style={{position:'absolute',top:'-4px',right:'-6px',background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 4px',borderRadius:'8px',minWidth:'14px',textAlign:'center'}}>{notificaciones.filter(n=>!n.leido).length + mensajesNoLeidos}</span>}
-          </button>
+          <div style={{position:'relative'}}>
+            <button onClick={() => setNotifPanelAbierto(v => !v)} style={{background: notifPanelAbierto ? 'rgba(255,255,255,0.08)' : 'transparent',border:'none',borderRadius:'8px',color:'#8FA3CC',cursor:'pointer',fontSize:'1.05rem',position:'relative',padding:'0.35rem'}}>
+              🔔
+              {(notificaciones.filter(n=>!n.leido).length + mensajesNoLeidos) > 0 && <span style={{position:'absolute',top:'-2px',right:'-2px',background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 4px',borderRadius:'8px',minWidth:'14px',textAlign:'center'}}>{notificaciones.filter(n=>!n.leido).length + mensajesNoLeidos}</span>}
+            </button>
+
+            {notifPanelAbierto && (
+              <>
+                <div onClick={() => setNotifPanelAbierto(false)} style={{position:'fixed',inset:0,zIndex:998}}></div>
+                <div style={{position:'absolute',top:'calc(100% + 10px)',right:0,width:'360px',maxWidth:'calc(100vw - 2rem)',maxHeight:'480px',background:'#15234a',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'14px',boxShadow:'0 12px 40px rgba(0,0,0,0.5)',zIndex:999,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+                  <div style={{padding:'0.875rem 1rem',borderBottom:'1px solid rgba(255,255,255,0.08)',display:'flex',alignItems:'center',justifyContent:'space-between',flexShrink:0}}>
+                    <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff'}}>Notificaciones</div>
+                    <div style={{display:'flex',alignItems:'center',gap:'0.75rem'}}>
+                      {notificaciones.some(n=>!n.leido) && (
+                        <button onClick={marcarTodasLeidas} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.7rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Marcar leídas</button>
+                      )}
+                      <button onClick={() => setNotifPanelAbierto(false)} style={{background:'none',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'0.9rem',padding:0}}>✕</button>
+                    </div>
+                  </div>
+
+                  {!pushActivo && (
+                    <div style={{padding:'0.6rem 1rem',borderBottom:'1px solid rgba(255,255,255,0.06)',flexShrink:0}}>
+                      <button onClick={activarPush} style={{background:'none',border:'1px solid rgba(29,158,117,0.35)',color:'#1D9E75',fontSize:'0.7rem',cursor:'pointer',padding:'0.3rem 0.6rem',borderRadius:'6px',fontFamily:'Inter,sans-serif',width:'100%'}}>🔔 Activar notificaciones push</button>
+                    </div>
+                  )}
+
+                  <div style={{overflowY:'auto',flex:1}}>
+                    {notificaciones.length === 0 ? (
+                      <div style={{padding:'2.5rem 1.5rem',textAlign:'center'}}>
+                        <div style={{fontSize:'1.6rem',marginBottom:'0.5rem'}}>🔔</div>
+                        <div style={{color:'#fff',fontWeight:'700',fontSize:'0.82rem',marginBottom:'0.3rem'}}>Sin notificaciones por ahora</div>
+                        <div style={{color:'#8FA3CC',fontSize:'0.72rem'}}>Aquí verás cuando te acepten en un rol, cuando alguien se postule a tu proyecto, o cuando haya actividad importante.</div>
+                      </div>
+                    ) : (
+                      notificaciones.map((n, i) => (
+                        <div key={n.id || i} onClick={() => marcarLeida(n)} style={{background: n.leido===false ? 'rgba(29,158,117,0.06)' : 'transparent',borderBottom:'1px solid rgba(255,255,255,0.05)',padding:'0.75rem 1rem',display:'flex',gap:'0.75rem',alignItems:'flex-start',cursor: (n.id || n.link) ? 'pointer' : 'default'}}>
+                          <div style={{width:'28px',height:'28px',borderRadius:'50%',background:`rgba(${COLOR_RGB[n.color] || '143,163,204'},0.15)`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.8rem',flexShrink:0}}>
+                            {n.icon}
+                          </div>
+                          <div style={{flex:1,minWidth:0}}>
+                            <div style={{fontSize:'0.78rem',color:'#fff',marginBottom:'0.2rem',lineHeight:'1.4'}}>{n.texto}</div>
+                            <div style={{fontSize:'0.65rem',color:'#8FA3CC'}}>{new Date(n.fecha).toLocaleDateString('es-CO', {day:'numeric',month:'short'})}</div>
+                            {n.tipo === 'nueva_postulacion' && n.postulante_id ? (
+                              <a href={'/perfil/'+n.postulante_id} onClick={(e)=>e.stopPropagation()} style={{display:'inline-block',marginTop:'0.3rem',fontSize:'0.68rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>Ver perfil →</a>
+                            ) : n.link ? (
+                              <span style={{display:'inline-block',marginTop:'0.3rem',fontSize:'0.68rem',color:'#1D9E75',fontWeight:'600'}}>Ver →</span>
+                            ) : null}
+                          </div>
+                          {n.leido===false && <div title="Sin leer" style={{width:'7px',height:'7px',borderRadius:'50%',background:'#1D9E75',flexShrink:0,marginTop:'0.3rem'}}></div>}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <button onClick={cerrarSesion} style={{background:'transparent',border:'1px solid rgba(255,255,255,0.15)',color:'#8FA3CC',padding:'0.3rem 0.75rem',borderRadius:'6px',fontSize:'0.8rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
       </nav>
@@ -401,49 +455,7 @@ export default function Dashboard() {
         <style>{`@keyframes pulseBanner { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
 
 
-        {vista === 'notificaciones' ? (
-          <div>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.25rem',flexWrap:'wrap',gap:'0.5rem'}}>
-              <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff'}}>Notificaciones</div>
-              <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
-                {!pushActivo && (
-                  <button onClick={activarPush} style={{background:'none',border:'1px solid rgba(29,158,117,0.35)',color:'#1D9E75',fontSize:'0.74rem',cursor:'pointer',padding:'0.3rem 0.7rem',borderRadius:'6px',fontFamily:'Inter,sans-serif'}}>🔔 Activar notificaciones push</button>
-                )}
-                {notificaciones.some(n=>!n.leido) && (
-                  <button onClick={marcarTodasLeidas} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer'}}>Marcar todas como leídas</button>
-                )}
-                <button onClick={() => setVista('resumen')} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer'}}>← Volver al resumen</button>
-              </div>
-            </div>
-            {notificaciones.length === 0 ? (
-              <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-                <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>🔔</div>
-                <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Sin notificaciones por ahora</div>
-                <div style={{color:'#8FA3CC',fontSize:'0.82rem'}}>Aquí verás cuando te acepten en un rol, cuando alguien se postule a tu proyecto, o cuando haya actividad importante.</div>
-              </div>
-            ) : (
-              <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
-                {notificaciones.map((n, i) => (
-                  <div key={n.id || i} onClick={() => marcarLeida(n)} style={{background: n.leido===false ? 'rgba(29,158,117,0.05)' : 'rgba(255,255,255,0.04)',border: n.leido===false ? '1px solid rgba(29,158,117,0.25)' : '1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem',display:'flex',gap:'1rem',alignItems:'flex-start',cursor: (n.id || n.link) ? 'pointer' : 'default'}}>
-                    <div style={{width:'36px',height:'36px',borderRadius:'50%',background:`rgba(${COLOR_RGB[n.color] || '143,163,204'},0.15)`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1rem',flexShrink:0}}>
-                      {n.icon}
-                    </div>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:'0.875rem',color:'#fff',marginBottom:'0.25rem',lineHeight:'1.5'}}>{n.texto}</div>
-                      <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{new Date(n.fecha).toLocaleDateString('es-CO', {day:'numeric',month:'long',year:'numeric'})}</div>
-                      {n.tipo === 'nueva_postulacion' && n.postulante_id ? (
-                        <a href={'/perfil/'+n.postulante_id} onClick={(e)=>e.stopPropagation()} style={{display:'inline-block',marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>Ver perfil del postulante →</a>
-                      ) : n.link ? (
-                        <span style={{display:'inline-block',marginTop:'0.5rem',fontSize:'0.75rem',color:'#1D9E75',fontWeight:'600'}}>Ver →</span>
-                      ) : null}
-                    </div>
-                    {n.leido===false && <div title="Sin leer" style={{width:'8px',height:'8px',borderRadius:'50%',background:'#1D9E75',flexShrink:0,marginTop:'0.3rem'}}></div>}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ) : vista === 'gerente' ? (
+        {vista === 'gerente' ? (
           <div>
             <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Gerente de Proyecto</div>
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem',marginBottom:'1.75rem'}}>
