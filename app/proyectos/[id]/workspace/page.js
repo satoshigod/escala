@@ -78,6 +78,7 @@ export default function Workspace() {
   const [deuda, setDeuda] = useState({ pendiente: [], resuelta: [], total_pendiente: 0 })
   const [badgeTareas, setBadgeTareas] = useState(0)
   const [badgeChat, setBadgeChat] = useState(0)
+  const [tareasPorVerificar, setTareasPorVerificar] = useState(0)
   const [mostrarFormRol, setMostrarFormRol] = useState(false)
   const [rolForm, setRolForm] = useState({ nombre: '', sub_especialidad: '', descripcion: '', tipo_aporte: 'servicio', valor_mercado: '', es_prioritario: false })
   const [guardandoRol, setGuardandoRol] = useState(false)
@@ -192,8 +193,10 @@ export default function Workspace() {
       // Cargar badge tareas pendientes
       const tRes = await fetch('/api/tareas?proyecto_id=' + pid)
       const tData = await tRes.json()
-      const misPendientes = (tData.tareas || []).filter(t => t.asignado_a === user.id && t.estado === 'pendiente')
-      setBadgeTareas(misPendientes.length)
+      const misPendientes = (tData.tareas || []).filter(t => t.asignado_a === user.id && (t.estado === 'pendiente' || t.estado === 'en_progreso'))
+      const porVerif = (tData.tareas || []).filter(t => t.estado === 'completada')
+      setBadgeTareas(esFundador ? porVerif.length : misPendientes.length)
+      setTareasPorVerificar(porVerif.length)
 
       // Tour de onboarding — solo para especialistas (no fundador), solo la primera vez
       if (!esFundador && miPostulacionAceptada) {
@@ -534,9 +537,15 @@ export default function Workspace() {
           {miRol && !esFundador && <span style={{fontSize:'0.62rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(29,158,117,0.2)',color:'#1D9E75'}}>{miRol.nombre}</span>}
         </div>
         <div style={{display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
-          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>📋 Tareas</a>
+          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color: badgeTareas > 0 ? (esFundador ? '#E8A020' : '#4A90D9') : '#E8A020',textDecoration:'none',background: badgeTareas > 0 ? (esFundador ? 'rgba(232,160,32,0.15)' : 'rgba(74,144,217,0.15)') : 'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border: badgeTareas > 0 ? ('1px solid ' + (esFundador ? 'rgba(232,160,32,0.4)' : 'rgba(74,144,217,0.4)')) : '1px solid rgba(232,160,32,0.25)',display:'flex',alignItems:'center',gap:'0.35rem'}}>
+            📋 Tareas
+            {badgeTareas > 0 && <span style={{background: esFundador ? '#E8A020' : '#4A90D9',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{badgeTareas}</span>}
+          </a>
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/documentos' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>📁 Documentación</a>
-          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/chat' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>💬 Chat</a>
+          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/chat' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)',display:'flex',alignItems:'center',gap:'0.35rem'}}>
+            💬 Chat
+            {badgeChat > 0 && <span style={{background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{badgeChat}</span>}
+          </a>
 
           {esFundador && (
             <button onClick={() => setTab('roles')} style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'none',cursor:'pointer'}}>🧩 Roles</button>
@@ -546,6 +555,20 @@ export default function Workspace() {
           <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/registro?modo=login' }} style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.25)',color:'#D85A30',fontSize:'0.75rem',fontWeight:'600',padding:'0.3rem 0.75rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
       </nav>
+
+      {/* BANNER DE TAREAS PENDIENTES — debajo del nav */}
+      {badgeTareas > 0 && (
+        <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'0.625rem 1.5rem',textDecoration:'none',background: esFundador ? 'rgba(232,160,32,0.08)' : 'rgba(74,144,217,0.08)',borderBottom: esFundador ? '1px solid rgba(232,160,32,0.2)' : '1px solid rgba(74,144,217,0.2)'}}>
+          <span style={{width:'7px',height:'7px',borderRadius:'50%',background: esFundador ? '#E8A020' : '#4A90D9',flexShrink:0,animation:'pulseBanner 1.5s infinite'}}></span>
+          <span style={{fontSize:'0.8rem',fontWeight:'600',color: esFundador ? '#E8A020' : '#4A90D9'}}>
+            {esFundador
+              ? `${badgeTareas} tarea${badgeTareas > 1 ? 's' : ''} completada${badgeTareas > 1 ? 's' : ''} esperan tu verificación`
+              : `Tienes ${badgeTareas} tarea${badgeTareas > 1 ? 's' : ''} pendiente${badgeTareas > 1 ? 's' : ''} de completar`
+            }
+          </span>
+          <span style={{marginLeft:'auto',fontSize:'0.75rem',color: esFundador ? '#E8A020' : '#4A90D9',fontWeight:'600'}}>Ir a tareas →</span>
+        </a>
+      )}
 
       {/* TABS */}
       <div style={{background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'0 1.5rem',display:'flex',gap:'0',overflowX:'auto'}}>
