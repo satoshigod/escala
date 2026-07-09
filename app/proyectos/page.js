@@ -4,6 +4,457 @@ import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 
+// ── WIZARD LOCAL COMERCIAL ────────────────────────────────────────────────────
+function WizardLocalComercial({ onCancelar, onPublicar }) {
+  const [paso, setPaso] = useState(1)
+  const [datos, setDatos] = useState({
+    // Paso 1 — negocio
+    nombre_negocio: '', tipo_negocio: '', ciudad: '',
+    // Paso 2 — local
+    direccion_local: '', propietario_nombre: '', propietario_telefono: '',
+    propietario_correo: '', canon_mensual: '', meses_deposito: '2',
+    necesita_adecuacion: false, presupuesto_adecuacion: '',
+    // Paso 3 — costos fijos
+    costo_arriendo: '', costo_servicios: '', costo_empleado: '', costo_otros: '',
+    // Paso 4 — producto
+    costo_producto: '', precio_venta: '',
+    // Paso 5 — proyeccion ventas
+    ventas_dia_flojo: '', ventas_dia_normal: '', ventas_dia_bueno: '',
+    // Paso 6 — compromisos
+    acepta_compromisos: false,
+  })
+  const [error, setError] = useState('')
+
+  const set = (k, v) => setDatos(d => ({ ...d, [k]: v }))
+
+  const totalFijosMes = () => {
+    const arr = parseFloat(datos.costo_arriendo || 0)
+    const srv = parseFloat(datos.costo_servicios || 0)
+    const emp = parseFloat(datos.costo_empleado || 0)
+    const otr = parseFloat(datos.costo_otros || 0)
+    return arr + srv + emp + otr
+  }
+  const fijoDia = () => Math.round(totalFijosMes() / 30)
+
+  const margenPct = () => {
+    const c = parseFloat(datos.costo_producto || 0)
+    const v = parseFloat(datos.precio_venta || 0)
+    if (!v || v <= c) return 0
+    return Math.round(((v - c) / v) * 100)
+  }
+  const margenUnit = () => {
+    const c = parseFloat(datos.costo_producto || 0)
+    const v = parseFloat(datos.precio_venta || 0)
+    return Math.max(0, v - c)
+  }
+
+  const excedenteDia = (ventas) => {
+    const v = parseFloat(ventas || 0)
+    const costoProducto = v * (1 - margenPct() / 100)
+    const fijos = fijoDia()
+    return Math.round(v - costoProducto - fijos)
+  }
+
+  const capitalTotal = () => {
+    const dep = parseFloat(datos.canon_mensual || 0) * parseInt(datos.meses_deposito || 2)
+    const primer = parseFloat(datos.canon_mensual || 0)
+    const adec = datos.necesita_adecuacion ? parseFloat(datos.presupuesto_adecuacion || 0) : 0
+    return dep + primer + adec
+  }
+
+  const totalArriendosAnio = () => parseFloat(datos.canon_mensual || 0) * 12
+
+  const s = {
+    wrap: { maxWidth: '540px', margin: '0 auto' },
+    pasos: { display: 'flex', gap: '0.4rem', alignItems: 'center', marginBottom: '1.5rem' },
+    pill: (activo, done) => ({
+      width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center',
+      justifyContent: 'center', fontSize: '0.72rem', fontWeight: '700', flexShrink: 0,
+      background: done ? '#1D9E75' : activo ? '#4A90D9' : 'rgba(255,255,255,0.1)',
+      color: done || activo ? '#fff' : '#6B7280',
+    }),
+    linea: { flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' },
+    titulo: { fontSize: '1.1rem', fontWeight: '800', color: '#fff', marginBottom: '0.4rem', letterSpacing: '-0.02em' },
+    educativo: { background: 'rgba(74,144,217,0.08)', border: '1px solid rgba(74,144,217,0.2)', borderRadius: '10px', padding: '0.875rem 1rem', marginBottom: '1.25rem', fontSize: '0.8rem', color: '#93B8E8', lineHeight: '1.6' },
+    advertencia: { background: 'rgba(232,160,32,0.08)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: '10px', padding: '0.875rem 1rem', marginBottom: '1.25rem', fontSize: '0.8rem', color: '#E8A020', lineHeight: '1.6' },
+    label: { fontSize: '0.78rem', fontWeight: '700', color: '#C8D4E8', marginBottom: '0.4rem', display: 'block' },
+    sublabel: { fontSize: '0.7rem', color: '#6B7280', marginBottom: '0.5rem', display: 'block', marginTop: '-0.25rem' },
+    input: { width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '0.6rem 0.875rem', color: '#fff', fontSize: '0.85rem', outline: 'none', fontFamily: 'Inter,sans-serif', marginBottom: '0.875rem', boxSizing: 'border-box' },
+    row: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' },
+    calc: { background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '10px', padding: '0.875rem 1rem', marginBottom: '1rem' },
+    calcRow: { display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#8FA3CC', padding: '3px 0' },
+    calcTotal: { display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: '700', color: '#1D9E75', padding: '6px 0', borderTop: '1px solid rgba(29,158,117,0.2)', marginTop: '4px' },
+    obligatorio: { background: 'rgba(232,32,32,0.06)', border: '1px solid rgba(232,32,32,0.2)', borderRadius: '10px', padding: '0.875rem 1rem', marginBottom: '0.75rem' },
+    obligatorioTitulo: { fontSize: '0.72rem', fontWeight: '700', color: '#E05555', marginBottom: '0.4rem' },
+    obligatorioTexto: { fontSize: '0.8rem', color: '#C8D4E8', lineHeight: '1.6' },
+    btnRow: { display: 'flex', gap: '0.75rem', marginTop: '1.5rem' },
+    btnCancel: { background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.7rem 1.25rem', fontSize: '0.85rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' },
+    btn: { flex: 1, background: '#4A90D9', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.7rem 1.5rem', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif' },
+    btnVerde: { flex: 1, background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.7rem 1.5rem', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif' },
+  }
+
+  const TIPOS_NEGOCIO = [
+    { id: 'ropa', emoji: '👗', label: 'Ropa y moda' },
+    { id: 'comida', emoji: '🍔', label: 'Comida' },
+    { id: 'frutas', emoji: '🍎', label: 'Frutas y verduras' },
+    { id: 'tienda', emoji: '🛒', label: 'Tienda / miscelánea' },
+    { id: 'belleza', emoji: '💄', label: 'Belleza' },
+    { id: 'calzado', emoji: '👟', label: 'Calzado' },
+    { id: 'tecnologia', emoji: '📱', label: 'Tecnología' },
+    { id: 'otro', emoji: '📦', label: 'Otro' },
+  ]
+
+  const fmt = (n) => Math.round(n).toLocaleString('es-CO')
+
+  return (
+    <div style={s.wrap}>
+
+      {/* Barra de pasos */}
+      <div style={s.pasos}>
+        {[1,2,3,4,5,6].map((p, i) => (
+          <div key={p} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flex: p < 6 ? 1 : 'none' }}>
+            <div style={s.pill(paso === p, paso > p)}>{paso > p ? '✓' : p}</div>
+            {p < 6 && <div style={s.linea}></div>}
+          </div>
+        ))}
+      </div>
+
+      {/* ── PASO 1: Tu negocio ── */}
+      {paso === 1 && (
+        <div>
+          <div style={s.titulo}>¿Qué negocio vas a montar?</div>
+          <div style={s.educativo}>
+            No importa si vendes ropa, comida, frutas o cualquier otra cosa. Lo importante es que tengas claro qué va a vender tu negocio — con eso calculamos si va a funcionar y cuánto necesitas.
+          </div>
+
+          <label style={s.label}>Nombre de tu negocio *</label>
+          <input style={s.input} value={datos.nombre_negocio} onChange={e => set('nombre_negocio', e.target.value)} placeholder="Ej: Tienda Lupita, Frutería El Paraíso..." />
+
+          <label style={s.label}>¿Qué vas a vender? *</label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.875rem' }}>
+            {TIPOS_NEGOCIO.map(t => (
+              <div key={t.id} onClick={() => set('tipo_negocio', t.id)} style={{ cursor: 'pointer', border: datos.tipo_negocio === t.id ? '2px solid #4A90D9' : '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '0.75rem 0.5rem', textAlign: 'center', background: datos.tipo_negocio === t.id ? 'rgba(74,144,217,0.12)' : 'rgba(255,255,255,0.03)' }}>
+                <div style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{t.emoji}</div>
+                <div style={{ fontSize: '0.7rem', color: datos.tipo_negocio === t.id ? '#4A90D9' : '#8FA3CC', fontWeight: datos.tipo_negocio === t.id ? '700' : '400', lineHeight: '1.2' }}>{t.label}</div>
+              </div>
+            ))}
+          </div>
+
+          <label style={s.label}>Ciudad donde va a estar el negocio *</label>
+          <input style={s.input} value={datos.ciudad} onChange={e => set('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
+        </div>
+      )}
+
+      {/* ── PASO 2: El local ── */}
+      {paso === 2 && (
+        <div>
+          <div style={s.titulo}>El local que vas a arrendar</div>
+          <div style={s.educativo}>
+            Cuéntanos dónde está el local y quién es el propietario. Escala va a contactar al propietario para verificar que el local existe y que el precio que declaras es el correcto — esto protege tanto al operador como al inversionista.
+          </div>
+
+          <label style={s.label}>Dirección del local *</label>
+          <span style={s.sublabel}>Dirección completa donde está el local</span>
+          <input style={s.input} value={datos.direccion_local} onChange={e => set('direccion_local', e.target.value)} placeholder="Ej: Calle 50 # 43-20, Local 3, El Poblado" />
+
+          <div style={s.row}>
+            <div>
+              <label style={s.label}>Nombre del propietario o arrendadora *</label>
+              <input style={s.input} value={datos.propietario_nombre} onChange={e => set('propietario_nombre', e.target.value)} placeholder="Nombre completo" />
+            </div>
+            <div>
+              <label style={s.label}>Teléfono del propietario *</label>
+              <input style={s.input} value={datos.propietario_telefono} onChange={e => set('propietario_telefono', e.target.value)} placeholder="300 000 0000" />
+            </div>
+          </div>
+
+          <label style={s.label}>Correo del propietario (si lo tienes)</label>
+          <input style={s.input} value={datos.propietario_correo} onChange={e => set('propietario_correo', e.target.value)} placeholder="correo@ejemplo.com" />
+
+          <div style={s.row}>
+            <div>
+              <label style={s.label}>Valor del arriendo mensual *</label>
+              <span style={s.sublabel}>Lo que pagas cada mes al propietario</span>
+              <input style={s.input} type="number" value={datos.canon_mensual} onChange={e => set('canon_mensual', e.target.value)} placeholder="1.200.000" />
+            </div>
+            <div>
+              <label style={s.label}>Meses de depósito que piden *</label>
+              <span style={s.sublabel}>Normalmente 1 o 2 meses</span>
+              <select style={{ ...s.input }} value={datos.meses_deposito} onChange={e => set('meses_deposito', e.target.value)}>
+                <option value="1">1 mes</option>
+                <option value="2">2 meses</option>
+                <option value="3">3 meses</option>
+              </select>
+            </div>
+          </div>
+
+          <label style={s.label}>¿El local necesita adecuaciones? *</label>
+          <span style={s.sublabel}>Pintura, estanterías, instalaciones eléctricas, etc.</span>
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.875rem' }}>
+            {[{ v: false, label: 'No, está listo para usar' }, { v: true, label: 'Sí, necesita arreglos' }].map(op => (
+              <div key={String(op.v)} onClick={() => set('necesita_adecuacion', op.v)} style={{ flex: 1, cursor: 'pointer', border: datos.necesita_adecuacion === op.v ? '2px solid #4A90D9' : '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.75rem', textAlign: 'center', background: datos.necesita_adecuacion === op.v ? 'rgba(74,144,217,0.1)' : 'rgba(255,255,255,0.03)', fontSize: '0.82rem', color: datos.necesita_adecuacion === op.v ? '#4A90D9' : '#8FA3CC', fontWeight: datos.necesita_adecuacion === op.v ? '700' : '400' }}>
+                {op.label}
+              </div>
+            ))}
+          </div>
+          {datos.necesita_adecuacion && (
+            <>
+              <label style={s.label}>Presupuesto para las adecuaciones *</label>
+              <input style={s.input} type="number" value={datos.presupuesto_adecuacion} onChange={e => set('presupuesto_adecuacion', e.target.value)} placeholder="800.000" />
+            </>
+          )}
+
+          {/* Resumen capital */}
+          {datos.canon_mensual && (
+            <div style={s.calc}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', marginBottom: '0.5rem' }}>Escala va a financiar este capital:</div>
+              <div style={s.calcRow}><span>Depósito ({datos.meses_deposito} mes{datos.meses_deposito > 1 ? 'es' : ''} × ${fmt(datos.canon_mensual)})</span><span>${fmt(parseFloat(datos.canon_mensual || 0) * parseInt(datos.meses_deposito))}</span></div>
+              <div style={s.calcRow}><span>Primer mes de arriendo</span><span>${fmt(datos.canon_mensual)}</span></div>
+              {datos.necesita_adecuacion && datos.presupuesto_adecuacion && <div style={s.calcRow}><span>Adecuaciones</span><span>${fmt(datos.presupuesto_adecuacion)}</span></div>}
+              <div style={s.calcTotal}><span>Total capital a financiar</span><span>${fmt(capitalTotal())}</span></div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── PASO 3: Costos fijos ── */}
+      {paso === 3 && (
+        <div>
+          <div style={s.titulo}>¿Cuánto te cuesta tener el negocio abierto cada mes?</div>
+          <div style={s.advertencia}>
+            <strong style={{ display: 'block', marginBottom: '4px' }}>¿Qué son los gastos fijos?</strong>
+            Son los gastos que tienes que pagar SIN IMPORTAR si vendiste mucho o poco ese mes. El arriendo lo pagas aunque no hayas vendido nada. La luz también. Eso son gastos fijos.
+          </div>
+
+          <label style={s.label}>Arriendo mensual del local</label>
+          <span style={s.sublabel}>Lo que le pagas al dueño del local cada mes (ya lo pusiste en el paso anterior)</span>
+          <input style={{ ...s.input, background: 'rgba(255,255,255,0.03)', color: '#6B7280' }} value={datos.canon_mensual ? `$${fmt(datos.canon_mensual)}` : ''} disabled />
+
+          <label style={s.label}>Servicios públicos *</label>
+          <span style={s.sublabel}>Luz, agua, gas, internet — pon un estimado si no sabes exacto</span>
+          <input style={s.input} type="number" value={datos.costo_servicios} onChange={e => set('costo_servicios', e.target.value)} placeholder="200.000" />
+
+          <label style={s.label}>Empleado (si vas a tener uno)</label>
+          <span style={s.sublabel}>Si vas a trabajar solo, pon $0</span>
+          <input style={s.input} type="number" value={datos.costo_empleado} onChange={e => set('costo_empleado', e.target.value)} placeholder="0" />
+
+          <label style={s.label}>Otros gastos fijos</label>
+          <span style={s.sublabel}>Seguridad, publicidad fija, contaduría, etc. Si no tienes, pon $0</span>
+          <input style={s.input} type="number" value={datos.costo_otros} onChange={e => set('costo_otros', e.target.value)} placeholder="0" />
+
+          <div style={s.calc}>
+            <div style={s.calcRow}><span>Arriendo</span><span>${fmt(datos.canon_mensual || 0)}</span></div>
+            <div style={s.calcRow}><span>Servicios</span><span>${fmt(datos.costo_servicios || 0)}</span></div>
+            <div style={s.calcRow}><span>Empleado</span><span>${fmt(datos.costo_empleado || 0)}</span></div>
+            <div style={s.calcRow}><span>Otros</span><span>${fmt(datos.costo_otros || 0)}</span></div>
+            <div style={s.calcTotal}><span>Total gastos fijos / mes</span><span>${fmt(totalFijosMes())}</span></div>
+            <div style={{ ...s.calcTotal, borderTop: 'none', marginTop: 0, fontSize: '0.78rem' }}><span>= Por día (÷ 30)</span><span style={{ color: '#E8A020' }}>${fmt(fijoDia())} / día</span></div>
+          </div>
+          {fijoDia() > 0 && (
+            <div style={{ fontSize: '0.78rem', color: '#8FA3CC', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.75rem', marginBottom: '0.875rem' }}>
+              Cada día que abras, necesitas vender al menos <strong style={{ color: '#fff' }}>${fmt(fijoDia())}</strong> solo para cubrir los gastos fijos — sin contar el costo de lo que vendes.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── PASO 4: Producto y margen ── */}
+      {paso === 4 && (
+        <div>
+          <div style={s.titulo}>¿Cuánto ganas por cada cosa que vendes?</div>
+          <div style={s.educativo}>
+            <strong style={{ display: 'block', marginBottom: '4px' }}>La ganancia es la diferencia entre lo que te cuesta y lo que cobras</strong>
+            Si compras una blusa en $25.000 y la vendes en $60.000, tu ganancia es $35.000 por blusa. Con esa ganancia tienes que cubrir los gastos fijos y pagarle al inversionista.
+          </div>
+
+          <label style={s.label}>¿Cuánto te cuesta conseguir lo que vendes? *</label>
+          <span style={s.sublabel}>El precio al que compras la mercancía o los ingredientes — por unidad o por lote</span>
+          <input style={s.input} type="number" value={datos.costo_producto} onChange={e => set('costo_producto', e.target.value)} placeholder="25.000" />
+
+          <label style={s.label}>¿A cuánto lo vendes? *</label>
+          <span style={s.sublabel}>El precio que le cobras al cliente</span>
+          <input style={s.input} type="number" value={datos.precio_venta} onChange={e => set('precio_venta', e.target.value)} placeholder="60.000" />
+
+          {datos.costo_producto && datos.precio_venta && parseFloat(datos.precio_venta) > parseFloat(datos.costo_producto) && (
+            <div style={s.calc}>
+              <div style={s.calcRow}><span>Lo compras en</span><span>${fmt(datos.costo_producto)}</span></div>
+              <div style={s.calcRow}><span>Lo vendes en</span><span>${fmt(datos.precio_venta)}</span></div>
+              <div style={s.calcTotal}><span>Ganas por unidad</span><span>${fmt(margenUnit())}</span></div>
+              <div style={{ ...s.calcTotal, borderTop: 'none', marginTop: 0 }}><span>Tu margen de ganancia</span><span style={{ color: margenPct() >= 40 ? '#1D9E75' : '#E8A020' }}>{margenPct()}%</span></div>
+              {margenPct() < 30 && (
+                <div style={{ fontSize: '0.75rem', color: '#E8A020', marginTop: '6px', padding: '6px 0', borderTop: '1px solid rgba(232,160,32,0.2)' }}>
+                  Con un margen del {margenPct()}% puede ser difícil cubrir los gastos fijos y pagarle al inversionista. Revisa si puedes vender a un precio mayor o comprar más barato.
+                </div>
+              )}
+            </div>
+          )}
+          {datos.precio_venta && datos.costo_producto && parseFloat(datos.precio_venta) <= parseFloat(datos.costo_producto) && (
+            <div style={{ ...s.advertencia, borderColor: 'rgba(224,85,85,0.3)', background: 'rgba(224,85,85,0.06)', color: '#E05555' }}>
+              El precio de venta debe ser mayor que el costo. Si vendes a $60.000 lo que te cuesta $60.000, no ganas nada.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── PASO 5: Proyeccion ventas ── */}
+      {paso === 5 && (
+        <div>
+          <div style={s.titulo}>¿Cuánto crees que puedes vender por día?</div>
+          <div style={s.advertencia}>
+            <strong style={{ display: 'block', marginBottom: '4px' }}>Importante: sé honesto</strong>
+            Muchas personas ponen números muy altos porque quieren que el negocio suene bien. Pero si pones un número que no es real, el modelo no va a funcionar y vas a quedar mal con el inversionista. Pon lo que crees que realmente puedes vender en un día normal.
+          </div>
+
+          <label style={s.label}>Un día flojo *</label>
+          <span style={s.sublabel}>Lunes por la mañana, día de lluvia, temporada baja</span>
+          <input style={s.input} type="number" value={datos.ventas_dia_flojo} onChange={e => set('ventas_dia_flojo', e.target.value)} placeholder="80.000" />
+
+          <label style={s.label}>Un día normal *</label>
+          <span style={s.sublabel}>Un día típico de la semana</span>
+          <input style={s.input} type="number" value={datos.ventas_dia_normal} onChange={e => set('ventas_dia_normal', e.target.value)} placeholder="180.000" />
+
+          <label style={s.label}>Un día bueno *</label>
+          <span style={s.sublabel}>Fin de semana, quincena, temporada alta</span>
+          <input style={s.input} type="number" value={datos.ventas_dia_bueno} onChange={e => set('ventas_dia_bueno', e.target.value)} placeholder="350.000" />
+
+          {datos.ventas_dia_normal && (
+            <div style={s.calc}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', marginBottom: '8px' }}>Con estas ventas, en un día normal:</div>
+              <div style={s.calcRow}><span>Ventas del día</span><span>${fmt(datos.ventas_dia_normal)}</span></div>
+              <div style={s.calcRow}><span>- Costo del producto ({(100 - margenPct())}%)</span><span>-${fmt(parseFloat(datos.ventas_dia_normal) * (1 - margenPct() / 100))}</span></div>
+              <div style={s.calcRow}><span>- Gastos fijos del día</span><span>-${fmt(fijoDia())}</span></div>
+              <div style={s.calcTotal}>
+                <span>Excedente al inversionista</span>
+                <span style={{ color: excedenteDia(datos.ventas_dia_normal) > 0 ? '#1D9E75' : '#E05555' }}>
+                  {excedenteDia(datos.ventas_dia_normal) > 0 ? `$${fmt(excedenteDia(datos.ventas_dia_normal))}` : 'Sin excedente'}
+                </span>
+              </div>
+              {capitalTotal() > 0 && excedenteDia(datos.ventas_dia_normal) > 0 && (
+                <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginTop: '6px', padding: '6px 0', borderTop: '1px solid rgba(29,158,117,0.2)' }}>
+                  Tiempo estimado para pagar el capital: ~{Math.ceil(capitalTotal() / excedenteDia(datos.ventas_dia_normal))} días hábiles ({Math.ceil(capitalTotal() / excedenteDia(datos.ventas_dia_normal) / 26)} meses aprox.)
+                </div>
+              )}
+              {excedenteDia(datos.ventas_dia_flojo) < 0 && datos.ventas_dia_flojo && (
+                <div style={{ fontSize: '0.75rem', color: '#E8A020', marginTop: '6px', padding: '6px 0', borderTop: '1px solid rgba(232,160,32,0.2)' }}>
+                  En un día flojo (${fmt(datos.ventas_dia_flojo)}) no hay excedente. Ese día no pagas al inversionista — el déficit se acumula para el día siguiente.
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── PASO 6: Compromisos ── */}
+      {paso === 6 && (
+        <div>
+          <div style={s.titulo}>Lee esto con cuidado — es un compromiso real</div>
+          <div style={{ fontSize: '0.8rem', color: '#8FA3CC', marginBottom: '1.25rem', lineHeight: '1.6' }}>
+            Estos son los compromisos que adquieres con el inversionista. Están escritos en lenguaje claro para que no haya malentendidos.
+          </div>
+
+          <div style={s.obligatorio}>
+            <div style={s.obligatorioTitulo}>🔒 Obligatorio — reporte diario de ventas</div>
+            <div style={s.obligatorioTexto}>
+              Cada noche, antes de cerrar, reportas en la app cuánto vendiste ese día — en efectivo y por BREB. Si un día no puedes reportar, tienes 24 horas para hacerlo. Si llevas 3 días sin reportar, el inversionista recibe una alerta automática.
+            </div>
+          </div>
+
+          <div style={s.obligatorio}>
+            <div style={s.obligatorioTitulo}>🔒 Obligatorio — pago diario del excedente</div>
+            <div style={s.obligatorioTexto}>
+              Con lo que reportas cada día, Escala calcula lo que le corresponde al inversionista: primero se pagan los intereses del día sobre el saldo pendiente, y lo que sobre abona al capital. El pago lo haces vía BREB al número que te indique la plataforma.
+            </div>
+          </div>
+
+          <div style={s.obligatorio}>
+            <div style={s.obligatorioTitulo}>🔒 Obligatorio — mantener informado el tipo de negocio</div>
+            <div style={s.obligatorioTexto}>
+              Le dices a Escala qué negocio tienes. Si cambias de actividad, lo actualizas en la plataforma. No controlamos lo que vendes — solo necesitamos saber el tipo de negocio para ayudarte mejor.
+            </div>
+          </div>
+
+          {/* Opcion de salida */}
+          {totalArriendosAnio() > 0 && (
+            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '0.875rem 1rem', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>Tu opción de salida anticipada</div>
+              <div style={{ fontSize: '0.78rem', color: '#8FA3CC', lineHeight: '1.6', marginBottom: '0.75rem' }}>
+                Si en algún momento quieres quedar libre de todos los compromisos, puedes pagar de una sola vez:
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div style={{ background: 'rgba(224,85,85,0.06)', border: '1px solid rgba(224,85,85,0.2)', borderRadius: '8px', padding: '0.75rem' }}>
+                  <div style={{ fontSize: '0.68rem', color: '#E05555', fontWeight: '700', marginBottom: '4px' }}>Mientras pagas el capital</div>
+                  <div style={{ fontSize: '0.72rem', color: '#C8D4E8', marginBottom: '4px' }}>Tasa pactada pendiente + 4% del total de arriendos del año</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff' }}>+ ${fmt(totalArriendosAnio() * 0.04)}</div>
+                </div>
+                <div style={{ background: 'rgba(232,160,32,0.06)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: '8px', padding: '0.75rem' }}>
+                  <div style={{ fontSize: '0.68rem', color: '#E8A020', fontWeight: '700', marginBottom: '4px' }}>Durante la regalía</div>
+                  <div style={{ fontSize: '0.72rem', color: '#C8D4E8', marginBottom: '4px' }}>Tasa pactada pendiente + 8% del total de arriendos del año</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff' }}>+ ${fmt(totalArriendosAnio() * 0.08)}</div>
+                </div>
+              </div>
+              <div style={{ fontSize: '0.72rem', color: '#6B7280', marginTop: '0.5rem' }}>
+                Total arriendos del año: ${fmt(totalArriendosAnio())} (12 meses × ${fmt(datos.canon_mensual)})
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', padding: '0.875rem', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px', cursor: 'pointer', background: datos.acepta_compromisos ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.03)' }} onClick={() => set('acepta_compromisos', !datos.acepta_compromisos)}>
+            <div style={{ width: '20px', height: '20px', border: `2px solid ${datos.acepta_compromisos ? '#1D9E75' : 'rgba(255,255,255,0.3)'}`, borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px', background: datos.acepta_compromisos ? '#1D9E75' : 'transparent' }}>
+              {datos.acepta_compromisos && <span style={{ color: '#fff', fontSize: '0.75rem', fontWeight: '700' }}>✓</span>}
+            </div>
+            <div style={{ fontSize: '0.82rem', color: '#fff', lineHeight: '1.5' }}>
+              Entendí todo lo anterior y acepto estos compromisos con el inversionista
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {error && <div style={{ fontSize: '0.8rem', color: '#E05555', marginTop: '1rem', padding: '0.75rem', background: 'rgba(224,85,85,0.08)', borderRadius: '8px', border: '1px solid rgba(224,85,85,0.2)' }}>{error}</div>}
+
+      {/* Botones */}
+      <div style={s.btnRow}>
+        <button style={s.btnCancel} onClick={() => {
+          setError('')
+          if (paso === 1) onCancelar()
+          else setPaso(p => p - 1)
+        }}>
+          {paso === 1 ? 'Cancelar' : '← Atrás'}
+        </button>
+        {paso < 6 ? (
+          <button style={s.btn} onClick={() => {
+            setError('')
+            if (paso === 1 && !datos.nombre_negocio.trim()) { setError('Escribe el nombre de tu negocio'); return }
+            if (paso === 1 && !datos.tipo_negocio) { setError('Selecciona qué vas a vender'); return }
+            if (paso === 1 && !datos.ciudad.trim()) { setError('Escribe la ciudad del negocio'); return }
+            if (paso === 2 && !datos.direccion_local.trim()) { setError('Escribe la dirección del local'); return }
+            if (paso === 2 && !datos.propietario_nombre.trim()) { setError('Escribe el nombre del propietario'); return }
+            if (paso === 2 && !datos.propietario_telefono.trim()) { setError('Escribe el teléfono del propietario'); return }
+            if (paso === 2 && !datos.canon_mensual) { setError('Escribe el valor del arriendo mensual'); return }
+            if (paso === 3 && !datos.costo_servicios) { setError('Escribe el costo de servicios públicos'); return }
+            if (paso === 4 && !datos.costo_producto) { setError('Escribe el costo de tu producto'); return }
+            if (paso === 4 && !datos.precio_venta) { setError('Escribe el precio de venta'); return }
+            if (paso === 4 && parseFloat(datos.precio_venta) <= parseFloat(datos.costo_producto)) { setError('El precio de venta debe ser mayor que el costo'); return }
+            if (paso === 5 && !datos.ventas_dia_normal) { setError('Escribe cuánto vendes en un día normal'); return }
+            setPaso(p => p + 1)
+          }}>
+            Siguiente →
+          </button>
+        ) : (
+          <button style={{ ...s.btnVerde, opacity: datos.acepta_compromisos ? 1 : 0.5, cursor: datos.acepta_compromisos ? 'pointer' : 'not-allowed' }} onClick={() => {
+            if (!datos.acepta_compromisos) { setError('Debes aceptar los compromisos para continuar'); return }
+            onPublicar(datos)
+          }}>
+            Enviar a verificación →
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── FIN WIZARD LOCAL COMERCIAL ────────────────────────────────────────────────
+
 const sectores = ['Tecnología','Salud','Educación','Agro','Comercio','Servicios','Construcción','Alimentos','Moda','Otro']
 
 const NIVELES_AVANCE = [
@@ -339,6 +790,19 @@ export default function Proyectos() {
 
         {vista === 'nuevo' && (
           <div style={s.form}>
+
+            {/* WIZARD LOCAL COMERCIAL — flujo separado y completo */}
+            {form.escenario === 'local_comercial' ? (
+              <WizardLocalComercial
+                onCancelar={() => { actualizar('escenario', ''); setVista('nuevo') }}
+                onPublicar={(datosLocal) => {
+                  // TODO: guardar proyecto tipo local_comercial
+                  alert('Wizard completado. Guardado próximamente.')
+                }}
+              />
+            ) : (
+
+            <>
             {/* Indicador de pasos */}
             <div style={{display:'flex',gap:'0.5rem',alignItems:'center',marginBottom:'1.25rem'}}>
               {[1,2].map(p => (
@@ -594,6 +1058,8 @@ export default function Proyectos() {
                 </button>
               )}
             </div>
+            </>
+            )}
           </div>
         )}
       </main>
