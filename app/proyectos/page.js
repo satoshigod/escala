@@ -352,6 +352,39 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
             Estos son los compromisos que adquieres con el inversionista. Están escritos en lenguaje claro para que no haya malentendidos.
           </div>
 
+          {/* DEUDA FORMAL */}
+          {capitalTotal() > 0 && (
+            <div style={{ background: 'rgba(74,144,217,0.08)', border: '2px solid rgba(74,144,217,0.3)', borderRadius: '12px', padding: '1rem 1.25rem', marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#4A90D9', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>Documento de deuda</div>
+              <div style={{ fontSize: '0.9rem', color: '#fff', lineHeight: '1.7', marginBottom: '0.875rem' }}>
+                Al recibir el fondeo, <strong>adquieres una deuda formal</strong> con el inversionista por:
+              </div>
+              <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '8px', padding: '0.875rem 1rem', marginBottom: '0.875rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '4px', paddingBottom: '6px' }}>
+                  <span>Depósito ({datos.meses_deposito} mes{parseInt(datos.meses_deposito) > 1 ? 'es' : ''})</span>
+                  <span>${fmt(parseFloat(datos.canon_mensual || 0) * parseInt(datos.meses_deposito))}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
+                  <span>Primer mes de arriendo</span>
+                  <span>${fmt(datos.canon_mensual || 0)}</span>
+                </div>
+                {datos.necesita_adecuacion && datos.presupuesto_adecuacion && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
+                    <span>Adecuaciones del local</span>
+                    <span>${fmt(datos.presupuesto_adecuacion)}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: '700', color: '#fff', padding: '8px 0 3px' }}>
+                  <span>Capital total de la deuda</span>
+                  <span style={{ color: '#4A90D9' }}>${fmt(capitalTotal())}</span>
+                </div>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#8FA3CC', lineHeight: '1.65' }}>
+                Esta deuda genera <strong style={{ color: '#fff' }}>intereses diarios</strong> sobre el saldo pendiente a la tasa que se asigne según tu estudio de crédito (entre la usura convencional y la usura de plataformas digitales). La deuda queda registrada en Escala y en el contrato firmado entre las partes. Se extingue completamente cuando termines de pagar el capital más los intereses acumulados.
+              </div>
+            </div>
+          )}
+
           <div style={s.obligatorio}>
             <div style={s.obligatorioTitulo}>🔒 Obligatorio — reporte diario de ventas</div>
             <div style={s.obligatorioTexto}>
@@ -362,7 +395,7 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
           <div style={s.obligatorio}>
             <div style={s.obligatorioTitulo}>🔒 Obligatorio — pago diario del excedente</div>
             <div style={s.obligatorioTexto}>
-              Con lo que reportas cada día, Escala calcula lo que le corresponde al inversionista: primero se pagan los intereses del día sobre el saldo pendiente, y lo que sobre abona al capital. El pago lo haces vía BREB al número que te indique la plataforma.
+              Con lo que reportas cada día, Escala calcula lo que le corresponde al inversionista: primero se pagan los intereses del día sobre el saldo pendiente de la deuda, y lo que sobre abona al capital. El pago lo haces vía BREB al número que te indique la plataforma.
             </div>
           </div>
 
@@ -403,7 +436,7 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
               {datos.acepta_compromisos && <span style={{ color: '#fff', fontSize: '0.75rem', fontWeight: '700' }}>✓</span>}
             </div>
             <div style={{ fontSize: '0.82rem', color: '#fff', lineHeight: '1.5' }}>
-              Entendí todo lo anterior y acepto estos compromisos con el inversionista
+              Entendí todo lo anterior. Acepto la deuda de <strong style={{ color: '#4A90D9' }}>${fmt(capitalTotal())}</strong> con el inversionista, los intereses diarios, el reporte diario de ventas y el pago del excedente vía BREB.
             </div>
           </div>
         </div>
