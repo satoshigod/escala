@@ -669,7 +669,7 @@ const fases = [
 
 ,
   {
-    titulo: 'Escenarios frecuentes — flujo completo 13 etapas (Prompt Maestro 2026-07-09)',
+    titulo: 'Escenarios frecuentes - flujo completo 13 etapas (Prompt Maestro 2026-07-09)',
     estado: 'pendiente',
     valor_total: 45000000,
     valor_hecho: 0,
