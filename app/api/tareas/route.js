@@ -506,7 +506,22 @@ export async function POST(request) {
       razon_creacion: razon
     }))
 
-    const { data, error } = await supabase.from('tareas').insert(tareas).select('*, asignado_perfil:asignado_a ( nombre, email )')
+    // Verificar cuáles ya existen en el proyecto para este rol (por nombre)
+    // para no duplicar si la plantilla se carga más de una vez o desde dos fuentes.
+    const { data: existentes } = await supabase
+      .from('tareas')
+      .select('nombre')
+      .eq('proyecto_id', proyecto_id)
+      .eq('rol_nombre', rol_nombre)
+
+    const nombresExistentes = new Set((existentes || []).map(t => t.nombre))
+    const tareasNuevas = tareas.filter(t => !nombresExistentes.has(t.nombre))
+
+    if (tareasNuevas.length === 0) {
+      return Response.json({ tareas: [], mensaje: 'Tareas ya existentes', ya_inicializado: true }, { status: 200 })
+    }
+
+    const { data, error } = await supabase.from('tareas').insert(tareasNuevas).select('*, asignado_perfil:asignado_a ( nombre, email )')
     if (error) return Response.json({ error: error.message }, { status: 500 })
 
     const creadorData = creado_por ? await supabase.from('perfiles').select('nombre, email').eq('id', creado_por).single() : null
