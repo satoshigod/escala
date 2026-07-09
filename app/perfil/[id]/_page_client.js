@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase'
 export default function PerfilPublico() {
   const [perfil, setPerfil] = useState(null)
   const [postulaciones, setPostulaciones] = useState([])
+  const [logros, setLogros] = useState([])
   const [cargando, setCargando] = useState(true)
   const [usuarioActual, setUsuarioActual] = useState(null)
 
@@ -16,16 +17,19 @@ export default function PerfilPublico() {
 
       const id = window.location.pathname.split('/').pop()
 
-      const [pRes, postRes] = await Promise.all([
+      const [pRes, postRes, logrosRes] = await Promise.all([
         fetch('/api/usuarios?id=' + id),
-        fetch('/api/postulaciones?postulante_id=' + id)
+        fetch('/api/postulaciones?postulante_id=' + id),
+        fetch('/api/logros?usuario_id=' + id),
       ])
 
       const pData = await pRes.json()
       const postData = await postRes.json()
+      const logrosData = await logrosRes.json()
 
       setPerfil(pData.usuario)
       setPostulaciones(postData.postulaciones || [])
+      setLogros(logrosData.logros || [])
       setCargando(false)
     }
     cargar()
@@ -202,6 +206,52 @@ export default function PerfilPublico() {
             >
               📲 WhatsApp
             </a>
+          </div>
+        )}
+
+        {/* BADGES / LOGROS */}
+        {logros.length > 0 && (
+          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+            <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem',paddingBottom:'0.75rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+              Logros y certificaciones
+            </div>
+            <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem'}}>
+              {logros.map((l, i) => (
+                <div key={i} title={l.desc} style={{display:'flex',alignItems:'center',gap:'0.4rem',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'20px',padding:'0.35rem 0.75rem'}}>
+                  <span style={{fontSize:'0.85rem'}}>{l.emoji}</span>
+                  <span style={{fontSize:'0.72rem',fontWeight:'600',color:'#fff'}}>{l.titulo}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* DOCUMENTOS PROFESIONALES VERIFICADOS */}
+        {(perfil?.cert_tarjeta_profesional_url || perfil?.cert_jcc_url) && (
+          <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1.5rem',marginBottom:'1.5rem'}}>
+            <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem',paddingBottom:'0.75rem',borderBottom:'1px solid rgba(74,144,217,0.15)'}}>
+              🏅 Documentos profesionales verificados
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:'0.6rem'}}>
+              {perfil.cert_tarjeta_profesional_url && (
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
+                  <div>
+                    <div style={{fontSize:'0.8rem',fontWeight:'600',color:'#fff'}}>🪪 Tarjeta Profesional de Contador Público</div>
+                    <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'2px'}}>Habilitación verificada como contador público</div>
+                  </div>
+                  <a href={perfil.cert_tarjeta_profesional_url} target="_blank" rel="noreferrer" style={{fontSize:'0.7rem',color:'#4A90D9',textDecoration:'none',fontWeight:'600',flexShrink:0}}>Ver →</a>
+                </div>
+              )}
+              {perfil.cert_jcc_url && (
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
+                  <div>
+                    <div style={{fontSize:'0.8rem',fontWeight:'600',color:'#fff'}}>📋 Certificado de Vigencia JCC</div>
+                    <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'2px'}}>Junta Central de Contadores — sin antecedentes disciplinarios</div>
+                  </div>
+                  <a href={perfil.cert_jcc_url} target="_blank" rel="noreferrer" style={{fontSize:'0.7rem',color:'#4A90D9',textDecoration:'none',fontWeight:'600',flexShrink:0}}>Ver →</a>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

@@ -11,6 +11,98 @@ const DISPONIBILIDAD_OPCIONES = [
   { id: 'fines_semana', label: 'Solo fines de semana', desc: 'disponibilidad limitada' },
 ]
 
+function CertDocumentos({ usuario, perfil, setPerfil }) {
+  const [subiendo, setSubiendo] = useState({ tarjeta: false, jcc: false })
+  const [mensaje, setMensaje] = useState('')
+
+  async function subirDoc(campo, file) {
+    if (!file) return
+    const key = campo === 'cert_tarjeta_profesional_url' ? 'tarjeta' : 'jcc'
+    setSubiendo(s => ({ ...s, [key]: true }))
+    setMensaje('')
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      form.append('carpeta', 'certificaciones')
+      const resUp = await fetch('/api/upload', { method: 'POST', body: form })
+      const dataUp = await resUp.json()
+      if (dataUp.error) { setMensaje('Error al subir: ' + dataUp.error); return }
+
+      const resPatch = await fetch('/api/usuarios', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: usuario.id, [campo]: dataUp.url })
+      })
+      const dataPatch = await resPatch.json()
+      if (dataPatch.error) { setMensaje('Error al guardar: ' + dataPatch.error); return }
+      setPerfil(dataPatch.usuario)
+      setMensaje('✓ Documento guardado. Tu Score se ha actualizado.')
+      setTimeout(() => setMensaje(''), 4000)
+    } finally {
+      setSubiendo(s => ({ ...s, [key]: false }))
+    }
+  }
+
+  const docs = [
+    {
+      campo: 'cert_tarjeta_profesional_url',
+      key: 'tarjeta',
+      emoji: '🪪',
+      titulo: 'Tarjeta Profesional de Contador Público',
+      desc: 'Sube una copia legible (anverso y reverso en un solo PDF o imagen). Acredita que estás habilitado como contador público.',
+      badge: 'cert_tarjeta_profesional',
+      urlActual: perfil?.cert_tarjeta_profesional_url,
+    },
+    {
+      campo: 'cert_jcc_url',
+      key: 'jcc',
+      emoji: '📋',
+      titulo: 'Certificado de Vigencia JCC',
+      desc: 'Certificado de Vigencia de Inscripción y Antecedentes Disciplinarios expedido por la Junta Central de Contadores. Muchas empresas piden uno reciente (últimos 30–90 días).',
+      badge: 'cert_jcc',
+      urlActual: perfil?.cert_jcc_url,
+    },
+  ]
+
+  return (
+    <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'14px',padding:'1.75rem',marginBottom:'1.25rem'}}>
+      <div style={{display:'flex',alignItems:'center',gap:'0.6rem',marginBottom:'0.3rem'}}>
+        <span style={{fontSize:'1rem'}}>🏅</span>
+        <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff'}}>Documentos profesionales — Contador (Colombia)</div>
+      </div>
+      <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'1.25rem',lineHeight:'1.6'}}>
+        Subir estos documentos sube tu Escala Score y le da más confianza a los fundadores. Son opcionales, pero los proyectos más formales los suelen pedir.
+      </div>
+      {mensaje && <div style={{fontSize:'0.75rem',fontWeight:'600',color:'#1D9E75',marginBottom:'1rem'}}>{mensaje}</div>}
+      <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
+        {docs.map(d => (
+          <div key={d.campo} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'10px',padding:'1rem 1.125rem'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem',flexWrap:'wrap'}}>
+              <div style={{flex:1}}>
+                <div style={{display:'flex',alignItems:'center',gap:'0.4rem',marginBottom:'0.3rem'}}>
+                  <span>{d.emoji}</span>
+                  <span style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff'}}>{d.titulo}</span>
+                  {d.urlActual && <span style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75',background:'rgba(29,158,117,0.12)',padding:'1px 6px',borderRadius:'10px'}}>✓ Subido</span>}
+                </div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',lineHeight:'1.5'}}>{d.desc}</div>
+              </div>
+              <div style={{display:'flex',flexDirection:'column',gap:'0.4rem',alignItems:'flex-end',flexShrink:0}}>
+                <label style={{background:'rgba(74,144,217,0.15)',border:'1px solid rgba(74,144,217,0.3)',color:'#4A90D9',borderRadius:'8px',padding:'0.4rem 0.875rem',fontSize:'0.72rem',fontWeight:'700',cursor:'pointer',whiteSpace:'nowrap'}}>
+                  {subiendo[d.key] ? 'Subiendo...' : d.urlActual ? 'Reemplazar' : 'Subir documento'}
+                  <input type="file" accept="image/*,application/pdf" style={{display:'none'}} disabled={subiendo[d.key]} onChange={e=>subirDoc(d.campo, e.target.files?.[0])} />
+                </label>
+                {d.urlActual && (
+                  <a href={d.urlActual} target="_blank" rel="noreferrer" style={{fontSize:'0.65rem',color:'#8FA3CC',textDecoration:'underline'}}>Ver documento →</a>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function EditarPerfil() {
   const [usuario, setUsuario] = useState(null)
   const [perfil, setPerfil] = useState(null)
@@ -223,16 +315,19 @@ export default function EditarPerfil() {
           </div>
         </div>
 
-        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.75rem',marginBottom:'1.5rem'}}>
-          <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Sobre ti</div>
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.75rem',marginBottom:'1.25rem'}}>
+          <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.25rem'}}>Sobre ti</div>
+          <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'1.25rem'}}>Cuéntale a los fundadores qué aportas y qué buscas en Escala.</div>
           <label style={s.label} htmlFor="pe-aporto">¿Qué tienes para aportar?</label>
           <textarea id="pe-aporto" style={{...s.input,marginBottom:'1rem',minHeight:'70px',resize:'vertical'}} value={form.lo_que_aporto} onChange={e=>actualizar('lo_que_aporto',e.target.value)} />
           <label style={s.label} htmlFor="pe-busco">¿Qué buscas en Escala?</label>
           <textarea id="pe-busco" style={{...s.input,minHeight:'70px',resize:'vertical'}} value={form.lo_que_busco} onChange={e=>actualizar('lo_que_busco',e.target.value)} />
         </div>
 
-
-        {/* SECCIÓN NOTIFICACIONES */}
+        {/* SECCIÓN DOCUMENTOS PROFESIONALES — Contador Colombia */}
+        {(perfil?.especialidad?.toLowerCase().includes('contad') || perfil?.rol_principal === 'especialista') && (
+          <CertDocumentos usuario={usuario} perfil={perfil} setPerfil={setPerfil} />
+        )}
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem',marginBottom:'1.5rem'}}>
           <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.25rem'}}>Notificaciones</div>
           <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'1rem'}}>Elige qué notificaciones quieres recibir por email ✉️ y push 🔔. Los cambios se guardan al instante.</div>

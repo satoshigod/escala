@@ -59,6 +59,22 @@ export const DEFINICIONES_LOGROS = {
     desc: 'Completaste todos los campos de tu perfil profesional.',
     color: '#34D399',
   },
+  cert_tarjeta_profesional: {
+    emoji: '🪪',
+    titulo: 'Tarjeta Profesional verificada',
+    desc: 'Subiste tu Tarjeta Profesional de Contador Público — anverso y reverso.',
+    color: '#4A90D9',
+    rol: 'Contador',
+    pais: 'Colombia',
+  },
+  cert_jcc: {
+    emoji: '📋',
+    titulo: 'Certificado JCC vigente',
+    desc: 'Subiste el Certificado de Vigencia de Inscripción y Antecedentes Disciplinarios expedido por la Junta Central de Contadores.',
+    color: '#AFA9EC',
+    rol: 'Contador',
+    pais: 'Colombia',
+  },
 }
 
 export async function GET(request) {
