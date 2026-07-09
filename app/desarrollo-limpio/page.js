@@ -453,18 +453,24 @@ const fases = [
       { num: '29.12', nombre: 'Pendiente: /angel-investor, /buscar-cto, /startup-chile, blog (100 artículos), hreflang 7 países, SEO programático por ciudad/industria. Se construyen a medida que lleguen primeros usuarios', done: false, valor: 500000, quien: 'Claude AI' },
     ]
   },
+
   {
-    titulo: 'Flujo de verificación, onboarding guiado y badges de certificación',
-    estado: 'completa',
-    valor_total: 12400000,
-    valor_hecho: 12400000,
-    items: [
-      { num: '30.1', nombre: 'Fix bug: tareas de constitución duplicadas al inicializar especialista. Reasigna existentes en vez de crear copias. SQL de limpieza aplicado en producción.', done: true, valor: 2100000, quien: 'Claude AI' },
-      { num: '30.2', nombre: 'Hilo de conversación por tarea: mensajes separados por tarea_id. Al completar/verificar, mensaje automático del sistema abre el hilo. Adjuntos se indexan en documentos_proyecto por categoría. Nueva pestaña Documentación en workspace.', done: true, valor: 3000000, quien: 'Claude AI' },
-      { num: '30.3', nombre: 'Banner de verificación pendiente en dashboard del fundador con link directo al hilo (?tarea=ID). Notificaciones como dropdown anclado (patrón Slack/Notion).', done: true, valor: 1400000, quien: 'Claude AI' },
-      { num: '30.4', nombre: 'Badges de certificación contador colombiano (Tarjeta Profesional JCC + Certificado de Vigencia). Sección de documentos en perfil editar y perfil público. Email incentivo + Cron Job semanal lunes 10am.', done: true, valor: 2500000, quien: 'Claude AI' },
-      { num: '30.5', nombre: 'Tour onboarding dashboard (5 pasos, 2 variantes: Fundador / Especialista) y tour onboarding workspace (5 pasos para especialistas). Ambos con overlay, barra de progreso y localStorage para mostrar solo una vez.', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '30.6', nombre: 'Mejora sección Proyectos disponibles: detector de match especialidad↔roles_buscados, badge "Encaja con tu perfil", lista vertical con más contexto.', done: true, valor: 400000, quien: 'Claude AI' },
+    titulo: 'Flujo de verificación de tareas, onboarding guiado, badges contador y plan SEO',
+    estado: 'progreso',
+    valor_total: 18900000,
+    valor_hecho: 16400000,
+    hitos: [
+      { num: '30.1', nombre: 'Fix bug: tareas de constitución duplicadas al inicializar especialista (reasignar en vez de crear copias) + Fix getSegmento() (segmento "Colombia" vs "Constitución de empresas"). SQL limpieza producción. QA anti-duplicado.', done: true, valor: 2100000, quien: 'Claude AI' },
+      { num: '30.2', nombre: 'Hilo de conversación por tarea: tarea_id/adjuntos/es_sistema en mensajes (SQL). Mensajes automáticos al completar/verificar. Panel hilo inline en /workspace/tareas con chat + adjuntar docs. Indicador "Requiere revisión" pulsante en tareas completadas.', done: true, valor: 2700000, quien: 'Claude AI' },
+      { num: '30.3', nombre: 'Documentación segmentada: tabla documentos_proyecto (SQL + RLS). API /api/documentos. Adjuntos de hilos indexados por categoría según rol. Nueva pestaña Documentación en workspace (/workspace/documentos).', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: '30.4', nombre: 'Banner verificación pendiente en dashboard del fundador con link directo al hilo (?tarea=ID). Workspace/tareas abre el hilo automáticamente al detectar el param en URL. Notificaciones como dropdown anclado (patrón Slack/Notion) — elimina la vista de página completa.', done: true, valor: 1400000, quien: 'Claude AI' },
+      { num: '30.5', nombre: 'Fix bug crítico: workspace/tareas con "This page couldn't load" por tres causas simultáneas: (1) insert en tabla inexistente sin try/catch, (2) useState de rolesAbiertos/segmentosAbiertos fuera del orden de hooks, (3) rolesTareas perdido en edición. Todos corregidos.', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: '30.6', nombre: 'Badges de certificación contador colombiano: cert_tarjeta_profesional y cert_jcc. Columnas en perfiles (SQL). Uploader en /perfil/editar, auto-badge y recalculo Score. Visible en perfil público. Email incentivo + Cron Job semanal lunes 10am UTC.', done: true, valor: 2500000, quien: 'Claude AI' },
+      { num: '30.7', nombre: 'Tour onboarding workspace (5 pasos, solo especialistas, localStorage) y tour onboarding dashboard post-registro (5 pasos, 2 variantes fundador/especialista, localStorage). Ambos con overlay/blur, barra de progreso y botón Saltar.', done: true, valor: 2100000, quien: 'Claude AI' },
+      { num: '30.8', nombre: 'Mejora proyectos disponibles en dashboard: lista vertical con contexto, detector de match especialidad↔roles_buscados, badge "Encaja con tu perfil", CTA por proyecto.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '30.9', nombre: 'Fix deploy Vercel: Deploy Hook configurado (claude-deploy, branch main). Commit vacío de trigger como flujo estándar de sesión.', done: true, valor: 300000, quien: 'Claude AI + Ivan' },
+      { num: '30.10', nombre: 'Pendiente: duplicados Gerente de Proyecto (plantilla cargada dos veces) — investigar y corregir.', done: false, valor: 600000, quien: 'Claude AI' },
+      { num: '30.11', nombre: 'PENDIENTE EJECUTAR: Plan Maestro SEO y Crecimiento Orgánico (doc 2026-07-08). Roadmap semanal 6 meses, 50 keywords clasificadas, landing pages (/angel-investor, /buscar-cto, /startup-chile, blog), calendario editorial, backlinks/autoridad, KPIs semanales, 20 acciones mayor ROI. Objetivo: primeros usuarios orgánicos reales.', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
     ]
   }
 ]
