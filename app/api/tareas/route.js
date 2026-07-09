@@ -617,6 +617,19 @@ export async function PATCH(request) {
         workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
       })
     }
+
+    // Abre (o continúa) el hilo de esta tarea en el chat del proyecto con un
+    // mensaje automático del sistema, para que quede visible qué se completó
+    // y haya un espacio puntual donde conversar y adjuntar documentación.
+    if (data.asignado_a) {
+      await supabase.from('mensajes').insert([{
+        proyecto_id: tareaAnterior.data?.proyecto_id,
+        autor_id: data.asignado_a,
+        contenido: `✅ ${data.asignado_perfil?.nombre || 'El especialista'} completó la tarea "${data.nombre}". Queda pendiente de verificación — puedes escribir aquí o adjuntar los documentos de soporte (ej. RUT, certificados, etc.).`,
+        tarea_id: id,
+        es_sistema: true,
+      }])
+    }
   }
 
   if (estado === 'verificada' && data.asignado_a) {
@@ -626,6 +639,14 @@ export async function PATCH(request) {
       proyecto_id: tareaAnterior.data?.proyecto_id,
       workspace_url: BASE_URL + '/proyectos/' + tareaAnterior.data?.proyecto_id + '/workspace/tareas'
     })
+
+    await supabase.from('mensajes').insert([{
+      proyecto_id: tareaAnterior.data?.proyecto_id,
+      autor_id: quien,
+      contenido: `🔒 ${quienNombre} verificó la tarea "${data.nombre}". Hilo cerrado.`,
+      tarea_id: id,
+      es_sistema: true,
+    }])
 
     if (data.asignado_a) {
       try {

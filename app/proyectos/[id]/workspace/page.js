@@ -398,6 +398,7 @@ export default function Workspace() {
     { id: 'economia', label: 'Economía', icon: '💰' },
     { id: 'roles', label: 'Roles', icon: '🧩', badge: roles.filter(r => r.estado === 'abierto').length > 0 ? roles.filter(r => r.estado === 'abierto').length : null },
     { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },
+    { id: 'documentos', label: 'Documentación', icon: '📁' },
     { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
   ]
 
@@ -437,6 +438,7 @@ export default function Workspace() {
         </div>
         <div style={{display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>📋 Tareas</a>
+          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/documentos' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>📁 Documentación</a>
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/chat' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>💬 Chat</a>
 
           {esFundador && (
@@ -458,7 +460,7 @@ export default function Workspace() {
             </>
           )
           const baseStyle = {background:'none',border:'none',borderBottom: tab===t.id ? '2px solid #1D9E75' : '2px solid transparent',color: tab===t.id ? '#fff' : '#8FA3CC',padding:'0.875rem 1.25rem',fontSize:'0.82rem',fontWeight: tab===t.id ? '700' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.4rem',position:'relative',textDecoration:'none'}
-          if (t.id === 'tareas' && proyecto?.id) {
+          if ((t.id === 'tareas' || t.id === 'documentos') && proyecto?.id) {
             return (
               <a key={t.id} href={'/proyectos/' + proyecto.id + '/workspace/' + t.id} style={baseStyle}>
                 {tabContent}

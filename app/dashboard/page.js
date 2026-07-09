@@ -384,6 +384,22 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {contadores.tareas_por_verificar > 0 && (
+          <a href={bandeja.find(b => b.tipo === 'tarea_por_verificar')?.href || '/proyectos'} style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'1rem',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.3)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',textDecoration:'none'}}>
+            <div style={{display:'flex',alignItems:'center',gap:'0.75rem'}}>
+              <span style={{width:'10px',height:'10px',borderRadius:'50%',background:'#E8A020',flexShrink:0,animation:'pulseBanner 1.5s infinite'}}></span>
+              <div>
+                <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff'}}>
+                  {contadores.tareas_por_verificar === 1 ? 'Hay 1 tarea completada esperando tu verificación' : `Hay ${contadores.tareas_por_verificar} tareas completadas esperando tu verificación`}
+                </div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'2px'}}>Revísalas en el workspace del proyecto — puedes conversar y pedir documentos antes de aprobar.</div>
+              </div>
+            </div>
+            <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#E8A020',flexShrink:0}}>Revisar →</div>
+          </a>
+        )}
+        <style>{`@keyframes pulseBanner { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }`}</style>
+
 
         {vista === 'notificaciones' ? (
           <div>

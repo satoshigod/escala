@@ -100,6 +100,19 @@ export async function GET(request) {
       })
     })
 
+    // Tareas completadas por especialistas en MIS proyectos, pendientes de que yo las verifique.
+    // Antes se consultaban (misTareas) pero nunca se mostraban en la bandeja — el fundador
+    // solo se enteraba por la campanita de notificaciones, no había nada accionable aquí.
+    misTareas.slice(0, 5).forEach(t => {
+      bandeja.push({
+        tipo: 'tarea_por_verificar',
+        texto: 'Verificar: ' + t.nombre,
+        href: '/proyectos/' + t.proyecto_id + '/workspace/tareas',
+        fecha: t.completado_at || t.created_at,
+        id: t.id
+      })
+    })
+
     misHitos.slice(0, 3).forEach(h => {
       bandeja.push({
         tipo: 'hito_pendiente',
@@ -209,6 +222,7 @@ export async function GET(request) {
       contadores: {
         proyectos: misProyectos.length,
         tareas_pendientes: (tareasAsignadasAMi || []).filter(t => t.estado === 'pendiente').length,
+        tareas_por_verificar: misTareas.length,
         postulaciones_pendientes: postulacionesRecibidas.filter(p => p.estado === 'pendiente').length,
         hitos_pendientes: misHitos.length,
         roles_cubiertos: postulacionesRecibidas.filter(p => p.estado === 'aceptada').length,

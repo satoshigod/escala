@@ -229,6 +229,105 @@ const GRUPOS = [
     ]
   },
   {
+    nombre: '💬 Hilo de tareas y Documentación (Fase 2)',
+    tests: [
+      {
+        id: 'hilo_setup',
+        nombre: 'Setup — crear proyecto y tarea de prueba',
+        run: async () => {
+          const nombre = 'QA-Hilo-' + Date.now()
+          const resP = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA test automatico para verificar el hilo de conversacion por tarea y el guardado segmentado de documentos', tipo: 'A', sector: 'Tecnología', fundador_id: FUNDADOR_ID, estado: 'activo' })
+          })
+          const dataP = await resP.json()
+          window._qaProyectoIdHilo = dataP.proyecto.id
+
+          const resT = await fetch('/api/tareas', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaProyectoIdHilo, nombre: 'QA Tarea Hilo', descripcion: 'Test', categoria: 'Finanzas', rol_nombre: 'Contador', asignado_a: FUNDADOR_ID, creado_por: FUNDADOR_ID })
+          })
+          const dataT = await resT.json()
+          window._qaTareaIdHilo = dataT.tarea.id
+          return 'Proyecto y tarea creados: ' + window._qaTareaIdHilo
+        }
+      },
+      {
+        id: 'hilo_mensaje_general_no_mezcla',
+        nombre: 'GET /api/mensajes sin tarea_id — no mezcla mensajes del chat general con los de hilos',
+        run: async () => {
+          await fetch('/api/mensajes', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaProyectoIdHilo, autor_id: FUNDADOR_ID, contenido: 'QA mensaje del chat general' })
+          })
+          const res = await fetch('/api/mensajes?proyecto_id=' + window._qaProyectoIdHilo)
+          const data = await res.json()
+          const conTarea = (data.mensajes || []).filter(m => m.tarea_id)
+          if (conTarea.length > 0) throw new Error('El chat general está devolviendo mensajes de un hilo de tarea')
+          return (data.mensajes || []).length + ' mensajes en el chat general, ninguno con tarea_id'
+        }
+      },
+      {
+        id: 'hilo_mensaje_tarea_completada',
+        nombre: 'PATCH tarea → completada dispara mensaje automático en su hilo',
+        run: async () => {
+          await fetch('/api/tareas', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaTareaIdHilo, estado: 'completada', verificado_por: FUNDADOR_ID })
+          })
+          const res = await fetch('/api/mensajes?proyecto_id=' + window._qaProyectoIdHilo + '&tarea_id=' + window._qaTareaIdHilo)
+          const data = await res.json()
+          const sistema = (data.mensajes || []).filter(m => m.es_sistema)
+          if (sistema.length === 0) throw new Error('No se creó el mensaje automático de tarea completada')
+          return sistema.length + ' mensaje(s) de sistema en el hilo tras completar la tarea'
+        }
+      },
+      {
+        id: 'hilo_adjunto_guarda_documento',
+        nombre: 'POST /api/mensajes con adjuntos — guarda también en documentos_proyecto',
+        run: async () => {
+          const adjunto = { url: 'https://example.com/qa-test.pdf', nombre_original: 'QA-Documento-Test.pdf', tipo: 'application/pdf', tamano_mb: '0.10' }
+          await fetch('/api/mensajes', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaProyectoIdHilo, autor_id: FUNDADOR_ID, contenido: '📎 QA adjunto de prueba', tarea_id: window._qaTareaIdHilo, adjuntos: [adjunto] })
+          })
+          const res = await fetch('/api/documentos?proyecto_id=' + window._qaProyectoIdHilo)
+          const data = await res.json()
+          const encontrado = (data.documentos || []).find(d => d.nombre === 'QA-Documento-Test.pdf')
+          if (!encontrado) throw new Error('El documento adjunto no quedó guardado en documentos_proyecto')
+          if (encontrado.categoria !== 'Contabilidad y Tributario') throw new Error('Categoría incorrecta: se esperaba "Contabilidad y Tributario", vino "' + encontrado.categoria + '"')
+          return 'Documento guardado correctamente bajo categoría "' + encontrado.categoria + '"'
+        }
+      },
+      {
+        id: 'hilo_verificar_cierra_hilo',
+        nombre: 'PATCH tarea → verificada agrega mensaje de cierre al hilo',
+        run: async () => {
+          await fetch('/api/tareas', {
+            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: window._qaTareaIdHilo, estado: 'verificada', verificado_por: FUNDADOR_ID })
+          })
+          const res = await fetch('/api/mensajes?proyecto_id=' + window._qaProyectoIdHilo + '&tarea_id=' + window._qaTareaIdHilo)
+          const data = await res.json()
+          const cierre = (data.mensajes || []).find(m => m.es_sistema && m.contenido.includes('verificó'))
+          if (!cierre) throw new Error('No se agregó el mensaje de cierre al verificar')
+          return 'Mensaje de cierre encontrado: "' + cierre.contenido + '"'
+        }
+      },
+      {
+        id: 'hilo_cleanup',
+        nombre: 'Limpieza — eliminar proyecto de prueba de hilos/documentos',
+        run: async () => {
+          if (!window._qaProyectoIdHilo) return 'Nada que limpiar'
+          await fetch('/api/proyectos/' + window._qaProyectoIdHilo + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+          window._qaProyectoIdHilo = null
+          window._qaTareaIdHilo = null
+          return 'Limpiado correctamente'
+        }
+      },
+    ]
+  },
+  {
     nombre: '👤 Usuarios',
     tests: [
       {

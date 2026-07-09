@@ -13,6 +13,15 @@
 -- Este script borra la copia huérfana (sin asignar, sin tocar) cuando existe una
 -- copia gemela (mismo proyecto + mismo rol + mismo nombre) que sí está asignada.
 -- No borra nada si ambas copias están asignadas o si ambas están sin asignar.
+--
+-- IMPORTANTE: el filtro por razon_creacion ('regulatori' o 'constituc') es
+-- necesario — sin él, la consulta también puede atrapar duplicados de OTRO
+-- origen (ej. plantillas de "Gerente de Proyecto" cargadas dos veces), que son
+-- un problema distinto y no deben borrarse con este script. Verificado en
+-- producción el 2026-07-08 sobre el proyecto ESCALA
+-- (f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf): sin el filtro aparecían 7 candidatas
+-- (5 de Contador/constitución + 2 de Gerente de Proyecto); con el filtro,
+-- solo las 5 correctas.
 
 BEGIN;
 
@@ -26,7 +35,8 @@ BEGIN;
 --  AND t1.id <> t2.id
 -- WHERE t1.asignado_a IS NULL
 --   AND t1.estado = 'pendiente'
---   AND t2.asignado_a IS NOT NULL;
+--   AND t2.asignado_a IS NOT NULL
+--   AND (t1.razon_creacion ILIKE '%regulatori%' OR t1.razon_creacion ILIKE '%constituc%');
 
 DELETE FROM tareas t1
 USING tareas t2
@@ -36,6 +46,7 @@ WHERE t1.proyecto_id = t2.proyecto_id
   AND t1.id <> t2.id
   AND t1.asignado_a IS NULL
   AND t1.estado = 'pendiente'
-  AND t2.asignado_a IS NOT NULL;
+  AND t2.asignado_a IS NOT NULL
+  AND (t1.razon_creacion ILIKE '%regulatori%' OR t1.razon_creacion ILIKE '%constituc%');
 
 COMMIT;

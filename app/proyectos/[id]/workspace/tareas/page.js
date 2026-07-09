@@ -48,6 +48,11 @@ export default function Tareas() {
   const [creando, setCreando] = useState(false)
   const [verTodas, setVerTodas] = useState(false)
   const [rolesConstitucionSinCubrir, setRolesConstitucionSinCubrir] = useState([]) // roles que el fundador puede asumir
+  const [hiloAbierto, setHiloAbierto] = useState(null) // id de la tarea cuyo hilo está expandido
+  const [mensajesHilo, setMensajesHilo] = useState({}) // { [tarea_id]: [mensajes] }
+  const [textoHilo, setTextoHilo] = useState('')
+  const [enviandoHilo, setEnviandoHilo] = useState(false)
+  const [subiendoArchivo, setSubiendoArchivo] = useState(false)
 
   function getProyectoIdFromPath() {
     const parts = window.location.pathname.split('/').filter(Boolean)
@@ -222,6 +227,70 @@ export default function Tareas() {
     const data = await res.json()
     if (!data.error) setTareas(t => t.map(x => x.id === tarea.id ? data.tarea : x))
     setActualizando(null)
+    // Al completar o verificar, el backend abre/actualiza el hilo automáticamente
+    // con un mensaje del sistema — si el hilo ya está abierto, lo recargamos.
+    if ((nuevoEstado === 'completada' || nuevoEstado === 'verificada') && hiloAbierto === tarea.id) {
+      cargarHilo(tarea.id)
+    }
+  }
+
+  async function cargarHilo(tareaId) {
+    const pid = getProyectoIdFromPath()
+    const res = await fetch('/api/mensajes?proyecto_id=' + pid + '&tarea_id=' + tareaId)
+    const data = await res.json()
+    setMensajesHilo(prev => ({ ...prev, [tareaId]: data.mensajes || [] }))
+  }
+
+  function toggleHilo(tarea) {
+    if (hiloAbierto === tarea.id) {
+      setHiloAbierto(null)
+      return
+    }
+    setHiloAbierto(tarea.id)
+    setTextoHilo('')
+    if (!mensajesHilo[tarea.id]) cargarHilo(tarea.id)
+  }
+
+  async function enviarMensajeHilo(tarea) {
+    if (!textoHilo.trim() || enviandoHilo) return
+    setEnviandoHilo(true)
+    const contenido = textoHilo.trim()
+    setTextoHilo('')
+    await fetch('/api/mensajes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ proyecto_id: proyecto.id, autor_id: usuario.id, contenido, tarea_id: tarea.id })
+    })
+    await cargarHilo(tarea.id)
+    setEnviandoHilo(false)
+  }
+
+  async function subirArchivoHilo(tarea, file) {
+    if (!file) return
+    setSubiendoArchivo(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('carpeta', 'documentos-tareas')
+      const resUpload = await fetch('/api/upload', { method: 'POST', body: formData })
+      const dataUpload = await resUpload.json()
+      if (dataUpload.error) { alert(dataUpload.error); return }
+
+      await fetch('/api/mensajes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proyecto_id: proyecto.id,
+          autor_id: usuario.id,
+          contenido: `📎 Adjuntó "${dataUpload.nombre_original}"`,
+          tarea_id: tarea.id,
+          adjuntos: [dataUpload],
+        })
+      })
+      await cargarHilo(tarea.id)
+    } finally {
+      setSubiendoArchivo(false)
+    }
   }
 
   async function crearTarea() {
@@ -271,7 +340,50 @@ export default function Tareas() {
     setCreando(false)
   }
 
-  const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
+  function renderHiloPanel(tarea) {
+    const mensajes = mensajesHilo[tarea.id] || []
+    return (
+      <div style={{marginTop:'0.6rem',borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:'0.6rem'}} onClick={e=>e.stopPropagation()}>
+        <div style={{fontSize:'0.68rem',fontWeight:'700',color:'#8FA3CC',marginBottom:'0.4rem'}}>Actividad de esta tarea</div>
+        <div style={{maxHeight:'220px',overflowY:'auto',display:'flex',flexDirection:'column',gap:'0.4rem',marginBottom:'0.5rem',paddingRight:'0.25rem'}}>
+          {mensajes.length === 0 && (
+            <div style={{fontSize:'0.68rem',color:'#4B5563',fontStyle:'italic'}}>Sin actividad todavía. Escribe algo o adjunta un documento.</div>
+          )}
+          {mensajes.map(m => (
+            <div key={m.id} style={{fontSize:'0.72rem',lineHeight:'1.4', background: m.es_sistema ? 'rgba(232,160,32,0.06)' : 'rgba(255,255,255,0.04)', border: m.es_sistema ? '1px solid rgba(232,160,32,0.15)' : '1px solid rgba(255,255,255,0.05)', borderRadius:'8px', padding:'0.45rem 0.6rem'}}>
+              {!m.es_sistema && (
+                <div style={{fontSize:'0.62rem',fontWeight:'700',color:'#1D9E75',marginBottom:'0.15rem'}}>{m.perfiles?.nombre || 'Usuario'}</div>
+              )}
+              <div style={{color: m.es_sistema ? '#E8A020' : '#fff'}}>{m.contenido}</div>
+              {Array.isArray(m.adjuntos) && m.adjuntos.length > 0 && (
+                <div style={{marginTop:'0.3rem',display:'flex',flexDirection:'column',gap:'0.2rem'}}>
+                  {m.adjuntos.map((a, i) => (
+                    <a key={i} href={a.url} target="_blank" rel="noreferrer" style={{fontSize:'0.68rem',color:'#4A90D9',textDecoration:'underline'}}>📎 {a.nombre_original || a.nombre || 'Documento'}</a>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:'0.4rem',alignItems:'center'}}>
+          <input
+            value={textoHilo}
+            onChange={e=>setTextoHilo(e.target.value)}
+            onKeyDown={e=>{ if (e.key==='Enter') enviarMensajeHilo(tarea) }}
+            placeholder="Escribe sobre esta tarea..."
+            style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.4rem 0.6rem',color:'#fff',fontSize:'0.7rem',outline:'none',fontFamily:'Inter,sans-serif'}}
+          />
+          <label style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'8px',padding:'0.4rem 0.55rem',fontSize:'0.7rem',cursor:'pointer',color:'#8FA3CC'}}>
+            {subiendoArchivo ? '...' : '📎'}
+            <input type="file" accept="image/*,application/pdf" style={{display:'none'}} onChange={e=>subirArchivoHilo(tarea, e.target.files?.[0])} />
+          </label>
+          <button onClick={()=>enviarMensajeHilo(tarea)} disabled={!textoHilo.trim()||enviandoHilo} style={{background: textoHilo.trim() ? '#1D9E75' : 'rgba(255,255,255,0.08)',color:'#fff',border:'none',borderRadius:'8px',padding:'0.4rem 0.65rem',fontSize:'0.7rem',cursor: textoHilo.trim() ? 'pointer' : 'not-allowed',fontFamily:'Inter,sans-serif'}}>↑</button>
+        </div>
+      </div>
+    )
+  }
+
+
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
   const tareasAsignadasAMi = tareas.filter(t => t.asignado_a === usuario?.id)
   const [rolesAbiertos, setRolesAbiertos] = useState({})
@@ -347,6 +459,7 @@ export default function Tareas() {
 
   return (
     <div style={{minHeight:'100vh',background:'#0B1628',fontFamily:'Inter,sans-serif'}}>
+      <style>{`@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }`}</style>
       <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
           <a href={'/proyectos/'+proyecto?.id+'/workspace'} style={{color:'#8FA3CC',textDecoration:'none',fontSize:'0.82rem'}}>Workspace</a>
@@ -610,6 +723,8 @@ export default function Tareas() {
                                   const esMia = t.asignado_a === usuario?.id
                                   const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
                                   const puedeMover = esMia || esFundador || esGerente
+                                  const requiereAtencion = (esFundador || esGerente) && t.estado === 'completada'
+                                  const hiloEstaAbierto = hiloAbierto === t.id
 
                                   return (
                                     <div key={t.id} style={{background: esMia ? 'rgba(29,158,117,0.04)' : 'rgba(255,255,255,0.02)', border: esMia ? '1px solid rgba(29,158,117,0.1)' : '1px solid rgba(255,255,255,0.04)', borderRadius:'6px', padding:'0.625rem 0.75rem'}}>
@@ -619,6 +734,7 @@ export default function Tareas() {
                                             {t.categoria && <span style={{fontSize:'0.58rem',padding:'1px 4px',borderRadius:'3px',background:'rgba(255,255,255,0.06)',color:'#6B7280'}}>{t.categoria}</span>}
                                             {esMia && <span style={{fontSize:'0.58rem',fontWeight:'700',color:'#1D9E75'}}>Mia</span>}
                                             {(t.razon_creacion||'').includes('Bootstrapping') && <span style={{fontSize:'0.58rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',padding:'1px 4px',borderRadius:'3px'}}>Bootstrapping</span>}
+                                            {requiereAtencion && <span style={{display:'inline-flex',alignItems:'center',gap:'3px',fontSize:'0.58rem',fontWeight:'700',color:'#E8A020'}}><span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#E8A020',animation:'pulse 1.5s infinite'}}></span>Requiere revisión</span>}
                                           </div>
                                           <div style={{fontSize:'0.8rem',fontWeight:'600',color: t.estado==='verificada' ? '#AFA9EC' : '#fff', textDecoration: t.estado==='verificada'?'line-through':'none', marginBottom:'0.1rem'}}>{t.nombre}</div>
                                           {t.descripcion && <div style={{fontSize:'0.7rem',color:'#6B7280',lineHeight:'1.4'}}>{t.descripcion}</div>}
@@ -632,8 +748,12 @@ export default function Tareas() {
                                           {puedeMover && t.estado === 'pendiente' && <button onClick={()=>cambiarEstado(t,'en_progreso')} disabled={actualizando===t.id} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'5px',padding:'0.15rem 0.45rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>{actualizando===t.id?'...':'Iniciar'}</button>}
                                           {puedeMover && t.estado === 'en_progreso' && <button onClick={()=>cambiarEstado(t,'completada')} disabled={actualizando===t.id} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'5px',padding:'0.15rem 0.45rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>{actualizando===t.id?'...':'Completar'}</button>}
                                           {puedeVerificar && <button onClick={()=>cambiarEstado(t,'verificada')} disabled={actualizando===t.id} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'5px',padding:'0.15rem 0.45rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>{actualizando===t.id?'...':'Verificar'}</button>}
+                                          {(t.estado === 'completada' || t.estado === 'verificada' || t.estado === 'en_progreso') && (
+                                            <button onClick={()=>toggleHilo(t)} style={{background: hiloEstaAbierto ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.06)',color: hiloEstaAbierto ? '#1D9E75' : '#8FA3CC',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'5px',padding:'0.15rem 0.45rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>💬{requiereAtencion ? ' Ver actividad' : ''}</button>
+                                          )}
                                         </div>
                                       </div>
+                                      {hiloEstaAbierto && renderHiloPanel(t)}
                                     </div>
                                   )
                                 })}
@@ -653,10 +773,13 @@ export default function Tareas() {
               const esMia = t.asignado_a === usuario?.id
               const puedeVerificar = (esFundador || esGerente) && t.estado === 'completada'
               const puedeMover = esMia || esFundador || esGerente
+              const requiereAtencion = (esFundador || esGerente) && t.estado === 'completada'
+              const hiloEstaAbierto = hiloAbierto === t.id
               return (
                 <div key={t.id} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'10px',padding:'0.75rem 1rem'}}>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',gap:'1rem'}}>
                     <div style={{flex:1}}>
+                      {requiereAtencion && <div style={{display:'inline-flex',alignItems:'center',gap:'3px',fontSize:'0.6rem',fontWeight:'700',color:'#E8A020',marginBottom:'0.2rem'}}><span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#E8A020',animation:'pulse 1.5s infinite'}}></span>Requiere revisión</div>}
                       <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.15rem'}}>{t.nombre}</div>
                       {t.descripcion && <div style={{fontSize:'0.72rem',color:'#6B7280'}}>{t.descripcion}</div>}
                     </div>
@@ -665,8 +788,12 @@ export default function Tareas() {
                       {puedeMover && t.estado === 'pendiente' && <button onClick={()=>cambiarEstado(t,'en_progreso')} style={{background:'rgba(232,160,32,0.12)',color:'#E8A020',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Iniciar</button>}
                       {puedeMover && t.estado === 'en_progreso' && <button onClick={()=>cambiarEstado(t,'completada')} style={{background:'rgba(29,158,117,0.12)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Completar</button>}
                       {puedeVerificar && <button onClick={()=>cambiarEstado(t,'verificada')} style={{background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Verificar</button>}
+                      {(t.estado === 'completada' || t.estado === 'verificada' || t.estado === 'en_progreso') && (
+                        <button onClick={()=>toggleHilo(t)} style={{background: hiloEstaAbierto ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.06)',color: hiloEstaAbierto ? '#1D9E75' : '#8FA3CC',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'6px',padding:'0.2rem 0.5rem',fontSize:'0.68rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>💬{requiereAtencion ? ' Ver actividad' : ''}</button>
+                      )}
                     </div>
                   </div>
+                  {hiloEstaAbierto && renderHiloPanel(t)}
                 </div>
               )
             })}
