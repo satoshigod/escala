@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     description: "La plataforma para crear empresas reales. Conecta con cofundadores, especialistas e inversores en Colombia, México, Chile y más.",
     url: "https://escala.network",
     siteName: "Escala",
-    images: [{ url: "https://escala.network/brand/og-default.png?v=2", width: 1200, height: 630, alt: "Escala — Plataforma para crear empresas" }],
+    images: [{ url: "https://escala.network/brand/og-default.png?v=3", width: 1200, height: 630, alt: "Escala — El sistema operativo para construir empresas" }],
     locale: "es_CO",
     type: "website",
   },
