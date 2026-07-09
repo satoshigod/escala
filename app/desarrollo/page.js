@@ -664,10 +664,7 @@ const fases = [
       { num: '39.16', nombre: 'SEO Tier 1 ejecutado: /contador-publico-colombia (contadores que buscan startups), /abogado-startups-colombia (abogados por equity), /startup-chile (mercado chileno), /crear-empresa-sin-capital (keyword conversion directa). Sitemap +7 URLs, robots.txt actualizado. PLAN_SEO.md en repo con 50 keywords, roadmap 6 meses, calendario editorial, backlinks, KPIs.', done: true, valor: 2500000, quien: 'Claude AI' },
       { num: '39.17', nombre: 'SEO Tier 2 ejecutado: /desarrollador-startup-colombia, /startup-bogota, /startup-medellin, /startup-santiago, /angel-investor, /buscar-cto. Blog 4 articulos + indice /blog. Sitemap 23 URLs. /seo panel de seguimiento. Pendiente: 6 articulos restantes, Reddit/LinkedIn/Product Hunt.', done: true, valor: 3000000, quien: 'Claude AI + Ivan' },
     ]
-  }
-]
-
-,
+  },
   {
     titulo: 'Escenarios frecuentes - flujo completo 13 etapas (Prompt Maestro 2026-07-09)',
     estado: 'pendiente',
