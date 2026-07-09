@@ -54,7 +54,7 @@ export default function Proyectos() {
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [creandoPais, setCreandoPais] = useState(false)
   const [form, setForm] = useState({
-    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', paso: 1
+    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', paso: 1, escenario: ''
   })
 
   useEffect(() => {
@@ -224,7 +224,7 @@ export default function Proyectos() {
 
       setProyectos(p => [data.proyecto, ...p])
       setVista('lista')
-      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '' })
+      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', escenario: '' })
     }
     setEnviando(false)
   }
@@ -387,6 +387,75 @@ export default function Proyectos() {
                 <button type="button" onClick={construirDescripcion} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
                   Generar descripción →
                 </button>
+              </div>
+            )}
+
+            <label style={s.label}>¿Qué tipo de proyecto vas a publicar? *</label>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
+              {[
+                {
+                  id: 'startup',
+                  icon: '💡',
+                  titulo: 'Startup o empresa',
+                  desc: 'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo.',
+                  badge: 'Equity diferido',
+                  badgeColor: '#1D9E75',
+                },
+                {
+                  id: 'local_comercial',
+                  icon: '🏪',
+                  titulo: 'Negocio en un local',
+                  desc: 'Quieres montar una tienda, restaurante, frutería, almacén de ropa u otro negocio de venta de productos y necesitas financiar el local.',
+                  badge: 'Fondeo Escala',
+                  badgeColor: '#4A90D9',
+                  destacado: true,
+                },
+                {
+                  id: 'otro',
+                  icon: '📦',
+                  titulo: 'Otro proyecto',
+                  desc: 'Importación, compra de vehículo, maquinaria u otro tipo de proyecto que necesita capital específico.',
+                  badge: 'Capital de trabajo',
+                  badgeColor: '#E8A020',
+                },
+              ].map(op => (
+                <div
+                  key={op.id}
+                  onClick={() => actualizar('escenario', op.id)}
+                  style={{
+                    cursor: 'pointer',
+                    border: form.escenario === op.id
+                      ? `2px solid ${op.badgeColor}`
+                      : '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '12px',
+                    padding: '1rem',
+                    background: form.escenario === op.id
+                      ? `rgba(${op.id === 'startup' ? '29,158,117' : op.id === 'local_comercial' ? '74,144,217' : '232,160,32'},0.08)`
+                      : 'rgba(255,255,255,0.03)',
+                    transition: 'all 0.15s',
+                    position: 'relative',
+                  }}
+                >
+                  {op.destacado && (
+                    <div style={{position:'absolute',top:'-10px',left:'50%',transform:'translateX(-50%)',background:op.badgeColor,color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'2px 10px',borderRadius:'20px',whiteSpace:'nowrap'}}>NUEVO</div>
+                  )}
+                  <div style={{fontSize:'1.75rem',marginBottom:'0.5rem'}}>{op.icon}</div>
+                  <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>{op.titulo}</div>
+                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.75rem'}}>{op.desc}</div>
+                  <span style={{fontSize:'0.65rem',fontWeight:'700',background:`rgba(${op.id === 'startup' ? '29,158,117' : op.id === 'local_comercial' ? '74,144,217' : '232,160,32'},0.15)`,color:op.badgeColor,padding:'2px 8px',borderRadius:'20px'}}>{op.badge}</span>
+                </div>
+              ))}
+            </div>
+
+            {form.escenario === 'local_comercial' && (
+              <div style={{background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.25rem'}}>
+                <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#4A90D9',marginBottom:'0.5rem'}}>🏪 Negocio en local — cómo funciona el fondeo</div>
+                <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6'}}>
+                  Escala financia el depósito, el primer arriendo y las adecuaciones del local. Cada día que tengas ventas, pagas primero los intereses del día y luego abonas al capital. Cuando termines de pagar, el negocio es tuyo. El wizard te guía paso a paso — no necesitas saber de finanzas.
+                </div>
+                <div style={{marginTop:'0.75rem',fontSize:'0.75rem',color:'#4A90D9',fontWeight:'600'}}>
+                  Este tipo de proyecto tiene un wizard especial en el siguiente paso →
+                </div>
               </div>
             )}
 
