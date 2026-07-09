@@ -487,6 +487,28 @@ const fases = [
       { num: '31.4', nombre: 'Wallet widget: 3 saldos visibles en vez de solo el disponible. Comprometido y pendiente de entrada ya existen en el ledger.', done: true, valor: 500000, quien: 'Claude AI' },
       { num: '31.5', nombre: 'PENDIENTE IVAN: correr 20260708_motor_financiero.sql en Supabase, configurar BREB_WEBHOOK_SECRET y BINANCE_WEBHOOK_SECRET en Vercel, /wallet/movimientos y /wallet/pagos/solicitar, QA del motor financiero.', done: false, valor: 500000, quien: 'Ivan + Claude AI' },
     ]
+  },
+  {
+    titulo: 'Escenarios frecuentes — flujo completo 13 etapas',
+    estado: 'pendiente',
+    valor_total: 45000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '32.1', nombre: 'ANÁLISIS (2026-07-09): Top 5 escenarios más frecuentes en LATAM: (1) Arrendar local comercial, (2) Abrir restaurante, (3) Importar mercancía, (4) Comprar vehículo para operar, (5) Tienda online. Los 3 gaps críticos que bloquean todos los escenarios: levantamiento de capital real, reparto económico y cierre formal.', done: true, valor: 0, quien: 'Claude AI + Ivan' },
+      { num: '32.2', nombre: 'Flujo de 13 etapas (doc Prompt Maestro Escenarios): Necesidad → Publicación → Validación → Formación equipo → Vinculación profesionales → Estructuración financiera → Levantamiento capital → Ejecución → Seguimiento → Finalización → Reparto económico → Cierre → Reputación participantes.', done: true, valor: 0, quien: 'Claude AI + Ivan' },
+      { num: '32.3', nombre: 'GAP 1 — Validación del proyecto (etapa 3): checklist antes de publicar — descripción suficiente, al menos 1 rol, 1 hito, capital requerido definido. Wizard de 3 pasos al crear proyecto. Sin validación cualquier escenario queda incompleto.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: '32.4', nombre: 'GAP 2 — Estructuración financiera por escenario (etapa 6): wizard contextual según tipo de proyecto. Fundador declara cuánto necesita, en qué lo va a usar (depósito, inventario, maquinaria, flete) y qué ofrece (% participación, deuda, revenue share).', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: '32.5', nombre: 'GAP 3 — Levantamiento de capital real (etapa 7): flujo completo ángel → hito específico → capital llega al wallet del proyecto → hito se ejecuta y verifica → participación del ángel registrada. Integración con motor financiero existente.', done: false, valor: 6000000, quien: 'Claude AI' },
+      { num: '32.6', nombre: 'GAP 4 — Reparto económico (etapa 11): cuando ocurre evento de pago (primera venta, ronda, venta empresa), calcular y distribuir participación según contratos. Cada participante ve cuánto le corresponde. Pagos desde motor financiero.', done: false, valor: 7000000, quien: 'Claude AI' },
+      { num: '32.7', nombre: 'GAP 5 — Cierre formal del proyecto (etapa 12): flujo de cierre cuando todos los hitos completados — confirmación ambas partes, resumen final (aportes, ingresos, participaciones), liberación de reputación. Estado: completado → cerrado.', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: '32.8', nombre: 'GAP 6 — Reputación post-proyecto (etapa 13): calificación mutua al cerrar (1-5 estrellas + comentario). Escala Score se actualiza con resultado real del proyecto cerrado, no solo con tareas verificadas.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: '32.9', nombre: 'Escenario 1 — Arrendar local: wizard (dirección, valor arriendo, meses depósito, presupuesto adecuación). Tareas predefinidas: buscar local, negociar contrato, constituir empresa, licencia funcionamiento, adecuación, apertura bancaria. Roles: Abogado + Contador.', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: '32.10', nombre: 'Escenario 2 — Restaurante/comida: wizard (tipo comida, aforo, ubicación). Tareas predefinidas: licencia INVIMA, permiso bomberos, uso de suelo, registro marca, adecuación. Roles: Abogado, Contador, Diseñador.', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: '32.11', nombre: 'Escenario 3 — Importar mercancía: wizard (país origen, tipo, valor FOB, incoterm). Tareas predefinidas: registro importador DIAN, agente aduanas, póliza, bodega, distribución. Capital: fondeo ángel para flete/arancel.', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: '32.12', nombre: 'Escenario 4 — Comprar vehículo operativo: wizard (tipo, uso, valor). Tareas: financiamiento, RUNT, SOAT, revisión técnico-mecánica, vinculación plataforma. Capital: ángel financia cuota inicial a cambio de % ingresos operativos.', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: '32.13', nombre: 'Escenario 5 — Tienda online/e-commerce: wizard (categoría productos, mercado, plataforma). Tareas: constitución, diseño marca, desarrollo tienda, catálogo, pagos, lanzamiento. Roles: Desarrollador, Diseñador, CM, Contador. Usa el flujo completo de Escala.', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: '32.14', nombre: 'Biblioteca 100 escenarios: completar los 30 sectores del documento Prompt Maestro (arrendamiento, maquinaria, franquicias, equipos médicos, software, audiovisual, agricultura, ganadería, energías renovables, minería, joyería, exportación, hotelería, educación, salud, logística, IA, biotecnología, turismo, bienes raíces, manufactura, moda, alimentos, centros deportivos, clínicas veterinarias, laboratorios, call centers, proyectos sociales). Cada uno con wizard, tareas y roles sugeridos.', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+    ]
   }
 ]
 

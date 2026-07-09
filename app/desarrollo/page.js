@@ -667,7 +667,26 @@ const fases = [
   }
 ]
 
-
+,
+  {
+    titulo: 'Escenarios frecuentes — flujo completo 13 etapas (Prompt Maestro 2026-07-09)',
+    estado: 'pendiente',
+    valor_total: 45000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '40.1', nombre: 'ANÁLISIS (2026-07-09): Top 5 escenarios frecuentes en LATAM: Arrendar local, Abrir restaurante, Importar mercancía, Comprar vehículo, Tienda online. Los 3 gaps que bloquean todos: levantamiento capital real, reparto económico, cierre formal. Flujo completo de 13 etapas definido.', done: true, valor: 0, quien: 'Claude AI + Ivan' },
+      { num: '40.2', nombre: 'GAP 1 — Validación proyecto (etapa 3): wizard checklist antes de publicar.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: '40.3', nombre: 'GAP 2 — Estructuración financiera por escenario (etapa 6): wizard contextual tipo de proyecto + wizard financiero.', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: '40.4', nombre: 'GAP 3 — Levantamiento de capital real (etapa 7): flujo ángel → hito → wallet proyecto → verificación.', done: false, valor: 6000000, quien: 'Claude AI' },
+      { num: '40.5', nombre: 'GAP 4 — Reparto económico (etapa 11): distribución automática según contratos en evento de pago.', done: false, valor: 7000000, quien: 'Claude AI' },
+      { num: '40.6', nombre: 'GAP 5 — Cierre formal (etapa 12): confirmación partes, resumen, liberación reputación.', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: '40.7', nombre: 'GAP 6 — Reputación post-proyecto (etapa 13): calificación mutua al cerrar, Score actualizado con resultado real.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: '40.8', nombre: 'Wizards específicos para Top 5 escenarios: local comercial, restaurante, importación, vehículo operativo, e-commerce. Cada uno con tareas predefinidas y roles sugeridos.', done: false, valor: 12000000, quien: 'Claude AI' },
+      { num: '40.9', nombre: 'Biblioteca 100 escenarios (30 sectores del doc Prompt Maestro): wizard + tareas + roles para cada uno.', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: '40.10', nombre: 'Workspace badges + banner tareas pendientes: fundador (amarillo, tareas por verificar), especialista (azul, tareas por completar). Badge en botón Tareas del nav + banner pulsante debajo del nav.', done: true, valor: 1000000, quien: 'Claude AI' },
+    ]
+  }
+]
 export default function Desarrollo() {
   const [faseAbierta, setFaseAbierta] = useState(null)
 
