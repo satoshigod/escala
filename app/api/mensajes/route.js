@@ -28,8 +28,6 @@ export async function GET(request) {
     .eq('proyecto_id', proyecto_id)
     .order('created_at', { ascending: true })
 
-  // Sin tarea_id → chat general del proyecto (no mezcla los hilos de tareas puntuales)
-  // Con tarea_id → solo la conversación de esa tarea específica
   query = tarea_id ? query.eq('tarea_id', tarea_id) : query.is('tarea_id', null)
 
   const { data, error } = await query
@@ -63,28 +61,33 @@ export async function POST(request) {
 
   // Si el mensaje trae adjuntos y pertenece al hilo de una tarea, los guardamos
   // también de forma segmentada en la Documentación del proyecto — no solo en el chat.
+  // Envuelto en try/catch por si la migración SQL aún no se ha corrido.
   if (tarea_id && Array.isArray(adjuntos) && adjuntos.length > 0) {
-    const { data: tarea } = await supabase
-      .from('tareas')
-      .select('rol_nombre, categoria')
-      .eq('id', tarea_id)
-      .single()
+    try {
+      const { data: tarea } = await supabase
+        .from('tareas')
+        .select('rol_nombre, categoria')
+        .eq('id', tarea_id)
+        .single()
 
-    const categoria = categoriaDocumento(tarea)
+      const categoria = categoriaDocumento(tarea)
 
-    const registros = adjuntos.map(a => ({
-      proyecto_id,
-      tarea_id,
-      mensaje_id: data.id,
-      categoria,
-      nombre: a.nombre_original || a.nombre || 'Documento',
-      url: a.url,
-      tipo: a.tipo || null,
-      tamano_mb: a.tamano_mb || null,
-      subido_por: autor_id,
-    }))
+      const registros = adjuntos.map(a => ({
+        proyecto_id,
+        tarea_id,
+        mensaje_id: data.id,
+        categoria,
+        nombre: a.nombre_original || a.nombre || 'Documento',
+        url: a.url,
+        tipo: a.tipo || null,
+        tamano_mb: a.tamano_mb || null,
+        subido_por: autor_id,
+      }))
 
-    await supabase.from('documentos_proyecto').insert(registros)
+      await supabase.from('documentos_proyecto').insert(registros)
+    } catch (e) {
+      console.error('[mensajes] Error guardando en documentos_proyecto:', e.message)
+    }
   }
 
   return Response.json({ mensaje: data }, { status: 201 })

@@ -107,7 +107,7 @@ export async function GET(request) {
       bandeja.push({
         tipo: 'tarea_por_verificar',
         texto: 'Verificar: ' + t.nombre,
-        href: '/proyectos/' + t.proyecto_id + '/workspace/tareas',
+        href: '/proyectos/' + t.proyecto_id + '/workspace/tareas?tarea=' + t.id,
         fecha: t.completado_at || t.created_at,
         id: t.id
       })

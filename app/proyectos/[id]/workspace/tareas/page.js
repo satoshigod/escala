@@ -161,6 +161,17 @@ export default function Tareas() {
 
       setTareas(tareasActuales)
 
+      // Si la URL trae ?tarea=ID (desde la bandeja del dashboard), abrimos ese hilo directamente
+      const params = new URLSearchParams(window.location.search)
+      const tareaParam = params.get('tarea')
+      if (tareaParam) {
+        setHiloAbierto(tareaParam)
+        const pid2 = getProyectoIdFromPath()
+        const rHilo = await fetch('/api/mensajes?proyecto_id=' + pid2 + '&tarea_id=' + tareaParam)
+        const dHilo = await rHilo.json()
+        setMensajesHilo(prev => ({ ...prev, [tareaParam]: dHilo.mensajes || [] }))
+      }
+
       // ── BOOTSTRAPPING: detectar roles de constitución sin especialista ──
       // Si el fundador no tiene nadie aceptado en abogado/contador de constitución,
       // le ofrecemos asumir ese rol él mismo.
