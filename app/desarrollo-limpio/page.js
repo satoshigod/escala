@@ -471,7 +471,8 @@ const fases = [
       { num: '30.9', nombre: 'Fix deploy Vercel: Deploy Hook configurado (claude-deploy, branch main). Commit vacío de trigger como flujo estándar de sesión.', done: true, valor: 300000, quien: 'Claude AI + Ivan' },
       { num: '30.10', nombre: '6 builds fallidos Turbopack: wrapper {toastNuevo && (} eliminado al insertar tour onboarding. Todos los deploys desde tour dashboard hasta roadmap completo fallaron. Fix commit 9f9a011. Pendiente: verificacion JSX estricta pre-deploy.', done: true, valor: 0, quien: 'Claude AI' },
       { num: '30.11', nombre: 'Pendiente: duplicados Gerente de Proyecto (plantilla cargada dos veces) — investigar y corregir.', done: false, valor: 600000, quien: 'Claude AI' },
-      { num: '30.12', nombre: 'PENDIENTE EJECUTAR: Plan Maestro SEO y Crecimiento Orgánico (doc 2026-07-08). Roadmap semanal 6 meses, 50 keywords clasificadas, landing pages (/angel-investor, /buscar-cto, /startup-chile, blog), calendario editorial, backlinks/autoridad, KPIs semanales, 20 acciones mayor ROI. Objetivo: primeros usuarios orgánicos reales.', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
+      { num: '30.12', nombre: 'SEO Tier 1 ejecutado: 4 landing pages nuevas (/contador-publico-colombia, /abogado-startups-colombia, /startup-chile, /crear-empresa-sin-capital), sitemap actualizado con 7 URLs nuevas, robots.txt con Allow explicito. PLAN_SEO.md en el repo con plan completo 6 meses.', done: true, valor: 2500000, quien: 'Claude AI' },
+      { num: '30.13', nombre: 'PENDIENTE SEO Tier 2: /desarrollador-startup-colombia, /startup-bogota, /startup-medellin, /angel-investor, /buscar-cto. Blog primeros 10 articulos (ver PLAN_SEO.md). Reddit, LinkedIn, Product Hunt launch. Meta: primeros clics organicos en Search Console en 4-8 semanas.', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
     ]
   }
 ]
