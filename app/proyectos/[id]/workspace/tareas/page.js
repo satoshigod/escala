@@ -53,6 +53,8 @@ export default function Tareas() {
   const [textoHilo, setTextoHilo] = useState('')
   const [enviandoHilo, setEnviandoHilo] = useState(false)
   const [subiendoArchivo, setSubiendoArchivo] = useState(false)
+  const [rolesAbiertos, setRolesAbiertos] = useState({})
+  const [segmentosAbiertos, setSegmentosAbiertos] = useState({})
 
   function getProyectoIdFromPath() {
     const parts = window.location.pathname.split('/').filter(Boolean)
@@ -397,8 +399,7 @@ export default function Tareas() {
 
   const misTareas = tareas.filter(t => t.asignado_a === usuario?.id)
   const tareasAsignadasAMi = tareas.filter(t => t.asignado_a === usuario?.id)
-  const [rolesAbiertos, setRolesAbiertos] = useState({})
-  const [segmentosAbiertos, setSegmentosAbiertos] = useState({})
+  const rolesTareas = [...new Set(tareas.map(t => t.rol_nombre).filter(Boolean))]
 
   function toggleRol(rol) {
     setRolesAbiertos(prev => ({ ...prev, [rol]: !prev[rol] }))
