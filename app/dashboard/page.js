@@ -431,6 +431,7 @@ export default function Dashboard() {
         </>
       )}
 
+      {toastNuevo && (
         <div onClick={() => { setNotifPanelAbierto(true); setToastNuevo(null) }} style={{
           position:'fixed', top:'20px', right:'20px', zIndex:1000,
           background:'#15234a', border:'1px solid rgba(232,160,32,0.4)', borderRadius:'12px',
