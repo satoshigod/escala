@@ -86,6 +86,7 @@ export default function Workspace() {
   const [busquedaEsp, setBusquedaEsp] = useState('')
   const [vistaRol, setVistaRol] = useState('catalogo') // 'catalogo' | 'nueva'
   const [nuevaEspNombre, setNuevaEspNombre] = useState('')
+  const [tourPaso, setTourPaso] = useState(null) // null = inactivo, 0-4 = paso del tour
 
   function getProyectoIdFromPath() {
     const parts = window.location.pathname.split('/').filter(Boolean)
@@ -193,6 +194,13 @@ export default function Workspace() {
       const tData = await tRes.json()
       const misPendientes = (tData.tareas || []).filter(t => t.asignado_a === user.id && t.estado === 'pendiente')
       setBadgeTareas(misPendientes.length)
+
+      // Tour de onboarding — solo para especialistas (no fundador), solo la primera vez
+      if (!esFundador && miPostulacionAceptada) {
+        const tourKey = 'escala_tour_workspace_' + user.id
+        const yaVioTour = localStorage.getItem(tourKey)
+        if (!yaVioTour) setTourPaso(0)
+      }
 
       setCargando(false)
     }
@@ -425,9 +433,98 @@ export default function Workspace() {
     </div>
   )
 
+  const TOUR_PASOS = [
+    {
+      titulo: '👋 Bienvenido a tu workspace',
+      texto: `Estás en el proyecto ${proyecto?.nombre}. Este es tu espacio de trabajo junto al equipo. Te mostramos rápidamente cómo funciona todo.`,
+      accion: 'Siguiente →',
+      highlight: null,
+    },
+    {
+      titulo: '✅ Tus tareas',
+      texto: 'Aquí aparecen las tareas asignadas a tu rol. Debes marcarlas como "En progreso" cuando las inicias y "Completada" cuando las terminas. El fundador las verifica.',
+      accion: 'Ver mis tareas →',
+      highlight: 'tareas',
+      href: proyecto?.id ? '/proyectos/' + proyecto.id + '/workspace/tareas' : null,
+    },
+    {
+      titulo: '💬 Chat del equipo',
+      texto: 'El chat es para coordinarte con el resto del equipo. Cuando completas una tarea, también se abre un hilo específico de esa tarea para subir documentos y hablar con el fundador.',
+      accion: 'Siguiente →',
+      highlight: 'chat',
+    },
+    {
+      titulo: '📋 Tu aporte y participación',
+      texto: 'En "Mis aportes" puedes registrar el tiempo o servicios que estás aportando al proyecto. Eso construye tu participación económica futura.',
+      accion: 'Siguiente →',
+      highlight: 'aportes',
+    },
+    {
+      titulo: '🚀 ¡Listo para empezar!',
+      texto: 'Ya sabes lo básico. El primer paso es ir a Tareas, iniciar las que tienes asignadas y completarlas. El fundador te notificará si necesita algo más.',
+      accion: 'Ir a mis tareas →',
+      href: proyecto?.id ? '/proyectos/' + proyecto.id + '/workspace/tareas' : null,
+      highlight: null,
+      esFinal: true,
+    },
+  ]
+
+  function cerrarTour() {
+    const tourKey = 'escala_tour_workspace_' + usuario?.id
+    localStorage.setItem(tourKey, '1')
+    setTourPaso(null)
+  }
+
+  function avanzarTour() {
+    const paso = TOUR_PASOS[tourPaso]
+    if (paso?.href) {
+      cerrarTour()
+      window.location.href = paso.href
+      return
+    }
+    if (tourPaso >= TOUR_PASOS.length - 1) {
+      cerrarTour()
+      return
+    }
+    setTourPaso(p => p + 1)
+  }
+
   return (
     <div style={{minHeight:'100vh',background:'#0B1628',fontFamily:'Inter,sans-serif'}}>
-      {/* NAV */}
+
+      {/* TOUR ONBOARDING — solo especialistas primera vez */}
+      {tourPaso !== null && TOUR_PASOS[tourPaso] && (
+        <>
+          <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,backdropFilter:'blur(2px)'}} onClick={cerrarTour}></div>
+          <div style={{position:'fixed',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:1001,background:'#15234a',border:'1px solid rgba(29,158,117,0.4)',borderRadius:'16px',padding:'2rem',maxWidth:'420px',width:'calc(100vw - 2rem)',boxShadow:'0 20px 60px rgba(0,0,0,0.6)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'1rem'}}>
+              <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.08em',textTransform:'uppercase'}}>
+                Paso {tourPaso + 1} de {TOUR_PASOS.length}
+              </div>
+              <button onClick={cerrarTour} style={{background:'none',border:'none',color:'#8FA3CC',cursor:'pointer',fontSize:'1rem',padding:0,lineHeight:1}}>✕</button>
+            </div>
+            {/* Barra de progreso */}
+            <div style={{height:'3px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',marginBottom:'1.5rem',overflow:'hidden'}}>
+              <div style={{height:'100%',width:((tourPaso+1)/TOUR_PASOS.length*100)+'%',background:'#1D9E75',borderRadius:'2px',transition:'width 0.3s ease'}}></div>
+            </div>
+            <div style={{fontSize:'1.1rem',fontWeight:'800',color:'#fff',marginBottom:'0.75rem',lineHeight:'1.3'}}>
+              {TOUR_PASOS[tourPaso].titulo}
+            </div>
+            <div style={{fontSize:'0.85rem',color:'#C8D4E8',lineHeight:'1.7',marginBottom:'1.75rem'}}>
+              {TOUR_PASOS[tourPaso].texto}
+            </div>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <button onClick={cerrarTour} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                Saltar tour
+              </button>
+              <button onClick={avanzarTour} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'10px',padding:'0.7rem 1.5rem',fontSize:'0.85rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                {TOUR_PASOS[tourPaso].accion}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'56px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
         <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
           <a href="/dashboard" style={{fontSize:'1rem',fontWeight:'900',color:'#fff',textDecoration:'none',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></a>
