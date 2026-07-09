@@ -289,8 +289,13 @@ export default function Tareas() {
   // Extraer el segmento de la razon_creacion de una tarea
   function getSegmento(tarea) {
     const r = tarea.razon_creacion || ''
-    // Tareas del sistema de países regulatorios → siempre bajo "Constitución de empresas"
-    if (r.includes('regulatori') || r.includes('Tarea regulatoria')) {
+    const rNorm = normalizarTexto(r)
+    // Tareas del sistema de países regulatorios (constitución de empresas) → siempre bajo
+    // "Constitución de empresas", sin importar si vinieron del flujo de país sin asignar
+    // ("Tarea regulatoria inicial — X") o del auto-init al especialista ("Constitución de
+    // empresas — X"). Antes solo se reconocía "regulatori" y la segunda variante caía al
+    // regex genérico, extrayendo el país como si fuera un segmento distinto.
+    if (rNorm.includes('regulatori') || rNorm.includes('constituc')) {
       return 'Constitución de empresas'
     }
     const match = r.match(/— (.+)$/)

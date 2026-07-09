@@ -324,45 +324,85 @@ export async function POST(request) {
       return Response.json({ tareas: [], mensaje: `Sin tareas configuradas para ${rolTipo} en ${paisProyecto}` }, { status: 200 })
     }
 
-    // Verificar cuáles ya existen para no duplicar
-    const { data: existentes } = await supabase
+    // Buscar TODAS las tareas de este rol que ya existan en el proyecto (asignadas o sin
+    // asignar), no solo las asignadas a este especialista. Antes solo se revisaba
+    // asignado_a = este usuario, así que si ya existían tareas de país sin asignar
+    // (creadas por inicializar_pais), este bloque las duplicaba en vez de reasignarlas.
+    const { data: existentesProyecto } = await supabase
       .from('tareas')
-      .select('nombre')
+      .select('id, nombre, asignado_a')
       .eq('proyecto_id', proyecto_id)
-      .eq('asignado_a', asignado_a)
+      .eq('rol_nombre', rolTipo)
 
-    const nombresExistentes = new Set((existentes || []).map(t => t.nombre))
-    const nuevas = tareasDelRol.filter(t => !nombresExistentes.has(t.nombre))
+    const existentesPorNombre = new Map((existentesProyecto || []).map(t => [t.nombre, t]))
+    const nombresYaAsignadosAMi = new Set(
+      (existentesProyecto || []).filter(t => t.asignado_a === asignado_a).map(t => t.nombre)
+    )
 
-    if (nuevas.length === 0) {
+    const idsReasignar = []
+    const nuevas = []
+    for (const t of tareasDelRol) {
+      if (nombresYaAsignadosAMi.has(t.nombre)) continue // ya las tiene asignadas, no tocar
+      const existente = existentesPorNombre.get(t.nombre)
+      if (existente && !existente.asignado_a) {
+        idsReasignar.push(existente.id) // ya existe sin asignar → reasignar, no duplicar
+      } else if (!existente) {
+        nuevas.push(t) // no existe en absoluto → crear
+      }
+      // si existe pero está asignada a otra persona, no se toca ni se duplica
+    }
+
+    if (idsReasignar.length === 0 && nuevas.length === 0) {
       return Response.json({ tareas: [], mensaje: 'Tareas ya existentes', ya_inicializado: true }, { status: 200 })
     }
 
-    const tareasAInsertar = nuevas.map(t => ({
-      proyecto_id,
-      rol_nombre: rolTipo,
-      asignado_a: asignado_a || null,
-      nombre: t.nombre,
-      descripcion: t.descripcion || '',
-      categoria: t.categoria || 'Legal',
-      estado: 'pendiente',
-      creado_por: creado_por || null,
-      razon_creacion: `Constitución de empresas — ${paisProyecto || 'país no definido'}`,
-    }))
-
-    const { data: insertadas, error: insertError } = await supabase
-      .from('tareas')
-      .insert(tareasAInsertar)
-      .select('*, asignado_perfil:asignado_a ( nombre, email )')
-
-    if (insertError) return Response.json({ error: insertError.message }, { status: 500 })
-
-    for (const tarea of insertadas) {
-      await registrarHistorial(tarea.id, proyecto_id, 'creada', creado_por,
-        `Tarea de constitución asignada automáticamente a ${tarea.asignado_perfil?.nombre || 'especialista'}`)
+    let reasignadas = []
+    if (idsReasignar.length > 0) {
+      const { data: r, error: reasignarError } = await supabase
+        .from('tareas')
+        .update({
+          asignado_a,
+          razon_creacion: `Constitución de empresas — ${paisProyecto || 'país no definido'}`,
+        })
+        .in('id', idsReasignar)
+        .select('*, asignado_perfil:asignado_a ( nombre, email )')
+      if (reasignarError) return Response.json({ error: reasignarError.message }, { status: 500 })
+      reasignadas = r || []
+      for (const tarea of reasignadas) {
+        await registrarHistorial(tarea.id, proyecto_id, 'creada', creado_por,
+          `Tarea de constitución (ya existente en el proyecto) reasignada a ${tarea.asignado_perfil?.nombre || 'especialista'}`)
+      }
     }
 
-    return Response.json({ tareas: insertadas, tipo: 'constitucion', rol: rolTipo, pais: paisProyecto }, { status: 201 })
+    let insertadas = []
+    if (nuevas.length > 0) {
+      const tareasAInsertar = nuevas.map(t => ({
+        proyecto_id,
+        rol_nombre: rolTipo,
+        asignado_a: asignado_a || null,
+        nombre: t.nombre,
+        descripcion: t.descripcion || '',
+        categoria: t.categoria || 'Legal',
+        estado: 'pendiente',
+        creado_por: creado_por || null,
+        razon_creacion: `Constitución de empresas — ${paisProyecto || 'país no definido'}`,
+      }))
+
+      const { data: ins, error: insertError } = await supabase
+        .from('tareas')
+        .insert(tareasAInsertar)
+        .select('*, asignado_perfil:asignado_a ( nombre, email )')
+
+      if (insertError) return Response.json({ error: insertError.message }, { status: 500 })
+      insertadas = ins || []
+      for (const tarea of insertadas) {
+        await registrarHistorial(tarea.id, proyecto_id, 'creada', creado_por,
+          `Tarea de constitución asignada automáticamente a ${tarea.asignado_perfil?.nombre || 'especialista'}`)
+      }
+    }
+
+    const todas = [...reasignadas, ...insertadas]
+    return Response.json({ tareas: todas, tipo: 'constitucion', rol: rolTipo, pais: paisProyecto }, { status: 201 })
   }
 
   // INICIALIZAR TAREAS REGULATORIAS POR PAÍS

@@ -146,6 +146,89 @@ const GRUPOS = [
     ]
   },
   {
+    nombre: '🏛️ Constitución de empresas — anti-duplicado',
+    tests: [
+      {
+        id: 'constitucion_setup',
+        nombre: 'Setup — crear proyecto Colombia de prueba',
+        run: async () => {
+          const nombre = 'QA-Constitucion-Dup-' + Date.now()
+          const resP = await fetch('/api/proyectos', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, descripcion: 'QA test automatico para verificar que las tareas de constitucion no se dupliquen al inicializar un especialista', tipo: 'A', sector: 'Tecnología', pais: 'Colombia', fundador_id: FUNDADOR_ID, estado: 'activo' })
+          })
+          const dataP = await resP.json()
+          if (!dataP.proyecto?.id) throw new Error('No se pudo crear el proyecto de prueba')
+          window._qaProyectoIdConstitucion = dataP.proyecto.id
+          return 'Proyecto creado: ' + dataP.proyecto.id
+        }
+      },
+      {
+        id: 'constitucion_inicializar_pais_primero',
+        nombre: 'Paso 1 — cargar tareas del país SIN asignar (simula estado previo real)',
+        run: async () => {
+          const res = await fetch('/api/tareas', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ proyecto_id: window._qaProyectoIdConstitucion, inicializar_pais: true, pais: 'Colombia', creado_por: FUNDADOR_ID })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          if (!data.tareas || data.tareas.length === 0) throw new Error('No se cargaron tareas del país')
+          window._qaConteoPaisInicial = data.tareas.length
+          return data.tareas.length + ' tareas cargadas sin asignar (Contador + Abogado)'
+        }
+      },
+      {
+        id: 'constitucion_inicializar_especialista',
+        nombre: 'Paso 2 — especialista Contador entra por primera vez (inicializar_constitucion)',
+        run: async () => {
+          const res = await fetch('/api/tareas', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              proyecto_id: window._qaProyectoIdConstitucion,
+              inicializar_constitucion: true,
+              rol_nombre_especialista: 'Contador',
+              sub_especialidad: 'Constitución de empresas',
+              asignado_a: FUNDADOR_ID,
+              creado_por: FUNDADOR_ID,
+            })
+          })
+          const data = await res.json()
+          if (data.error) throw new Error(data.error)
+          return (data.tareas?.length || 0) + ' tareas devueltas (reasignadas o nuevas), tipo: ' + data.tipo
+        }
+      },
+      {
+        id: 'constitucion_verificar_sin_duplicados',
+        nombre: 'Verificación — el total de tareas de Contador NO se duplicó',
+        run: async () => {
+          const res = await fetch('/api/tareas?proyecto_id=' + window._qaProyectoIdConstitucion)
+          const data = await res.json()
+          const tareasContador = (data.tareas || []).filter(t => t.rol_nombre === 'Contador')
+          const nombresUnicos = new Set(tareasContador.map(t => t.nombre))
+          if (tareasContador.length !== nombresUnicos.size) {
+            throw new Error(`Hay duplicados: ${tareasContador.length} tareas de Contador pero solo ${nombresUnicos.size} nombres únicos`)
+          }
+          const asignadas = tareasContador.filter(t => t.asignado_a === FUNDADOR_ID)
+          if (asignadas.length !== tareasContador.length) {
+            throw new Error(`Quedaron tareas sin reasignar: ${tareasContador.length - asignadas.length} de ${tareasContador.length}`)
+          }
+          return `${tareasContador.length} tareas de Contador, todas únicas y reasignadas correctamente (sin duplicados)`
+        }
+      },
+      {
+        id: 'constitucion_cleanup',
+        nombre: 'Limpieza — eliminar proyecto de prueba de constitución',
+        run: async () => {
+          if (!window._qaProyectoIdConstitucion) return 'Nada que limpiar'
+          await fetch('/api/proyectos/' + window._qaProyectoIdConstitucion + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+          window._qaProyectoIdConstitucion = null
+          return 'Limpiado correctamente'
+        }
+      },
+    ]
+  },
+  {
     nombre: '👤 Usuarios',
     tests: [
       {
