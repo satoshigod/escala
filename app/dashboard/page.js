@@ -871,19 +871,35 @@ export default function Dashboard() {
             {/* Proyectos disponibles — para especialistas sube aquí (posición prioritaria) */}
             {!esFundador && todosProyectos.filter(p => p.fundador_id !== usuario?.id).length > 0 && (
               <div style={{marginBottom:'1.75rem'}}>
-                <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Proyectos disponibles</div>
-                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(200px,1fr))',gap:'0.75rem'}}>
-                  {todosProyectos.filter(p => p.fundador_id !== usuario?.id).slice(0,3).map(p => (
-                    <a key={p.id} href={'/proyectos/'+p.id} style={{textDecoration:'none',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'10px',padding:'1rem',display:'block'}}>
-                      <div style={{fontSize:'0.6rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Tipo {p.tipo}</div>
-                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
-                      <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{p.sector} · {p.ciudad}</div>
-                    </a>
-                  ))}
-                  <a href="/buscar" style={{textDecoration:'none',background:'rgba(255,255,255,0.02)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px',padding:'1rem',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',minHeight:'90px'}}>
-                    <div style={{fontSize:'1.25rem',marginBottom:'0.3rem'}}>+</div>
-                    <div style={{fontSize:'0.72rem',color:'#8FA3CC',fontWeight:'600'}}>Ver todos</div>
-                  </a>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'0.875rem'}}>
+                  <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff'}}>Proyectos disponibles</div>
+                  <a href="/buscar" style={{fontSize:'0.72rem',color:'#1D9E75',textDecoration:'none',fontWeight:'600'}}>Ver todos →</a>
+                </div>
+                <div style={{display:'flex',flexDirection:'column',gap:'0.625rem'}}>
+                  {todosProyectos.filter(p => p.fundador_id !== usuario?.id).slice(0,4).map(p => {
+                    const rolesBuscados = p.roles_buscados || []
+                    const especialidadUsuario = (perfil?.especialidad || '').toLowerCase()
+                    const hayMatch = rolesBuscados.some(r => (r || '').toLowerCase().includes(especialidadUsuario.split(' ')[0]) || especialidadUsuario.includes((r || '').toLowerCase().split(' ')[0]))
+                    return (
+                      <a key={p.id} href={'/proyectos/'+p.id} style={{textDecoration:'none',background: hayMatch ? 'rgba(29,158,117,0.05)' : 'rgba(255,255,255,0.03)',border: hayMatch ? '1px solid rgba(29,158,117,0.2)' : '1px solid rgba(255,255,255,0.07)',borderRadius:'10px',padding:'0.875rem 1rem',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.25rem',flexWrap:'wrap'}}>
+                            {hayMatch && <span style={{fontSize:'0.6rem',fontWeight:'700',color:'#1D9E75',background:'rgba(29,158,117,0.12)',padding:'1px 6px',borderRadius:'10px'}}>✓ Encaja con tu perfil</span>}
+                            <span style={{fontSize:'0.6rem',color:'#8FA3CC'}}>{p.pais || p.ciudad || 'Sin ubicación'}</span>
+                          </div>
+                          <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{p.nombre}</div>
+                          <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>{p.sector}{p.industria ? ' · ' + p.industria : ''}</div>
+                        </div>
+                        <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:'0.3rem',flexShrink:0}}>
+                          <span style={{fontSize:'0.68rem',fontWeight:'700',color:'#E8A020',background:'rgba(232,160,32,0.1)',border:'1px solid rgba(232,160,32,0.2)',padding:'0.2rem 0.6rem',borderRadius:'20px'}}>Ver roles</span>
+                        </div>
+                      </a>
+                    )
+                  })}
+                </div>
+                <div style={{marginTop:'0.875rem',background:'rgba(83,74,183,0.06)',border:'1px dashed rgba(83,74,183,0.2)',borderRadius:'10px',padding:'0.75rem 1rem',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>¿No encontrás lo que buscás? Usa el buscador avanzado.</div>
+                  <a href="/buscar" style={{fontSize:'0.75rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',whiteSpace:'nowrap'}}>Buscar →</a>
                 </div>
               </div>
             )}
