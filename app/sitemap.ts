@@ -20,6 +20,16 @@ export default async function sitemap() {
     { url: `${BASE_URL}/directorio`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.8 },
     { url: `${BASE_URL}/buscar`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.7 },
     { url: `${BASE_URL}/registro`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
+    // Landing pages SEO — países
+    { url: `${BASE_URL}/startup-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/startup-mexico`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/startup-chile`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    // Landing pages SEO — especialistas
+    { url: `${BASE_URL}/contador-publico-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/abogado-startups-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/buscar-cofundador`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    // Landing pages SEO — modelo
+    { url: `${BASE_URL}/crear-empresa-sin-capital`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
   ]
 
   // Proyectos públicos

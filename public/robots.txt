@@ -5,6 +5,13 @@ Allow: /directorio
 Allow: /buscar
 Allow: /que-es-escala
 Allow: /registro
+Allow: /startup-colombia
+Allow: /startup-mexico
+Allow: /startup-chile
+Allow: /buscar-cofundador
+Allow: /contador-publico-colombia
+Allow: /abogado-startups-colombia
+Allow: /crear-empresa-sin-capital
 
 # Páginas privadas — no indexar
 Disallow: /dashboard
