@@ -1,15 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      // Redirigir index.html a / para evitar contenido duplicado
-      {
-        source: '/index.html',
-        destination: '/',
-        permanent: true,
-      },
-    ]
+  async rewrites() {
+    return {
+      // beforeFiles se revisa ANTES que app/page.tsx (que sigue ahí con su redirect,
+      // pero nunca se llega a ejecutar porque este rewrite lo intercepta primero).
+      // Resultado: escala.network muestra el contenido de index.html directamente,
+      // sin cambiar la URL a /index.html — igual que cualquier sitio normal.
+      beforeFiles: [
+        { source: '/', destination: '/index.html' },
+      ],
+      afterFiles: [],
+      fallback: [],
+    }
   },
 };
 
