@@ -152,6 +152,58 @@ export default function LatinosUSAPage() {
         </div>
       </section>
 
+      {/* MODELO LOCAL COMERCIAL PARA USA */}
+      <section style={s.section}>
+        <div style={{ background: 'rgba(74,144,217,0.06)', border: '1px solid rgba(74,144,217,0.2)', borderRadius: '16px', padding: '2rem', marginBottom: '3rem' }}>
+          <div style={{ display: 'inline-block', background: 'rgba(74,144,217,0.15)', border: '1px solid rgba(74,144,217,0.3)', color: '#4A90D9', fontSize: '0.7rem', fontWeight: '700', padding: '0.25rem 0.75rem', borderRadius: '20px', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1rem' }}>Fondeo para tu local en USA</div>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#fff', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
+            Quieres abrir tu taquería, tu salon, tu tienda — pero el deposito y el primer mes no los tienes
+          </h2>
+          <p style={{ fontSize: '0.88rem', color: '#8FA3CC', lineHeight: '1.7', marginBottom: '1.5rem' }}>
+            El problema mas comun del latino en USA que quiere abrir un negocio fisico no es el local — es el capital inicial. El landlord pide 2-3 meses de deposito mas el primer mes. Eso puede ser $6,000, $10,000 o $20,000 que no estan disponibles. Escala tiene un modelo especifico para esto.
+          </p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1.25rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Como funciona</div>
+              {[
+                '1. Publicas tu negocio en Escala con los datos del local',
+                '2. Escala verifica el local y te asigna una tasa',
+                '3. Un inversionista latino financia el deposito y primer mes',
+                '4. Reportas tus ventas cada dia en la app',
+                '5. Pagas el excedente diario hasta cubrir la deuda',
+                '6. El negocio es completamente tuyo',
+              ].map(item => (
+                <div key={item} style={{ fontSize: '0.8rem', color: '#C8D4E8', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', lineHeight: '1.5' }}>{item}</div>
+              ))}
+            </div>
+
+            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1.25rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Ejemplo real — taqueria en Houston</div>
+              {[
+                ['Deposito (2 meses x $1,500)', '$3,000'],
+                ['Primer mes de renta', '$1,500'],
+                ['Adecuaciones basicas', '$2,000'],
+                ['Total financiado', '$6,500'],
+                ['', ''],
+                ['Ventas dia normal', '$400'],
+                ['- Costo de insumos (45%)', '-$180'],
+                ['- Gastos fijos del dia', '-$85'],
+                ['= Pago al inversionista', '$135/dia'],
+              ].map(([label, valor]) => label ? (
+                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: valor === '$6,500' ? '0.85rem' : '0.78rem', fontWeight: valor === '$6,500' ? '700' : '400', color: valor === '$6,500' ? '#4A90D9' : valor === '$135/dia' ? '#1D9E75' : '#8FA3CC', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <span>{label}</span><span>{valor}</span>
+                </div>
+              ) : <div key="sep" style={{ height: '8px' }} />)}
+            </div>
+          </div>
+
+          <a href="/financiar-negocio-local-colombia" style={{ fontSize: '0.85rem', color: '#4A90D9', textDecoration: 'none', fontWeight: '600' }}>
+            Ver el modelo completo de fondeo para locales →
+          </a>
+        </div>
+      </section>
+
       {/* SECTORES */}
       <section style={s.section}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
