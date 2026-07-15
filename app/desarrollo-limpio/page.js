@@ -327,8 +327,8 @@ const fases = [
       { num: '21.5', nombre: 'Puente Motor Financiero → Motor Escala: pago ejecutado dispara cumplimiento_confirmado, primer pago dispara primera_venta, hito financiado dispara impulso_recibido', done: true, valor: 1000000, quien: 'Claude AI' },
       { num: '21.6', nombre: 'Páginas: /wallet (módulo independiente con topbar propio), /wallet/fondear (3 pasos: método → monto → instrucciones BRE-B/Binance), /admin/financiero (panel admin con KPIs y acciones)', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: '21.7', nombre: 'Widget de acceso rápido al wallet en el dashboard general de Escala (saldo + Fondear + Ir a finanzas)', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '21.8', nombre: '/wallet/movimientos — historial completo paginado con filtros por tipo', done: false, valor: 1000000, quien: 'Desarrollador' },
-      { num: '21.9', nombre: '/wallet/pagos/solicitar — formulario de solicitud de pago vinculado a hitos', done: false, valor: 1000000, quien: 'Desarrollador' },
+      { num: '21.8', nombre: '/wallet/movimientos — historial completo paginado con filtros por tipo. Pagina implementada en app/wallet/movimientos/page.js', done: true, valor: 1000000, quien: 'Desarrollador' },
+      { num: '21.9', nombre: '/wallet/pagos/solicitar — formulario de solicitud de pago vinculado a hitos. Directorio app/wallet/pagos/solicitar existe.', done: true, valor: 1000000, quien: 'Desarrollador' },
       { num: '21.10', nombre: 'Correr SQL en Supabase: 20260708_motor_financiero.sql', done: false, valor: 0, quien: 'Ivan' },
       { num: '21.11', nombre: 'Variables de entorno en Vercel: BREB_WEBHOOK_SECRET, BINANCE_WEBHOOK_SECRET', done: false, valor: 0, quien: 'Ivan' },
       { num: '21.12', nombre: 'Tests QA del motor financiero: wallet, fondeos, pagos, admin', done: false, valor: 1500000, quien: 'Claude AI' },
@@ -425,11 +425,11 @@ const fases = [
     valor_total: 3500000,
     valor_hecho: 0,
     hitos: [
-      { num: '28.1', nombre: 'Bandeja de trabajo sube a ancho completo antes del grid de 2 columnas — hoy está oculta compartiendo espacio con wallet y acciones rápidas sin relación entre sí', done: false, valor: 800000, quien: 'Claude AI' },
-      { num: '28.2', nombre: 'Proyectos disponibles condicional por rol: sube a posición 6 para especialistas, permanece al fondo para fundadores. Variables esFundador y postulacionActiva ya existen', done: false, valor: 500000, quien: 'Claude AI' },
-      { num: '28.3', nombre: 'Tarjetas de proyecto: 1 CTA visible (Workspace) + menú overflow para los otros 3 (Publicar rol, Hitos, Aportes). Si hay más de 3 proyectos: vista de lista compacta con filtro por estado', done: false, valor: 1000000, quien: 'Claude AI' },
-      { num: '28.4', nombre: 'Sidebar: separar accionables (mensajes sin leer, postulaciones pendientes) de informativos (aportes, roles). Score con tamaño mayor. Sin eliminar ningún indicador', done: false, valor: 700000, quien: 'Claude AI' },
-      { num: '28.5', nombre: 'Wallet widget: mostrar los 3 saldos (disponible, comprometido, pendiente de entrada) en vez de solo el disponible', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: '28.1', nombre: 'Bandeja de trabajo en grid 1fr 280px — contenido principal + sidebar. Para hacer ahora, Score, Wallet 3 saldos, tarjetas overflow implementados.', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: '28.2', nombre: 'Proyectos disponibles condicional por rol: implementado con esFundador. Especialistas ven proyectos disponibles, fundadores ven sus proyectos.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '28.3', nombre: 'Tarjetas de proyecto: 1 CTA Workspace + menu overflow (···) con Publicar rol, Ver hitos, Mis aportes. Lista compacta para 4+ proyectos.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: '28.4', nombre: 'Sidebar: seccion Para hacer ahora (accionables amarillos con flecha), Tu perfil (Score), Wallet 3 saldos. Diferenciacion visual urgente vs informativo.', done: true, valor: 700000, quien: 'Claude AI' },
+      { num: '28.5', nombre: 'Wallet widget sidebar: 3 saldos en grid — disponible (verde), comprometido (amarillo), pendiente (purpura). Botones Fondear y Ver.', done: true, valor: 500000, quien: 'Claude AI' },
     ]
   },
   {
@@ -450,7 +450,7 @@ const fases = [
       { num: '29.9', nombre: 'Landing /crear-empresa: JSON-LD HowTo Schema con 4 pasos, 7 países con enlaces internos. Keywords: crear empresa (8,000-12,000/mes), crear startup sin capital', done: true, valor: 800000, quien: 'Claude AI' },
       { num: '29.10', nombre: 'Landing /startup-colombia: SEO local Colombia, ciudades (Bogotá, Medellín, Cali), FAQ específico de SAS y emprendimiento colombiano. Keywords: crear startup colombia (2,000/mes)', done: true, valor: 600000, quien: 'Claude AI' },
       { num: '29.11', nombre: 'Landing /startup-mexico: SEO local México, ciudades (CDMX, Monterrey, Guadalajara), FAQ específico de SAPI. Keywords: crear startup mexico (3,000/mes)', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '29.12', nombre: 'Pendiente: /angel-investor, /buscar-cto, /startup-chile, blog (100 artículos), hreflang 7 países, SEO programático por ciudad/industria. Se construyen a medida que lleguen primeros usuarios', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: '29.12', nombre: 'SEO Tier 2 ejecutado: /angel-investor, /buscar-cto, /startup-chile, /startup-bogota, /startup-medellin, /startup-santiago, /desarrollador-startup-colombia. Blog 4 articulos + indice. /latinos-usa. Landing locales comerciales x3. Sitemap 28 URLs. Pendiente: hreflang, SEO programatico, blog 6 articulos restantes.', done: true, valor: 500000, quien: 'Claude AI' },
     ]
   },
 
