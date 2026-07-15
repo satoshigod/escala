@@ -217,7 +217,7 @@ export default function LatinosUSAPage() {
             { emoji: '🍔', sector: 'Restaurantes y comida', pct: '1er sector de LOB inmigrantes', desc: 'La cultura culinaria latina es el diferencial. Taquerías, restaurantes colombianos, panaderías, food trucks.' },
             { emoji: '🏗️', sector: 'Construcción', pct: '31.5% de la fuerza laboral', desc: 'El latino que trabaja en construcción y quiere ser su propio jefe. Escala le pone el contador y el abogado que necesita.' },
             { emoji: '💻', sector: 'Tecnología y software', pct: '19% de los negocios latinos', desc: 'Apps, plataformas, soluciones digitales. El talento técnico de LATAM construye para el mercado de USA.' },
-            { emoji: '🛒', sector: 'Retail y tiendas', pct: 'Alta concentración en comunidades', desc: 'Tiendas de barrio, almacenes, bodegas. El modelo de fondeo de Escala financia el local y los equipos.' },
+            { emoji: '🛒', sector: 'Retail y tiendas', pct: 'Alta concentración en comunidades', desc: 'Tiendas de barrio, almacenes, bodegas. El modelo de fondeo de Escala financia el arriendo del local — deposito y mensualidades.' },
             { emoji: '🏠', sector: 'Servicios al hogar', pct: 'Limpieza, jardinería, remodelación', desc: 'Del trabajo independiente a la empresa formal con equipo, contratos y facturación.' },
             { emoji: '💆', sector: 'Belleza y cuidado personal', pct: 'Salones, spas, barberías', desc: 'Alta densidad en comunidades latinas. El local es la barrera — Escala la elimina.' },
           ].map(item => (
@@ -258,7 +258,7 @@ export default function LatinosUSAPage() {
           {[
             ['¿Necesito tener visa o ciudadanía para usar Escala?', 'No. Escala es una plataforma que conecta personas — no hace ninguna verificación migratoria. Lo que importa es tu proyecto y tu compromiso con el equipo que se une a él.'],
             ['¿El equipo de LATAM puede trabajar legalmente para un negocio en USA?', 'Sí. Los contratos de participación diferida son acuerdos entre personas naturales o empresas — no son contratos laborales. El especialista en Colombia trabaja como contratista independiente para un proyecto, independientemente del país donde opere el negocio.'],
-            ['¿El inversionista de Escala puede fondear un negocio en USA?', 'Sí. El modelo de fondeo de local comercial de Escala funciona para negocios en cualquier país. Un inversionista en Bogotá puede financiar el depósito y primer mes de arriendo de una taquería en Houston — el repago es desde los ingresos diarios del negocio.'],
+            ['¿El inversionista de Escala puede fondear un negocio en USA?', 'Sí. El modelo de fondeo de local comercial de Escala funciona para negocios en cualquier país. Un inversionista en Bogotá puede financiar el depósito y los meses de arriendo del contrato de una taquería en Houston — el repago es desde los ingresos diarios del negocio.'],
             ['¿En qué idioma funciona Escala?', 'En español. Toda la plataforma, los contratos, el workspace y el soporte son en español. Para el mercado latino — dentro y fuera de USA — el idioma no es una barrera.'],
             ['¿Qué pasa cuando el negocio empiece a generar ingresos en USA?', 'Cada participante recibe según lo que aportó y lo que acordaron al inicio — documentado en el contrato de participación diferida. Cómo se distribuye fiscalmente en USA depende de la estructura legal que elijan (LLC, S-Corp, etc.) — para eso Escala conecta con contadores especializados.'],
           ].map(([q, a]) => (

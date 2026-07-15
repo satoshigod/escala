@@ -1,7 +1,7 @@
 // app/financiar-negocio-local-colombia/page.js
 export const metadata = {
   title: 'Financiar un Negocio en Local Comercial en Colombia — Escala',
-  description: 'Consigue el capital para el deposito, arriendo y adecuacion de tu local comercial. Escala financia tu negocio y recupera el capital desde los ingresos diarios. Sin banco, sin garante.',
+  description: 'Consigue el capital para el deposito y los meses de arriendo de tu local comercial. Escala financia el arriendo y recupera el capital desde los ingresos diarios de tu negocio. Sin banco, sin garante.',
   keywords: ['financiar negocio local comercial colombia', 'capital para local comercial', 'como financiar un local', 'prestamo para abrir negocio colombia', 'fondeo negocio local medellin bogota'],
   openGraph: { title: 'Financiar Negocio en Local Comercial — Escala', description: 'Capital para deposito, arriendo y adecuaciones. Pagas desde los ingresos del negocio.', url: 'https://escala.network/financiar-negocio-local-colombia', images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }] },
   alternates: { canonical: 'https://escala.network/financiar-negocio-local-colombia' },
@@ -37,10 +37,10 @@ export default function FinanciarNegocioLocalPage() {
 
       <section style={s.hero}>
         <div style={s.tag}>🏪 Fondeo para locales comerciales</div>
-        <h1 style={s.h1}>Tienes el negocio, tienes el local visto. Solo te falta el capital.</h1>
-        <p style={s.sub}>Escala financia el depósito, el primer arriendo y las adecuaciones de tu local. No necesitas banco, no necesitas garante. Pagas desde los ingresos diarios de tu negocio — cuando vendes, pagas.</p>
+        <h1 style={s.h1}>Tienes el negocio claro y el local visto. Solo te falta quien financie el arriendo.</h1>
+        <p style={s.sub}>Escala financia el depósito, el los meses de arriendo del contrato y las adecuaciones de tu local. No necesitas banco, no necesitas garante. Pagas desde los ingresos diarios de tu negocio — cuando vendes, pagas.</p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
-          <a href="/registro" style={s.btn}>Solicitar fondeo para mi local →</a>
+          <a href="/registro" style={s.btn}>Solicitar fondeo para el arriendo de mi local →</a>
           <a href="#como-funciona" style={s.btn2}>Ver cómo funciona</a>
         </div>
 
@@ -124,7 +124,7 @@ export default function FinanciarNegocioLocalPage() {
         <div style={{ background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '20px', padding: '3rem', textAlign: 'center' }}>
           <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#fff', marginBottom: '1rem', letterSpacing: '-0.02em' }}>¿Tienes el local visto y el negocio claro?</h2>
           <p style={{ color: '#8FA3CC', marginBottom: '2rem', lineHeight: '1.6' }}>Crea tu cuenta en Escala y empieza el proceso. No necesitas capital propio — solo el negocio, el local y las ganas de trabajar.</p>
-          <a href="/registro" style={s.btn}>Solicitar fondeo para mi local →</a>
+          <a href="/registro" style={s.btn}>Solicitar fondeo para el arriendo de mi local →</a>
         </div>
       </div>
 

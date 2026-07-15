@@ -209,7 +209,7 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
             <div style={s.calc}>
               <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', marginBottom: '0.5rem' }}>Escala va a financiar este capital:</div>
               <div style={s.calcRow}><span>Depósito ({datos.meses_deposito} mes{datos.meses_deposito > 1 ? 'es' : ''} × ${fmt(datos.canon_mensual)})</span><span>${fmt(parseFloat(datos.canon_mensual || 0) * parseInt(datos.meses_deposito))}</span></div>
-              <div style={s.calcRow}><span>Primer mes de arriendo</span><span>${fmt(datos.canon_mensual)}</span></div>
+              <div style={s.calcRow}><span>Primer mes de arriendo (incluido en el contrato)</span><span>${fmt(datos.canon_mensual)}</span></div>
               {datos.necesita_adecuacion && datos.presupuesto_adecuacion && <div style={s.calcRow}><span>Adecuaciones</span><span>${fmt(datos.presupuesto_adecuacion)}</span></div>}
               <div style={s.calcTotal}><span>Total capital a financiar</span><span>${fmt(capitalTotal())}</span></div>
             </div>
@@ -365,7 +365,7 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
                   <span>${fmt(parseFloat(datos.canon_mensual || 0) * parseInt(datos.meses_deposito))}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC', padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '6px' }}>
-                  <span>Primer mes de arriendo</span>
+                  <span>Primer mes de arriendo (incluido en el contrato)</span>
                   <span>${fmt(datos.canon_mensual || 0)}</span>
                 </div>
                 {datos.necesita_adecuacion && datos.presupuesto_adecuacion && (
@@ -914,7 +914,7 @@ export default function Proyectos() {
                   id: 'local_comercial',
                   icon: '🏪',
                   titulo: 'Negocio en un local',
-                  desc: 'Quieres montar una tienda, restaurante, frutería, almacén de ropa u otro negocio de venta de productos y necesitas financiar el local.',
+                  desc: 'Quieres montar una tienda, restaurante, frutería, almacén de ropa u otro negocio de venta de productos y necesitas financiar el arriendo del local — deposito, mensualidades del contrato y adecuaciones.',
                   badge: 'Fondeo Escala',
                   badgeColor: '#4A90D9',
                   destacado: true,
@@ -960,7 +960,7 @@ export default function Proyectos() {
               <div style={{background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.25rem'}}>
                 <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#4A90D9',marginBottom:'0.5rem'}}>🏪 Negocio en local — cómo funciona el fondeo</div>
                 <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6'}}>
-                  Escala financia el depósito, el primer arriendo y las adecuaciones del local. Cada día que tengas ventas, pagas primero los intereses del día y luego abonas al capital. Cuando termines de pagar, el negocio es tuyo. El wizard te guía paso a paso — no necesitas saber de finanzas.
+                  Escala financia el depósito y los meses de arriendo del contrato. Cada mes de arriendo queda registrado como parte de tu deuda con el inversionista. Cada día que tengas ventas, pagas primero los intereses del día y luego abonas al capital. Cuando termines de pagar, el negocio es tuyo. El wizard te guía paso a paso — no necesitas saber de finanzas.
                 </div>
                 <div style={{marginTop:'0.75rem',fontSize:'0.75rem',color:'#4A90D9',fontWeight:'600'}}>
                   Este tipo de proyecto tiene un wizard especial en el siguiente paso →

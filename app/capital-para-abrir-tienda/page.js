@@ -32,7 +32,7 @@ export default function CapitalParaAbrirTiendaPage() {
       <section style={s.hero}>
         <div style={s.tag}>💰 Capital para tu tienda</div>
         <h1 style={s.h1}>Quieres abrir tu tienda pero no tienes para el deposito ni el primer mes.</h1>
-        <p style={s.sub}>El problema mas comun de los emprendedores en Colombia no es la idea — es el capital inicial. Escala lo resuelve: un inversionista financia tu local y tu pagas desde lo que vendes cada dia.</p>
+        <p style={s.sub}>El problema mas comun de los emprendedores en Colombia no es la idea — es el capital para el arriendo. Escala lo resuelve: un inversionista financia el deposito y los meses de arriendo, y tu pagas desde lo que vendes cada dia.</p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
           <a href="/registro" style={s.btn}>Quiero capital para mi tienda →</a>
         </div>
