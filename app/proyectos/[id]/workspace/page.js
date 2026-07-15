@@ -582,7 +582,7 @@ export default function Workspace() {
                     setEliminando(false)
                     return
                   }
-                  const res = await fetch(`/api/proyectos/${proyecto.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${session.access_token}` } })
+                  const res = await fetch(`/api/proyectos/${proyecto.id}?fundador_id=${usuario.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${session.access_token}` } })
                   if (res.ok) {
                     window.location.href = '/proyectos'
                   } else {
