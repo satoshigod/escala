@@ -79,6 +79,8 @@ export default function Workspace() {
   const [badgeTareas, setBadgeTareas] = useState(0)
   const [badgeChat, setBadgeChat] = useState(0)
   const [tareasPorVerificar, setTareasPorVerificar] = useState(0)
+  const [confirmandoEliminar, setConfirmandoEliminar] = useState(false)
+  const [eliminando, setEliminando] = useState(false)
   const [mostrarFormRol, setMostrarFormRol] = useState(false)
   const [rolForm, setRolForm] = useState({ nombre: '', sub_especialidad: '', descripcion: '', tipo_aporte: 'servicio', valor_mercado: '', es_prioritario: false })
   const [guardandoRol, setGuardandoRol] = useState(false)
@@ -557,6 +559,49 @@ export default function Workspace() {
           )}
           <a href={'/proyectos/' + proyecto?.id} style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Ver proyecto</a>
           <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>Dashboard</a>
+          {esFundador && !confirmandoEliminar && (
+            <button onClick={() => setConfirmandoEliminar(true)} style={{background:'none',border:'none',color:'rgba(255,255,255,0.25)',fontSize:'0.75rem',cursor:'pointer',fontFamily:'Inter,sans-serif',padding:'0.3rem 0.5rem'}}>Eliminar</button>
+          )}
+          {esFundador && confirmandoEliminar && (
+            <div style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(224,85,85,0.1)',border:'1px solid rgba(224,85,85,0.3)',borderRadius:'8px',padding:'0.3rem 0.75rem'}}>
+              <span style={{fontSize:'0.72rem',color:'#E05555'}}>¿Eliminar proyecto?</span>
+              <button onClick={async () => {
+                setEliminando(true)
+                try {
+                  const { data: { session } } = await supabase.auth.getSession()
+                  // Verificar que no hay especialistas aceptados
+                  const { data: contratos } = await supabase
+                    .from('contratos')
+                    .select('id')
+                    .eq('proyecto_id', proyecto.id)
+                    .eq('estado', 'activo')
+                    .limit(1)
+                  if (contratos && contratos.length > 0) {
+                    alert('No puedes eliminar este proyecto porque tiene especialistas con contratos activos.')
+                    setConfirmandoEliminar(false)
+                    setEliminando(false)
+                    return
+                  }
+                  const res = await fetch(`/api/proyectos/${proyecto.id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${session.access_token}` } })
+                  if (res.ok) {
+                    window.location.href = '/proyectos'
+                  } else {
+                    const d = await res.json()
+                    alert(d.error || 'No se pudo eliminar el proyecto')
+                    setConfirmandoEliminar(false)
+                  }
+                } catch (err) {
+                  alert('Error al eliminar: ' + err.message)
+                  setConfirmandoEliminar(false)
+                } finally {
+                  setEliminando(false)
+                }
+              }} style={{background:'#E05555',color:'#fff',border:'none',borderRadius:'5px',padding:'2px 8px',fontSize:'0.72rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                {eliminando ? '...' : 'Sí, eliminar'}
+              </button>
+              <button onClick={() => setConfirmandoEliminar(false)} style={{background:'none',border:'none',color:'#8FA3CC',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
+            </div>
+          )}
           <button onClick={async () => { await supabase.auth.signOut(); window.location.href = '/registro?modo=login' }} style={{background:'rgba(216,90,48,0.1)',border:'1px solid rgba(216,90,48,0.25)',color:'#D85A30',fontSize:'0.75rem',fontWeight:'600',padding:'0.3rem 0.75rem',borderRadius:'6px',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Salir</button>
         </div>
       </nav>
