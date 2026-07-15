@@ -36,6 +36,10 @@ export default async function sitemap() {
     // Landing pages SEO — modelo e inversión
     { url: `${BASE_URL}/crear-empresa-sin-capital`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${BASE_URL}/angel-investor`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    // Landing pages SEO — local comercial
+    { url: `${BASE_URL}/financiar-negocio-local-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/capital-para-abrir-tienda`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/como-financiar-local-comercial`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     // Blog
     { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/blog/historia-de-escala`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
