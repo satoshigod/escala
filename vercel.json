@@ -16,6 +16,10 @@
     {
       "path": "/api/cron/incentivo-cert-contador",
       "schedule": "0 10 * * 1"
+    },
+    {
+      "path": "/api/cron/local-comercial-alertas",
+      "schedule": "0 13 * * *"
     }
   ]
 }

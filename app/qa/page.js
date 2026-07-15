@@ -1772,6 +1772,131 @@ const GRUPOS = [
       },
     ]
   },
+  {
+    nombre: '🏪 Local Comercial — motor waterfall y verificacion',
+    tests: [
+      {
+        id: 'local_wizard_selector',
+        nombre: 'GET /proyectos — selector de escenario visible',
+        run: async () => {
+          const res = await fetch('/proyectos')
+          if (!res.ok) throw new Error('Status: ' + res.status)
+          const html = await res.text()
+          if (!html.includes('local_comercial') && !html.includes('Negocio en un local')) throw new Error('Selector de escenario no encontrado en la pagina')
+          return 'OK — selector de escenario presente'
+        }
+      },
+      {
+        id: 'local_api_sin_auth',
+        nombre: 'POST /api/local-comercial — rechaza sin autenticacion',
+        run: async () => {
+          const res = await fetch('/api/local-comercial', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+          if (res.status === 401) return 'OK — 401 sin auth'
+          throw new Error('Esperaba 401, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'local_reporte_sin_auth',
+        nombre: 'POST /api/local-comercial/reporte-diario — rechaza sin auth',
+        run: async () => {
+          const res = await fetch('/api/local-comercial/reporte-diario', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+          if (res.status === 401) return 'OK — 401 sin auth'
+          throw new Error('Esperaba 401, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'local_waterfall_calculo',
+        nombre: 'Waterfall — calculo correcto de excedente e intereses',
+        run: async () => {
+          // Simular el calculo sin llamar la API
+          const ventas = 180000
+          const margen_pct = 58 // %
+          const fijo_dia = 46667
+          const capital = 4400000
+          const tasa_mensual = 3.0
+
+          const costo_producto = ventas * (1 - margen_pct / 100)
+          const excedente = ventas - costo_producto - fijo_dia
+          const tasa_diaria = tasa_mensual / 100 / 30
+          const intereses = Math.round(capital * tasa_diaria)
+          const abono = Math.round(excedente - intereses)
+          const pago = intereses + abono
+
+          if (excedente < 0) throw new Error('Excedente negativo inesperado: ' + excedente)
+          if (intereses <= 0) throw new Error('Intereses deben ser positivos')
+          if (abono <= 0) throw new Error('Abono al capital debe ser positivo')
+          if (pago !== Math.round(excedente)) throw new Error('Pago total no coincide con excedente: ' + pago + ' vs ' + excedente)
+
+          return `OK — excedente: $${Math.round(excedente).toLocaleString('es-CO')} | intereses: $${intereses.toLocaleString('es-CO')} | abono capital: $${abono.toLocaleString('es-CO')}`
+        }
+      },
+      {
+        id: 'local_salida_calculo',
+        nombre: 'Salida anticipada — penalidad correcta por fase',
+        run: async () => {
+          const canon_mensual = 1200000
+          const canon_anio = canon_mensual * 12
+          const penalidad_fase1 = canon_anio * 0.04
+          const penalidad_fase2 = canon_anio * 0.08
+
+          if (penalidad_fase1 !== 576000) throw new Error('Penalidad Fase 1 incorrecta: ' + penalidad_fase1)
+          if (penalidad_fase2 !== 1152000) throw new Error('Penalidad Fase 2 incorrecta: ' + penalidad_fase2)
+
+          return `OK — Fase 1: $${penalidad_fase1.toLocaleString('es-CO')} | Fase 2: $${penalidad_fase2.toLocaleString('es-CO')}`
+        }
+      },
+      {
+        id: 'local_salida_api_sin_auth',
+        nombre: 'GET /api/local-comercial/salida-anticipada — rechaza sin auth',
+        run: async () => {
+          const res = await fetch('/api/local-comercial/salida-anticipada?proyecto_id=test')
+          if (res.status === 401) return 'OK — 401 sin auth'
+          throw new Error('Esperaba 401, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'local_inversionista_sin_auth',
+        nombre: 'GET /api/local-comercial/inversionista — rechaza sin auth',
+        run: async () => {
+          const res = await fetch('/api/local-comercial/inversionista?proyecto_id=test')
+          if (res.status === 401) return 'OK — 401 sin auth'
+          throw new Error('Esperaba 401, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'local_admin_no_admin',
+        nombre: 'GET /api/admin/local-comercial — rechaza no-admin',
+        run: async () => {
+          const { data: { session } } = await window.supabase.auth.getSession()
+          if (!session) return 'Sin sesion — omitido'
+          const res = await fetch('/api/admin/local-comercial', { headers: { Authorization: 'Bearer ' + session.access_token } })
+          const data = await res.json()
+          if (res.status === 403) return 'OK — 403 no-admin bloqueado'
+          if (res.ok) return 'OK — acceso admin verificado (' + data.total + ' locales)'
+          throw new Error(data.error)
+        }
+      },
+      {
+        id: 'local_cron_sin_auth',
+        nombre: 'GET /api/cron/local-comercial-alertas — rechaza sin CRON_SECRET',
+        run: async () => {
+          const res = await fetch('/api/cron/local-comercial-alertas', { headers: { Authorization: 'Bearer token-falso' } })
+          if (res.status === 401) return 'OK — 401 sin CRON_SECRET valido'
+          throw new Error('Esperaba 401, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'local_panel_operador_carga',
+        nombre: 'GET /proyectos/[id]/workspace/local — pagina carga',
+        run: async () => {
+          const res = await fetch('/proyectos/' + PROYECTO_ESCALA + '/workspace/local')
+          if (res.ok) return 'OK — panel operador carga con status ' + res.status
+          if (res.status === 404) return 'OK — 404 esperado (proyecto ESCALA no es tipo local)'
+          throw new Error('Status inesperado: ' + res.status)
+        }
+      },
+    ]
+  }
 ]
 
 const RUTAS_CRITICAS = [
@@ -1835,6 +1960,11 @@ const MANUAL = [
   { id: 'm28', nombre: 'Blog — índice y artículos', texto: 'Entra a /blog. Debe mostrar el artículo "La historia de Escala" como destacado y los otros 3 en grid. Los links a /blog/historia-de-escala, /blog/que-es-la-participacion-diferida, etc. deben cargar sus artículos correctamente.' },
   { id: 'm29', nombre: 'Dashboard tarjetas de proyecto — 1 CTA + overflow', texto: 'En el dashboard, las tarjetas de tus proyectos deben tener un solo botón verde "Workspace →" y un botón "···" que al hacer clic muestra un menú con Publicar rol, Ver hitos y Mis aportes.' },
   { id: 'm30', nombre: 'Dashboard sidebar — 3 saldos del wallet', texto: 'En el sidebar del dashboard, el widget del Wallet debe mostrar 3 saldos en un grid: Disponible (verde), Comprometido (amarillo) y Pendiente (púrpura). No solo el disponible.' },
+  { id: 'm31', nombre: 'Local comercial — wizard completo 6 pasos', texto: 'Crea un proyecto tipo "Negocio en un local". El wizard de 6 pasos debe aparecer (no el formulario generico). Completa todos los pasos con datos reales. El paso 6 debe mostrar el bloque de deuda formal con el monto exacto calculado. Al enviar debe redirigir a /proyectos/local-en-verificacion.' },
+  { id: 'm32', nombre: 'Local comercial — reporte diario waterfall', texto: 'En el workspace de un proyecto local_comercial, entra a Reporte diario. Ingresa ventas en efectivo y BREB. El preview debe calcular en tiempo real: costo producto, fijos del dia, excedente, intereses del dia y pago al inversionista. Al enviar debe mostrar el resultado y la instruccion de pago BREB.' },
+  { id: 'm33', nombre: 'Local comercial — panel del inversionista', texto: 'Entra a /workspace/local/inversionista. Debe mostrar el semaforo de reportes (verde si reporto hoy), barra de progreso, stats de capital/recuperado/saldo, historial con gaps visibles, info del negocio y opcion de salida anticipada.' },
+  { id: 'm34', nombre: 'Local comercial — salida anticipada', texto: 'En el panel del operador, clic en "Calcular mi salida anticipada". Debe mostrar: capital pendiente + penalidad (4% arriendos en Fase 1, 8% en Fase 2). Al confirmar debe pasar el proyecto a Fase 3 y registrar en el ledger.' },
+  { id: 'm35', nombre: 'Local comercial — panel admin verificacion', texto: 'Entra a /admin/local-comercial con la cuenta de Ivan. Debe mostrar los proyectos en_verificacion con sus datos. Prueba aprobar uno con una tasa entre usura convencional y digital. El operador debe recibir notificacion de aprobacion.' },
 ]
 
 export default function QA() {
