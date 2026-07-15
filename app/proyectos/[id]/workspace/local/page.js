@@ -1,6 +1,6 @@
 'use client'
 // Panel del operador — negocio en local comercial
-// Reporte diario de ventas + estado del waterfall
+// Reporte diario de ventas + estado del waterfall + salida anticipada
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
@@ -17,6 +17,10 @@ export default function PanelLocalComercial() {
   const [yaReportoHoy, setYaReportoHoy] = useState(false)
   const [resultado, setResultado] = useState(null)
   const [error, setError] = useState('')
+  const [mostrarSalida, setMostrarSalida] = useState(false)
+  const [datosSalida, setDatosSalida] = useState(null)
+  const [confirmandoSalida, setConfirmandoSalida] = useState(false)
+  const [ejecutandoSalida, setEjecutandoSalida] = useState(false)
 
   const [form, setForm] = useState({
     ventas_efectivo: '',
@@ -238,6 +242,107 @@ export default function PanelLocalComercial() {
             <div style={{ fontSize: '0.8rem', color: '#8FA3CC' }}>Vuelve manana para reportar el siguiente dia.</div>
           </div>
         ) : null}
+
+        {/* Link al panel del inversionista */}
+        <div style={{ ...s.card, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff', marginBottom: '2px' }}>Vista del inversionista</div>
+            <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>Ve como ve tu inversionista el progreso del negocio</div>
+          </div>
+          <a href={`/proyectos/${id}/workspace/local/inversionista`} style={{ background: 'rgba(74,144,217,0.15)', border: '1px solid rgba(74,144,217,0.3)', color: '#4A90D9', padding: '0.5rem 1rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.8rem', fontWeight: '600' }}>
+            Ver panel →
+          </a>
+        </div>
+
+        {/* Salida anticipada */}
+        {local && local.fase_actual !== 'libre' && (
+          <div style={s.card}>
+            <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff', marginBottom: '0.25rem' }}>Opcion de salida anticipada</div>
+            <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginBottom: '1rem' }}>
+              Si quieres quedar libre de todos los compromisos antes de terminar el contrato, puedes pagar una unica vez.
+            </div>
+
+            {!mostrarSalida && (
+              <button onClick={async () => {
+                const { data: { session } } = await supabase.auth.getSession()
+                const res = await fetch(`/api/local-comercial/salida-anticipada?proyecto_id=${id}`, {
+                  headers: { Authorization: `Bearer ${session.access_token}` }
+                })
+                const d = await res.json()
+                if (d.ok) { setDatosSalida(d); setMostrarSalida(true) }
+              }} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.6rem 1.25rem', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                Calcular mi salida anticipada
+              </button>
+            )}
+
+            {mostrarSalida && datosSalida && (
+              <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '1rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#8FA3CC', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span>Capital pendiente con intereses</span>
+                    <span style={{ color: '#fff' }}>${fmt(datosSalida.saldo_pendiente)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', color: '#8FA3CC', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <span>Penalidad ({datosSalida.descripcion_penalidad})</span>
+                    <span style={{ color: '#E8A020' }}>${fmt(datosSalida.monto_penalidad)}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', fontWeight: '700', color: '#fff', padding: '8px 0', marginTop: '4px' }}>
+                    <span>Total pago unico de salida</span>
+                    <span style={{ color: '#4A90D9' }}>${fmt(datosSalida.monto_total_salida)}</span>
+                  </div>
+                </div>
+
+                {!confirmandoSalida ? (
+                  <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.875rem' }}>
+                    <button onClick={() => setConfirmandoSalida(true)} style={{ flex: 1, background: '#E05555', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.6rem', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                      Quiero salir — pagar ${fmt(datosSalida.monto_total_salida)}
+                    </button>
+                    <button onClick={() => { setMostrarSalida(false); setDatosSalida(null) }} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.6rem 1rem', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                      Cancelar
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ background: 'rgba(224,85,85,0.08)', border: '1px solid rgba(224,85,85,0.3)', borderRadius: '8px', padding: '0.875rem', marginTop: '0.875rem' }}>
+                    <div style={{ fontSize: '0.82rem', color: '#E05555', fontWeight: '700', marginBottom: '0.5rem' }}>Confirma la salida anticipada</div>
+                    <div style={{ fontSize: '0.75rem', color: '#C8D4E8', marginBottom: '0.875rem', lineHeight: '1.6' }}>
+                      Al confirmar, el proyecto pasa a Fase 3 (Libre) y debes pagar <strong>${fmt(datosSalida.monto_total_salida)} via BREB</strong> al inversionista. Esta accion no se puede deshacer.
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                      <button onClick={async () => {
+                        setEjecutandoSalida(true)
+                        try {
+                          const { data: { session } } = await supabase.auth.getSession()
+                          const res = await fetch('/api/local-comercial/salida-anticipada', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+                            body: JSON.stringify({ proyecto_id: id, confirmado: true })
+                          })
+                          const d = await res.json()
+                          if (d.ok) { await cargar(); setMostrarSalida(false); setConfirmandoSalida(false) }
+                          else setError(d.error)
+                        } catch (err) { setError(err.message) }
+                        finally { setEjecutandoSalida(false) }
+                      }} style={{ flex: 1, background: '#E05555', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.6rem', fontSize: '0.82rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                        {ejecutandoSalida ? 'Procesando...' : 'Si, confirmo la salida'}
+                      </button>
+                      <button onClick={() => setConfirmandoSalida(false)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.6rem 1rem', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                        No, seguir en el contrato
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {local && local.fase_actual === 'libre' && (
+          <div style={{ ...s.card, background: 'rgba(29,158,117,0.06)', borderColor: 'rgba(29,158,117,0.3)', textAlign: 'center', padding: '2rem' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎉</div>
+            <div style={{ fontSize: '1rem', fontWeight: '700', color: '#1D9E75', marginBottom: '0.4rem' }}>Estas en Fase 3 — Libre</div>
+            <div style={{ fontSize: '0.82rem', color: '#8FA3CC' }}>Terminaste de pagar al inversionista. El negocio es tuyo completamente.</div>
+          </div>
+        )}
 
         {/* Historial de ultimos 30 dias */}
         {reportes.length > 0 && (
