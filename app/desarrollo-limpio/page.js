@@ -329,7 +329,7 @@ const fases = [
       { num: '21.7', nombre: 'Widget de acceso rápido al wallet en el dashboard general de Escala (saldo + Fondear + Ir a finanzas)', done: true, valor: 500000, quien: 'Claude AI' },
       { num: '21.8', nombre: '/wallet/movimientos — historial completo paginado con filtros por tipo. Pagina implementada en app/wallet/movimientos/page.js', done: true, valor: 1000000, quien: 'Desarrollador' },
       { num: '21.9', nombre: '/wallet/pagos/solicitar — formulario de solicitud de pago vinculado a hitos. Directorio app/wallet/pagos/solicitar existe.', done: true, valor: 1000000, quien: 'Desarrollador' },
-      { num: '21.10', nombre: 'Correr SQL en Supabase: 20260708_motor_financiero.sql', done: false, valor: 0, quien: 'Ivan' },
+      { num: '21.10', nombre: 'Correr SQL en Supabase: 20260708_motor_financiero.sql — CONFIRMADO: las 6 tablas existen (exchange_rates, wallets, ledger_entries, fondeos, payment_requests, financial_audit)', done: true, valor: 0, quien: 'Ivan' },
       { num: '21.11', nombre: 'Variables de entorno en Vercel: BREB_WEBHOOK_SECRET, BINANCE_WEBHOOK_SECRET', done: false, valor: 0, quien: 'Ivan' },
       { num: '21.12', nombre: 'Tests QA del motor financiero: wallet, fondeos, pagos, admin', done: false, valor: 1500000, quien: 'Claude AI' },
     ]
