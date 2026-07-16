@@ -46,7 +46,27 @@ export async function GET(req) {
 
     if (error) {
       console.error('oportunidades error:', error)
-      throw error
+      return NextResponse.json({ ok: false, error: error.message, details: error }, { status: 500 })
+    }
+
+    // Debug temporal
+    console.log('oportunidades: items encontrados:', items?.length, 'error:', error)
+
+    if (!items || items.length === 0) {
+      // Intentar query simple sin join para diagnosticar
+      const { data: simple, error: e2 } = await supabase
+        .from('presupuesto_items')
+        .select('id, nombre, estado_fondeo, es_aporte_especie')
+        .in('estado_fondeo', ['sin_fondear', 'parcialmente_fondeado'])
+        .eq('es_aporte_especie', false)
+
+      return NextResponse.json({
+        ok: true,
+        items: [],
+        meta: { page, per_page, total: 0 },
+        resumen: { total_oportunidades: 0, capital_requerido: 0, por_categoria: {} },
+        _debug: { items_con_join: items?.length, items_sin_join: simple?.length, error_sin_join: e2?.message }
+      })
     }
 
     // Calcular faltante por fondear en cada item
