@@ -26,10 +26,7 @@ export async function GET(req) {
         id, nombre, descripcion, categoria, subcategoria,
         valor_total, monto_fondeado, estado_fondeo, prioridad,
         tipo_gasto, es_recurrente, justificacion, created_at,
-        proyectos!inner(
-          id, nombre, descripcion, sector, ciudad, pais, estado,
-          perfiles!fundador_id(id, nombre, avatar_url)
-        )
+        proyectos(id, nombre, sector, ciudad, pais)
       `)
       .in('estado_fondeo', ['sin_fondear', 'parcialmente_fondeado'])
       .eq('es_aporte_especie', false)
@@ -47,7 +44,10 @@ export async function GET(req) {
 
     const { data: items, error, count } = await query
 
-    if (error) throw error
+    if (error) {
+      console.error('oportunidades error:', error)
+      throw error
+    }
 
     // Calcular faltante por fondear en cada item
     const itemsConFaltante = (items || []).map(item => ({
