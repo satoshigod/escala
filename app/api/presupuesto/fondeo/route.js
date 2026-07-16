@@ -152,6 +152,29 @@ export async function PUT(req) {
         updated_at: new Date().toISOString(),
       }).eq('id', fondeo.item_id)
 
+      // Generar contrato automatico
+      const terminos = fondeo.a_cambio_de === 'participacion'
+        ? `${fondeo.pct_participacion}% de participacion en el proyecto`
+        : fondeo.a_cambio_de === 'deuda'
+        ? `Deuda con tasa ${fondeo.tasa_mensual}% mensual sobre saldo`
+        : `${fondeo.pct_revenue}% de los ingresos mensuales del proyecto`
+
+      const { data: contrato } = await supabase.from('contratos').insert({
+        proyecto_id: fondeo.proyecto_id,
+        especialista_id: fondeo.inversionista_id,
+        fundador_id: user.id,
+        rol_nombre: 'Angel de Impulso',
+        tipo: 'inversion_presupuesto',
+        estado: 'activo',
+        monto: parseFloat(fondeo.monto),
+        descripcion: `Inversion en: ${fondeo.presupuesto_items?.nombre}. A cambio de: ${terminos}.`,
+        fecha_inicio: new Date().toISOString().split('T')[0],
+      }).select('id').single().catch(() => ({ data: null }))
+
+      if (contrato?.id) {
+        updates.contrato_id = contrato.id
+      }
+
       // Notificar al inversionista
       const { data: invPerfil } = await supabase.from('perfiles').select('id, nombre, email').eq('id', fondeo.inversionista_id).single()
       if (invPerfil) {
@@ -221,6 +244,48 @@ export async function PUT(req) {
           nombre_item: fondeo.presupuesto_items?.nombre,
           proyecto_id: fondeo.proyecto_id,
         }).catch(() => {})
+      }
+
+      // Acreditar capital al wallet del proyecto
+      try {
+        const monto = parseFloat(fondeo.monto)
+        const idempotency_key = `fondeo-presupuesto-${fondeo_id}-verificado`
+
+        // Registrar en ledger como credito al proyecto
+        await supabase.from('ledger_entries').insert({
+          tipo: 'credito',
+          tipo_referencia: 'fondeo_presupuesto',
+          referencia_id: fondeo_id,
+          cuenta_origen: `angel:${fondeo.inversionista_id}`,
+          cuenta_destino: `proyecto:${fondeo.proyecto_id}`,
+          monto,
+          monto_usd: monto / 4200,
+          moneda: 'COP',
+          descripcion: `Fondeo verificado: ${fondeo.presupuesto_items?.nombre} — ${fondeo.a_cambio_de}`,
+          idempotency_key,
+        }).select().single()
+
+        // Buscar o crear wallet del proyecto
+        const { data: walletExistente } = await supabase
+          .from('wallets').select('id, saldo_disponible').eq('usuario_id', fondeo.proyecto_id).eq('moneda', 'COP').maybeSingle()
+
+        if (walletExistente) {
+          await supabase.from('wallets').update({
+            saldo_disponible: (parseFloat(walletExistente.saldo_disponible) + monto),
+            updated_at: new Date().toISOString(),
+          }).eq('id', walletExistente.id)
+        } else {
+          await supabase.from('wallets').insert({
+            usuario_id: fondeo.proyecto_id,
+            moneda: 'COP',
+            saldo_disponible: monto,
+            saldo_comprometido: 0,
+            saldo_pendiente: 0,
+          })
+        }
+      } catch (walletErr) {
+        console.error('Error acreditando wallet:', walletErr)
+        // No falla el flujo principal si el wallet falla
       }
     }
 
