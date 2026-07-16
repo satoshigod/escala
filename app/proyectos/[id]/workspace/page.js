@@ -669,7 +669,7 @@ export default function Workspace() {
               </div>
             </div>
 
-            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'1rem',marginBottom:'1.5rem'}}>
               <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{hitosCompletados}</div>
                 <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Hitos completados</div>
@@ -686,6 +686,25 @@ export default function Workspace() {
                 <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>${totalAportes.toLocaleString()}</div>
                 <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Total aportado</div>
               </div>
+            </div>
+
+            {/* Bloque de descubrimiento del presupuesto */}
+            <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',marginBottom:'2rem'}}>
+              <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
+                <div>
+                  <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>💰 ¿Necesitas capital para algo específico?</div>
+                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega una máquina, un empleado, tecnología o cualquier recurso al presupuesto. Los ángeles de inversión lo fondean por item — a cambio de participación, deuda o revenue share.</div>
+                </div>
+                <button onClick={() => setTab('presupuesto')} style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                  Ver presupuesto →
+                </button>
+              </div>
+              {esFundador && hitosPendientes > 0 && (
+                <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem'}}>
+                  <div style={{fontSize:'0.78rem',color:'#E8A020'}}>📋 Tienes <strong>{hitosPendientes} hito{hitosPendientes > 1 ? 's' : ''}</strong> pendientes — vincúlalos a items del presupuesto para que el fondeo desbloquee el avance automáticamente.</div>
+                  <button onClick={() => setTab('hitos')} style={{background:'none',border:'1px solid rgba(232,160,32,0.4)',color:'#E8A020',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>Ver hitos</button>
+                </div>
+              )}
             </div>
 
             <div style={{display:'flex',gap:'1rem',flexWrap:'wrap',marginBottom:'2rem'}}>

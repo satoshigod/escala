@@ -42,6 +42,8 @@ export default async function sitemap() {
     { url: `${BASE_URL}/como-financiar-local-comercial`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     // Landing pages SEO — latinos USA
     { url: `${BASE_URL}/latinos-usa`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    // Directorio de inversion
+    { url: `${BASE_URL}/directorio-inversion`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.85 },
     // Blog
     { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE_URL}/blog/historia-de-escala`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },

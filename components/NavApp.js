@@ -16,6 +16,7 @@ import { supabase } from '@/lib/supabase'
 
 const LINKS = [
   { href: '/proyectos', label: 'Proyectos' },
+  { href: '/directorio-inversion', label: '💰 Invertir' },
   { href: '/postulaciones', label: 'Postulaciones' },
   { href: '/score', label: 'Mi Score' },
 ]
@@ -97,9 +98,14 @@ export default function NavApp({ paginaActual }) {
 
         {/* Admin */}
         {esAdmin && (
-          <a href="/admin-escala" style={{ color: '#8FA3CC', fontSize: '0.82rem', textDecoration: 'none' }}>
-            Admin
-          </a>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <a href="/admin-escala" style={{ color: '#8FA3CC', fontSize: '0.82rem', textDecoration: 'none' }}>
+              Admin
+            </a>
+            <a href="/admin/finanzas" style={{ color: '#E8A020', fontSize: '0.78rem', textDecoration: 'none', fontWeight: '600' }}>
+              Finanzas
+            </a>
+          </div>
         )}
 
         {/* Notificaciones */}
