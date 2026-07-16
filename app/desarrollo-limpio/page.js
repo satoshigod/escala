@@ -509,6 +509,23 @@ const fases = [
       { num: '32.13', nombre: 'Escenario 5 — Tienda online/e-commerce: wizard (categoría productos, mercado, plataforma). Tareas: constitución, diseño marca, desarrollo tienda, catálogo, pagos, lanzamiento. Roles: Desarrollador, Diseñador, CM, Contador. Usa el flujo completo de Escala.', done: false, valor: 2500000, quien: 'Claude AI' },
       { num: '32.14', nombre: 'Biblioteca 100 escenarios: completar los 30 sectores del documento Prompt Maestro (arrendamiento, maquinaria, franquicias, equipos médicos, software, audiovisual, agricultura, ganadería, energías renovables, minería, joyería, exportación, hotelería, educación, salud, logística, IA, biotecnología, turismo, bienes raíces, manufactura, moda, alimentos, centros deportivos, clínicas veterinarias, laboratorios, call centers, proyectos sociales). Cada uno con wizard, tareas y roles sugeridos.', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
     ]
+  },
+  {
+    titulo: 'Modulo de Presupuesto e Inversion',
+    estado: 'progreso',
+    valor_total: 20000000,
+    valor_hecho: 12000000,
+    hitos: [
+      { num: '34.1', nombre: 'ARQUITECTURA (2026-07-15): 6 categorias principales (equipo, equipos_activos, tecnologia, capital_trabajo, marketing_ventas, legal_operacion) + categoria "otro" con 9 subcategorias desplegables. Cada item: nombre, descripcion, cantidad, valor_unitario, CAPEX/OPEX, es_recurrente, prioridad, estado_fondeo, monto_fondeado, hito_id, es_aporte_especie. Multiples inversionistas por item con 3 modelos: participacion, deuda, revenue_share.', done: true, valor: 0, quien: 'Claude AI + Ivan' },
+      { num: '34.2', nombre: 'SQL: tabla presupuesto_items + presupuesto_fondeos. RLS. Indices. valor_total GENERATED. PENDIENTE IVAN: correr en Supabase.', done: false, valor: 1000000, quien: 'Ivan' },
+      { num: '34.3', nombre: 'API /api/presupuesto (GET, POST, PUT, DELETE): CRUD items. GET devuelve items agrupados por categoria + resumen financiero (total, fondeado, CAPEX/OPEX, pct_fondeado).', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: '34.4', nombre: 'API /api/presupuesto/fondeo (GET, POST, PUT): angel propone fondeo, fundador acepta/rechaza/contraofertar, angel confirma transferencia, fundador verifica. Notificaciones en cada paso.', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: '34.5', nombre: 'UI /workspace/presupuesto: selector visual de 6 categorias + submenu 9 subcategorias para "Otro". Modal agregar item. Modal proponer fondeo (participacion/deuda/revenue_share). Barra progreso por item y global. Fundador acepta/rechaza propuestas inline.', done: true, valor: 5000000, quien: 'Claude AI' },
+      { num: '34.6', nombre: 'Boton Presupuesto en nav workspace. 4 eventos notificacion: propuesta recibida, aceptada, transferencia pendiente, fondeado verificado.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: '34.7', nombre: 'PENDIENTE: vinculacion items presupuesto con hitos. Cuando item se ejecuta, hito vinculado cambia estado automaticamente.', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: '34.8', nombre: 'PENDIENTE: vista resumen financiero en tab Economia del workspace — CAPEX vs OPEX, burn rate, proyeccion fondeo, items criticos sin fondear.', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: '34.9', nombre: 'PENDIENTE: QA tests automaticos y manuales para presupuesto e inversion.', done: false, valor: 1000000, quien: 'Claude AI' },
+    ]
   }
 ]
 

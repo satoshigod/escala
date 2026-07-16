@@ -543,6 +543,9 @@ export default function Workspace() {
             📋 Tareas
             {badgeTareas > 0 && <span style={{background: esFundador ? '#E8A020' : '#4A90D9',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{badgeTareas}</span>}
           </a>
+          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/presupuesto' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>
+            💰 Presupuesto
+          </a>
           {proyecto?.escenario === 'local_comercial' && (
             <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/local' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.15)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.4)',display:'flex',alignItems:'center',gap:'0.35rem'}}>
               🏪 Reporte diario
