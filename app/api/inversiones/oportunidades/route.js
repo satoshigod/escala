@@ -32,7 +32,6 @@ export async function GET(req) {
         )
       `)
       .in('estado_fondeo', ['sin_fondear', 'parcialmente_fondeado'])
-      .eq('proyectos.estado', 'activo')
       .eq('es_aporte_especie', false)
       .order('prioridad', { ascending: true })
       .order('created_at', { ascending: false })
