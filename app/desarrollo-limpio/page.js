@@ -534,12 +534,12 @@ const fases = [
     valor_total: 15000000,
     valor_hecho: 0,
     hitos: [
-      { num: '35.1', nombre: 'Bloque descubrimiento en tab Resumen: bloque azul CTA a presupuesto + bloque warning hitos sin vincular. Reemplaza stats vacios con contexto accionable.', done: true', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '35.2', nombre: '/directorio-inversion: angeles ven items de presupuesto sin fondear. Filtros categoria/prioridad. Modal fondeo inline. Stats globales de oportunidades.', done: true', done: true, valor: 4000000, quien: 'Claude AI' },
-      { num: '35.3', nombre: 'API /api/inversiones/oportunidades: items sin fondear de proyectos activos, paginado, filtros categoria/monto/prioridad, resumen global.', done: true', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '35.4', nombre: '/admin/finanzas: capital en movimiento, transferencias por verificar, locales en mora, fondeos recientes, locales activos. 4 tabs. Solo admin.', done: true', done: true, valor: 4000000, quien: 'Claude AI' },
-      { num: '35.5', nombre: 'API /api/admin/finanzas: fondeos por estado, capital presupuesto/local, intereses cobrados, locales en mora (sin reporte 3+ dias), transferencias por verificar.', done: true', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '35.6', nombre: 'Link Invertir en NavApp + link Finanzas para admin. Sitemap actualizado con /directorio-inversion.', done: true', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: '35.1', nombre: 'Bloque descubrimiento en tab Resumen: bloque azul CTA a presupuesto + bloque warning hitos sin vincular. Reemplaza stats vacios con contexto accionable.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: '35.2', nombre: '/directorio-inversion: angeles ven items de presupuesto sin fondear. Filtros categoria/prioridad. Modal fondeo inline. Stats globales de oportunidades.', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: '35.3', nombre: 'API /api/inversiones/oportunidades: items sin fondear de proyectos activos, paginado, filtros categoria/monto/prioridad, resumen global.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: '35.4', nombre: '/admin/finanzas: capital en movimiento, transferencias por verificar, locales en mora, fondeos recientes, locales activos. 4 tabs. Solo admin.', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: '35.5', nombre: 'API /api/admin/finanzas: fondeos por estado, capital presupuesto/local, intereses cobrados, locales en mora (sin reporte 3+ dias), transferencias por verificar.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: '35.6', nombre: 'Link Invertir en NavApp + link Finanzas para admin. Sitemap actualizado con /directorio-inversion.', done: true, valor: 1000000, quien: 'Claude AI' },
     ]
   }
 ]
