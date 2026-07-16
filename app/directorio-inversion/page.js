@@ -42,7 +42,21 @@ export default function DirectorioInversionPage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => setUsuario(user))
-    cargar()
+  }, [])
+
+  useEffect(() => {
+    setCargando(true)
+    let url = '/api/inversiones/oportunidades?per_page=30'
+    if (filtroCategoria && filtroCategoria !== 'todas') url += `&categoria=${filtroCategoria}`
+    if (filtroPrioridad) url += `&prioridad=${filtroPrioridad}`
+    if (filtroMontoMax) url += `&monto_max=${filtroMontoMax}`
+    fetch(url)
+      .then(r => r.json())
+      .then(d => {
+        if (d.ok) { setItems(d.items || []); setResumen(d.resumen) }
+        setCargando(false)
+      })
+      .catch(() => setCargando(false))
   }, [filtroCategoria, filtroPrioridad, filtroMontoMax])
 
   async function cargar() {
