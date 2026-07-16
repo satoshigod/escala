@@ -1896,6 +1896,95 @@ const GRUPOS = [
         }
       },
     ]
+  },
+  {
+    nombre: '💰 Presupuesto e Inversion',
+    tests: [
+      {
+        id: 'presupuesto_get_sin_proyecto',
+        nombre: 'GET /api/presupuesto — rechaza sin proyecto_id',
+        run: async () => {
+          const res = await fetch('/api/presupuesto')
+          if (res.status === 400) return 'OK — 400 sin proyecto_id'
+          throw new Error('Esperaba 400, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'presupuesto_get_proyecto_escala',
+        nombre: 'GET /api/presupuesto — lista items del proyecto ESCALA',
+        run: async () => {
+          const res = await fetch('/api/presupuesto?proyecto_id=' + PROYECTO_ESCALA)
+          const data = await res.json()
+          if (!data.ok) throw new Error(data.error)
+          return (data.items?.length || 0) + ' items — total: $' + Math.round(data.resumen?.total_presupuesto || 0).toLocaleString('es-CO')
+        }
+      },
+      {
+        id: 'presupuesto_post_sin_auth',
+        nombre: 'POST /api/presupuesto — rechaza sin auth',
+        run: async () => {
+          const res = await fetch('/api/presupuesto', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+          if (res.status === 401) return 'OK — 401 sin auth'
+          throw new Error('Esperaba 401, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'presupuesto_crud_completo',
+        nombre: 'POST + PUT + DELETE /api/presupuesto — CRUD completo con QA-Item',
+        run: async () => {
+          const { data: { session } } = await window.supabase.auth.getSession()
+          if (!session) return 'Sin sesion — omitido'
+          const resC = await fetch('/api/presupuesto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+            body: JSON.stringify({ proyecto_id: PROYECTO_ESCALA, categoria: 'tecnologia', nombre: 'QA-Item-Presupuesto', descripcion: 'Test QA automatico', cantidad: 2, valor_unitario: 500000, tipo_gasto: 'capex', prioridad: 'baja' })
+          })
+          const dataC = await resC.json()
+          if (!dataC.ok) throw new Error('CREATE: ' + dataC.error)
+          const itemId = dataC.item.id
+          const resU = await fetch('/api/presupuesto', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+            body: JSON.stringify({ id: itemId, descripcion: 'QA actualizado' })
+          })
+          const dataU = await resU.json()
+          if (!dataU.ok) throw new Error('UPDATE: ' + dataU.error)
+          const resD = await fetch('/api/presupuesto?id=' + itemId, { method: 'DELETE', headers: { Authorization: 'Bearer ' + session.access_token } })
+          const dataD = await resD.json()
+          if (!dataD.ok) throw new Error('DELETE: ' + dataD.error)
+          return 'OK — CREATE ($1.000.000) + UPDATE + DELETE completados'
+        }
+      },
+      {
+        id: 'presupuesto_fondeo_sin_auth',
+        nombre: 'POST /api/presupuesto/fondeo — rechaza sin auth',
+        run: async () => {
+          const res = await fetch('/api/presupuesto/fondeo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+          if (res.status === 401) return 'OK — 401 sin auth'
+          throw new Error('Esperaba 401, recibio ' + res.status)
+        }
+      },
+      {
+        id: 'presupuesto_aporte_especie',
+        nombre: 'POST /api/presupuesto — aporte en especie queda como fondeado',
+        run: async () => {
+          const { data: { session } } = await window.supabase.auth.getSession()
+          if (!session) return 'Sin sesion — omitido'
+          const res = await fetch('/api/presupuesto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+            body: JSON.stringify({ proyecto_id: PROYECTO_ESCALA, categoria: 'equipos_activos', nombre: 'QA-Aporte-Especie', cantidad: 1, valor_unitario: 2000000, tipo_gasto: 'capex', prioridad: 'baja', es_aporte_especie: true })
+          })
+          const data = await res.json()
+          if (!data.ok) throw new Error(data.error)
+          const ok = data.item.estado_fondeo === 'fondeado' && parseFloat(data.item.monto_fondeado) === 2000000
+          // Limpiar
+          await fetch('/api/presupuesto?id=' + data.item.id, { method: 'DELETE', headers: { Authorization: 'Bearer ' + session.access_token } })
+          if (!ok) throw new Error('Aporte en especie no quedo como fondeado')
+          return 'OK — aporte especie $2.000.000 quedo con estado_fondeo=fondeado'
+        }
+      },
+    ]
   }
 ]
 
