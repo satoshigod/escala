@@ -18,14 +18,18 @@ export async function GET(req) {
     const proyecto_id = searchParams.get('proyecto_id')
     if (!proyecto_id) return NextResponse.json({ error: 'proyecto_id requerido' }, { status: 400 })
 
-    const { data: items, error } = await supabase
+    // Primero intentar con join a fondeos
+    let items = []
+    let errorJoin = null
+
+    const { data: itemsConFondeos, error: e1 } = await supabase
       .from('presupuesto_items')
       .select(`
         *,
         hitos(id, nombre),
         perfiles!responsable_id(id, nombre, avatar_url),
         presupuesto_fondeos(
-          id, monto, estado, a_cambio_de, pct_participacion, 
+          id, monto, estado, a_cambio_de, pct_participacion,
           tasa_mensual, pct_revenue, inversionista_id,
           perfiles!inversionista_id(nombre, avatar_url)
         )
@@ -35,7 +39,20 @@ export async function GET(req) {
       .order('prioridad')
       .order('created_at')
 
-    if (error) throw error
+    if (e1) {
+      // Si falla el join (tabla no existe), intentar sin fondeos
+      const { data: itemsSimples, error: e2 } = await supabase
+        .from('presupuesto_items')
+        .select('*')
+        .eq('proyecto_id', proyecto_id)
+        .order('categoria')
+        .order('created_at')
+
+      if (e2) throw e2
+      items = (itemsSimples || []).map(i => ({ ...i, presupuesto_fondeos: [] }))
+    } else {
+      items = itemsConFondeos || []
+    }
 
     // Calcular resumen
     const total_presupuesto = (items || []).reduce((s, i) => s + parseFloat(i.valor_total || 0), 0)

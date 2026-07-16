@@ -103,6 +103,7 @@ export default function PresupuestoPage() {
     setError('')
     try {
       const { data: { session } } = await supabase.auth.getSession()
+      if (!session) { setError('Sesión expirada. Recarga la página.'); setGuardando(false); return }
       const method = editando ? 'PUT' : 'POST'
       const body = editando ? { id: editando, ...form } : { proyecto_id: id, ...form }
 
@@ -112,13 +113,13 @@ export default function PresupuestoPage() {
         body: JSON.stringify(body),
       })
       const d = await res.json()
-      if (!d.ok) throw new Error(d.error)
+      if (!d.ok) throw new Error(d.error || `Error ${res.status}`)
 
       setMostrarForm(false)
       setEditando(null)
       setForm({ categoria: '', subcategoria: '', nombre: '', descripcion: '', cantidad: '1', valor_unitario: '', tipo_gasto: 'capex', es_recurrente: false, frecuencia: 'unico', vida_util_meses: '', prioridad: 'media', justificacion: '', es_aporte_especie: false, fecha_requerida: '' })
       await cargar()
-    } catch (err) { setError(err.message) }
+    } catch (err) { setError('Error al guardar: ' + err.message) }
     finally { setGuardando(false) }
   }
 
