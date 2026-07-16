@@ -447,6 +447,7 @@ export default function Dashboard() {
         </div>
         <div style={{display:'flex',alignItems:'center',gap:'1.25rem'}}>
           <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
+          <a href="/directorio-inversion" style={{color:'#4A90D9',fontSize:'0.82rem',textDecoration:'none',fontWeight:'600'}}>💰 Invertir</a>
           <a href="/score" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mi Score</a>
           <div style={{position:'relative'}}>
             <button onClick={() => setNotifPanelAbierto(v => !v)} style={{background: notifPanelAbierto ? 'rgba(255,255,255,0.08)' : 'transparent',border:'none',borderRadius:'8px',color:'#8FA3CC',cursor:'pointer',fontSize:'1.05rem',position:'relative',padding:'0.35rem'}}>
@@ -706,6 +707,18 @@ export default function Dashboard() {
         ) : vista === 'angel' ? (
           <div>
             <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Ángel de Impulso</div>
+
+            {/* CTA al directorio de inversión */}
+            <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
+              <div>
+                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#4A90D9',marginBottom:'3px'}}>💰 Oportunidades de inversión disponibles</div>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Proyectos activos que necesitan capital para equipos, tecnología, nómina y más. Fondea por item a cambio de participación, deuda o revenue share.</div>
+              </div>
+              <a href="/directorio-inversion" style={{background:'#4A90D9',color:'#fff',padding:'0.5rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700',whiteSpace:'nowrap'}}>
+                Ver oportunidades →
+              </a>
+            </div>
+
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem',marginBottom:'1.75rem'}}>
               <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{misImpulsos.length}</div>
