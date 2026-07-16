@@ -1090,6 +1090,17 @@ export default function Workspace() {
           <div>
             <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'1.5rem'}}>Economía del proyecto</div>
 
+            {/* Link al presupuesto completo */}
+            <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
+              <div>
+                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Presupuesto e inversión del proyecto</div>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Define los recursos que necesitas y recibe fondeo por item de inversionistas</div>
+              </div>
+              <a href={`/proyectos/${proyecto?.id}/workspace/presupuesto`} style={{background:'#4A90D9',color:'#fff',padding:'0.5rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700',whiteSpace:'nowrap'}}>
+                💰 Ver presupuesto →
+              </a>
+            </div>
+
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
               <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.25rem',textAlign:'center'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>${totalMisAportes.toLocaleString()}</div>

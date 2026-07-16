@@ -196,11 +196,32 @@ export async function PUT(req) {
       updates.verificado_at = new Date().toISOString()
 
       // Marcar el item como ejecutado
-      await supabase.from('presupuesto_items').update({
+      const { data: itemActualizado } = await supabase.from('presupuesto_items').update({
         estado: 'completado',
         estado_fondeo: 'verificado',
         updated_at: new Date().toISOString(),
-      }).eq('id', fondeo.item_id)
+      }).eq('id', fondeo.item_id).select('hito_id').single()
+
+      // Si el item tiene un hito vinculado, avanzar su estado
+      if (itemActualizado?.hito_id) {
+        const { data: hito } = await supabase
+          .from('hitos').select('estado').eq('id', itemActualizado.hito_id).single()
+        if (hito && hito.estado === 'pendiente') {
+          await supabase.from('hitos').update({
+            estado: 'en_progreso',
+            updated_at: new Date().toISOString(),
+          }).eq('id', itemActualizado.hito_id)
+        }
+      }
+
+      // Notificar al inversionista que el capital fue verificado
+      const { data: invPerfilV } = await supabase.from('perfiles').select('id, nombre, email').eq('id', fondeo.inversionista_id).single()
+      if (invPerfilV) {
+        await notificar('inversion_fondeada_verificada', { id: invPerfilV.id, email: invPerfilV.email }, {
+          nombre_item: fondeo.presupuesto_items?.nombre,
+          proyecto_id: fondeo.proyecto_id,
+        }).catch(() => {})
+      }
     }
 
     const { data: updated, error } = await supabase
