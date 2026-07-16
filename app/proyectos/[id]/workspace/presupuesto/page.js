@@ -181,9 +181,14 @@ export default function PresupuestoPage() {
       <nav style={s.nav}>
         <a href={`/proyectos/${id}/workspace`} style={{ fontSize: '0.85rem', color: '#8FA3CC', textDecoration: 'none' }}>← Workspace</a>
         <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>💰 Presupuesto e inversión</div>
-        {esFundador && (
-          <button onClick={() => setMostrarForm(true)} style={s.btn('#1D9E75')}>+ Agregar item</button>
-        )}
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <a href={`/api/presupuesto/exportar?proyecto_id=${id}`} target="_blank" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', padding: '0.4rem 0.875rem', borderRadius: '6px', textDecoration: 'none', fontSize: '0.78rem', fontWeight: '600' }}>
+            📄 Exportar PDF
+          </a>
+          {esFundador && (
+            <button onClick={() => setMostrarForm(true)} style={s.btn('#1D9E75')}>+ Agregar item</button>
+          )}
+        </div>
       </nav>
 
       <div style={s.wrap}>

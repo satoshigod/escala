@@ -524,7 +524,7 @@ const fases = [
       { num: '34.6', nombre: 'Boton Presupuesto en nav workspace. 4 eventos notificacion: propuesta recibida, aceptada, transferencia pendiente, fondeado verificado.', done: true, valor: 1000000, quien: 'Claude AI' },
       { num: '34.7', nombre: 'Vinculacion items presupuesto con hitos: cuando item se verifica como fondeado+ejecutado, el hito vinculado cambia de pendiente a en_progreso automaticamente.', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: '34.8', nombre: 'Resumen financiero en tab Economia del workspace: bloque destacado con link al presupuesto completo, contexto del modelo de compensacion y deuda diferida.', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '34.9', nombre: 'PENDIENTE: QA tests automaticos y manuales para presupuesto e inversion.', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: '34.9', nombre: 'QA: grupo automatico 6 tests (GET sin proyecto_id, GET proyecto_escala, POST sin auth, CRUD completo con QA-Item, fondeo sin auth, aporte_especie). 4 tests manuales m36-m39.', done: true, valor: 1000000, quien: 'Claude AI' },
     ]
   }
 ]
