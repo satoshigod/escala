@@ -44,7 +44,7 @@ export async function POST(request) {
 
   const { data, error } = await supabase
     .from('proyectos')
-    .insert([{ nombre, descripcion, tipo, sector, ciudad, fundador_id, industria: industria || null, pais: pais || null, estado: estado || 'activo', estado_financiacion: estado_financiacion || 'riesgo_compartido', nivel_avance: nivel_avance || null, modalidad_trabajo: modalidad_trabajo || null, roles_buscados: roles_buscados || [] }])
+    .insert([{ nombre, descripcion, tipo, sector, ciudad, fundador_id, industria: industria || null, pais: pais || null, estado: estado || 'borrador', estado_financiacion: estado_financiacion || 'riesgo_compartido', nivel_avance: nivel_avance || null, modalidad_trabajo: modalidad_trabajo || null, roles_buscados: roles_buscados || [] }])
     .select()
     .single()
 
@@ -124,6 +124,15 @@ export async function PATCH(request) {
       await Promise.allSettled(todos.map(d =>
         otorgarLogro(supabase, d.id, 'primer_proyecto_completado', id)
       ))
+
+    } else if (estado === 'activo' && proyecto.estado === 'borrador') {
+      // Proyecto publicado por primera vez — notificar al fundador
+      await notificar('proyecto_publicado', dest, {
+        fundador_nombre: fundador?.nombre,
+        proyecto_nombre: data.nombre,
+        proyecto_id: id,
+        proyecto_url: BASE_URL + '/proyectos/' + id,
+      }).catch(() => {})
 
     } else if (Object.keys(updates).some(k => k !== 'estado')) {
       // Actualización de datos — notificar solo al fundador

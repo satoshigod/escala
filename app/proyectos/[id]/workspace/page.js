@@ -657,6 +657,33 @@ export default function Workspace() {
         </div>
       </nav>
 
+      {/* BANNER DE BORRADOR — proyecto no publicado todavia */}
+      {esFundador && proyecto?.estado === 'borrador' && (
+        <div style={{background:'rgba(232,160,32,0.06)',borderBottom:'2px solid rgba(232,160,32,0.3)',padding:'0.875rem 1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
+          <div style={{display:'flex',alignItems:'center',gap:'0.75rem'}}>
+            <span style={{width:'8px',height:'8px',borderRadius:'50%',background:'#E8A020',flexShrink:0,animation:'pulseBanner 1.5s infinite'}}></span>
+            <div>
+              <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#E8A020'}}>Este proyecto es privado — solo tú lo puedes ver</div>
+              <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>No aparece en el directorio público ni recibe postulaciones. Publícalo cuando estés listo.</div>
+            </div>
+          </div>
+          <button onClick={async () => {
+            if (!confirm('¿Confirmas que quieres publicar este proyecto?\n\nA partir de ahora será visible en el directorio público y podrás recibir postulaciones e inversión.')) return
+            const { data: { session } } = await supabase.auth.getSession()
+            const res = await fetch('/api/proyectos', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: proyecto.id, fundador_id: session.user.id, estado: 'activo' })
+            })
+            const d = await res.json()
+            if (d.proyecto) window.location.reload()
+            else alert(d.error || 'Error al publicar')
+          }} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+            Publicar proyecto →
+          </button>
+        </div>
+      )}
+
       {/* BANNER DE TAREAS PENDIENTES — debajo del nav */}
       {badgeTareas > 0 && (
         <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{display:'flex',alignItems:'center',gap:'0.75rem',padding:'0.625rem 1.5rem',textDecoration:'none',background: esFundador ? 'rgba(232,160,32,0.08)' : 'rgba(74,144,217,0.08)',borderBottom: esFundador ? '1px solid rgba(232,160,32,0.2)' : '1px solid rgba(74,144,217,0.2)'}}>

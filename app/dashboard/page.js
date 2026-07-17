@@ -864,7 +864,7 @@ export default function Dashboard() {
                         <div style={{padding:'0.875rem 1rem',borderBottom:'1px solid rgba(255,255,255,0.06)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
                           <div>
                             <div style={{fontSize:'0.92rem',fontWeight:'800',color:'#fff'}}>{p.nombre}</div>
-                            <div style={{fontSize:'0.7rem',color:'#6B7280'}}>{p.sector} · {p.ciudad} · {p.estado}</div>
+                            <div style={{fontSize:'0.7rem',color:'#6B7280'}}>{p.sector} · {p.ciudad} · {p.estado === 'borrador' ? <span style={{color:'#E8A020',fontWeight:'600'}}>Borrador — no publicado</span> : p.estado}</div>
                           </div>
                           <div style={{display:'flex',gap:'0.5rem',alignItems:'center'}}>
                             {tareasDelProyecto > 0 && <span style={{fontSize:'0.65rem',fontWeight:'700',background:'rgba(175,169,236,0.15)',color:'#AFA9EC',padding:'2px 7px',borderRadius:'10px'}}>⚠ {tareasDelProyecto} tareas</span>}

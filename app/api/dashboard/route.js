@@ -17,7 +17,7 @@ export async function GET(request) {
     // PASO 1 — consultas que no dependen de nada más, todas en paralelo
     const [perfilRes, todosProyectosRes, misPostulacionesRes] = await Promise.all([
       supabase.from('perfiles').select('*').eq('id', userId).single(),
-      supabase.from('proyectos').select('*').eq('estado', 'activo').order('created_at', { ascending: false }),
+      supabase.from('proyectos').select('*').in('estado', ['activo', 'borrador']).order('created_at', { ascending: false }),
       supabase.from('postulaciones')
         .select('*, perfiles:postulante_id ( nombre, ciudad, especialidad, pais ), roles ( nombre, proyecto_id )')
         .eq('postulante_id', userId)

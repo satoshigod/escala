@@ -707,8 +707,9 @@ export default function Proyectos() {
       }
 
       setProyectos(p => [data.proyecto, ...p])
-      setVista('lista')
       setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', escenario: '' })
+      // Redirigir al workspace con flag de borrador recien creado
+      window.location.href = '/proyectos/' + pid + '/workspace?nuevo=1'
     }
     setEnviando(false)
   }
