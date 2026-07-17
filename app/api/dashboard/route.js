@@ -37,18 +37,41 @@ export async function GET(request) {
     let mensajesRecientes = []
 
     if (misProyectoIds.length > 0) {
-      const [aportesRes, rolesRes, tareasRes, hitosRes, mensajesRes] = await Promise.all([
+      const [aportesRes, rolesRes, tareasRes, hitosRes, mensajesRes, presupuestoRes, localRes] = await Promise.all([
         supabase.from('aportes').select('*').in('proyecto_id', misProyectoIds),
         supabase.from('roles').select('id, nombre, proyecto_id').in('proyecto_id', misProyectoIds),
         supabase.from('tareas').select('*').in('proyecto_id', misProyectoIds).eq('estado', 'completada'),
         supabase.from('hitos').select('*').in('proyecto_id', misProyectoIds).eq('completado', false),
-        supabase.from('mensajes').select('*, perfiles:autor_id ( nombre )').in('proyecto_id', misProyectoIds).order('created_at', { ascending: false }).limit(10)
+        supabase.from('mensajes').select('*, perfiles:autor_id ( nombre )').in('proyecto_id', misProyectoIds).order('created_at', { ascending: false }).limit(10),
+        supabase.from('presupuesto_items').select('id, proyecto_id, nombre, categoria, valor_total, monto_fondeado, estado_fondeo, prioridad, tipo_gasto').in('proyecto_id', misProyectoIds).in('estado_fondeo', ['sin_fondear', 'parcialmente_fondeado']).order('prioridad'),
+        supabase.from('proyectos_local_comercial').select('proyecto_id, nombre_negocio, capital_total, capital_pagado, fase_actual, estado_verificacion').in('proyecto_id', misProyectoIds)
       ])
 
       misAportes = (aportesRes.data || []).filter(a => a.aportante_id === userId)
       misTareas = tareasRes.data || []
       misHitos = hitosRes.data || []
       mensajesRecientes = mensajesRes.data || []
+
+      // Items del presupuesto sin fondear por proyecto
+      const presupuestoItems = presupuestoRes.data || []
+      const presupuestoPorProyecto = {}
+      for (const item of presupuestoItems) {
+        if (!presupuestoPorProyecto[item.proyecto_id]) presupuestoPorProyecto[item.proyecto_id] = []
+        presupuestoPorProyecto[item.proyecto_id].push(item)
+      }
+
+      // Datos de locales comerciales
+      const localesPorProyecto = {}
+      for (const local of (localRes.data || [])) {
+        localesPorProyecto[local.proyecto_id] = local
+      }
+
+      // Enriquecer misProyectos con datos contextuales
+      for (let i = 0; i < misProyectos.length; i++) {
+        const pid = misProyectos[i].id
+        misProyectos[i]._presupuesto_items = presupuestoPorProyecto[pid] || []
+        misProyectos[i]._local = localesPorProyecto[pid] || null
+      }
 
       const todosRoles = rolesRes.data || []
       const rolIds = todosRoles.map(r => r.id)

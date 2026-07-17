@@ -65,6 +65,7 @@ export default function Workspace() {
   const [hitos, setHitos] = useState([])
   const [aportes, setAportes] = useState([])
   const [postulaciones, setPostulaciones] = useState([])
+  const [presupuestoItems, setPresupuestoItems] = useState([])
   const [miPostulacion, setMiPostulacion] = useState(null)
   const [miContrato, setMiContrato] = useState(null)
   const [tab, setTab] = useState('resumen')
@@ -181,6 +182,12 @@ export default function Workspace() {
       setHitos(hitosData.hitos || [])
       setAportes(aportesData.aportes || [])
       setPostulaciones(postEquipo)
+
+      // Cargar items del presupuesto para adaptar el nav
+      fetch('/api/presupuesto?proyecto_id=' + pid)
+        .then(r => r.json())
+        .then(d => { if (d.ok) setPresupuestoItems(d.items || []) })
+        .catch(() => {})
 
       // Cargar deuda pendiente (solo tiene datos si el proyecto pasó por Riesgo Compartido)
       const deudaRes = await fetch('/api/deuda?proyecto_id=' + pid)
@@ -402,7 +409,32 @@ export default function Workspace() {
     }
   }
 
-  const tabs = [
+  // Detectar qué tiene el proyecto para adaptar el nav
+  const esLocalComercial = proyecto?.escenario === 'local_comercial'
+  const tieneMaquinaria = presupuestoItems.some(i => i.categoria === 'equipos_activos')
+  const tienePersonas = presupuestoItems.some(i => i.categoria === 'equipo')
+  const tieneTechItems = presupuestoItems.some(i => i.categoria === 'tecnologia')
+  const tienePresupuestoDefinido = presupuestoItems.length > 0
+  const esProyectoSimple = esLocalComercial || (tienePresupuestoDefinido && !tienePersonas && !tieneTechItems)
+
+  const tabs = esLocalComercial ? [
+    // Local comercial: nav reducido enfocado en la operación
+    { id: 'resumen', label: 'Resumen', icon: '📊' },
+    { id: 'economia', label: 'Capital', icon: '💰' },
+    { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
+    ...(esFundador ? [{ id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null }] : []),
+    ...(esFundador ? [{ id: 'roles', label: 'Roles', icon: '🧩' }] : []),
+    { id: 'documentos', label: 'Docs', icon: '📁' },
+  ] : esProyectoSimple ? [
+    // Proyecto de maquinaria/equipos sin equipo humano: enfocado en fondeo
+    { id: 'resumen', label: 'Resumen', icon: '📊' },
+    ...(mostrarPresupuesto ? [{ id: 'presupuesto', label: 'Presupuesto', icon: '💸' }] : []),
+    { id: 'economia', label: 'Capital', icon: '💰' },
+    { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
+    ...(esFundador ? [{ id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null }] : []),
+    { id: 'documentos', label: 'Docs', icon: '📁' },
+  ] : [
+    // Proyecto completo: todos los tabs
     { id: 'resumen', label: 'Resumen', icon: '📊' },
     { id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null },
     { id: 'equipo', label: 'Equipo', icon: '👥' },
@@ -640,7 +672,7 @@ export default function Workspace() {
       )}
 
       {/* TABS */}
-      <div style={{background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'0 1.5rem',display:'flex',gap:'0',overflowX:'auto'}}>
+      <div style={{background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'0 1.5rem',display:'flex',gap:'0',overflowX:'auto',alignItems:'stretch'}}>
         {tabs.map(t => {
           const tabContent = (
             <>
@@ -662,6 +694,12 @@ export default function Workspace() {
             </button>
           )
         })}
+        {/* Toggle ver workspace completo si el nav está reducido */}
+        {esProyectoSimple && (
+          <a href={'/proyectos/' + proyecto?.id + '/workspace'} style={{marginLeft:'auto',background:'none',border:'none',borderBottom:'2px solid transparent',color:'#4B5563',padding:'0.875rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.35rem',textDecoration:'none',flexShrink:0}}>
+            ··· completo
+          </a>
+        )}
       </div>
 
       <main style={{maxWidth:'1000px',margin:'0 auto',padding:'2rem 1.25rem'}}>

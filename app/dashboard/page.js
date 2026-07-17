@@ -837,31 +837,162 @@ export default function Dashboard() {
                   })}
                 </div>
               ) : (
-                /* Tarjetas para 1-3 proyectos */
-                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:'0.875rem'}}>
+                /* Tarjetas contextuales por tipo de proyecto */
+                <div style={{display:'flex',flexDirection:'column',gap:'0.875rem'}}>
                   {misProyectos.map(p => {
+                    const items = p._presupuesto_items || []
+                    const local = p._local || null
                     const tareasDelProyecto = bandeja.filter(b => b.href?.includes(p.id) && b.tipo === 'tarea_pendiente').length
+
+                    // Detectar qué tiene el proyecto
+                    const tieneLocal = p.escenario === 'local_comercial' && local
+                    const tieneEquipos = items.filter(i => i.categoria === 'equipos_activos').length > 0
+                    const tieneEquipo = items.filter(i => i.categoria === 'equipo').length > 0
+                    const tieneTech = items.filter(i => i.categoria === 'tecnologia').length > 0
+                    const tieneOtros = items.filter(i => !['equipos_activos','equipo','tecnologia'].includes(i.categoria)).length > 0
+                    const esSimple = !tieneLocal && items.length > 0
+                    const esGenerico = !tieneLocal && items.length === 0
+
+                    const fmt = (n) => Math.round(parseFloat(n||0)).toLocaleString('es-CO')
+                    const pctPagado = local ? Math.round((parseFloat(local.capital_pagado||0)/parseFloat(local.capital_total||1))*100) : 0
+                    const semaforoColor = local ? (pctPagado > 60 ? '#1D9E75' : pctPagado > 30 ? '#E8A020' : '#4A90D9') : '#6B7280'
+
                     return (
-                      <div key={p.id} style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem'}}>
-                        <div style={{fontSize:'0.62rem',fontWeight:'700',color:'#E8A020',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:'0.3rem'}}>Tipo {p.tipo} · {p.estado}</div>
-                        <div style={{fontSize:'0.92rem',fontWeight:'800',color:'#fff',marginBottom:'0.2rem'}}>{p.nombre}</div>
-                        <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'0.75rem'}}>{p.sector} · {p.ciudad}</div>
-                        {tareasDelProyecto > 0 && (
-                          <div style={{fontSize:'0.7rem',color:'#AFA9EC',marginBottom:'0.75rem'}}>⚠ {tareasDelProyecto} tarea{tareasDelProyecto!==1?'s':''} pendiente{tareasDelProyecto!==1?'s':''}</div>
-                        )}
-                        <div style={{display:'flex',gap:'0.5rem',alignItems:'center',flexWrap:'wrap'}}>
-                          <a href={'/proyectos/'+p.id+'/workspace'} style={{flex:1,fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.4rem 0.875rem',borderRadius:'6px',textDecoration:'none',textAlign:'center'}}>Workspace →</a>
-                          <div style={{position:'relative'}}>
-                            <details style={{listStyle:'none'}}>
-                              <summary style={{cursor:'pointer',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'6px',padding:'0.4rem 0.5rem',fontSize:'0.82rem',color:'#8FA3CC',listStyle:'none',userSelect:'none'}}>···</summary>
+                      <div key={p.id} style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',overflow:'hidden'}}>
+
+                        {/* Header del proyecto */}
+                        <div style={{padding:'0.875rem 1rem',borderBottom:'1px solid rgba(255,255,255,0.06)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                          <div>
+                            <div style={{fontSize:'0.92rem',fontWeight:'800',color:'#fff'}}>{p.nombre}</div>
+                            <div style={{fontSize:'0.7rem',color:'#6B7280'}}>{p.sector} · {p.ciudad} · {p.estado}</div>
+                          </div>
+                          <div style={{display:'flex',gap:'0.5rem',alignItems:'center'}}>
+                            {tareasDelProyecto > 0 && <span style={{fontSize:'0.65rem',fontWeight:'700',background:'rgba(175,169,236,0.15)',color:'#AFA9EC',padding:'2px 7px',borderRadius:'10px'}}>⚠ {tareasDelProyecto} tareas</span>}
+                            <details style={{position:'relative'}}>
+                              <summary style={{cursor:'pointer',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'6px',padding:'0.3rem 0.6rem',fontSize:'0.82rem',color:'#8FA3CC',listStyle:'none',userSelect:'none'}}>···</summary>
                               <div style={{position:'absolute',right:0,top:'calc(100% + 4px)',background:'#15234a',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'8px',minWidth:'160px',zIndex:10,overflow:'hidden'}}>
+                                <a href={'/proyectos/'+p.id+'/workspace'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🖥️ Workspace completo</a>
                                 <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🧩 Publicar rol</a>
-                                <a href="/hitos" style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🎯 Ver hitos</a>
-                                <a href="/aportes" style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8'}}>💰 Mis aportes</a>
+                                <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>💰 Presupuesto</a>
+                                <a href={'/proyectos/'+p.id+'/workspace/reparto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8'}}>💸 Reparto</a>
                               </div>
                             </details>
                           </div>
                         </div>
+
+                        {/* BLOQUE LOCAL COMERCIAL */}
+                        {tieneLocal && (
+                          <div style={{padding:'0.875rem 1rem',borderBottom:esSimple?'1px solid rgba(255,255,255,0.06)':'none'}}>
+                            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.625rem'}}>
+                              <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#E8A020',textTransform:'uppercase',letterSpacing:'0.05em'}}>📍 Local comercial</div>
+                              <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
+                                <div style={{width:'8px',height:'8px',borderRadius:'50%',background:semaforoColor}}></div>
+                                <span style={{fontSize:'0.7rem',color:semaforoColor,fontWeight:'600'}}>{local.fase_actual === 'libre' ? 'Libre' : local.fase_actual === 'regalia' ? 'Regalía' : 'Repago'}</span>
+                              </div>
+                            </div>
+                            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.5rem',marginBottom:'0.75rem'}}>
+                              <div style={{textAlign:'center'}}>
+                                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#1D9E75'}}>${fmt(local.capital_pagado)}</div>
+                                <div style={{fontSize:'0.62rem',color:'#6B7280'}}>pagado</div>
+                              </div>
+                              <div style={{textAlign:'center'}}>
+                                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#E8A020'}}>${fmt(parseFloat(local.capital_total||0)-parseFloat(local.capital_pagado||0))}</div>
+                                <div style={{fontSize:'0.62rem',color:'#6B7280'}}>pendiente</div>
+                              </div>
+                              <div style={{textAlign:'center'}}>
+                                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff'}}>{pctPagado}%</div>
+                                <div style={{fontSize:'0.62rem',color:'#6B7280'}}>completado</div>
+                              </div>
+                            </div>
+                            <div style={{height:'4px',background:'rgba(255,255,255,0.06)',borderRadius:'2px',overflow:'hidden',marginBottom:'0.75rem'}}>
+                              <div style={{height:'100%',width:pctPagado+'%',background:semaforoColor,borderRadius:'2px',transition:'width 0.5s'}}></div>
+                            </div>
+                            <a href={'/proyectos/'+p.id+'/workspace/local'} style={{display:'block',textAlign:'center',background:'#E8A020',color:'#fff',borderRadius:'8px',padding:'0.45rem',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none'}}>
+                              Reportar ventas hoy →
+                            </a>
+                          </div>
+                        )}
+
+                        {/* BLOQUE EQUIPOS Y ACTIVOS */}
+                        {tieneEquipos && (
+                          <div style={{padding:'0.875rem 1rem',borderBottom:(tieneEquipo||tieneTech||tieneOtros)?'1px solid rgba(255,255,255,0.06)':'none'}}>
+                            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#4A90D9',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'0.625rem'}}>🔧 Equipos y maquinaria</div>
+                            {items.filter(i=>i.categoria==='equipos_activos').slice(0,2).map(item => {
+                              const faltante = parseFloat(item.valor_total||0) - parseFloat(item.monto_fondeado||0)
+                              const pct = item.valor_total > 0 ? Math.round((parseFloat(item.monto_fondeado||0)/parseFloat(item.valor_total))*100) : 0
+                              return (
+                                <div key={item.id} style={{marginBottom:'0.625rem'}}>
+                                  <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.78rem',marginBottom:'3px'}}>
+                                    <span style={{color:'#C8D4E8',fontWeight:'600'}}>{item.nombre}</span>
+                                    <span style={{color:'#fff',fontWeight:'700'}}>${fmt(faltante)} <span style={{color:'#6B7280',fontWeight:'400'}}>falta</span></span>
+                                  </div>
+                                  <div style={{height:'3px',background:'rgba(255,255,255,0.06)',borderRadius:'2px',overflow:'hidden'}}>
+                                    <div style={{height:'100%',width:pct+'%',background:'#4A90D9',borderRadius:'2px'}}></div>
+                                  </div>
+                                </div>
+                              )
+                            })}
+                            {items.filter(i=>i.categoria==='equipos_activos').length > 2 && (
+                              <div style={{fontSize:'0.7rem',color:'#6B7280',marginBottom:'0.5rem'}}>+{items.filter(i=>i.categoria==='equipos_activos').length-2} items más</div>
+                            )}
+                            <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'block',textAlign:'center',background:'#4A90D9',color:'#fff',borderRadius:'8px',padding:'0.45rem',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none'}}>
+                              Buscar inversionista →
+                            </a>
+                          </div>
+                        )}
+
+                        {/* BLOQUE EQUIPO (personas) */}
+                        {tieneEquipo && (
+                          <div style={{padding:'0.875rem 1rem',borderBottom:(tieneTech||tieneOtros)?'1px solid rgba(255,255,255,0.06)':'none'}}>
+                            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#1D9E75',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'0.625rem'}}>👥 Equipo y personas</div>
+                            {items.filter(i=>i.categoria==='equipo').slice(0,2).map(item => {
+                              const faltante = parseFloat(item.valor_total||0) - parseFloat(item.monto_fondeado||0)
+                              return (
+                                <div key={item.id} style={{display:'flex',justifyContent:'space-between',fontSize:'0.78rem',marginBottom:'4px'}}>
+                                  <span style={{color:'#C8D4E8'}}>{item.nombre}</span>
+                                  <span style={{color:'#1D9E75',fontWeight:'600'}}>${fmt(faltante)}</span>
+                                </div>
+                              )
+                            })}
+                            <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'block',textAlign:'center',background:'rgba(29,158,117,0.15)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'8px',padding:'0.45rem',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none',marginTop:'0.5rem'}}>
+                              Ver necesidades de equipo →
+                            </a>
+                          </div>
+                        )}
+
+                        {/* BLOQUE TECNOLOGÍA */}
+                        {tieneTech && (
+                          <div style={{padding:'0.875rem 1rem',borderBottom:tieneOtros?'1px solid rgba(255,255,255,0.06)':'none'}}>
+                            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#AFA9EC',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'0.625rem'}}>💻 Tecnología</div>
+                            {items.filter(i=>i.categoria==='tecnologia').slice(0,2).map(item => {
+                              const faltante = parseFloat(item.valor_total||0) - parseFloat(item.monto_fondeado||0)
+                              return (
+                                <div key={item.id} style={{display:'flex',justifyContent:'space-between',fontSize:'0.78rem',marginBottom:'4px'}}>
+                                  <span style={{color:'#C8D4E8'}}>{item.nombre}</span>
+                                  <span style={{color:'#AFA9EC',fontWeight:'600'}}>${fmt(faltante)}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+
+                        {/* BLOQUE GENÉRICO — sin presupuesto definido */}
+                        {esGenerico && (
+                          <div style={{padding:'0.875rem 1rem'}}>
+                            <div style={{fontSize:'0.75rem',color:'#6B7280',marginBottom:'0.625rem'}}>Define qué necesitas para que los ángeles puedan fondearte.</div>
+                            <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'block',textAlign:'center',background:'rgba(74,144,217,0.12)',color:'#4A90D9',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'8px',padding:'0.45rem',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none'}}>
+                              Agregar al presupuesto →
+                            </a>
+                          </div>
+                        )}
+
+                        {/* Workspace completo siempre visible */}
+                        <div style={{padding:'0.625rem 1rem',borderTop:'1px solid rgba(255,255,255,0.04)',display:'flex',justifyContent:'center'}}>
+                          <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.72rem',color:'#6B7280',textDecoration:'none'}}>
+                            Ver workspace completo →
+                          </a>
+                        </div>
+
                       </div>
                     )
                   })}
