@@ -549,6 +549,9 @@ export default function Workspace() {
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/capital' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>
             💼 Capital
           </a>
+          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/reparto' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>
+            💸 Reparto
+          </a>
           {proyecto?.escenario === 'local_comercial' && (
             <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/local' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.15)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.4)',display:'flex',alignItems:'center',gap:'0.35rem'}}>
               🏪 Reporte diario
