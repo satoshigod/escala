@@ -1,6 +1,10 @@
 'use client'
 import { useState } from 'react'
 
+// NOTA: Esta es la vista HISTORICA del roadmap — organizada por orden de implementacion.
+// La vista ESTRATEGICA por capas esta en /desarrollo-limpio
+// Cualquier funcionalidad nueva debe agregarse alli, en la capa que corresponda.
+
 const fases = [
   {
     num: '01',
@@ -711,6 +715,17 @@ export default function Desarrollo() {
       </nav>
 
       <main style={{maxWidth:'900px',margin:'0 auto',padding:'2rem 1.25rem'}}>
+        {/* Banner: esta es la vista historica */}
+        <div style={{background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'0.875rem 1.25rem',marginBottom:'1.5rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
+          <div>
+            <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>Vista historica — organizada por orden de implementacion</div>
+            <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>La arquitectura estrategica por 10 capas permanentes esta en la vista Entregable. Cualquier item nuevo va alla.</div>
+          </div>
+          <a href="/desarrollo-limpio" style={{background:'#4A90D9',color:'#fff',padding:'0.4rem 1rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.78rem',fontWeight:'700',whiteSpace:'nowrap'}}>
+            Ver roadmap por capas →
+          </a>
+        </div>
+
         <div style={{marginBottom:'2rem'}}>
           <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Seguimiento técnico</div>
           <div style={{fontSize:'clamp(1.5rem,3vw,2rem)',fontWeight:'900',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>Plan de desarrollo</div>
