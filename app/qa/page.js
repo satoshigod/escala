@@ -2172,6 +2172,70 @@ const GRUPOS = [
         }
       },
     ]
+  },
+  {
+    nombre: '📝 Borrador de Proyectos',
+    tests: [
+      {
+        id: 'borrador_get_directorio_no_muestra',
+        nombre: 'GET /api/proyectos — no devuelve proyectos en borrador',
+        run: async () => {
+          const res = await fetch('/api/proyectos')
+          const data = await res.json()
+          const borradores = (data.proyectos || []).filter(p => p.estado === 'borrador')
+          if (borradores.length > 0) throw new Error('El directorio publico muestra ' + borradores.length + ' proyectos en borrador — no deberia')
+          return 'OK — directorio publico tiene ' + (data.proyectos?.length || 0) + ' proyectos activos, 0 borradores'
+        }
+      },
+      {
+        id: 'borrador_post_crea_en_borrador',
+        nombre: 'POST /api/proyectos — crea proyecto en estado borrador por defecto',
+        run: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) return 'Sin sesion — omitido'
+          const res = await fetch('/api/proyectos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre: 'QA-Borrador-Test-' + Date.now(), descripcion: 'Proyecto de prueba QA para verificar que se crea en estado borrador y no aparece en el directorio publico hasta publicarse', tipo: 'A', sector: 'Tecnologia', fundador_id: session.user.id })
+          })
+          const data = await res.json()
+          if (!data.proyecto) throw new Error(data.error || 'No se creo el proyecto')
+          const estado = data.proyecto.estado
+          // Limpiar — eliminar el proyecto de prueba
+          await fetch('/api/proyectos?id=' + data.proyecto.id + '&fundador_id=' + session.user.id, { method: 'DELETE' }).catch(() => {})
+          if (estado !== 'borrador') throw new Error('El proyecto se creo con estado=' + estado + ', esperaba borrador')
+          return 'OK — proyecto creado con estado=borrador y eliminado'
+        }
+      },
+      {
+        id: 'borrador_patch_publica',
+        nombre: 'PATCH /api/proyectos — publicar proyecto (borrador → activo)',
+        run: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) return 'Sin sesion — omitido'
+          // Crear en borrador
+          const resC = await fetch('/api/proyectos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre: 'QA-Publicar-Test-' + Date.now(), descripcion: 'Proyecto QA para verificar flujo de publicacion desde borrador a activo correctamente', tipo: 'A', sector: 'Tecnologia', fundador_id: session.user.id })
+          })
+          const dataC = await resC.json()
+          if (!dataC.proyecto) throw new Error('No se creo: ' + dataC.error)
+          const pid = dataC.proyecto.id
+          // Publicar
+          const resP = await fetch('/api/proyectos', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: pid, fundador_id: session.user.id, estado: 'activo' })
+          })
+          const dataP = await resP.json()
+          // Limpiar
+          await fetch('/api/proyectos?id=' + pid + '&fundador_id=' + session.user.id, { method: 'DELETE' }).catch(() => {})
+          if (dataP.proyecto?.estado !== 'activo') throw new Error('Estado final: ' + dataP.proyecto?.estado)
+          return 'OK — borrador → activo en 2 pasos, proyecto eliminado'
+        }
+      },
+    ]
   }
 ]
 
@@ -2245,6 +2309,9 @@ const MANUAL = [
   { id: 'm37', nombre: 'Presupuesto — flujo de fondeo completo', texto: 'Como inversionista, entra al workspace de un proyecto con items sin fondear. Ve a Presupuesto, clic en "Quiero fondear este item", elige un monto y el modelo (participacion/deuda/revenue_share). Envía la propuesta. Como fundador, acepta la propuesta. Verifica que el estado del item cambia a "parcialmente_fondeado" o "fondeado" y que el monto fondeado se actualiza.' },
   { id: 'm38', nombre: 'Presupuesto — resumen financiero y barra de progreso', texto: 'En el workspace de un proyecto con items, el resumen superior debe mostrar: Total presupuesto, Total fondeado, CAPEX, OPEX y % fondeado. La barra de progreso global debe reflejar el % correcto. Cada item debe tener su propia barra de progreso.' },
   { id: 'm39', nombre: 'Presupuesto — item como aporte en especie', texto: 'Como fundador, agrega un item marcando "Es aporte en especie". El item debe aparecer inmediatamente como "Fondeado" sin necesitar un inversionista externo. El monto fondeado debe ser igual al valor total del item.' },
+  { id: 'm40', nombre: 'Borrador — proyecto se crea en borrador y no aparece en directorio', texto: 'Crea un proyecto nuevo. Debe redirigirte al workspace del proyecto recien creado. El workspace debe mostrar el banner amarillo "Este proyecto es privado". Ve a /proyectos — el proyecto NO debe aparecer en el directorio publico. Ve al dashboard — la tarjeta debe mostrar "Borrador — no publicado" en naranja.' },
+  { id: 'm41', nombre: 'Borrador — publicar proyecto desde el workspace', texto: 'Desde el workspace de un proyecto en borrador, haz clic en "Publicar proyecto". Confirma en el dialogo. El banner debe desaparecer y el proyecto debe aparecer ahora en /proyectos (directorio publico). En el dashboard la tarjeta debe mostrar el estado activo.' },
+  { id: 'm42', nombre: 'Sentry — verificar que captura errores en produccion', texto: 'Entra a sentry.io → proyecto escala-production. Debe haber al menos un evento registrado. Si no hay eventos, ve a escala.network/sentry-example-page (si existe) o espera a que ocurra un error real en produccion. El DSN debe estar configurado como NEXT_PUBLIC_SENTRY_DSN en Vercel.' },
 ]
 
 export default function QA() {
