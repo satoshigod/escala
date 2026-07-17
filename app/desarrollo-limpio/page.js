@@ -541,6 +541,38 @@ const fases = [
       { num: '35.5', nombre: 'API /api/admin/finanzas: fondeos por estado, capital presupuesto/local, intereses cobrados, locales en mora (sin reporte 3+ dias), transferencias por verificar.', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: '35.6', nombre: 'Link Invertir en NavApp + link Finanzas para admin. Sitemap actualizado con /directorio-inversion.', done: true, valor: 1000000, quien: 'Claude AI' },
     ]
+  },
+  {
+    titulo: 'Problema Huevo y Gallina — Oferta y Demanda (Fase 36)',
+    estado: 'pendiente',
+    valor_total: 30000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '36.1', nombre: 'PENDIENTE: Equipo base interno de Escala — profesionales propios que aparecen listados cuando no hay especialistas externos. Se asignan temporalmente hasta que el marketplace tenga masa critica. Reducir dependencia gradualmente a medida que lleguen expertos externos.', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: '36.2', nombre: 'PENDIENTE: Sistema para que ningun proyecto encuentre pantalla vacia. Si falta un profesional: mostrar perfil de Escala como temporal, notificar internamente, activar reclutamiento del perfil faltante.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: '36.3', nombre: 'PENDIENTE: Motor de matching automatico — IA recomienda especialistas, inversionistas y activos compatibles con cada proyecto segun historial, sector, ciudad y etapa.', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: '36.4', nombre: 'PENDIENTE: Sistema de invitacion viralizado — inversionista invita a otro inversionista con incentivos, fundador trae inversionistas externos con beneficios de prioridad en fondeo.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: '36.5', nombre: 'PENDIENTE: Red de partners institucionales — family offices, empresas, cooperativas profesionales que alimenten el marketplace con volumen desde el inicio.', done: false, valor: 5000000, quien: 'Ivan' },
+      { num: '36.6', nombre: 'PENDIENTE: Fondo propio temporal de Escala — capital semilla para financiar los primeros proyectos y demostrar el modelo antes de atraer angeles externos.', done: false, valor: 0, quien: 'Ivan (decision estrategica)' },
+      { num: '36.7', nombre: 'PENDIENTE: Grupo fundador de inversores ancla — 10-20 inversores comprometidos desde el inicio con condiciones preferenciales a cambio de liquidez inicial.', done: false, valor: 0, quien: 'Ivan (desarrollo comercial)' },
+    ]
+  },
+  {
+    titulo: 'Analisis Estrategico — Mejoras y Gaps Criticos (Fase 37)',
+    estado: 'pendiente',
+    valor_total: 50000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: '37.1', nombre: 'PENDIENTE: Motor de publicaciones — feed de actualizaciones dentro de cada proyecto. Los miembros del equipo publican avances, fotos, videos, documentos. Inversionistas y mentores comentan. Similar a un LinkedIn interno por proyecto.', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: '37.2', nombre: 'PENDIENTE: Sistema de reputacion y certificacion de profesionales — score verificable basado en proyectos completados, calificaciones recibidas, tiempo de respuesta y calidad de entregables. Certificacion por especialidad.', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: '37.3', nombre: 'PENDIENTE: KPIs y metricas de liquidez — panel donde Escala mide: tiempo promedio para que un proyecto consiga su primer especialista, tiempo para primer fondeo, tasa de conversion visitante a proyecto publicado, NPS por rol.', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: '37.4', nombre: 'PENDIENTE: Flujo de onboarding inteligente — cuando un usuario entra por primera vez, la IA le hace 3 preguntas y lo lleva directamente al tipo de proyecto que necesita (local, startup, maquinaria, etc.) sin que tenga que descubrir el camino solo.', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: '37.5', nombre: 'PENDIENTE: Modelos de inversion en arriendos formalizados — flujo completo para que un inversionista financie el deposito + meses de arriendo de oficina, bodega o local con contrato automatico y waterfall desde ingresos.', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: '37.6', nombre: 'PENDIENTE: Modelos de inversion en maquinaria formalizados — flujo completo para que el inversionista compre la maquina, quede como propietario con leasing/renting al proyecto, y reciba cuota mensual desde el waterfall de ingresos.', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: '37.7', nombre: 'PENDIENTE: IA copiloto por proyecto — asistente que analiza el proyecto y recomienda: que roles faltan, que hitos son criticos, que inversionistas son compatibles, que riesgos hay. Basado en embeddings del grafo de proyectos.', done: false, valor: 10000000, quien: 'Claude AI (requiere Fase 24 primero)' },
+      { num: '37.8', nombre: 'PENDIENTE: Mecanismo para que cada proyecto exitoso alimente el ecosistema — cuando un proyecto cierra exitosamente, el fundador recibe beneficios por traer nuevos proyectos, los especialistas quedan certificados, los inversores tienen case study publico.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: '37.9', nombre: 'PENDIENTE: Ventajas competitivas difíciles de copiar (moats) — grafo de reputacion verificable, historial de cumplimiento, valoraciones negociadas on-chain, red de especialistas certificados por Escala. Diseñar e implementar.', done: false, valor: 7000000, quien: 'Claude AI + Ivan' },
+    ]
   }
 ]
 
