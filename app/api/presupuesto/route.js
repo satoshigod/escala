@@ -27,11 +27,11 @@ export async function GET(req) {
       .select(`
         *,
         hitos(id, nombre),
-        perfiles!responsable_id(id, nombre, avatar_url),
+        perfiles!responsable_id(id, nombre),
         presupuesto_fondeos(
           id, monto, estado, a_cambio_de, pct_participacion,
           tasa_mensual, pct_revenue, inversionista_id,
-          perfiles!inversionista_id(nombre, avatar_url)
+          perfiles!inversionista_id(nombre)
         )
       `)
       .eq('proyecto_id', proyecto_id)

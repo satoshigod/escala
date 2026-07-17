@@ -23,7 +23,7 @@ export async function GET(req) {
       .select(`
         *, 
         presupuesto_items(id, nombre, categoria, valor_total, valor_unitario, cantidad),
-        perfiles!inversionista_id(id, nombre, avatar_url, email)
+        perfiles!inversionista_id(id, nombre, email)
       `)
       .order('created_at', { ascending: false })
 

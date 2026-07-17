@@ -2105,7 +2105,7 @@ const GRUPOS = [
         nombre: 'Supabase — tabla wallets existe con saldos',
         run: async () => {
           const sb = window._supabase
-          const { data, error } = await sb.from('wallets').select('id, usuario_id, moneda, saldo_disponible').limit(5)
+          const { data, error } = await sb.from('wallets').select('id, usuario_id, moneda, estado').limit(5)
           if (error) throw new Error(error.message)
           return 'OK — ' + (data?.length || 0) + ' wallets registrados'
         }
@@ -2164,7 +2164,7 @@ const GRUPOS = [
           const { data, error } = await sb
             .from('notificaciones')
             .select('id, tipo, titulo, created_at')
-            .eq('usuario_id', user.id)
+            .eq('destinatario_id', user.id)
             .in('tipo', ['reparto_registrado', 'inversion_propuesta_recibida', 'inversion_propuesta_aceptada', 'inversion_fondeada_verificada'])
             .limit(5)
           if (error) throw new Error(error.message)

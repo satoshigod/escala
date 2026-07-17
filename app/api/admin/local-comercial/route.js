@@ -37,7 +37,7 @@ export async function GET(req) {
       .select(`
         *,
         proyectos!inner(id, nombre, ciudad, fundador_id, created_at,
-          perfiles:fundador_id(id, nombre, email, avatar_url)
+          perfiles:fundador_id(id, nombre, email)
         )
       `)
       .eq('estado_verificacion', estado)

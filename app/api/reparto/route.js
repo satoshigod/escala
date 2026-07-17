@@ -23,7 +23,7 @@ export async function GET(req) {
       .select(`
         *,
         reparto_lineas(
-          *, perfiles!beneficiario_id(id, nombre, avatar_url, email)
+          *, perfiles!beneficiario_id(id, nombre, email)
         ),
         ingresos(id, descripcion, valor, fecha)
       `)
