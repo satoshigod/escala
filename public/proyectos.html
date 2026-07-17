@@ -291,9 +291,14 @@ footer .logo span{color:var(--green);}
   try {
     var res = await fetch('/api/proyectos');
     var data = await res.json();
-    var proyectos = (data.proyectos || []).filter(function(p){ return !FIJOS.includes(p.id); });
+    // Mostrar todos los proyectos activos incluyendo ESCALA
+    var proyectos = (data.proyectos || []);
     var cont = document.getElementById('proyectos-dinamicos');
-    if (!cont || proyectos.length === 0) return;
+    if (!cont) return;
+    if (proyectos.length === 0) {
+      cont.innerHTML = '<p style="color:var(--gray-500);font-size:0.88rem;padding:1rem 0;">No hay proyectos activos en este momento.</p>';
+      return;
+    }
     cont.innerHTML = proyectos.map(function(p) {
       var roles = p.roles || [];
       var abiertos = roles.filter(function(r){ return r.estado === 'abierto'; }).length;

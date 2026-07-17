@@ -49,7 +49,6 @@ export default function DirectorioInversionPage() {
     let url = '/api/inversiones/oportunidades?per_page=30'
     if (filtroCategoria && filtroCategoria !== 'todas') url += `&categoria=${filtroCategoria}`
     if (filtroPrioridad) url += `&prioridad=${filtroPrioridad}`
-    if (filtroMontoMax) url += `&monto_max=${filtroMontoMax}`
     fetch(url)
       .then(r => r.json())
       .then(d => {
@@ -57,7 +56,7 @@ export default function DirectorioInversionPage() {
         setCargando(false)
       })
       .catch(() => setCargando(false))
-  }, [filtroCategoria, filtroPrioridad, filtroMontoMax])
+  }, [filtroCategoria, filtroPrioridad])
 
   async function cargar() {
     setCargando(true)
@@ -112,6 +111,20 @@ export default function DirectorioInversionPage() {
             Proyectos activos en Escala que necesitan capital para recursos específicos. Fondea un item concreto — una máquina, un empleado, tecnología — y recibes participación, un retorno con tasa o revenue share.
           </p>
         </div>
+
+        {/* Banner para visitantes sin cuenta */}
+        {!usuario && (
+          <div style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '12px', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#1D9E75', marginBottom: '2px' }}>Invierte desde $500.000 COP en negocios reales</div>
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>Crea tu cuenta gratis para proponer fondeo en cualquier item. Sin mínimos de inversión.</div>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <a href="/registro" style={{ background: '#1D9E75', color: '#fff', padding: '0.5rem 1.25rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: '700', whiteSpace: 'nowrap' }}>Crear cuenta gratis →</a>
+              <a href="/registro?modo=login" style={{ fontSize: '0.78rem', color: '#8FA3CC', textDecoration: 'none', whiteSpace: 'nowrap' }}>Ya tengo cuenta</a>
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         {resumen && (
@@ -193,9 +206,18 @@ export default function DirectorioInversionPage() {
                   )}
 
                   <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                    <button onClick={() => setMostrarFondeo(item)} style={s.btn('#4A90D9')}>
-                      💰 Quiero fondear este item
-                    </button>
+                    {usuario ? (
+                      <button onClick={() => setMostrarFondeo(item)} style={s.btn('#4A90D9')}>
+                        💰 Quiero fondear este item
+                      </button>
+                    ) : (
+                      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <a href="/registro" style={{ ...s.btn('#1D9E75'), textDecoration: 'none', display: 'inline-block' }}>
+                          Registrarme para invertir →
+                        </a>
+                        <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>¿Ya tienes cuenta? <a href="/registro?modo=login" style={{ color: '#4A90D9', textDecoration: 'none' }}>Inicia sesión</a></span>
+                      </div>
+                    )}
                     <a href={`/proyectos/${item.proyectos?.id}/workspace`} style={{ fontSize: '0.78rem', color: '#8FA3CC', textDecoration: 'none' }}>
                       Ver proyecto →
                     </a>
