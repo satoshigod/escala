@@ -6,7 +6,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
-import { notificar } from '@/lib/notificaciones/notificar'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
