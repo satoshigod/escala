@@ -706,7 +706,11 @@ export default function Dashboard() {
           </div>
         ) : vista === 'angel' ? (
           <div>
-            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Ángel de Impulso</div>
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Ángel de Impulso
+              <a href="/angel" style={{marginLeft:'0.875rem',fontSize:'0.72rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.12)',padding:'0.25rem 0.75rem',borderRadius:'20px',textDecoration:'none',border:'1px solid rgba(175,169,236,0.2)'}}>
+                Ver panel completo →
+              </a>
+            </div>
 
             {/* CTA al directorio de inversión */}
             <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>

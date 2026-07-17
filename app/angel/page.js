@@ -1,244 +1,385 @@
 'use client'
+// /angel — Panel del Ángel Inversionista
+// Centro de operaciones: portafolio, alertas, oportunidades, estado de inversiones
+
 import { useState, useEffect } from 'react'
-import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 
-export default function Angel() {
+const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
+const fmtK = (n) => {
+  const v = parseFloat(n || 0)
+  if (v >= 1000000) return '$' + (v/1000000).toFixed(1) + 'M'
+  if (v >= 1000) return '$' + (v/1000).toFixed(0) + 'K'
+  return '$' + fmt(v)
+}
+
+const ESTADO_FONDEO = {
+  propuesta: { label: 'Propuesta enviada', color: '#6B7280', bg: 'rgba(107,114,128,0.12)', accion: 'Esperando respuesta del fundador' },
+  negociando: { label: 'Negociando', color: '#E8A020', bg: 'rgba(232,160,32,0.12)', accion: 'El fundador hizo una contrapropuesta' },
+  aceptado: { label: 'Aceptado', color: '#4A90D9', bg: 'rgba(74,144,217,0.12)', accion: 'Accion requerida: realiza la transferencia' },
+  transferido: { label: 'Transferido', color: '#E8A020', bg: 'rgba(232,160,32,0.12)', accion: 'Esperando verificacion de Escala' },
+  verificado: { label: 'Activo', color: '#1D9E75', bg: 'rgba(29,158,117,0.12)', accion: 'Capital acreditado al proyecto' },
+  rechazado: { label: 'Rechazado', color: '#E05555', bg: 'rgba(224,85,85,0.12)', accion: 'El fundador no acepto esta propuesta' },
+}
+
+const CATEGORIA_LABEL = {
+  equipo: 'Equipo', equipos_activos: 'Equipos/Activos',
+  tecnologia: 'Tecnologia', capital_trabajo: 'Capital trabajo',
+  marketing_ventas: 'Marketing', legal_operacion: 'Legal', otro: 'Otro',
+}
+
+export default function AngelPage() {
   const [usuario, setUsuario] = useState(null)
-  const [proyectos, setProyectos] = useState([])
-  const [hitosDisponibles, setHitosDisponibles] = useState([])
-  const [misImpulsos, setMisImpulsos] = useState([])
+  const [tab, setTab] = useState('portafolio')
+  const [fondeos, setFondeos] = useState([])
+  const [oportunidades, setOportunidades] = useState([])
+  const [resumen, setResumen] = useState(null)
   const [cargando, setCargando] = useState(true)
-  const [financiando, setFinanciando] = useState(null)
-  const [msgHito, setMsgHito] = useState({})
-  const [tab, setTab] = useState('explorar')
-  const [logrosOtorgado, setLogrosOtorgado] = useState(false)
+  const [mostrarFondeo, setMostrarFondeo] = useState(null)
+  const [formFondeo, setFormFondeo] = useState({ monto: '', a_cambio_de: 'participacion', pct_participacion: '', tasa_mensual: '', pct_revenue: '' })
+  const [comprobante, setComprobante] = useState('')
+  const [mostrarComprobante, setMostrarComprobante] = useState(null)
+  const [enviando, setEnviando] = useState(null)
+  const [mensaje, setMensaje] = useState('')
 
-  useEffect(() => {
-    async function cargar() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/registro?modo=login'; return }
-      setUsuario(user)
+  useEffect(() => { init() }, [])
 
-      const pRes = await fetch('/api/proyectos')
-      const pData = await pRes.json()
-      const proyectosData = pData.proyectos || []
-      setProyectos(proyectosData)
+  async function init() {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { window.location.href = '/registro?modo=login'; return }
+    setUsuario(user)
 
-      const todosHitos = []
-      await Promise.all(proyectosData.map(async p => {
-        const hRes = await fetch('/api/hitos?proyecto_id=' + p.id)
-        const hData = await hRes.json()
-        const pendientes = (hData.hitos || []).filter(h => !h.completado)
-        pendientes.forEach(h => todosHitos.push({ ...h, proyecto_nombre: p.nombre, proyecto_ciudad: p.ciudad, proyecto_sector: p.sector }))
-      }))
-      setHitosDisponibles(todosHitos)
+    const { data: misfondeos } = await supabase
+      .from('presupuesto_fondeos')
+      .select('*, presupuesto_items(id, nombre, categoria, valor_total, proyecto_id), proyectos!proyecto_id(id, nombre, sector, ciudad)')
+      .eq('inversionista_id', user.id)
+      .order('created_at', { ascending: false })
 
-      const impulRes = await fetch('/api/impulsos?angel_id=' + user.id).catch(() => ({ json: () => ({ impulsos: [] }) }))
-      const impulData = await impulRes.json().catch(() => ({ impulsos: [] }))
-      setMisImpulsos(impulData.impulsos || [])
+    const todos = misfondeos || []
+    setFondeos(todos)
 
-      // Otorgar logro si tiene impulsos
-      if (impulData.impulsos?.length > 0 && !logrosOtorgado) {
-        fetch('/api/logros', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usuario_id: user.id, tipo: 'primer_impulso' })
-        }).catch(() => {})
-        setLogrosOtorgado(true)
-      }
-      setCargando(false)
-    }
-    cargar()
-  }, [])
+    const activos = todos.filter(f => f.estado === 'verificado')
+    const enProceso = todos.filter(f => ['propuesta','negociando','aceptado','transferido'].includes(f.estado))
+    const accionRequerida = todos.filter(f => f.estado === 'aceptado')
 
-  async function financiarHito(hito) {
-    setFinanciando(hito.id)
-    const res = await fetch('/api/impulsos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        proyecto_id: hito.proyecto_id,
-        angel_id: usuario.id,
-        hito_id: hito.id,
-        descripcion: 'Impulso al hito: ' + hito.nombre,
-        valor: 0
+    setResumen({
+      total_invertido: activos.reduce((s, f) => s + parseFloat(f.monto || 0), 0),
+      total_comprometido: enProceso.reduce((s, f) => s + parseFloat(f.monto || 0), 0),
+      proyectos_activos: new Set(activos.map(f => f.proyecto_id)).size,
+      accion_requerida: accionRequerida.length,
+    })
+
+    fetch('/api/inversiones/oportunidades?per_page=6')
+      .then(r => r.json())
+      .then(d => { if (d.ok) setOportunidades(d.items || []) })
+      .catch(() => {})
+
+    setCargando(false)
+  }
+
+  async function accionFondeo(fondeo_id, accion, extra) {
+    setEnviando(fondeo_id)
+    setMensaje('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/presupuesto/fondeo', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+        body: JSON.stringify({ fondeo_id, accion, ...(extra || {}) }),
       })
-    }).catch(() => null)
+      const d = await res.json()
+      if (!d.ok) throw new Error(d.error)
+      setMostrarComprobante(null)
+      setComprobante('')
+      await init()
+    } catch (err) { setMensaje('Error: ' + err.message) }
+    finally { setEnviando(null) }
+  }
 
-    if (res && res.ok) {
-      setMsgHito({ [hito.id]: '✅ Impulso registrado. El equipo del proyecto te contactará.' })
-    } else {
-      setMsgHito({ [hito.id]: '📲 Escríbenos por WhatsApp para coordinar el pago de este hito.' })
-    }
-    setFinanciando(null)
+  async function proponerFondeo() {
+    if (!formFondeo.monto || parseFloat(formFondeo.monto) <= 0) { setMensaje('Ingresa el monto'); return }
+    setEnviando('nuevo')
+    setMensaje('')
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/presupuesto/fondeo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+        body: JSON.stringify({ item_id: mostrarFondeo.id, ...formFondeo }),
+      })
+      const d = await res.json()
+      if (!d.ok) throw new Error(d.error)
+      setMostrarFondeo(null)
+      setFormFondeo({ monto: '', a_cambio_de: 'participacion', pct_participacion: '', tasa_mensual: '', pct_revenue: '' })
+      setTab('portafolio')
+      await init()
+    } catch (err) { setMensaje('Error: ' + err.message) }
+    finally { setEnviando(null) }
+  }
+
+  const s = {
+    page: { minHeight: '100vh', background: '#080F20', fontFamily: 'Inter,sans-serif', color: '#fff' },
+    nav: { background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '0 1.5rem', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 },
+    wrap: { maxWidth: '960px', margin: '0 auto', padding: '2rem 1.5rem' },
+    card: { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1.25rem', marginBottom: '0.75rem' },
+    btn: (color) => ({ background: color, color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1rem', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif', whiteSpace: 'nowrap' }),
+    input: { width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px', padding: '0.6rem 0.875rem', color: '#fff', fontSize: '0.85rem', outline: 'none', fontFamily: 'Inter,sans-serif', boxSizing: 'border-box', marginBottom: '0.75rem' },
   }
 
   if (cargando) return (
-    <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>
-      Cargando...
+    <div style={{ ...s.page, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8FA3CC' }}>
+      Cargando tu panel...
     </div>
   )
 
+  const accion_requerida = fondeos.filter(f => f.estado === 'aceptado')
+  const activos = fondeos.filter(f => f.estado === 'verificado')
+  const enProceso = fondeos.filter(f => ['propuesta','negociando','transferido'].includes(f.estado))
+  const rechazados = fondeos.filter(f => f.estado === 'rechazado')
+
   return (
-    <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif'}}>
-      <NavApp paginaActual="angel" />
-
-      <main style={{maxWidth:'900px',margin:'0 auto',padding:'2rem 1.25rem'}}>
-        <div style={{marginBottom:'2rem'}}>
-          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#E8A020',marginBottom:'0.4rem'}}>Rol especial</div>
-          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#E8A020',marginBottom:'0.3rem'}}>Financiamiento por hitos</div>
-          <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>🌟 Ángel de Impulso</div>
-          <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginTop:'0.3rem',lineHeight:'1.6'}}>Financia hitos específicos de proyectos en Escala. A cambio recibes un retorno proporcional cuando el proyecto genere ingresos — sin intervenir en las decisiones del equipo.</div>
-          <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginTop:'0.3rem',maxWidth:'580px'}}>Financia un hito específico sin esperar equity ni devolución. Tu aporte queda rastreado con fecha y evidencia. Recibes acceso al expediente del proyecto y prioridad en rondas futuras.</div>
-        </div>
-
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'1rem',marginBottom:'2rem'}}>
-          <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
-            <div style={{fontSize:'1.5rem',marginBottom:'0.4rem'}}>📋</div>
-            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>Sin equity</div>
-            <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>No se convierte en socio</div>
-          </div>
-          <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
-            <div style={{fontSize:'1.5rem',marginBottom:'0.4rem'}}>🔍</div>
-            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>Trazabilidad total</div>
-            <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>Expediente del proyecto</div>
-          </div>
-          <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
-            <div style={{fontSize:'1.5rem',marginBottom:'0.4rem'}}>⭐</div>
-            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>Prioridad en rondas</div>
-            <div style={{fontSize:'0.7rem',color:'#8FA3CC'}}>Antes que inversionistas externos</div>
-          </div>
-        </div>
-
-        <div style={{display:'flex',gap:'0',marginBottom:'1.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>
+    <div style={s.page}>
+      <nav style={s.nav}>
+        <a href="/dashboard" style={{ fontSize: '1rem', fontWeight: '900', color: '#fff', textDecoration: 'none', letterSpacing: '-0.03em' }}>
+          Esca<span style={{ color: '#1D9E75' }}>la</span>
+        </a>
+        <div style={{ display: 'flex', gap: '0.4rem' }}>
           {[
-            { id: 'explorar', label: `Hitos disponibles (${hitosDisponibles.length})` },
-            { id: 'mis_impulsos', label: `Mis impulsos (${misImpulsos.length})` },
-            { id: 'metricas', label: '📊 Métricas' },
+            { id: 'portafolio', label: 'Portafolio' },
+            { id: 'alertas', label: accion_requerida.length > 0 ? 'Alertas (' + accion_requerida.length + ')' : 'Alertas' },
+            { id: 'oportunidades', label: 'Oportunidades' },
           ].map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{background:'none',border:'none',borderBottom: tab===t.id ? '2px solid #E8A020' : '2px solid transparent',color: tab===t.id ? '#fff' : '#8FA3CC',padding:'0.5rem 1.25rem',fontSize:'0.85rem',fontWeight: tab===t.id ? '600' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',marginBottom:'-1px'}}>
+            <button key={t.id} onClick={() => setTab(t.id)} style={{ background: tab === t.id ? 'rgba(255,255,255,0.1)' : 'none', border: tab === t.id ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent', color: tab === t.id ? '#fff' : '#8FA3CC', borderRadius: '8px', padding: '0.3rem 0.875rem', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
               {t.label}
             </button>
           ))}
         </div>
+        <a href="/directorio-inversion" style={{ background: '#4A90D9', color: '#fff', padding: '0.4rem 1rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.78rem', fontWeight: '700' }}>
+          + Invertir
+        </a>
+      </nav>
 
-        {tab === 'explorar' && (
-          hitosDisponibles.length === 0 ? (
-            <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-              <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🎯</div>
-              <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin hitos disponibles por ahora</div>
-              <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Cuando los proyectos publiquen hitos pendientes, aparecerán aquí para que puedas financiarlos.</div>
-              <a href="/hitos" style={{background:'#E8A020',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700',display:'inline-block'}}>Crear hito en mi proyecto →</a>
+      <div style={s.wrap}>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ fontSize: '0.68rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#AFA9EC', marginBottom: '0.4rem' }}>Angel de Impulso</div>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em' }}>Mi portafolio</h1>
+        </div>
+
+        {/* KPIs */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
+          {[
+            { label: 'Capital invertido', valor: fmtK(resumen?.total_invertido), color: '#1D9E75' },
+            { label: 'Capital comprometido', valor: fmtK(resumen?.total_comprometido), color: '#E8A020' },
+            { label: 'Proyectos activos', valor: resumen?.proyectos_activos || 0, color: '#4A90D9' },
+            { label: 'Accion requerida', valor: resumen?.accion_requerida || 0, color: resumen?.accion_requerida > 0 ? '#E05555' : '#6B7280' },
+          ].map(k => (
+            <div key={k.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1rem', borderTop: '2px solid ' + k.color }}>
+              <div style={{ fontSize: '1.5rem', fontWeight: '900', color: k.color, letterSpacing: '-0.02em', marginBottom: '2px' }}>{k.valor}</div>
+              <div style={{ fontSize: '0.65rem', fontWeight: '700', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k.label}</div>
             </div>
-          ) : (
-            <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
-              {hitosDisponibles.map(h => (
-                <div key={h.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem'}}>
-                  <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:'1rem',marginBottom:'0.875rem'}}>
-                    <div>
-                      <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#E8A020',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'0.3rem'}}>{h.proyecto_nombre} · {h.proyecto_sector}</div>
-                      <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{h.nombre}</div>
-                      {h.descripcion && <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>{h.descripcion}</div>}
+          ))}
+        </div>
+
+        {/* Alerta accion requerida */}
+        {accion_requerida.length > 0 && (
+          <div style={{ background: 'rgba(74,144,217,0.06)', border: '1px solid rgba(74,144,217,0.3)', borderRadius: '12px', padding: '0.875rem 1.25rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#4A90D9' }}>
+                {accion_requerida.length} inversion{accion_requerida.length > 1 ? 'es' : ''} aceptada{accion_requerida.length > 1 ? 's' : ''} pendiente{accion_requerida.length > 1 ? 's' : ''} de transferencia
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>El fundador acepto tu propuesta. Transfiere para activar la inversion.</div>
+            </div>
+            <button onClick={() => setTab('alertas')} style={s.btn('#4A90D9')}>Ver ahora</button>
+          </div>
+        )}
+
+        {/* TAB PORTAFOLIO */}
+        {tab === 'portafolio' && (
+          <div>
+            {fondeos.length === 0 ? (
+              <div style={{ ...s.card, textAlign: 'center', padding: '3rem' }}>
+                <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🌟</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>Aun no tienes inversiones</div>
+                <div style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.25rem' }}>Explora el directorio y fondea el primer item de un proyecto.</div>
+                <button onClick={() => setTab('oportunidades')} style={s.btn('#4A90D9')}>Ver oportunidades</button>
+              </div>
+            ) : (
+              <div>
+                {activos.length > 0 && (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem' }}>Inversiones activas ({activos.length})</div>
+                    {activos.map(f => <TarjetaFondeo key={f.id} f={f} s={s} accionFondeo={accionFondeo} enviando={enviando} mostrarComprobante={mostrarComprobante} setMostrarComprobante={setMostrarComprobante} comprobante={comprobante} setComprobante={setComprobante} />)}
+                  </div>
+                )}
+                {enProceso.length > 0 && (
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#E8A020', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem' }}>En proceso ({enProceso.length})</div>
+                    {enProceso.map(f => <TarjetaFondeo key={f.id} f={f} s={s} accionFondeo={accionFondeo} enviando={enviando} mostrarComprobante={mostrarComprobante} setMostrarComprobante={setMostrarComprobante} comprobante={comprobante} setComprobante={setComprobante} />)}
+                  </div>
+                )}
+                {rechazados.length > 0 && (
+                  <div>
+                    <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem' }}>Rechazados ({rechazados.length})</div>
+                    {rechazados.map(f => <TarjetaFondeo key={f.id} f={f} s={s} accionFondeo={accionFondeo} enviando={enviando} mostrarComprobante={mostrarComprobante} setMostrarComprobante={setMostrarComprobante} comprobante={comprobante} setComprobante={setComprobante} />)}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB ALERTAS */}
+        {tab === 'alertas' && (
+          <div>
+            {accion_requerida.length === 0 ? (
+              <div style={{ ...s.card, textAlign: 'center', padding: '2.5rem', color: '#6B7280' }}>
+                Todo al dia - no tienes acciones pendientes
+              </div>
+            ) : accion_requerida.map(f => (
+              <div key={f.id} style={{ background: 'rgba(74,144,217,0.06)', border: '1px solid rgba(74,144,217,0.25)', borderRadius: '12px', padding: '1.25rem', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.875rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#4A90D9', marginBottom: '3px', textTransform: 'uppercase' }}>Transferencia requerida</div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff' }}>{f.presupuesto_items?.nombre}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>{f.proyectos?.nombre}</div>
+                  </div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#4A90D9' }}>${fmt(f.monto)}</div>
+                </div>
+                <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.75rem', marginBottom: '0.875rem', fontSize: '0.78rem', color: '#8FA3CC', lineHeight: '1.6' }}>
+                  Transfiere <strong style={{ color: '#fff' }}>${fmt(f.monto)} COP</strong> via BREB (Nequi, Daviplata, Bancolombia) a la cuenta de fondeo de Escala. Sube el numero de comprobante para verificar.
+                </div>
+                {mostrarComprobante === f.id ? (
+                  <div>
+                    <input style={s.input} placeholder="Numero de comprobante o referencia" value={comprobante} onChange={e => setComprobante(e.target.value)} />
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button onClick={() => accionFondeo(f.id, 'confirmar_transferencia', { comprobante_url: comprobante })} disabled={enviando === f.id || !comprobante} style={{ ...s.btn('#4A90D9'), opacity: !comprobante ? 0.5 : 1 }}>
+                        {enviando === f.id ? 'Enviando...' : 'Confirmar transferencia'}
+                      </button>
+                      <button onClick={() => setMostrarComprobante(null)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.4rem 0.75rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>Cancelar</button>
                     </div>
                   </div>
-                  <button
-                    onClick={() => financiarHito(h)}
-                    disabled={financiando === h.id || !!msgHito[h.id]}
-                    style={{background: msgHito[h.id] ? 'rgba(232,160,32,0.1)' : '#E8A020',color:'#fff',border: msgHito[h.id] ? '1px solid rgba(232,160,32,0.3)' : 'none',borderRadius:'8px',padding:'0.7rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor: financiando === h.id || msgHito[h.id] ? 'not-allowed' : 'pointer',fontFamily:'Inter,sans-serif',transition:'all 0.2s'}}
-                  >
-                    {financiando === h.id ? 'Registrando...' : msgHito[h.id] ? msgHito[h.id] : '🌟 Quiero impulsar este hito'}
-                  </button>
-                  {msgHito[h.id] && msgHito[h.id].includes('WhatsApp') && (
-                    <a href={'https://wa.me/573005485019?text=' + encodeURIComponent('Quiero impulsar el hito: ' + h.nombre)} style={{display:'inline-block',marginTop:'0.5rem',background:'#1D9E75',color:'#fff',padding:'0.5rem 1rem',borderRadius:'6px',textDecoration:'none',fontSize:'0.78rem',fontWeight:'700'}}>
-                      📲 Escribir por WhatsApp
-                    </a>
+                ) : (
+                  <button onClick={() => setMostrarComprobante(f.id)} style={s.btn('#4A90D9')}>Ya transferi - subir comprobante</button>
+                )}
+              </div>
+            ))}
+            {mensaje && <div style={{ fontSize: '0.82rem', color: '#E05555', marginTop: '1rem', padding: '0.75rem', background: 'rgba(224,85,85,0.08)', borderRadius: '8px' }}>{mensaje}</div>}
+          </div>
+        )}
+
+        {/* TAB OPORTUNIDADES */}
+        {tab === 'oportunidades' && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <div style={{ fontSize: '0.82rem', color: '#8FA3CC' }}>Items sin fondear en proyectos activos</div>
+              <a href="/directorio-inversion" style={{ fontSize: '0.78rem', color: '#4A90D9', textDecoration: 'none' }}>Ver directorio completo</a>
+            </div>
+            {oportunidades.length === 0 ? (
+              <div style={{ ...s.card, textAlign: 'center', padding: '2rem', color: '#6B7280' }}>No hay oportunidades disponibles en este momento.</div>
+            ) : oportunidades.map(item => {
+              const yaInvertido = fondeos.some(f => f.item_id === item.id && f.estado !== 'rechazado')
+              return (
+                <div key={item.id} style={{ ...s.card, opacity: yaInvertido ? 0.6 : 1 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff', marginBottom: '2px' }}>{item.nombre}</div>
+                      <div style={{ fontSize: '0.72rem', color: '#6B7280' }}>{item.proyectos?.nombre} - {item.proyectos?.sector} - {item.proyectos?.ciudad}</div>
+                      {item.descripcion && <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginTop: '3px' }}>{item.descripcion}</div>}
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      <div style={{ fontSize: '1rem', fontWeight: '800', color: '#fff' }}>${fmt(item.faltante)}</div>
+                      <div style={{ fontSize: '0.65rem', color: '#6B7280' }}>falta fondear</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.75rem' }}>
+                    <span style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.06)', color: '#8FA3CC', padding: '2px 8px', borderRadius: '20px' }}>{CATEGORIA_LABEL[item.categoria] || item.categoria}</span>
+                    <span style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.06)', color: '#8FA3CC', padding: '2px 8px', borderRadius: '20px' }}>{item.tipo_gasto?.toUpperCase()}</span>
+                    <span style={{ fontSize: '0.65rem', background: item.prioridad === 'critica' ? 'rgba(224,85,85,0.12)' : 'rgba(255,255,255,0.06)', color: item.prioridad === 'critica' ? '#E05555' : '#8FA3CC', padding: '2px 8px', borderRadius: '20px', fontWeight: '700' }}>{item.prioridad}</span>
+                  </div>
+                  {yaInvertido ? (
+                    <div style={{ fontSize: '0.75rem', color: '#1D9E75' }}>Ya tienes una propuesta activa en este item</div>
+                  ) : (
+                    <button onClick={() => { setMostrarFondeo(item); setMensaje('') }} style={s.btn('#4A90D9')}>Fondear este item</button>
                   )}
                 </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Modal fondeo */}
+      {mostrarFondeo && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }}>
+          <div style={{ background: '#0F1E3A', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '16px', padding: '1.5rem', width: '100%', maxWidth: '480px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff' }}>Fondear: {mostrarFondeo.nombre}</div>
+              <button onClick={() => { setMostrarFondeo(null); setMensaje('') }} style={{ background: 'none', border: 'none', color: '#8FA3CC', fontSize: '1.25rem', cursor: 'pointer' }}>X</button>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '0.875rem', marginBottom: '1rem', fontSize: '0.82rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC', marginBottom: '3px' }}><span>Proyecto</span><span style={{ color: '#fff' }}>{mostrarFondeo.proyectos?.nombre}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC' }}><span>Falta fondear</span><span style={{ color: '#E8A020', fontWeight: '600' }}>${fmt(mostrarFondeo.faltante)}</span></div>
+            </div>
+            <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#8FA3CC', display: 'block', marginBottom: '4px' }}>Monto a invertir (COP)</label>
+            <input style={s.input} type="number" value={formFondeo.monto} onChange={e => setFormFondeo(f => ({ ...f, monto: e.target.value }))} placeholder="5000000" />
+            <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#8FA3CC', display: 'block', marginBottom: '6px' }}>A cambio de</label>
+            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.875rem' }}>
+              {[{ id: 'participacion', label: '% Participacion' }, { id: 'deuda', label: 'Deuda + tasa' }, { id: 'revenue_share', label: '% Revenue' }].map(op => (
+                <div key={op.id} onClick={() => setFormFondeo(f => ({ ...f, a_cambio_de: op.id }))} style={{ flex: 1, cursor: 'pointer', border: formFondeo.a_cambio_de === op.id ? '2px solid #4A90D9' : '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.5rem', textAlign: 'center', background: formFondeo.a_cambio_de === op.id ? 'rgba(74,144,217,0.12)' : 'transparent', fontSize: '0.72rem', color: formFondeo.a_cambio_de === op.id ? '#4A90D9' : '#8FA3CC', fontWeight: formFondeo.a_cambio_de === op.id ? '700' : '400' }}>
+                  {op.label}
+                </div>
               ))}
             </div>
-          )
-        )}
-
-        {tab === 'metricas' && (() => {
-          const totalInvertido = misImpulsos.reduce((s, i) => s + (i.valor || 0), 0)
-          const ejecutados = misImpulsos.filter(i => i.ejecutado)
-          const pendientes = misImpulsos.filter(i => !i.ejecutado)
-          const pctEjecutado = misImpulsos.length > 0 ? Math.round((ejecutados.length / misImpulsos.length) * 100) : 0
-          const fmt = v => '$' + v.toLocaleString('es-CO')
-          return (
-            <div>
-              <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'1rem',marginBottom:'1.5rem'}}>
-                <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.25rem'}}>
-                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{fmt(totalInvertido)}</div>
-                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Total invertido en hitos</div>
-                </div>
-                <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.25rem'}}>
-                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{pctEjecutado}%</div>
-                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Hitos ejecutados ({ejecutados.length} de {misImpulsos.length})</div>
-                </div>
-                <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
-                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff'}}>{misImpulsos.length}</div>
-                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Total de impulsos</div>
-                </div>
-                <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
-                  <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{fmt(pendientes.reduce((s,i)=>s+(i.valor||0),0))}</div>
-                  <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Pendiente de ejecución</div>
-                </div>
-              </div>
-
-              {misImpulsos.length > 0 && (
-                <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
-                  <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'1rem'}}>Historial de impulsos</div>
-                  {misImpulsos.map(imp => (
-                    <div key={imp.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
-                      <div>
-                        <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff'}}>{imp.hitos?.nombre || imp.descripcion}</div>
-                        <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{imp.proyectos?.nombre || 'Proyecto'}</div>
-                      </div>
-                      <div style={{textAlign:'right',flexShrink:0}}>
-                        <div style={{fontFamily:'monospace',fontSize:'0.875rem',fontWeight:'700',color:'#E8A020'}}>{fmt(imp.valor)}</div>
-                        <div style={{fontSize:'0.68rem',color:imp.ejecutado ? '#1D9E75' : '#8FA3CC',marginTop:'0.1rem'}}>{imp.ejecutado ? '✓ Ejecutado' : '⏳ Pendiente'}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {misImpulsos.length === 0 && (
-                <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-                  <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📊</div>
-                  <div style={{fontSize:'0.875rem',color:'#8FA3CC'}}>Tus métricas aparecerán aquí cuando hagas tu primer impulso.</div>
-                </div>
-              )}
+            {formFondeo.a_cambio_de === 'participacion' && <input style={s.input} type="number" step="0.1" value={formFondeo.pct_participacion} onChange={e => setFormFondeo(f => ({ ...f, pct_participacion: e.target.value }))} placeholder="% participacion en el proyecto" />}
+            {formFondeo.a_cambio_de === 'deuda' && <input style={s.input} type="number" step="0.1" value={formFondeo.tasa_mensual} onChange={e => setFormFondeo(f => ({ ...f, tasa_mensual: e.target.value }))} placeholder="Tasa mensual %" />}
+            {formFondeo.a_cambio_de === 'revenue_share' && <input style={s.input} type="number" step="0.1" value={formFondeo.pct_revenue} onChange={e => setFormFondeo(f => ({ ...f, pct_revenue: e.target.value }))} placeholder="% de ingresos mensuales" />}
+            {mensaje && <div style={{ fontSize: '0.8rem', color: '#E05555', marginBottom: '0.75rem', padding: '0.625rem', background: 'rgba(224,85,85,0.08)', borderRadius: '8px' }}>{mensaje}</div>}
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+              <button onClick={proponerFondeo} disabled={enviando === 'nuevo'} style={{ ...s.btn('#4A90D9'), flex: 1, opacity: enviando === 'nuevo' ? 0.7 : 1 }}>
+                {enviando === 'nuevo' ? 'Enviando...' : 'Enviar propuesta'}
+              </button>
+              <button onClick={() => { setMostrarFondeo(null); setMensaje('') }} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.5rem 1rem', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>Cancelar</button>
             </div>
-          )
-        })()}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
-        {tab === 'mis_impulsos' && (
-          misImpulsos.length === 0 ? (
-            <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-              <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🌟</div>
-              <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin impulsos todavía</div>
-              <div style={{color:'#8FA3CC',fontSize:'0.85rem'}}>Explora los hitos disponibles y financia el primero.</div>
+function TarjetaFondeo({ f, s, accionFondeo, enviando, mostrarComprobante, setMostrarComprobante, comprobante, setComprobante }) {
+  const est = ESTADO_FONDEO[f.estado] || ESTADO_FONDEO.propuesta
+  const terminos = f.a_cambio_de === 'participacion' ? (f.pct_participacion + '% participacion') : f.a_cambio_de === 'deuda' ? (f.tasa_mensual + '% mensual') : (f.pct_revenue + '% revenue')
+  return (
+    <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1rem', marginBottom: '0.6rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
+        <div>
+          <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>{f.presupuesto_items?.nombre}</div>
+          <div style={{ fontSize: '0.72rem', color: '#6B7280' }}>{f.proyectos?.nombre} - {terminos}</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <span style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>${Math.round(parseFloat(f.monto || 0)).toLocaleString('es-CO')}</span>
+          <span style={{ fontSize: '0.62rem', fontWeight: '700', background: est.bg, color: est.color, padding: '2px 7px', borderRadius: '20px' }}>{est.label}</span>
+        </div>
+      </div>
+      <div style={{ fontSize: '0.7rem', color: '#4B5563' }}>{est.accion}</div>
+      {f.estado === 'aceptado' && (
+        <div style={{ marginTop: '0.75rem' }}>
+          {mostrarComprobante === f.id ? (
+            <div>
+              <input style={{ ...s.input, marginTop: '0.5rem' }} placeholder="Numero de comprobante" value={comprobante} onChange={e => setComprobante(e.target.value)} />
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button onClick={() => accionFondeo(f.id, 'confirmar_transferencia', { comprobante_url: comprobante })} disabled={enviando === f.id || !comprobante} style={{ ...s.btn('#4A90D9'), opacity: !comprobante ? 0.5 : 1 }}>
+                  {enviando === f.id ? 'Enviando...' : 'Confirmar'}
+                </button>
+                <button onClick={() => setMostrarComprobante(null)} style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.4rem 0.75rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>Cancelar</button>
+              </div>
             </div>
           ) : (
-            <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
-              {misImpulsos.map(i => (
-                <div key={i.id} style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'10px',padding:'1.25rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'1rem'}}>
-                  <div>
-                    <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{i.descripcion}</div>
-                    <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>{new Date(i.created_at).toLocaleDateString('es-CO')}</div>
-                  </div>
-                  <span style={{fontSize:'0.72rem',fontWeight:'700',padding:'0.25rem 0.75rem',borderRadius:'20px',background: i.ejecutado ? 'rgba(29,158,117,0.15)' : 'rgba(232,160,32,0.15)',color: i.ejecutado ? '#1D9E75' : '#E8A020'}}>
-                    {i.ejecutado ? '✅ Ejecutado' : '⏳ En proceso'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )
-        )}
-      </main>
+            <button onClick={() => setMostrarComprobante(f.id)} style={{ ...s.btn('#4A90D9'), marginTop: '0.5rem' }}>Ya transferi</button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
