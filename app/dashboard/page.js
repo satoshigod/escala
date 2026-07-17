@@ -973,10 +973,35 @@ export default function Dashboard() {
                                 </div>
                               )
                             })}
+                            <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'block',textAlign:'center',background:'rgba(175,169,236,0.12)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'8px',padding:'0.45rem',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none',marginTop:'0.625rem'}}>
+                              Fondear tecnología →
+                            </a>
                           </div>
                         )}
 
-                        {/* BLOQUE GENÉRICO — sin presupuesto definido */}
+                        {/* BLOQUE OTROS */}
+                        {tieneOtros && (
+                          <div style={{padding:'0.875rem 1rem'}}>
+                            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#6B7280',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'0.625rem'}}>📋 Otros recursos</div>
+                            {items.filter(i=>!['equipos_activos','equipo','tecnologia'].includes(i.categoria)).slice(0,2).map(item => {
+                              const faltante = parseFloat(item.valor_total||0) - parseFloat(item.monto_fondeado||0)
+                              return (
+                                <div key={item.id} style={{display:'flex',justifyContent:'space-between',fontSize:'0.78rem',marginBottom:'4px'}}>
+                                  <span style={{color:'#C8D4E8'}}>{item.nombre}</span>
+                                  <span style={{color:'#6B7280',fontWeight:'600'}}>${fmt(faltante)}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
+
+                        {/* Total capital requerido si hay items */}
+                        {items.length > 0 && (
+                          <div style={{padding:'0.5rem 1rem',borderTop:'1px solid rgba(255,255,255,0.04)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                            <span style={{fontSize:'0.7rem',color:'#6B7280'}}>Total por fondear</span>
+                            <span style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff'}}>${fmt(items.reduce((s,i)=>s+(parseFloat(i.valor_total||0)-parseFloat(i.monto_fondeado||0)),0))}</span>
+                          </div>
+                        )}
                         {esGenerico && (
                           <div style={{padding:'0.875rem 1rem'}}>
                             <div style={{fontSize:'0.75rem',color:'#6B7280',marginBottom:'0.625rem'}}>Define qué necesitas para que los ángeles puedan fondearte.</div>
