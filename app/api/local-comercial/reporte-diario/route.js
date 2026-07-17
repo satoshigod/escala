@@ -17,6 +17,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { notificar } from '@/lib/notificaciones/notificar'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -177,6 +178,64 @@ export async function POST(req) {
             idempotency_key: `ledger-${idempotency_key}`,
           }
         ])
+
+      // Notificar al inversionista del abono
+      const { data: localData } = await supabase
+        .from('proyectos_local_comercial')
+        .select('inversionista_id, nombre_negocio, perfiles!inversionista_id(id, nombre, email)')
+        .eq('proyecto_id', proyecto_id).single()
+
+      if (localData?.perfiles) {
+        const pctPagado = Math.round((nuevo_capital_pagado / capital_original) * 100)
+        await notificar('local_abono_capital', {
+          id: localData.perfiles.id,
+          email: localData.perfiles.email,
+        }, {
+          nombre_negocio: localData.nombre_negocio,
+          monto_formateado: Math.round(pago_inversionista).toLocaleString('es-CO'),
+          pct_pagado: pctPagado,
+          proyecto_id,
+        }).catch(() => {})
+
+        // Si el capital quedo completamente pagado, notificar con evento especial
+        if (nuevo_saldo <= 0) {
+          await notificar('local_pago_completado', {
+            id: localData.perfiles.id,
+            email: localData.perfiles.email,
+          }, {
+            nombre_negocio: localData.nombre_negocio,
+            proyecto_id,
+          }).catch(() => {})
+        }
+      }
+
+      // Notificar cambio de fase si ocurrio
+      if (nueva_fase !== local.fase_actual) {
+        const { data: operadorPerfil } = await supabase.from('perfiles').select('id, nombre, email').eq('id', user.id).single()
+        if (operadorPerfil) {
+          await notificar('local_fase_cambiada', {
+            id: operadorPerfil.id,
+            email: operadorPerfil.email,
+          }, {
+            nombre_negocio: local.nombre_negocio || 'tu negocio',
+            fase_anterior: local.fase_actual,
+            fase_nueva: nueva_fase,
+            proyecto_id,
+          }).catch(() => {})
+        }
+      }
+
+      // Notificar al admin de movimientos grandes (>$500.000)
+      if (pago_inversionista > 500000) {
+        await notificar('admin_transferencia_recibida', {
+          id: 'a57b6849-1388-4186-8880-2ec31dd31af5',
+          email: 'ivan@escala.network',
+        }, {
+          nombre_usuario: 'Motor waterfall local',
+          monto_formateado: Math.round(pago_inversionista).toLocaleString('es-CO'),
+          referencia: `Reporte ${hoy} - ${local.nombre_negocio}`,
+        }).catch(() => {})
+      }
     }
 
     return NextResponse.json({

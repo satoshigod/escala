@@ -6,6 +6,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { notificar } from '@/lib/notificaciones/notificar'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -248,9 +249,22 @@ export async function PUT(req) {
       .from('reparto_lineas')
       .update({ estado: 'pagado', pagado_at: new Date().toISOString() })
       .eq('id', linea_id)
-      .select().single()
+      .select(`*, repartos(proyecto_id, descripcion, proyectos!proyecto_id(nombre))`)
+      .single()
 
     if (error) throw error
+
+    // Notificar al beneficiario que recibio el pago
+    const { data: perfil } = await supabase.from('perfiles').select('id, nombre, email').eq('id', data.beneficiario_id).single()
+    if (perfil && data.beneficiario_id !== user.id && data.monto > 0) {
+      await notificar('reparto_linea_pagada', { id: perfil.id, email: perfil.email }, {
+        monto_formateado: Math.round(parseFloat(data.monto)).toLocaleString('es-CO'),
+        concepto: data.concepto || 'participacion en proyecto',
+        proyecto_nombre: data.repartos?.proyectos?.nombre || 'el proyecto',
+        proyecto_id: data.repartos?.proyecto_id,
+      }).catch(() => {})
+    }
+
     return NextResponse.json({ ok: true, linea: data })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })

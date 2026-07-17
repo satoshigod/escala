@@ -246,6 +246,27 @@ export async function PUT(req) {
         }).catch(() => {})
       }
 
+      // Notificar al fundador que el capital quedó acreditado al proyecto
+      const fundadorId = fondeo.presupuesto_items?.proyectos?.fundador_id
+      const { data: fundadorPerfil } = await supabase.from('perfiles').select('id, nombre, email').eq('id', fondadorId).single()
+      if (fundadorPerfil) {
+        await notificar('wallet_proyecto_fondeado', { id: fundadorPerfil.id, email: fundadorPerfil.email }, {
+          monto_formateado: Math.round(parseFloat(fondeo.monto)).toLocaleString('es-CO'),
+          proyecto_nombre: fondeo.presupuesto_items?.proyectos?.nombre || 'tu proyecto',
+          proyecto_id: fondeo.proyecto_id,
+        }).catch(() => {})
+      }
+
+      // Notificar al admin
+      await notificar('admin_fondeo_presupuesto_verificado', {
+        id: 'a57b6849-1388-4186-8880-2ec31dd31af5',
+        email: 'ivan@escala.network',
+      }, {
+        monto_formateado: Math.round(parseFloat(fondeo.monto)).toLocaleString('es-CO'),
+        nombre_item: fondeo.presupuesto_items?.nombre,
+        proyecto_nombre: fondeo.presupuesto_items?.proyectos?.nombre,
+      }).catch(() => {})
+
       // Acreditar capital al wallet del proyecto
       try {
         const monto = parseFloat(fondeo.monto)
