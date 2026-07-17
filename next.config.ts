@@ -1,12 +1,9 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   async rewrites() {
     return {
-      // beforeFiles se revisa ANTES que app/page.tsx (que sigue ahí con su redirect,
-      // pero nunca se llega a ejecutar porque este rewrite lo intercepta primero).
-      // Resultado: escala.network muestra el contenido de index.html directamente,
-      // sin cambiar la URL a /index.html — igual que cualquier sitio normal.
       beforeFiles: [
         { source: '/', destination: '/index.html' },
       ],
@@ -16,4 +13,25 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: "plaza-black",
+  project: "escala-production",
+
+  // Solo subir source maps en CI/Vercel, no en local
+  silent: !process.env.CI,
+
+  // Source maps para ver el codigo original en Sentry (no el minificado)
+  widenClientFileUpload: true,
+
+  // No incluir el SDK de Sentry en el bundle del cliente mas de una vez
+  disableLogger: true,
+
+  // Tunneling para evitar adblockers que bloqueen sentry.io
+  tunnelRoute: "/monitoring",
+
+  // Ocultar source maps del bundle publico
+  hideSourceMaps: true,
+
+  // No hacer tree-shaking del SDK de Sentry
+  automaticVercelMonitors: false,
+});

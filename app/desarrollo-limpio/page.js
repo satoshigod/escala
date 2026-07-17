@@ -30,7 +30,7 @@ const CAPAS = [
       { num: 'C1.6', nombre: 'Funcion SQL eliminar_usuario_completo(uid) — borra usuario y todos sus datos en el orden correcto respetando FK', done: true, valor: 300000, quien: 'Claude AI' },
       { num: 'C1.7', nombre: 'Rate limiting global: Vercel Edge Middleware en todas las APIs — 100 req/min por IP, 1000/min por usuario autenticado', done: false, valor: 3000000, quien: 'Claude AI' },
       { num: 'C1.8', nombre: 'Cache de lectura: Upstash Redis para cachear tasas de cambio, catalogos y scores. TTL 5 min para datos frecuentes', done: false, valor: 2000000, quien: 'Claude AI' },
-      { num: 'C1.9', nombre: 'Observabilidad: Sentry para errores frontend y API, Vercel Analytics, alertas automaticas si error rate > 1% o latencia P95 > 2s', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C1.9', nombre: 'Observabilidad: Sentry instalado (@sentry/nextjs). Captura errores cliente y servidor. DSN configurado. Org: plaza-black, proyecto: escala-production. Source maps ocultos. Tunnel /monitoring para evitar adblockers.', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: 'C1.10', nombre: 'React Server Components: migrar las 5 paginas mas criticas de fetch() client-side a RSC — eliminar waterfalls de datos y mejorar TTI', done: false, valor: 5000000, quien: 'Claude AI' },
       { num: 'C1.11', nombre: 'Multi-tenant: tabla organizations, separacion de datos por organizacion, modelo white-label — prerequisito para Escala for Teams y Capa 9', done: false, valor: 8000000, quien: 'Claude AI' },
       { num: 'C1.12', nombre: 'i18n real: next-intl en todas las paginas, deteccion de pais por IP, moneda y proveedor de pago automaticos segun pais del usuario', done: false, valor: 4000000, quien: 'Claude AI' },
