@@ -552,6 +552,11 @@ export default function Workspace() {
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/reparto' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.25)'}}>
             💸 Reparto
           </a>
+          {esFundador && (
+            <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/cierre' : '#'} style={{fontSize:'0.78rem',fontWeight:'600',color:'#6B7280',textDecoration:'none',background:'rgba(107,114,128,0.08)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(107,114,128,0.2)'}}>
+              🔒 Cerrar proyecto
+            </a>
+          )}
           {proyecto?.escenario === 'local_comercial' && (
             <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/local' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',background:'rgba(29,158,117,0.15)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(29,158,117,0.4)',display:'flex',alignItems:'center',gap:'0.35rem'}}>
               🏪 Reporte diario
