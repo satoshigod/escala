@@ -6,6 +6,24 @@ if (typeof window !== 'undefined') window._supabase = supabase
 const PROYECTO_ESCALA = 'f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf'
 const FUNDADOR_ID = 'a57b6849-1388-4186-8880-2ec31dd31af5'
 
+// Funcion de limpieza de emergencia — elimina TODOS los proyectos QA acumulados
+async function limpiarTodosProyectosQA() {
+  const sb = window._supabase
+  if (!sb) return 'Supabase no disponible'
+  const { data, error } = await sb
+    .from('proyectos')
+    .select('id, nombre')
+    .eq('fundador_id', FUNDADOR_ID)
+    .like('nombre', 'QA-%')
+  if (error) return 'Error: ' + error.message
+  if (!data || data.length === 0) return 'No hay proyectos QA acumulados'
+  for (const p of data) {
+    await sb.from('ingresos').delete().eq('proyecto_id', p.id)
+    await sb.from('proyectos').delete().eq('id', p.id)
+  }
+  return 'Eliminados ' + data.length + ' proyectos QA: ' + data.map(p => p.nombre).join(', ')
+}
+
 const GRUPOS = [
   {
     nombre: '🌎 País e Industria',
@@ -1351,10 +1369,14 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar proyecto de prueba',
         run: async () => {
           if (!window._qaIngresosProyectoId) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaIngresosProyectoId, { method: 'DELETE' })
+          const sb = window._supabase
+          // Eliminar ingresos primero
+          await sb.from('ingresos').delete().eq('proyecto_id', window._qaIngresosProyectoId)
+          // Eliminar el proyecto
+          await sb.from('proyectos').delete().eq('id', window._qaIngresosProyectoId).eq('fundador_id', FUNDADOR_ID)
           window._qaIngresosProyectoId = null
           window._qaIngresosId = null
-          return 'Proyecto eliminado'
+          return 'Proyecto QA-Ingresos eliminado correctamente'
         }
       },
     ]
@@ -2427,6 +2449,12 @@ export default function QA() {
                     Limpiar resultados
                   </button>
                 )}
+                <button onClick={async () => {
+                  const msg = await limpiarTodosProyectosQA()
+                  alert(msg)
+                }} style={{background:'rgba(224,85,85,0.1)',color:'#E05555',border:'1px solid rgba(224,85,85,0.25)',borderRadius:'8px',padding:'0.6rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',marginLeft:'auto'}}>
+                  🧹 Limpiar proyectos QA acumulados
+                </button>
               </div>
 
               {/* Grupos de tests */}
