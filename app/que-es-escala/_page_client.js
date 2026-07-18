@@ -6,7 +6,7 @@ const MODELOS = [
   {
     icon: '💡',
     titulo: 'Startup o empresa',
-    subtitulo: 'Equity diferido',
+    subtitulo: 'Participacion diferida',
     color: '#1D9E75',
     bg: 'rgba(29,158,117,0.08)',
     border: 'rgba(29,158,117,0.25)',
@@ -33,7 +33,7 @@ const MODELOS = [
 const PREGUNTAS = [
   {
     q: '¿Qué es Escala?',
-    a: 'Una plataforma donde personas con ideas, capital, conocimiento o trabajo pueden co-crear negocios reales. Cada aporte queda registrado y reconocido formalmente — ya sea equity diferido para una startup o fondeo de capital para un negocio en un local.'
+    a: 'Una plataforma donde personas con ideas, capital, conocimiento o trabajo pueden co-crear negocios reales. Cada aporte queda registrado y reconocido formalmente — ya sea participacion diferida para una startup o fondeo de capital para un negocio en un local.'
   },
   {
     q: '¿Qué problema resuelve?',
@@ -62,7 +62,7 @@ const ROLES = [
   { icon: '💰', nombre: 'Capitalista', desc: 'Aporta capital a proyectos con potencial a cambio de participación accionaria o retorno financiero.' },
   { icon: '🔧', nombre: 'Especialista', desc: 'Aporta conocimiento o servicios profesionales — abogados, contadores, diseñadores, programadores.' },
   { icon: '⚙️', nombre: 'Ejecutor / Gerente de Proyecto', desc: 'Administrador operativo: asigna tareas, verifica entregables, mantiene el proyecto organizado.' },
-  { icon: '🌟', nombre: 'Ángel de Impulso', desc: 'Financia un hito puntual o un negocio completo en local sin financiar toda la empresa.' },
+  { icon: '🌟', nombre: 'Angel Inversionista', desc: 'Financia un hito puntual o un negocio completo en local sin financiar toda la empresa.' },
   { icon: '🧭', nombre: 'Mentor', desc: 'Aporta experiencia estratégica sin ejecutar tareas operativas.' },
   { icon: '🏢', nombre: 'Empresa', desc: 'Puede actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora.' },
 ]
@@ -143,7 +143,7 @@ export default function QueEsEscala() {
               { href: '/crear-empresa-sin-capital', label: 'Crear empresa sin capital' },
               { href: '/financiar-negocio-local-colombia', label: 'Necesito un local para mi negocio' },
               { href: '/buscar-cofundador', label: 'Buscar cofundador' },
-              { href: '/angel-investor', label: 'Ser Ángel de Impulso' },
+              { href: '/angel-investor', label: 'Ser Angel Inversionista' },
               { href: '/blog/que-es-la-participacion-diferida', label: 'Qué es la participación diferida' },
               { href: '/blog/como-crear-una-startup-sin-dinero', label: 'Crear startup sin dinero' },
             ].map(l => (

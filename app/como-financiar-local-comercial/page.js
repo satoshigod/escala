@@ -58,7 +58,7 @@ export default function ComoFinanciarLocalComercialPage() {
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '2rem', marginTop: '2rem' }}>
           <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#8FA3CC', marginBottom: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Ver tambien</div>
           {[
-            { href: '/financiar-negocio-local-colombia', titulo: 'Financiar un negocio en local comercial con Escala' },
+            { href: '/financiar-negocio-local-colombia', titulo: 'Financiar un negocio en un local con Escala' },
             { href: '/capital-para-abrir-tienda', titulo: 'Capital para abrir tu tienda sin banco ni garante' },
             { href: '/blog/como-crear-una-startup-sin-dinero', titulo: 'Como crear una empresa sin capital inicial' },
           ].map(a => <a key={a.href} href={a.href} style={{ display: 'block', fontSize: '0.88rem', color: '#4A90D9', textDecoration: 'none', marginBottom: '0.5rem' }}>{a.titulo} →</a>)}

@@ -40,6 +40,17 @@ export default async function sitemap() {
     { url: `${BASE_URL}/financiar-negocio-local-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
     { url: `${BASE_URL}/capital-para-abrir-tienda`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${BASE_URL}/como-financiar-local-comercial`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    // Landing pages SEO — maquinaria y equipos
+    { url: `${BASE_URL}/financiar-maquinaria-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/financiar-equipos-negocio`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    // Landing pages SEO — inversores
+    { url: `${BASE_URL}/invertir-en-startups-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    // Landing pages SEO — crear empresa
+    { url: `${BASE_URL}/como-crear-empresa-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    // Landing pages SEO — startups por pais (nuevos)
+    { url: `${BASE_URL}/startup-espana`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/startup-argentina`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
+    { url: `${BASE_URL}/startup-peru`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
     // Landing pages SEO — latinos USA
     { url: `${BASE_URL}/latinos-usa`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
     // Directorio de inversion
@@ -50,6 +61,11 @@ export default async function sitemap() {
     { url: `${BASE_URL}/blog/que-es-la-participacion-diferida`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
     { url: `${BASE_URL}/blog/como-constituir-una-empresa-sas-en-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
     { url: `${BASE_URL}/blog/como-crear-una-startup-sin-dinero`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/como-financiar-un-negocio-sin-banco`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/como-conseguir-inversionistas-startup-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/diferencia-prestamo-inversion-participacion`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/como-montar-tienda-sin-capital`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/blog/equipos-maquinaria-financiacion-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
   ]
 
   // Proyectos públicos
