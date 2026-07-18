@@ -6,11 +6,93 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { notificar } from '@/lib/notificaciones/notificar'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
+
+// C5.10 — Detecta angeles compatibles y les notifica cuando se publica un item
+// Compatible = alguien que ya ha invertido en proyectos del mismo sector
+//              o en items de la misma categoria y rango de monto similar
+async function notificarAngelesCompatibles(supabase, item, proyecto_id) {
+  try {
+    // Obtener datos del proyecto
+    const { data: proyecto } = await supabase
+      .from('proyectos')
+      .select('nombre, sector, ciudad, fundador_id')
+      .eq('id', proyecto_id).single()
+    if (!proyecto) return
+
+    const montoItem = parseFloat(item.valor_unitario) * parseFloat(item.cantidad || 1)
+
+    // Buscar angeles que han invertido previamente:
+    // 1. En proyectos del mismo sector
+    // 2. En items de la misma categoria
+    // 3. En rangos de monto similares (50% - 200% del monto actual)
+    const { data: fondeosPrevios } = await supabase
+      .from('presupuesto_fondeos')
+      .select(`
+        inversionista_id,
+        monto,
+        presupuesto_items!item_id(categoria, valor_total),
+        proyectos!proyecto_id(sector)
+      `)
+      .eq('estado', 'verificado')
+      .neq('inversionista_id', proyecto.fundador_id)
+      .gte('monto', montoItem * 0.3)
+      .lte('monto', montoItem * 5)
+
+    if (!fondeosPrevios?.length) return
+
+    // Deduplicar por inversionista y filtrar compatibles
+    const angelesNotificados = new Set()
+    const compatibles = []
+
+    for (const f of fondeosPrevios) {
+      if (angelesNotificados.has(f.inversionista_id)) continue
+
+      const mismoSector = f.proyectos?.sector === proyecto.sector
+      const mismaCategoria = f.presupuesto_items?.categoria === item.categoria
+      if (!mismoSector && !mismaCategoria) continue
+
+      angelesNotificados.add(f.inversionista_id)
+      compatibles.push(f.inversionista_id)
+    }
+
+    if (!compatibles.length) return
+
+    // Obtener perfiles de los angeles compatibles
+    const { data: perfiles } = await supabase
+      .from('perfiles')
+      .select('id, nombre, email')
+      .in('id', compatibles)
+
+    const fmtM = n => {
+      const v = parseFloat(n || 0)
+      if (v >= 1000000) return (v/1000000).toFixed(1) + 'M'
+      if (v >= 1000) return (v/1000).toFixed(0) + 'K'
+      return Math.round(v).toLocaleString('es-CO')
+    }
+
+    // Notificar a cada angel compatible
+    for (const perfil of (perfiles || [])) {
+      await notificar('angel_oportunidad_compatible', {
+        id: perfil.id,
+        email: perfil.email,
+      }, {
+        proyecto_nombre: proyecto.nombre,
+        nombre_item: item.nombre,
+        monto_formateado: fmtM(montoItem),
+        sector: proyecto.sector || 'Tecnologia',
+        ciudad: proyecto.ciudad || 'Colombia',
+      }).catch(() => {})
+    }
+  } catch (err) {
+    console.error('notificarAngelesCompatibles error:', err.message)
+  }
+}
 
 export async function GET(req) {
   try {
@@ -138,6 +220,12 @@ export async function POST(req) {
       .single()
 
     if (error) throw error
+
+    // C5.10 — Notificar a angeles compatibles si el item no es aporte en especie
+    if (!es_aporte_especie && item) {
+      notificarAngelesCompatibles(supabase, item, proyecto_id).catch(() => {})
+    }
+
     return NextResponse.json({ ok: true, item })
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 })
