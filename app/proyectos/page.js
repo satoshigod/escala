@@ -1032,7 +1032,13 @@ export default function Proyectos() {
               ].map(op => (
                 <div
                   key={op.id}
-                  onClick={() => actualizar('escenario', op.id)}
+                  onClick={() => {
+                    actualizar('escenario', op.id)
+                    // local y maquinaria siempre son riesgo_compartido — no tiene sentido preguntar
+                    if (op.id === 'local_comercial' || op.id === 'otro') {
+                      actualizar('estado_financiacion', 'riesgo_compartido')
+                    }
+                  }}
                   style={{
                     cursor: 'pointer',
                     border: form.escenario === op.id
@@ -1096,29 +1102,68 @@ export default function Proyectos() {
               </div>
             )}
 
-            <label style={s.label}>Tipo de proyecto *</label>
-            <div style={s.tipoGrid}>
-              <div style={s.tipoCard(form.tipo === 'A')} onClick={() => actualizar('tipo', 'A')}>
-                <div style={s.tipoLabel}>Tipo A — Creación</div>
-                <div style={s.tipoDesc}>Empresa nueva que busca equipo y capital</div>
+            {/* TIPO A/B — lenguaje adaptado por escenario, backend igual */}
+            {form.escenario === 'local_comercial' ? (
+              <div>
+                <label style={s.label}>¿Ya tienes este negocio funcionando? *</label>
+                <div style={s.tipoGrid}>
+                  <div style={s.tipoCard(form.tipo === 'A')} onClick={() => actualizar('tipo', 'A')}>
+                    <div style={s.tipoLabel}>Voy a abrir mi primera tienda</div>
+                    <div style={s.tipoDesc}>El negocio no existe todavía — arrancas desde cero con este local</div>
+                  </div>
+                  <div style={s.tipoCard(form.tipo === 'B')} onClick={() => actualizar('tipo', 'B')}>
+                    <div style={s.tipoLabel}>Ya vendo, quiero un local propio</div>
+                    <div style={s.tipoDesc}>Ya tienes ventas — desde la casa, ferias, WhatsApp — y quieres un punto físico</div>
+                  </div>
+                </div>
               </div>
-              <div style={s.tipoCard(form.tipo === 'B')} onClick={() => actualizar('tipo', 'B')}>
-                <div style={s.tipoLabel}>Tipo B — Transformación</div>
-                <div style={s.tipoDesc}>Empresa existente con una brecha específica</div>
+            ) : form.escenario === 'otro' ? (
+              <div>
+                <label style={s.label}>¿Ya tienes este negocio funcionando? *</label>
+                <div style={s.tipoGrid}>
+                  <div style={s.tipoCard(form.tipo === 'A')} onClick={() => actualizar('tipo', 'A')}>
+                    <div style={s.tipoLabel}>Voy a arrancar con este equipo</div>
+                    <div style={s.tipoDesc}>El negocio no existe todavía — este equipo o maquina es lo que necesitas para empezar</div>
+                  </div>
+                  <div style={s.tipoCard(form.tipo === 'B')} onClick={() => actualizar('tipo', 'B')}>
+                    <div style={s.tipoLabel}>Ya produzco, necesito mejorar</div>
+                    <div style={s.tipoDesc}>Ya tienes el negocio funcionando — necesitas un equipo mejor o adicional para crecer</div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div>
+                <label style={s.label}>Tipo de proyecto *</label>
+                <div style={s.tipoGrid}>
+                  <div style={s.tipoCard(form.tipo === 'A')} onClick={() => actualizar('tipo', 'A')}>
+                    <div style={s.tipoLabel}>Tipo A — Creación</div>
+                    <div style={s.tipoDesc}>Empresa nueva que busca equipo y capital</div>
+                  </div>
+                  <div style={s.tipoCard(form.tipo === 'B')} onClick={() => actualizar('tipo', 'B')}>
+                    <div style={s.tipoLabel}>Tipo B — Transformación</div>
+                    <div style={s.tipoDesc}>Empresa existente con una brecha específica</div>
+                  </div>
+                </div>
+              </div>
+            )}
 
-            <label style={s.label}>¿El proyecto tiene recursos para esta etapa inicial? *</label>
-            <div style={s.tipoGrid}>
-              <div style={s.tipoCard(form.estado_financiacion === 'con_recursos')} onClick={() => actualizar('estado_financiacion', 'con_recursos')}>
-                <div style={s.tipoLabel}>Con Recursos para Etapa Inicial</div>
-                <div style={s.tipoDesc}>Hay fondos reales para pagar en efectivo lo que se acuerde con cada especialista</div>
+            {/* CON RECURSOS / RIESGO COMPARTIDO
+                Solo para startup — local y maquinaria siempre es riesgo_compartido */}
+            {form.escenario === 'startup' || (!form.escenario) ? (
+              <div>
+                <label style={s.label}>¿El proyecto tiene recursos para esta etapa inicial? *</label>
+                <div style={s.tipoGrid}>
+                  <div style={s.tipoCard(form.estado_financiacion === 'con_recursos')} onClick={() => actualizar('estado_financiacion', 'con_recursos')}>
+                    <div style={s.tipoLabel}>Con Recursos para Etapa Inicial</div>
+                    <div style={s.tipoDesc}>Hay fondos reales para pagar en efectivo lo que se acuerde con cada especialista</div>
+                  </div>
+                  <div style={s.tipoCard(form.estado_financiacion === 'riesgo_compartido')} onClick={() => actualizar('estado_financiacion', 'riesgo_compartido')}>
+                    <div style={s.tipoLabel}>Riesgo Compartido</div>
+                    <div style={s.tipoDesc}>Todavía no hay fondos — el pago queda en acciones o como deuda de la empresa, condicionado a que el proyecto genere valor</div>
+                  </div>
+                </div>
               </div>
-              <div style={s.tipoCard(form.estado_financiacion === 'riesgo_compartido')} onClick={() => actualizar('estado_financiacion', 'riesgo_compartido')}>
-                <div style={s.tipoLabel}>Riesgo Compartido</div>
-                <div style={s.tipoDesc}>Todavía no hay fondos — el pago queda en acciones o como deuda de la empresa, condicionado a que el proyecto genere valor</div>
-              </div>
-            </div>
+            ) : null}
 
             <div style={s.row}>
               <div>
