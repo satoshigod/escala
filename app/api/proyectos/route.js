@@ -147,3 +147,30 @@ export async function PATCH(request) {
     return Response.json({ error: e.message }, { status: 500 })
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+    const fundador_id = searchParams.get('fundador_id')
+
+    if (!id) return Response.json({ error: 'Se requiere id del proyecto' }, { status: 400 })
+    if (!fundador_id) return Response.json({ error: 'Se requiere fundador_id' }, { status: 400 })
+
+    // Verificar que el solicitante es el fundador
+    const { data: proyecto } = await supabase
+      .from('proyectos').select('fundador_id, nombre').eq('id', id).single()
+
+    if (!proyecto) return Response.json({ error: 'Proyecto no encontrado' }, { status: 404 })
+    if (proyecto.fundador_id !== fundador_id) {
+      return Response.json({ error: 'Solo el fundador puede eliminar este proyecto' }, { status: 403 })
+    }
+
+    const { error } = await supabase.from('proyectos').delete().eq('id', id)
+    if (error) throw error
+
+    return Response.json({ ok: true, mensaje: 'Proyecto eliminado: ' + proyecto.nombre })
+  } catch(e) {
+    return Response.json({ error: e.message }, { status: 500 })
+  }
+}

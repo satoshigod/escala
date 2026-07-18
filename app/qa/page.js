@@ -10,18 +10,32 @@ const FUNDADOR_ID = 'a57b6849-1388-4186-8880-2ec31dd31af5'
 async function limpiarTodosProyectosQA() {
   const sb = window._supabase
   if (!sb) return 'Supabase no disponible'
+
   const { data, error } = await sb
     .from('proyectos')
     .select('id, nombre')
     .eq('fundador_id', FUNDADOR_ID)
-    .like('nombre', 'QA-%')
-  if (error) return 'Error: ' + error.message
+    .ilike('nombre', 'QA-%')
+
+  if (error) return 'Error buscando proyectos QA: ' + error.message
   if (!data || data.length === 0) return 'No hay proyectos QA acumulados'
+
+  const eliminados = []
+  const errores = []
+
   for (const p of data) {
-    await sb.from('ingresos').delete().eq('proyecto_id', p.id)
-    await sb.from('proyectos').delete().eq('id', p.id)
+    const res = await fetch('/api/proyectos?id=' + p.id + '&fundador_id=' + FUNDADOR_ID, {
+      method: 'DELETE'
+    })
+    const d = await res.json()
+    if (d.ok) eliminados.push(p.nombre)
+    else errores.push(p.nombre + ': ' + d.error)
   }
-  return 'Eliminados ' + data.length + ' proyectos QA: ' + data.map(p => p.nombre).join(', ')
+
+  let msg = ''
+  if (eliminados.length) msg += 'Eliminados (' + eliminados.length + '): ' + eliminados.join(', ')
+  if (errores.length) msg += '\nErrores: ' + errores.join(', ')
+  return msg || 'Listo'
 }
 
 const GRUPOS = [
@@ -110,7 +124,7 @@ const GRUPOS = [
         nombre: 'DELETE /api/proyectos/[id] — eliminar en cascada',
         run: async () => {
           if (!window._qaProyectoId) throw new Error('Necesita correr "crear proyecto" primero')
-          const res = await fetch('/api/proyectos/' + window._qaProyectoId + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+          const res = await fetch('/api/proyectos?id=' + window._qaProyectoId + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           const data = await res.json()
           if (data.error) throw new Error(data.error)
           return 'Proyecto de prueba eliminado correctamente'
@@ -160,7 +174,7 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar proyecto de prueba de tareas',
         run: async () => {
           if (!window._qaProyectoIdPais) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaProyectoIdPais + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+          await fetch('/api/proyectos?id=' + window._qaProyectoIdPais + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           window._qaProyectoIdPais = null
           return 'Limpiado correctamente'
         }
@@ -243,7 +257,7 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar proyecto de prueba de constitución',
         run: async () => {
           if (!window._qaProyectoIdConstitucion) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaProyectoIdConstitucion + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+          await fetch('/api/proyectos?id=' + window._qaProyectoIdConstitucion + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           window._qaProyectoIdConstitucion = null
           return 'Limpiado correctamente'
         }
@@ -341,7 +355,7 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar proyecto de prueba de hilos/documentos',
         run: async () => {
           if (!window._qaProyectoIdHilo) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaProyectoIdHilo + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+          await fetch('/api/proyectos?id=' + window._qaProyectoIdHilo + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           window._qaProyectoIdHilo = null
           window._qaTareaIdHilo = null
           return 'Limpiado correctamente'
@@ -623,7 +637,7 @@ const GRUPOS = [
           if (dataCrear.error) throw new Error('No se pudo crear proyecto de prueba: ' + dataCrear.error)
           const id = dataCrear.proyecto.id
 
-          const resDelete = await fetch('/api/proyectos/' + id + '?fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+          const resDelete = await fetch('/api/proyectos?id=' + id + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           const dataDelete = await resDelete.json()
           if (dataDelete.error) throw new Error('Error al eliminar: ' + dataDelete.error)
 
@@ -976,7 +990,7 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar proyecto y datos de prueba de notificaciones',
         run: async () => {
           if (!window._qaNotifProyectoId) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaNotifProyectoId, { method: 'DELETE' })
+          await fetch('/api/proyectos?id=' + window._qaNotifProyectoId + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           window._qaNotifProyectoId = null
           window._qaNotifRolAId = null
           window._qaNotifRolBId = null
@@ -1179,7 +1193,7 @@ const GRUPOS = [
         run: async () => {
           const ids = [window._qaCompRiesgoProyectoId, window._qaCompRecProyectoId].filter(Boolean)
           for (const pid of ids) {
-            await fetch('/api/proyectos/' + pid, { method: 'DELETE' })
+            await fetch('/api/proyectos?id=' + pid + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           }
           window._qaCompRiesgoProyectoId = null
           window._qaCompRiesgoRolId = null
@@ -1292,7 +1306,7 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar el proyecto de prueba',
         run: async () => {
           if (!window._qaOfertasProyectoId) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaOfertasProyectoId, { method: 'DELETE' })
+          await fetch('/api/proyectos?id=' + window._qaOfertasProyectoId + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           window._qaOfertasProyectoId = null
           window._qaOfertasRolId = null
           window._qaOfertasPostulacionId = null
@@ -1432,7 +1446,7 @@ const GRUPOS = [
         nombre: 'Limpieza — eliminar proyecto de prueba',
         run: async () => {
           if (!window._qaCalifProyectoId) return 'Nada que limpiar'
-          await fetch('/api/proyectos/' + window._qaCalifProyectoId + '?fundador_id=a57b6849-1388-4186-8880-2ec31dd31af5', { method: 'DELETE' })
+          await fetch('/api/proyectos?id=' + window._qaCalifProyectoId + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
           window._qaCalifProyectoId = null
           return 'Proyecto eliminado'
         }
