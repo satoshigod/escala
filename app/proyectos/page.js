@@ -222,13 +222,27 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
       {/* ── PASO 1: Tu negocio ── */}
       {paso === 1 && (
         <div>
-          <div style={s.titulo}>¿Qué negocio vas a montar?</div>
+          <div style={s.titulo}>¿Qué vas a vender?</div>
           <div style={s.educativo}>
-            No importa si vendes ropa, comida, frutas o cualquier otra cosa. Lo importante es que tengas claro qué va a vender tu negocio — con eso calculamos si va a funcionar y cuánto necesitas.
+            No importa si vendes ropa, comida, frutas o cualquier otra cosa. Lo importante es que tengas claro qué va a vender tu negocio — con eso calculamos si va a funcionar.
           </div>
 
-          <label style={s.label}>Nombre de tu negocio *</label>
-          <input style={s.input} value={datos.nombre_negocio} onChange={e => set('nombre_negocio', e.target.value)} placeholder="Ej: Tienda Lupita, Frutería El Paraíso..." />
+          {/* Nombre y ciudad ya vienen del paso 0 — solo mostrarlos como confirmacion */}
+          <div style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.15)', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Negocio</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>{datos.nombre_negocio || '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ciudad</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>{datos.ciudad || '—'}</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Arriendo</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>${parseFloat(datos.canon_mensual || 0).toLocaleString('es-CO')}/mes</div>
+            </div>
+            <button onClick={() => setPaso(0)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#4A90D9', fontSize: '0.72rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif', textDecoration: 'underline' }}>Editar</button>
+          </div>
 
           <label style={s.label}>¿Qué vas a vender? *</label>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.875rem' }}>
@@ -239,9 +253,6 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
               </div>
             ))}
           </div>
-
-          <label style={s.label}>Ciudad donde va a estar el negocio *</label>
-          <input style={s.input} value={datos.ciudad} onChange={e => set('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
         </div>
       )}
 
@@ -250,10 +261,33 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
         <div>
           <div style={s.titulo}>El local que vas a arrendar</div>
           <div style={s.educativo}>
-            Cuéntanos dónde está el local y quién es el propietario. Escala va a contactar al propietario para verificar que el local existe y que el precio que declaras es el correcto — esto protege tanto al operador como al inversionista.
+            Escala va a contactar al propietario para verificar que el local existe y que el precio es correcto — esto protege tanto a ti como al inversionista.
           </div>
 
-          <label style={s.label}>Dirección del local *</label>
+          {/* Resumen de lo que ya se ingreso — sin repetir */}
+          <div style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.15)', borderRadius: '10px', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Arriendo</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>${parseFloat(datos.canon_mensual || 0).toLocaleString('es-CO')}/mes</div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Depósito</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>{datos.meses_deposito} mes(es)</div>
+            </div>
+            {datos.presupuesto_adecuacion && parseFloat(datos.presupuesto_adecuacion) > 0 && (
+              <div>
+                <div style={{ fontSize: '0.65rem', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Adecuaciones</div>
+                <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>${parseFloat(datos.presupuesto_adecuacion).toLocaleString('es-CO')}</div>
+              </div>
+            )}
+            <div>
+              <div style={{ fontSize: '0.65rem', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Ciudad</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>{datos.ciudad}</div>
+            </div>
+            <button onClick={() => setPaso(0)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#4A90D9', fontSize: '0.72rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif', textDecoration: 'underline' }}>Editar</button>
+          </div>
+
+          <label style={s.label}>Dirección exacta del local *</label>
           <span style={s.sublabel}>Dirección completa donde está el local</span>
           <input style={s.input} value={datos.direccion_local} onChange={e => set('direccion_local', e.target.value)} placeholder="Ej: Calle 50 # 43-20, Local 3, El Poblado" />
 
@@ -270,39 +304,6 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
 
           <label style={s.label}>Correo del propietario (si lo tienes)</label>
           <input style={s.input} value={datos.propietario_correo} onChange={e => set('propietario_correo', e.target.value)} placeholder="correo@ejemplo.com" />
-
-          <div style={s.row}>
-            <div>
-              <label style={s.label}>Valor del arriendo mensual *</label>
-              <span style={s.sublabel}>Lo que pagas cada mes al propietario</span>
-              <input style={s.input} type="number" value={datos.canon_mensual} onChange={e => set('canon_mensual', e.target.value)} placeholder="1.200.000" />
-            </div>
-            <div>
-              <label style={s.label}>Meses de depósito que piden *</label>
-              <span style={s.sublabel}>Normalmente 1 o 2 meses</span>
-              <select style={{ ...s.input }} value={datos.meses_deposito} onChange={e => set('meses_deposito', e.target.value)}>
-                <option value="1">1 mes</option>
-                <option value="2">2 meses</option>
-                <option value="3">3 meses</option>
-              </select>
-            </div>
-          </div>
-
-          <label style={s.label}>¿El local necesita adecuaciones? *</label>
-          <span style={s.sublabel}>Pintura, estanterías, instalaciones eléctricas, etc.</span>
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.875rem' }}>
-            {[{ v: false, label: 'No, está listo para usar' }, { v: true, label: 'Sí, necesita arreglos' }].map(op => (
-              <div key={String(op.v)} onClick={() => set('necesita_adecuacion', op.v)} style={{ flex: 1, cursor: 'pointer', border: datos.necesita_adecuacion === op.v ? '2px solid #4A90D9' : '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.75rem', textAlign: 'center', background: datos.necesita_adecuacion === op.v ? 'rgba(74,144,217,0.1)' : 'rgba(255,255,255,0.03)', fontSize: '0.82rem', color: datos.necesita_adecuacion === op.v ? '#4A90D9' : '#8FA3CC', fontWeight: datos.necesita_adecuacion === op.v ? '700' : '400' }}>
-                {op.label}
-              </div>
-            ))}
-          </div>
-          {datos.necesita_adecuacion && (
-            <>
-              <label style={s.label}>Presupuesto para las adecuaciones *</label>
-              <input style={s.input} type="number" value={datos.presupuesto_adecuacion} onChange={e => set('presupuesto_adecuacion', e.target.value)} placeholder="800.000" />
-            </>
-          )}
 
           {/* Resumen capital */}
           {datos.canon_mensual && (
