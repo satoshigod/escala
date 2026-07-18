@@ -676,22 +676,7 @@ export default function Workspace() {
           {esFundador && <span style={{fontSize:'0.62rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(232,160,32,0.2)',color:'#E8A020'}}>Fundador</span>}
           {miRol && !esFundador && <span style={{fontSize:'0.62rem',fontWeight:'700',padding:'2px 8px',borderRadius:'10px',background:'rgba(29,158,117,0.2)',color:'#1D9E75'}}>{miRol.nombre}</span>}
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flexWrap:'wrap'}}>
-          {/* Solo accesos rápidos que NO están en los tabs de abajo */}
-          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/tareas' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color: badgeTareas > 0 ? (esFundador ? '#E8A020' : '#4A90D9') : '#8FA3CC',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.35rem'}}>
-            📋 Tareas
-            {badgeTareas > 0 && <span style={{background: esFundador ? '#E8A020' : '#4A90D9',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{badgeTareas}</span>}
-          </a>
-          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/presupuesto' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none'}}>
-            🔧 Equipos
-          </a>
-          <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/chat' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.35rem'}}>
-            💬 Chat
-            {badgeChat > 0 && <span style={{background:'#1D9E75',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{badgeChat}</span>}
-          </a>
-          {esFundador && (
-            <button onClick={() => setTab('roles')} style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>🧩 Roles</button>
-          )}
+        <div style={{display:'flex',alignItems:'center',gap:'1rem',flexWrap:'wrap'}}>
           <a href={'/proyectos/' + proyecto?.id} style={{color:'#6B7280',fontSize:'0.75rem',textDecoration:'none'}}>Ver proyecto</a>
           <a href="/dashboard" style={{color:'#6B7280',fontSize:'0.75rem',textDecoration:'none'}}>Dashboard</a>
           {esFundador && !confirmandoEliminar && (
