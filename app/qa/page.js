@@ -2291,7 +2291,6 @@ const GRUPOS = [
         run: async () => {
           const { data: { session } } = await window._supabase.auth.getSession()
           if (!session) return 'Sin sesion — omitido'
-          // Crear en borrador
           const resC = await fetch('/api/proyectos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2300,17 +2299,72 @@ const GRUPOS = [
           const dataC = await resC.json()
           if (!dataC.proyecto) throw new Error('No se creo: ' + dataC.error)
           const pid = dataC.proyecto.id
-          // Publicar
           const resP = await fetch('/api/proyectos', {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id: pid, fundador_id: session.user.id, estado: 'activo' })
           })
           const dataP = await resP.json()
-          // Limpiar
           await fetch('/api/proyectos?id=' + pid + '&fundador_id=' + session.user.id, { method: 'DELETE' }).catch(() => {})
           if (dataP.proyecto?.estado !== 'activo') throw new Error('Estado final: ' + dataP.proyecto?.estado)
           return 'OK — borrador → activo en 2 pasos, proyecto eliminado'
+        }
+      },
+    ]
+  },
+  {
+    nombre: '🎛️ Formulario por Escenario',
+    tests: [
+      {
+        id: 'form_local_sin_modalidad',
+        nombre: 'POST proyecto local — estado_financiacion es riesgo_compartido automaticamente',
+        run: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) return 'Sin sesion — omitido'
+          const res = await fetch('/api/proyectos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nombre: 'QA-Local-Escenario-' + Date.now(),
+              descripcion: 'Proyecto QA para verificar que local comercial queda con riesgo_compartido por defecto automaticamente',
+              tipo: 'A', sector: 'Comercio', fundador_id: session.user.id,
+              escenario: 'local_comercial',
+              estado_financiacion: 'riesgo_compartido'
+            })
+          })
+          const data = await res.json()
+          if (!data.proyecto) throw new Error(data.error || 'No se creo')
+          const ef = data.proyecto.estado_financiacion
+          await fetch('/api/proyectos?id=' + data.proyecto.id + '&fundador_id=' + session.user.id, { method: 'DELETE' }).catch(() => {})
+          if (ef !== 'riesgo_compartido') throw new Error('estado_financiacion=' + ef + ', esperaba riesgo_compartido')
+          return 'OK — local creado con estado_financiacion=riesgo_compartido, proyecto eliminado'
+        }
+      },
+      {
+        id: 'form_equipos_sin_modalidad',
+        nombre: 'POST proyecto equipos — tipo y escenario se guardan correctamente',
+        run: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          if (!session) return 'Sin sesion — omitido'
+          const res = await fetch('/api/proyectos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nombre: 'QA-Equipos-Escenario-' + Date.now(),
+              descripcion: 'Proyecto QA para verificar que equipos guarda escenario y tipo correctamente en el backend',
+              tipo: 'B', sector: 'Manufactura', fundador_id: session.user.id,
+              escenario: 'otro',
+              estado_financiacion: 'riesgo_compartido'
+            })
+          })
+          const data = await res.json()
+          if (!data.proyecto) throw new Error(data.error || 'No se creo')
+          const tipo = data.proyecto.tipo
+          const esc = data.proyecto.escenario
+          await fetch('/api/proyectos?id=' + data.proyecto.id + '&fundador_id=' + session.user.id, { method: 'DELETE' }).catch(() => {})
+          if (tipo !== 'B') throw new Error('tipo=' + tipo + ', esperaba B')
+          if (esc !== 'otro') throw new Error('escenario=' + esc + ', esperaba otro')
+          return 'OK — equipos con tipo=B, escenario=otro, proyecto eliminado'
         }
       },
     ]
@@ -2390,6 +2444,11 @@ const MANUAL = [
   { id: 'm40', nombre: 'Borrador — proyecto se crea en borrador y no aparece en directorio', texto: 'Crea un proyecto nuevo. Debe redirigirte al workspace del proyecto recien creado. El workspace debe mostrar el banner amarillo "Este proyecto es privado". Ve a /proyectos — el proyecto NO debe aparecer en el directorio publico. Ve al dashboard — la tarjeta debe mostrar "Borrador — no publicado" en naranja.' },
   { id: 'm41', nombre: 'Borrador — publicar proyecto desde el workspace', texto: 'Desde el workspace de un proyecto en borrador, haz clic en "Publicar proyecto". Confirma en el dialogo. El banner debe desaparecer y el proyecto debe aparecer ahora en /proyectos (directorio publico). En el dashboard la tarjeta debe mostrar el estado activo.' },
   { id: 'm42', nombre: 'Sentry — verificar que captura errores en produccion', texto: 'Entra a sentry.io → proyecto escala-production. Debe haber al menos un evento registrado. Si no hay eventos, ve a escala.network/sentry-example-page (si existe) o espera a que ocurra un error real en produccion. El DSN debe estar configurado como NEXT_PUBLIC_SENTRY_DSN en Vercel.' },
+  { id: 'm43', nombre: 'Formulario creacion — local no muestra modalidad ni perfiles', texto: 'En /proyectos → crear proyecto → seleccionar "Necesito un local". Verificar que NO aparecen: Modalidad de trabajo (remoto/presencial/hibrido), Perfiles que necesitas, Industria. Si aparecen es un error.' },
+  { id: 'm44', nombre: 'Formulario creacion — equipos no muestra modalidad ni perfiles', texto: 'En /proyectos → crear proyecto → seleccionar "Necesito equipos o maquinaria". Verificar que NO aparecen: Modalidad de trabajo, Perfiles que necesitas, Industria. Verificar que SI aparece la etapa del proyecto.' },
+  { id: 'm45', nombre: 'Tab Necesito mas — workspace local comercial', texto: 'Entra al workspace de un proyecto de local comercial. Debe haber un tab "Necesito mas" al final de la barra. Al hacer clic debe mostrar 3 bloques: Necesito un empleado (boton Publicar rol), Necesito un equipo (boton Agregar equipo), Necesito capital de trabajo (boton Agregar item).' },
+  { id: 'm46', nombre: 'Tab Necesito mas — workspace equipos', texto: 'Entra al workspace de un proyecto de equipos/maquinaria. Debe haber un tab "Necesito mas" al final. Al hacer clic debe mostrar: Necesito un empleado, Necesito un local (enlace a crear proyecto local), Necesito otro equipo, Necesito capital de trabajo.' },
+  { id: 'm47', nombre: 'Dashboard — pills Necesito mas en tarjetas de local y equipos', texto: 'En el dashboard, las tarjetas de proyectos de local y equipos deben mostrar un bloque con pills: Empleado / Equipo / Capital (local) o Empleado / Local / Capital (equipos). Hacer clic en un pill debe llevar al workspace en el tab Necesito mas.' },
 ]
 
 export default function QA() {
