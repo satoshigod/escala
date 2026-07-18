@@ -417,35 +417,141 @@ export default function Workspace() {
   const tienePresupuestoDefinido = presupuestoItems.length > 0
   const esProyectoSimple = esLocalComercial || (tienePresupuestoDefinido && !tienePersonas && !tieneTechItems)
 
-  const tabs = esLocalComercial ? [
-    // Local comercial: nav reducido enfocado en la operación
-    { id: 'resumen', label: 'Resumen', icon: '📊' },
-    { id: 'economia', label: 'Capital', icon: '💰' },
-    { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
-    ...(esFundador ? [{ id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null }] : []),
-    ...(esFundador ? [{ id: 'roles', label: 'Roles', icon: '🧩' }] : []),
-    { id: 'documentos', label: 'Docs', icon: '📁' },
-  ] : esProyectoSimple ? [
-    // Proyecto que necesita equipos o maquinaria: enfocado en conseguir fondeo
-    { id: 'resumen', label: 'Resumen', icon: '📊' },
-    ...(mostrarPresupuesto ? [{ id: 'presupuesto', label: 'Presupuesto', icon: '💸' }] : []),
-    { id: 'economia', label: 'Capital', icon: '💰' },
-    { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
-    ...(esFundador ? [{ id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null }] : []),
-    { id: 'documentos', label: 'Docs', icon: '📁' },
+  // Definicion de tabs con icono SVG, label y tooltip
+  const TABS_CONFIG = {
+    // Tab "Mi proyecto" — resumen general, hitos, acciones del fundador
+    resumen: {
+      label: 'Mi proyecto',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+      ),
+      tooltip: ['Estado general e hitos del proyecto', 'Publicar un nuevo rol', 'Registrar ingresos', 'Cerrar el proyecto'],
+    },
+    // Tab "Mi equipo" — personas, contratos, roles
+    equipo: {
+      label: 'Mi equipo',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/>
+        </svg>
+      ),
+      tooltip: ['Quienes hacen parte del proyecto', 'Contratos firmados y postulaciones', 'Roles abiertos que buscan personas'],
+    },
+    // Tab "Maquinas y activos" — equipos, tech, inventario, fondeo
+    presupuesto: {
+      label: 'Maquinas y activos',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+        </svg>
+      ),
+      tooltip: ['Equipos y maquinas que necesitas', 'Tecnologia, software, inventario', 'Pedir fondeo por cada item', 'Ver que esta fondeado y que no'],
+    },
+    // Tab "Financiacion" — capital, aportes, economia, reparto
+    economia: {
+      label: 'Financiacion',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="2" y="6" width="20" height="12" rx="2"/>
+          <circle cx="12" cy="12" r="2"/>
+          <path d="M6 12h.01M18 12h.01"/>
+        </svg>
+      ),
+      tooltip: ['Capital que ha entrado al proyecto', 'Aportes del equipo', 'Repartir ingresos entre participantes', 'Historial de movimientos'],
+    },
+    // Tab "Tareas" — lo que hay que hacer
+    tareas: {
+      label: 'Tareas',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+      ),
+      tooltip: ['Lo que hay que hacer y quien lo hace', 'Plazos y prioridades', 'Documentos adjuntos por tarea'],
+    },
+    // Tab "Chat" — mensajes del equipo
+    chat: {
+      label: 'Chat',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      ),
+      tooltip: ['Mensajes de todo el equipo', 'Solo ven los miembros del proyecto'],
+    },
+    // Tab para local comercial
+    local: {
+      label: 'Ventas de hoy',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      ),
+      tooltip: ['Reportar las ventas del dia', 'Ver el calculo del pago al inversionista', 'Historial de reportes diarios'],
+    },
+    aportes: {
+      label: 'Mis aportes',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+        </svg>
+      ),
+      tooltip: ['Lo que has aportado al proyecto', 'En tiempo, dinero o recursos'],
+    },
+    hitos: {
+      label: 'Hitos',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      ),
+      tooltip: ['Las metas del proyecto', 'Completar hitos desbloquea el fondeo'],
+    },
+    documentos: {
+      label: 'Documentos',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+      ),
+      tooltip: ['Documentos y archivos del proyecto', 'Contratos, permisos, entregables'],
+    },
+    roles: {
+      label: 'Roles',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/><line x1="20" y1="8" x2="20" y2="14"/>
+        </svg>
+      ),
+      tooltip: ['Roles que buscan postulantes', 'Publicar nuevo rol'],
+    },
+  }
+
+  // Construir lista de tabs segun tipo de proyecto y rol
+  const tabIds = esLocalComercial ? [
+    'resumen', 'local', 'economia', 'chat',
+    ...(esFundador ? ['hitos'] : []),
+    'documentos',
+  ] : esFundador ? [
+    'resumen', 'equipo', 'presupuesto', 'economia', 'tareas', 'chat',
   ] : [
-    // Proyecto completo: todos los tabs
-    { id: 'resumen', label: 'Resumen', icon: '📊' },
-    { id: 'hitos', label: 'Hitos', icon: '🎯', badge: hitosPendientes > 0 ? hitosPendientes : null },
-    { id: 'equipo', label: 'Equipo', icon: '👥' },
-    { id: 'aportes', label: 'Mis aportes', icon: '📋' },
-    ...(mostrarPresupuesto ? [{ id: 'presupuesto', label: 'Presupuesto', icon: '💸' }] : []),
-    { id: 'economia', label: 'Economía', icon: '💰' },
-    { id: 'roles', label: 'Roles', icon: '🧩', badge: roles.filter(r => r.estado === 'abierto').length > 0 ? roles.filter(r => r.estado === 'abierto').length : null },
-    { id: 'tareas', label: 'Tareas', icon: '✅', badge: badgeTareas > 0 ? badgeTareas : null },
-    { id: 'documentos', label: 'Documentación', icon: '📁' },
-    { id: 'chat', label: 'Chat', icon: '💬', badge: badgeChat > 0 ? badgeChat : null },
+    // Especialista: primero lo que le importa
+    'tareas', 'resumen', 'aportes', 'economia', 'chat',
   ]
+
+  const tabs = tabIds.map(id => ({
+    id,
+    ...TABS_CONFIG[id],
+    badge: id === 'chat' ? (badgeChat > 0 ? badgeChat : null)
+      : id === 'tareas' ? (badgeTareas > 0 ? badgeTareas : null)
+      : id === 'hitos' ? (hitosPendientes > 0 ? hitosPendientes : null)
+      : id === 'roles' ? (roles.filter(r => r.estado === 'abierto').length > 0 ? roles.filter(r => r.estado === 'abierto').length : null)
+      : null
+  }))
 
   function handleTabClick(id) {
     if (id === 'tareas' && proyecto?.id) {
@@ -676,33 +782,101 @@ export default function Workspace() {
         </a>
       )}
 
-      {/* TABS */}
-      <div style={{background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'0 1.5rem',display:'flex',gap:'0',overflowX:'auto',alignItems:'stretch'}}>
+      {/* TABS — icono + label + tooltip */}
+      <div style={{background:'rgba(255,255,255,0.02)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'0 1rem',display:'flex',gap:'0',overflowX:'auto',alignItems:'stretch'}}>
         {tabs.map(t => {
-          const tabContent = (
+          const activo = tab === t.id
+          const baseStyle = {
+            background:'none', border:'none',
+            borderBottom: activo ? '2px solid #1D9E75' : '2px solid transparent',
+            padding:'0.75rem 1rem 0.625rem',
+            cursor:'pointer', fontFamily:'Inter,sans-serif',
+            whiteSpace:'nowrap', display:'flex', flexDirection:'column',
+            alignItems:'center', gap:'4px', position:'relative',
+            textDecoration:'none', minWidth:'80px',
+            transition:'background 0.15s',
+          }
+          const labelStyle = {
+            fontSize:'0.68rem',
+            fontWeight: activo ? '700' : '400',
+            color: activo ? '#1D9E75' : '#8FA3CC',
+            lineHeight:'1.2',
+            textAlign:'center',
+          }
+          const tooltipEl = t.tooltip ? (
+            <div style={{
+              position:'absolute', top:'calc(100% + 8px)', left:'50%',
+              transform:'translateX(-50%)',
+              background:'#0D1B3E', border:'1px solid rgba(255,255,255,0.15)',
+              borderRadius:'10px', padding:'0.625rem 0.875rem',
+              width:'200px', zIndex:200,
+              pointerEvents:'none',
+              opacity:0, transition:'opacity 0.15s',
+              boxShadow:'0 8px 24px rgba(0,0,0,0.4)',
+            }} className="tab-tooltip">
+              <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#fff',marginBottom:'6px'}}>{t.label}</div>
+              {t.tooltip.map((item, i) => (
+                <div key={i} style={{display:'flex',gap:'5px',alignItems:'flex-start',fontSize:'0.68rem',color:'#8FA3CC',padding:'2px 0'}}>
+                  <span style={{color:'#4B5563',flexShrink:0}}>·</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          ) : null
+
+          const content = (
             <>
-              {t.icon} {t.label}
-              {t.badge && <span style={{background:'#E8A020',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{t.badge}</span>}
+              {t.icon(activo)}
+              <span style={labelStyle}>{t.label}</span>
+              {t.badge && <span style={{position:'absolute',top:'6px',right:'6px',background:'#E8A020',color:'#fff',fontSize:'0.55rem',fontWeight:'700',padding:'1px 4px',borderRadius:'10px',minWidth:'14px',textAlign:'center',lineHeight:'1.4'}}>{t.badge}</span>}
+              {tooltipEl}
             </>
           )
-          const baseStyle = {background:'none',border:'none',borderBottom: tab===t.id ? '2px solid #1D9E75' : '2px solid transparent',color: tab===t.id ? '#fff' : '#8FA3CC',padding:'0.875rem 1.25rem',fontSize:'0.82rem',fontWeight: tab===t.id ? '700' : '400',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.4rem',position:'relative',textDecoration:'none'}
-          if ((t.id === 'tareas' || t.id === 'documentos') && proyecto?.id) {
+
+          if (t.id === 'tareas' && proyecto?.id) {
             return (
-              <a key={t.id} href={'/proyectos/' + proyecto.id + '/workspace/' + t.id} style={baseStyle}>
-                {tabContent}
+              <a key={t.id} href={'/proyectos/' + proyecto.id + '/workspace/tareas'}
+                style={baseStyle}
+                onMouseEnter={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='1' }}
+                onMouseLeave={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='0' }}>
+                {content}
+              </a>
+            )
+          }
+          if (t.id === 'documentos' && proyecto?.id) {
+            return (
+              <a key={t.id} href={'/proyectos/' + proyecto.id + '/workspace/documentos'}
+                style={baseStyle}
+                onMouseEnter={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='1' }}
+                onMouseLeave={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='0' }}>
+                {content}
+              </a>
+            )
+          }
+          if (t.id === 'local' && proyecto?.id) {
+            return (
+              <a key={t.id} href={'/proyectos/' + proyecto.id + '/workspace/local'}
+                style={baseStyle}
+                onMouseEnter={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='1' }}
+                onMouseLeave={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='0' }}>
+                {content}
               </a>
             )
           }
           return (
-            <button key={t.id} onClick={() => handleTabClick(t.id)} style={baseStyle}>
-              {tabContent}
+            <button key={t.id}
+              onClick={() => handleTabClick(t.id)}
+              style={baseStyle}
+              onMouseEnter={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='1' }}
+              onMouseLeave={e => { const tt = e.currentTarget.querySelector('.tab-tooltip'); if(tt) tt.style.opacity='0' }}>
+              {content}
             </button>
           )
         })}
-        {/* Toggle ver workspace completo si el nav está reducido */}
+        {/* Acceso workspace completo si es modo reducido */}
         {esProyectoSimple && (
-          <a href={'/proyectos/' + proyecto?.id + '/workspace'} style={{marginLeft:'auto',background:'none',border:'none',borderBottom:'2px solid transparent',color:'#4B5563',padding:'0.875rem 0.875rem',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',gap:'0.35rem',textDecoration:'none',flexShrink:0}}>
-            ··· completo
+          <a href={'/proyectos/' + proyecto?.id + '/workspace'} style={{marginLeft:'auto',background:'none',border:'none',borderBottom:'2px solid transparent',color:'#4B5563',padding:'0.75rem 0.75rem',fontSize:'0.65rem',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',display:'flex',alignItems:'center',textDecoration:'none',flexShrink:0}}>
+            ··· todo
           </a>
         )}
       </div>
