@@ -161,14 +161,14 @@ const CAPAS = [
       { num: 'C5.6', nombre: 'Dashboard contextual: tarjeta de proyecto detecta automaticamente equipos/maquinaria/local/tech y muestra informacion relevante sin entrar al workspace', done: true, valor: 3000000, quien: 'Claude AI' },
       { num: 'C5.7', nombre: 'Bloque descubrimiento en workspace: CTA azul a presupuesto, bloque warning hitos sin vincular al presupuesto', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: 'C5.8', nombre: 'Equipo base interno de Escala: profesionales propios que aparecen listados cuando no hay especialistas externos. Se asignan temporalmente hasta tener masa critica', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
-      { num: 'C5.9', nombre: 'Pantalla vacia resuelta: cuando no hay equipo ni roles abiertos el fundador ve CTA Publicar primer rol + Ver proyecto publico. Desaparece cuando hay miembros.', done: true, valor: 500000, quien: 'Claude AI' }, // old: fil de Escala como temporal, notificar internamente, activar reclutamiento del perfil faltante', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C5.9', nombre: 'Pantalla vacia resuelta: cuando no hay equipo ni roles abiertos el fundador ve CTA Publicar primer rol + Ver proyecto publico. Desaparece cuando hay miembros.', done: true, valor: 500000, quien: 'Claude AI' },
       { num: 'C5.10', nombre: 'Sistema de invitacion viralizado: inversionista invita a otro con incentivos, fundador trae inversionistas con beneficios de prioridad en fondeo', done: false, valor: 3000000, quien: 'Claude AI' },
       { num: 'C5.11', nombre: 'Red de partners institucionales: family offices, empresas, cooperativas que alimenten el marketplace con volumen desde el inicio', done: false, valor: 0, quien: 'Ivan' },
       { num: 'C5.12', nombre: 'Fondo propio temporal de Escala: capital semilla para financiar los primeros proyectos y demostrar el modelo antes de atraer angeles externos', done: false, valor: 0, quien: 'Ivan (decision estrategica)' },
       { num: 'C5.13', nombre: 'Grupo fundador de inversores ancla: 10-20 inversores comprometidos desde el inicio con condiciones preferenciales a cambio de liquidez inicial', done: false, valor: 0, quien: 'Ivan (desarrollo comercial)' },
       { num: 'C5.14', nombre: 'KPIs de liquidez del marketplace: tiempo promedio para primer especialista, tiempo para primer fondeo, tasa de conversion visitante a proyecto publicado, NPS por rol', done: false, valor: 4000000, quien: 'Claude AI' },
     ]
-  ,
+  },
   {
     id: 'C6',
     titulo: 'CAPA 6 — Intelligence Layer',
