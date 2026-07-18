@@ -426,7 +426,7 @@ export default function Workspace() {
     ...(esFundador ? [{ id: 'roles', label: 'Roles', icon: '🧩' }] : []),
     { id: 'documentos', label: 'Docs', icon: '📁' },
   ] : esProyectoSimple ? [
-    // Proyecto de maquinaria/equipos sin equipo humano: enfocado en fondeo
+    // Proyecto que necesita equipos o maquinaria: enfocado en conseguir fondeo
     { id: 'resumen', label: 'Resumen', icon: '📊' },
     ...(mostrarPresupuesto ? [{ id: 'presupuesto', label: 'Presupuesto', icon: '💸' }] : []),
     { id: 'economia', label: 'Capital', icon: '💰' },
@@ -576,7 +576,7 @@ export default function Workspace() {
             {badgeTareas > 0 && <span style={{background: esFundador ? '#E8A020' : '#4A90D9',color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'1px 5px',borderRadius:'10px',minWidth:'16px',textAlign:'center'}}>{badgeTareas}</span>}
           </a>
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/presupuesto' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#E8A020',textDecoration:'none',background:'rgba(232,160,32,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(232,160,32,0.25)'}}>
-            💰 Presupuesto
+            🔧 Equipos y capital
           </a>
           <a href={proyecto?.id ? '/proyectos/'+proyecto.id+'/workspace/capital' : '#'} style={{fontSize:'0.78rem',fontWeight:'700',color:'#AFA9EC',textDecoration:'none',background:'rgba(175,169,236,0.1)',padding:'0.3rem 0.875rem',borderRadius:'6px',border:'1px solid rgba(175,169,236,0.25)'}}>
             💼 Capital
@@ -769,7 +769,7 @@ export default function Workspace() {
               <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
                 <div>
                   <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>💰 ¿Necesitas capital para algo específico?</div>
-                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega una máquina, un empleado, tecnología o cualquier recurso al presupuesto. Los ángeles de inversión lo fondean por item — a cambio de participación, deuda o revenue share.</div>
+                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega lo que necesitas: una máquina, un horno, un empleado, tecnología. Los ángeles lo fondean — tú decides a cambio de qué.</div>
                 </div>
                 <button onClick={() => setTab('presupuesto')} style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                   Ver presupuesto →
@@ -1188,7 +1188,7 @@ export default function Workspace() {
             {/* Link al presupuesto completo */}
             <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
               <div>
-                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Presupuesto e inversión del proyecto</div>
+                <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Equipos, maquinaria y capital del proyecto</div>
                 <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Define los recursos que necesitas y recibe fondeo por item de inversionistas</div>
               </div>
               <a href={`/proyectos/${proyecto?.id}/workspace/presupuesto`} style={{background:'#4A90D9',color:'#fff',padding:'0.5rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700',whiteSpace:'nowrap'}}>

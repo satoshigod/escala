@@ -199,8 +199,8 @@ export default function AngelPage() {
             {fondeos.length === 0 ? (
               <div style={{ ...s.card, textAlign: 'center', padding: '3rem' }}>
                 <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🌟</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>Aun no tienes inversiones</div>
-                <div style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.25rem' }}>Explora el directorio y fondea el primer item de un proyecto.</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>Aún no has financiado ningún negocio</div>
+                <div style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.25rem' }}>Entra al directorio y elige qué quieres financiar.</div>
                 <button onClick={() => setTab('oportunidades')} style={s.btn('#4A90D9')}>Ver oportunidades</button>
               </div>
             ) : (
@@ -271,7 +271,7 @@ export default function AngelPage() {
         {tab === 'oportunidades' && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <div style={{ fontSize: '0.82rem', color: '#8FA3CC' }}>Items sin fondear en proyectos activos</div>
+              <div style={{ fontSize: '0.82rem', color: '#8FA3CC' }}>Emprendedores que necesitan tu capital ahora</div>
               <a href="/directorio-inversion" style={{ fontSize: '0.78rem', color: '#4A90D9', textDecoration: 'none' }}>Ver directorio completo</a>
             </div>
             {oportunidades.length === 0 ? (
@@ -297,9 +297,9 @@ export default function AngelPage() {
                     <span style={{ fontSize: '0.65rem', background: item.prioridad === 'critica' ? 'rgba(224,85,85,0.12)' : 'rgba(255,255,255,0.06)', color: item.prioridad === 'critica' ? '#E05555' : '#8FA3CC', padding: '2px 8px', borderRadius: '20px', fontWeight: '700' }}>{item.prioridad}</span>
                   </div>
                   {yaInvertido ? (
-                    <div style={{ fontSize: '0.75rem', color: '#1D9E75' }}>Ya tienes una propuesta activa en este item</div>
+                    <div style={{ fontSize: '0.75rem', color: '#1D9E75' }}>Ya tienes una propuesta enviada aquí</div>
                   ) : (
-                    <button onClick={() => { setMostrarFondeo(item); setMensaje('') }} style={s.btn('#4A90D9')}>Fondear este item</button>
+                    <button onClick={() => { setMostrarFondeo(item); setMensaje('') }} style={s.btn('#4A90D9')}>Financiar esto</button>
                   )}
                 </div>
               )

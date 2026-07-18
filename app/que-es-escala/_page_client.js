@@ -141,7 +141,7 @@ export default function QueEsEscala() {
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:'0.5rem'}}>
             {[
               { href: '/crear-empresa-sin-capital', label: 'Crear empresa sin capital' },
-              { href: '/financiar-negocio-local-colombia', label: 'Financiar negocio en local comercial' },
+              { href: '/financiar-negocio-local-colombia', label: 'Necesito un local para mi negocio' },
               { href: '/buscar-cofundador', label: 'Buscar cofundador' },
               { href: '/angel-investor', label: 'Ser Ángel de Impulso' },
               { href: '/blog/que-es-la-participacion-diferida', label: 'Qué es la participación diferida' },

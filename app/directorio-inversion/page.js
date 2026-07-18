@@ -106,9 +106,9 @@ export default function DirectorioInversionPage() {
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
           <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A90D9', marginBottom: '0.5rem' }}>Angel de Impulso</div>
-          <h1 style={{ fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>Oportunidades de inversión</h1>
+          <h1 style={{ fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>Negocios que necesitan tu capital</h1>
           <p style={{ fontSize: '0.88rem', color: '#8FA3CC', lineHeight: '1.6', maxWidth: '600px' }}>
-            Proyectos activos en Escala que necesitan capital para recursos específicos. Fondea un item concreto — una máquina, un empleado, tecnología — y recibes participación, un retorno con tasa o revenue share.
+            Emprendedores reales que necesitan una máquina, un local, un empleado o tecnología para arrancar. Tú pones el capital, ellos ponen el trabajo. Defines tú a cambio de qué.
           </p>
         </div>
 
@@ -116,8 +116,8 @@ export default function DirectorioInversionPage() {
         {!usuario && (
           <div style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '12px', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#1D9E75', marginBottom: '2px' }}>Invierte desde $500.000 COP en negocios reales</div>
-              <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>Crea tu cuenta gratis para proponer fondeo en cualquier item. Sin mínimos de inversión.</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#1D9E75', marginBottom: '2px' }}>Financia lo que necesitan — desde $500.000 COP</div>
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>Registrate gratis y propón cuánto quieres poner y a cambio de qué. Sin montos mínimos.</div>
             </div>
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
               <a href="/registro" style={{ background: '#1D9E75', color: '#fff', padding: '0.5rem 1.25rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.82rem', fontWeight: '700', whiteSpace: 'nowrap' }}>Crear cuenta gratis →</a>
@@ -208,12 +208,12 @@ export default function DirectorioInversionPage() {
                   <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     {usuario ? (
                       <button onClick={() => setMostrarFondeo(item)} style={s.btn('#4A90D9')}>
-                        💰 Quiero fondear este item
+                        💰 Quiero financiar esto
                       </button>
                     ) : (
                       <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                         <a href="/registro" style={{ ...s.btn('#1D9E75'), textDecoration: 'none', display: 'inline-block' }}>
-                          Registrarme para invertir →
+                          Quiero invertir en esto →
                         </a>
                         <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>¿Ya tienes cuenta? <a href="/registro?modo=login" style={{ color: '#4A90D9', textDecoration: 'none' }}>Inicia sesión</a></span>
                       </div>

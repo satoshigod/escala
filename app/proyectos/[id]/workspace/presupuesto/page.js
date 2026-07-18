@@ -181,13 +181,13 @@ export default function PresupuestoPage() {
     <div style={s.page}>
       <nav style={s.nav}>
         <a href={`/proyectos/${id}/workspace`} style={{ fontSize: '0.85rem', color: '#8FA3CC', textDecoration: 'none' }}>← Workspace</a>
-        <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>💰 Presupuesto e inversión</div>
+        <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>🔧 Lo que necesito para operar</div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <a href={`/api/presupuesto/exportar?proyecto_id=${id}`} target="_blank" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', padding: '0.4rem 0.875rem', borderRadius: '6px', textDecoration: 'none', fontSize: '0.78rem', fontWeight: '600' }}>
-            📄 Exportar PDF
+            📄 Descargar resumen
           </a>
           {esFundador && (
-            <button onClick={() => setMostrarForm(true)} style={s.btn('#1D9E75')}>+ Agregar item</button>
+            <button onClick={() => setMostrarForm(true)} style={s.btn('#1D9E75')}>+ Agregar lo que necesito</button>
           )}
         </div>
       </nav>
@@ -247,7 +247,7 @@ export default function PresupuestoPage() {
             {esFundador ? (
               <>
                 <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>💰</div>
-                <div style={{ fontSize: '0.88rem', marginBottom: '1rem' }}>El presupuesto está vacío. Agrega los recursos que necesitas para que los inversionistas puedan fondearte.</div>
+                <div style={{ fontSize: '0.88rem', marginBottom: '1rem' }}>Aún no has agregado lo que necesitas. Empieza aquí — una máquina, un empleado, tecnología, inventario. Los ángeles lo fondean por item.</div>
                 <button onClick={() => setMostrarForm(true)} style={s.btn('#1D9E75')}>+ Agregar primer item</button>
               </>
             ) : (
@@ -331,7 +331,7 @@ export default function PresupuestoPage() {
                   <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     {!esFundador && !['fondeado', 'verificado'].includes(item.estado_fondeo) && (
                       <button onClick={() => setMostrarFondeoModal(item)} style={s.btn('#4A90D9')}>
-                        💰 Quiero fondear este item
+                        💰 Quiero financiar esto
                       </button>
                     )}
                     {esFundador && (
@@ -358,7 +358,7 @@ export default function PresupuestoPage() {
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }}>
             <div style={{ background: '#0F1E3A', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '16px', padding: '1.5rem', width: '100%', maxWidth: '560px', maxHeight: '90vh', overflowY: 'auto' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-                <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff' }}>{editando ? 'Editar item' : 'Agregar item al presupuesto'}</div>
+                <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff' }}>{editando ? 'Editar item' : '¿Qué necesitas para operar?'}</div>
                 <button onClick={() => { setMostrarForm(false); setEditando(null); setError('') }} style={{ background: 'none', border: 'none', color: '#8FA3CC', fontSize: '1.25rem', cursor: 'pointer' }}>✕</button>
               </div>
 
@@ -387,8 +387,8 @@ export default function PresupuestoPage() {
                 </div>
               )}
 
-              <label style={s.label}>Nombre *</label>
-              <input style={s.input} value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} placeholder="Ej: Horno industrial, Sueldo desarrollador, Meta Ads..." />
+              <label style={s.label}>¿Qué necesitas? *</label>
+              <input style={s.input} value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} placeholder="Ej: Horno, máquina de coser, servidor, primer empleado, publicidad..." />
 
               <label style={s.label}>Descripcion</label>
               <input style={s.input} value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} placeholder="Para que se va a usar este recurso..." />
@@ -436,7 +436,7 @@ export default function PresupuestoPage() {
                 </label>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: '#C8D4E8', cursor: 'pointer' }}>
                   <input type="checkbox" checked={form.es_aporte_especie} onChange={e => setForm(f => ({ ...f, es_aporte_especie: e.target.checked }))} />
-                  Es aporte en especie (ya lo tengo)
+                  Ya lo tengo — lo estoy poniendo como aporte
                 </label>
               </div>
 
@@ -534,7 +534,7 @@ export default function PresupuestoPage() {
 
               <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button onClick={proponerFondeo} disabled={guardando} style={{ ...s.btn('#4A90D9'), flex: 1, opacity: guardando ? 0.7 : 1 }}>
-                  {guardando ? 'Enviando...' : 'Enviar propuesta de fondeo →'}
+                  {guardando ? 'Enviando...' : 'Hacer mi propuesta →'}
                 </button>
                 <button onClick={() => { setMostrarFondeoModal(null); setError('') }} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.6rem 1rem', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
                   Cancelar

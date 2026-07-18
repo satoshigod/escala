@@ -112,7 +112,7 @@ export default function CapitalWorkspacePage() {
     <div style={s.page}>
       <nav style={s.nav}>
         <a href={`/proyectos/${id}/workspace`} style={{ fontSize: '0.85rem', color: '#8FA3CC', textDecoration: 'none' }}>← Workspace</a>
-        <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>💼 Capital del proyecto</div>
+        <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>💼 Financiamiento recibido</div>
         <a href={`/proyectos/${id}/workspace/presupuesto`} style={{ fontSize: '0.78rem', color: '#4A90D9', textDecoration: 'none' }}>Ver presupuesto →</a>
       </nav>
 
@@ -248,7 +248,7 @@ export default function CapitalWorkspacePage() {
               Agrega los recursos que necesitas al presupuesto para que los ángeles puedan fondearlos.
             </div>
             <a href={`/proyectos/${id}/workspace/presupuesto`} style={{ background: '#4A90D9', color: '#fff', padding: '0.6rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: '700' }}>
-              Ir al presupuesto →
+              Agregar lo que necesito →
             </a>
           </div>
         )}

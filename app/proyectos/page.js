@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase'
 
 // ── WIZARD LOCAL COMERCIAL ────────────────────────────────────────────────────
 function WizardLocalComercial({ onCancelar, onPublicar }) {
-  const [paso, setPaso] = useState(1)
+  const [paso, setPaso] = useState(0)  // 0 = calculadora previa
   const [datos, setDatos] = useState({
     // Paso 1 — negocio
     nombre_negocio: '', tipo_negocio: '', ciudad: '',
@@ -106,18 +106,102 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
 
   const fmt = (n) => Math.round(n).toLocaleString('es-CO')
 
+  // Estado local para la calculadora previa (paso 0)
+  const [calcPrev, setCalcPrev] = useState({ canon: '', meses: '2', adecuacion: '' })
+  const calcCanon = parseFloat(calcPrev.canon || 0)
+  const calcMeses = parseInt(calcPrev.meses || 2)
+  const calcAdec = parseFloat(calcPrev.adecuacion || 0)
+  const calcTotal = calcCanon * calcMeses + calcCanon + calcAdec
+  const fmtC = n => Math.round(n).toLocaleString('es-CO')
+
   return (
     <div style={s.wrap}>
 
-      {/* Barra de pasos */}
-      <div style={s.pasos}>
+      {/* ── PASO 0: Calculadora previa — ver el monto antes de comprometerse ── */}
+      {paso === 0 && (
+        <div>
+          <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A90D9', marginBottom: '0.5rem' }}>Necesito un local</div>
+          <div style={s.titulo}>¿Cuánto necesitas para arrancar?</div>
+          <div style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+            Un inversionista de Escala pone el capital del local. Tú se lo devuelves desde las ventas diarias — sin banco, sin garante. Calcula cuánto necesitas:
+          </div>
+
+          <label style={s.label}>¿Cuánto vale el arriendo mensual?</label>
+          <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
+            <span style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>$</span>
+            <input style={{ ...s.input, paddingLeft: '1.75rem', marginBottom: 0 }} type="number" value={calcPrev.canon} onChange={e => setCalcPrev(c => ({ ...c, canon: e.target.value }))} placeholder="1.200.000" />
+          </div>
+
+          <label style={s.label}>¿Cuántos meses de depósito pide el propietario?</label>
+          <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.875rem' }}>
+            {[1, 2, 3].map(m => (
+              <div key={m} onClick={() => setCalcPrev(c => ({ ...c, meses: String(m) }))} style={{ flex: 1, padding: '0.5rem', textAlign: 'center', borderRadius: '8px', cursor: 'pointer', border: `2px solid ${calcPrev.meses === String(m) ? '#4A90D9' : 'rgba(255,255,255,0.1)'}`, background: calcPrev.meses === String(m) ? 'rgba(74,144,217,0.12)' : 'rgba(255,255,255,0.04)', color: calcPrev.meses === String(m) ? '#4A90D9' : '#8FA3CC', fontSize: '0.82rem', fontWeight: calcPrev.meses === String(m) ? '700' : '400' }}>
+                {m} {m === 1 ? 'mes' : 'meses'}
+              </div>
+            ))}
+          </div>
+
+          <label style={s.label}>¿Necesitas adecuar el local? (pintura, estantes, etc.)</label>
+          <div style={{ position: 'relative', marginBottom: '1rem' }}>
+            <span style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>$</span>
+            <input style={{ ...s.input, paddingLeft: '1.75rem', marginBottom: 0 }} type="number" value={calcPrev.adecuacion} onChange={e => setCalcPrev(c => ({ ...c, adecuacion: e.target.value }))} placeholder="0 (opcional)" />
+          </div>
+
+          {calcCanon > 0 ? (
+            <div style={{ background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.25)', borderRadius: '12px', padding: '1.1rem 1.25rem', marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.875rem' }}>Capital que necesita el inversionista poner</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC', padding: '4px 0' }}>
+                <span>Depósito ({calcMeses} {calcMeses === 1 ? 'mes' : 'meses'} × ${fmtC(calcCanon)})</span>
+                <span style={{ color: '#fff' }}>${fmtC(calcCanon * calcMeses)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC', padding: '4px 0' }}>
+                <span>Primer mes de arriendo</span>
+                <span style={{ color: '#fff' }}>${fmtC(calcCanon)}</span>
+              </div>
+              {calcAdec > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC', padding: '4px 0' }}>
+                  <span>Adecuaciones del local</span>
+                  <span style={{ color: '#fff' }}>${fmtC(calcAdec)}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.15rem', fontWeight: '800', color: '#1D9E75', padding: '10px 0 4px', borderTop: '1px solid rgba(29,158,117,0.2)', marginTop: '6px' }}>
+                <span>Total</span>
+                <span>${fmtC(calcTotal)}</span>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginTop: '0.5rem', lineHeight: '1.5' }}>
+                Tú lo pagas de vuelta desde las ventas diarias de tu negocio — con intereses acordados. Sin banco, sin garante, sin ceder el negocio.
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '1.25rem', marginBottom: '1.25rem', textAlign: 'center', color: '#4B5563', fontSize: '0.82rem' }}>
+              Ingresa el valor del arriendo para ver cuánto necesitas
+            </div>
+          )}
+
+          <div style={s.btnRow}>
+            <button style={s.btnCancel} onClick={onCancelar}>Cancelar</button>
+            <button
+              style={{ ...s.btnVerde, opacity: calcCanon > 0 ? 1 : 0.4 }}
+              onClick={() => {
+                if (!calcCanon) return
+                setDatos(d => ({ ...d, canon_mensual: calcPrev.canon, meses_deposito: calcPrev.meses, presupuesto_adecuacion: calcPrev.adecuacion || '', necesita_adecuacion: calcAdec > 0 }))
+                setPaso(1)
+              }}>
+              {calcCanon > 0 ? `Quiero conseguir $${fmtC(calcTotal)} →` : 'Ingresa el arriendo para continuar'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Barra de pasos — pasos 1 al 6 */}
+      {paso >= 1 && (<div style={s.pasos}>
         {[1,2,3,4,5,6].map((p, i) => (
           <div key={p} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flex: p < 6 ? 1 : 'none' }}>
             <div style={s.pill(paso === p, paso > p)}>{paso > p ? '✓' : p}</div>
             {p < 6 && <div style={s.linea}></div>}
           </div>
         ))}
-      </div>
+      </div>)}
 
       {/* ── PASO 1: Tu negocio ── */}
       {paso === 1 && (
@@ -494,7 +578,7 @@ const NIVELES_AVANCE = [
   { id: 'tengo_la_idea',      emoji: '💡', label: 'Tengo la idea',      desc: 'Sé qué quiero hacer pero aún no he empezado' },
   { id: 'ya_empece',          emoji: '🔧', label: 'Ya empecé',          desc: 'Tengo algo funcionando, aunque sea pequeño' },
   { id: 'tengo_clientes',     emoji: '🤝', label: 'Tengo clientes',     desc: 'Ya hay personas pagando o usando lo que ofrezco' },
-  { id: 'necesito_crecer',    emoji: '📈', label: 'Necesito crecer',    desc: 'El negocio funciona pero me falta capital o equipo' },
+  { id: 'necesito_crecer',    emoji: '📈', label: 'Necesito crecer o escalar',    desc: 'El negocio funciona pero me falta capital o equipo' },
   { id: 'quiero_transformar', emoji: '🔄', label: 'Quiero transformar', desc: 'Tengo una empresa y necesito cambiar algo' },
 ]
 
@@ -900,32 +984,32 @@ export default function Proyectos() {
               </div>
             )}
 
-            <label style={s.label}>¿Qué tipo de proyecto vas a publicar? *</label>
+            <label style={s.label}>¿Qué necesitas? *</label>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
               {[
                 {
                   id: 'startup',
                   icon: '💡',
-                  titulo: 'Startup o empresa',
-                  desc: 'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo.',
-                  badge: 'Equity diferido',
+                  titulo: 'Crear o crecer mi empresa',
+                  desc: 'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo que trabaja por participación.',
+                  badge: 'Equipo + capital',
                   badgeColor: '#1D9E75',
                 },
                 {
                   id: 'local_comercial',
                   icon: '🏪',
-                  titulo: 'Negocio en un local',
-                  desc: 'Quieres montar una tienda, restaurante, frutería, almacén de ropa u otro negocio de venta de productos y necesitas financiar el arriendo del local — deposito, mensualidades del contrato y adecuaciones.',
-                  badge: 'Fondeo Escala',
+                  titulo: 'Necesito un local',
+                  desc: 'Quieres montar una tienda, restaurante, frutería, almacén u otro negocio y necesitas que alguien financie el depósito y el arriendo del contrato.',
+                  badge: 'Fondeo de local',
                   badgeColor: '#4A90D9',
                   destacado: true,
                 },
                 {
                   id: 'otro',
-                  icon: '📦',
-                  titulo: 'Otro proyecto',
-                  desc: 'Importación, compra de vehículo, maquinaria u otro tipo de proyecto que necesita capital específico.',
-                  badge: 'Capital de trabajo',
+                  icon: '🔧',
+                  titulo: 'Necesito equipos o maquinaria',
+                  desc: 'Necesitas una máquina, un horno, un vehículo, tecnología u otro activo para que tu negocio opere. Un ángel lo financia y tú lo pagas desde tus ingresos.',
+                  badge: 'Activos y capital',
                   badgeColor: '#E8A020',
                 },
               ].map(op => (
@@ -959,12 +1043,38 @@ export default function Proyectos() {
 
             {form.escenario === 'local_comercial' && (
               <div style={{background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.25rem'}}>
-                <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#4A90D9',marginBottom:'0.5rem'}}>🏪 Negocio en local — cómo funciona el fondeo</div>
-                <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6'}}>
-                  Escala financia el depósito y los meses de arriendo del contrato. Cada mes de arriendo queda registrado como parte de tu deuda con el inversionista. Cada día que tengas ventas, pagas primero los intereses del día y luego abonas al capital. Cuando termines de pagar, el negocio es tuyo. El wizard te guía paso a paso — no necesitas saber de finanzas.
+                <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#4A90D9',marginBottom:'0.75rem'}}>🏪 Así funciona — en 4 pasos</div>
+                <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                  {[
+                    { n:'1', txt:'Describes tu negocio y el local (5 minutos)' },
+                    { n:'2', txt:'Escala verifica el local y te asigna la tasa (24-48 horas)' },
+                    { n:'3', txt:'Un ángel financia el depósito y el arriendo' },
+                    { n:'4', txt:'Tú pagas desde las ventas diarias — sin banco, sin garante' },
+                  ].map(p => (
+                    <div key={p.n} style={{display:'flex',gap:'0.625rem',alignItems:'center'}}>
+                      <span style={{width:'20px',height:'20px',borderRadius:'50%',background:'rgba(74,144,217,0.2)',color:'#4A90D9',fontSize:'0.65rem',fontWeight:'700',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{p.n}</span>
+                      <span style={{fontSize:'0.78rem',color:'#8FA3CC'}}>{p.txt}</span>
+                    </div>
+                  ))}
                 </div>
-                <div style={{marginTop:'0.75rem',fontSize:'0.75rem',color:'#4A90D9',fontWeight:'600'}}>
-                  Este tipo de proyecto tiene un wizard especial en el siguiente paso →
+              </div>
+            )}
+
+            {form.escenario === 'otro' && (
+              <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.25rem'}}>
+                <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#E8A020',marginBottom:'0.75rem'}}>🔧 Así funciona — en 4 pasos</div>
+                <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                  {[
+                    { n:'1', txt:'Describes qué necesitas (máquina, horno, vehículo, servidor...)' },
+                    { n:'2', txt:'Lo publicas con el precio y a cambio de qué' },
+                    { n:'3', txt:'Un ángel lo financia por item — no todo el proyecto' },
+                    { n:'4', txt:'Cuando llega el capital, ejecutas la compra y arrancas' },
+                  ].map(p => (
+                    <div key={p.n} style={{display:'flex',gap:'0.625rem',alignItems:'center'}}>
+                      <span style={{width:'20px',height:'20px',borderRadius:'50%',background:'rgba(232,160,32,0.2)',color:'#E8A020',fontSize:'0.65rem',fontWeight:'700',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>{p.n}</span>
+                      <span style={{fontSize:'0.78rem',color:'#8FA3CC'}}>{p.txt}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
