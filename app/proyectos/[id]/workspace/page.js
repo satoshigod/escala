@@ -425,6 +425,30 @@ export default function Workspace() {
 
   // Detectar qué tiene el proyecto para adaptar el nav
   const esLocalComercial = proyecto?.escenario === 'local_comercial'
+
+  // Helpers para navegar al tab correcto segun escenario
+  // En local y equipos no existe el tab 'roles' ni 'presupuesto' como tal
+  function irAPublicarRol() {
+    // En todos los escenarios: abrir el form de rol en el tab que lo contiene
+    if (esLocalComercial || esEscenarioEquipos) {
+      // En local y equipos el form de rol esta en el tab necesito_mas → pero mejor
+      // redirigir al workspace con el form de roles abierto via URL
+      setTab('necesito_mas')
+      setMostrarFormRol(true)
+    } else {
+      setTab('roles')
+      setMostrarFormRol(true)
+    }
+  }
+
+  function irAPresupuesto() {
+    // En local comercial, presupuesto es una subpagina separada
+    if (esLocalComercial) {
+      window.location.href = '/proyectos/' + proyecto?.id + '/workspace/presupuesto'
+    } else {
+      setTab('presupuesto')
+    }
+  }
   const tieneMaquinaria = presupuestoItems.some(i => i.categoria === 'equipos_activos')
   const tienePersonas = presupuestoItems.some(i => i.categoria === 'equipo')
   const tieneTechItems = presupuestoItems.some(i => i.categoria === 'tecnologia')
@@ -1097,7 +1121,7 @@ export default function Workspace() {
                         </div>
                       </div>
                       <button
-                        onClick={() => setTab('presupuesto')}
+                        onClick={irAPresupuesto}
                         style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.45rem 1rem',fontSize:'0.75rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                         Conseguir fondeo →
                       </button>
@@ -1151,7 +1175,7 @@ export default function Workspace() {
                     <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>¿Necesitas capital para algo especifico?</div>
                     <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega lo que necesitas — una maquina, un empleado, tecnologia. Los angeles lo financian por item.</div>
                   </div>
-                  <button onClick={() => setTab('presupuesto')} style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                  <button onClick={irAPresupuesto} style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                     Agregar lo que necesito →
                   </button>
                 </div>
@@ -1581,7 +1605,7 @@ export default function Workspace() {
                     <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Publica un rol y alguien del directorio se postula para trabajar a cambio de participacion en el negocio.</div>
                   </div>
                 </div>
-                <button onClick={() => setTab('roles')} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                <button onClick={irAPublicarRol} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                   Publicar rol →
                 </button>
               </div>
@@ -1598,7 +1622,7 @@ export default function Workspace() {
                       <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega el equipo que necesitas al presupuesto. Un angel lo financia por item — tu pagas desde los ingresos.</div>
                     </div>
                   </div>
-                  <button onClick={() => setTab('presupuesto')} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                  <button onClick={irAPresupuesto} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                     Agregar equipo →
                   </button>
                 </div>
@@ -1633,7 +1657,7 @@ export default function Workspace() {
                     <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Para inventario, insumos, materia prima o cualquier gasto operativo. Agregalo al presupuesto y un angel lo financia.</div>
                   </div>
                 </div>
-                <button onClick={() => setTab('presupuesto')} style={{background:'rgba(175,169,236,0.2)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                <button onClick={irAPresupuesto} style={{background:'rgba(175,169,236,0.2)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                   Agregar item →
                 </button>
               </div>
