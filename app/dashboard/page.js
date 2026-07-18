@@ -871,14 +871,28 @@ export default function Dashboard() {
                             <details style={{position:'relative'}}>
                               <summary style={{cursor:'pointer',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'6px',padding:'0.3rem 0.6rem',fontSize:'0.82rem',color:'#8FA3CC',listStyle:'none',userSelect:'none'}}>···</summary>
                               <div style={{position:'absolute',right:0,top:'calc(100% + 4px)',background:'#15234a',border:'1px solid rgba(255,255,255,0.12)',borderRadius:'8px',minWidth:'160px',zIndex:10,overflow:'hidden'}}>
-                                <a href={'/proyectos/'+p.id+'/workspace'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🖥️ Workspace completo</a>
+                                <a href={'/proyectos/'+p.id+'/workspace'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🖥️ Workspace</a>
+                                {p.escenario === 'local_comercial'
+                                  ? <a href={'/proyectos/'+p.id+'/workspace/local'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>📊 Ventas de hoy</a>
+                                  : <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🔧 Maquinas y activos</a>
+                                }
                                 <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🧩 Publicar rol</a>
-                                <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>💰 Presupuesto</a>
                                 <a href={'/proyectos/'+p.id+'/workspace/reparto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8'}}>💸 Reparto</a>
                               </div>
                             </details>
                           </div>
                         </div>
+
+                        {/* PROYECTO DE EQUIPOS SIN ITEMS — CTA para empezar */}
+                        {!tieneLocal && esGenerico && p.escenario === 'otro' && (
+                          <div style={{padding:'0.875rem 1rem',background:'rgba(74,144,217,0.04)',borderTop:'1px solid rgba(74,144,217,0.12)'}}>
+                            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#4A90D9',marginBottom:'0.375rem'}}>🔧 Agrega lo que necesitas comprar</div>
+                            <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.625rem'}}>Todavia no has agregado ningun equipo o maquina. Ese es el primer paso para conseguir el capital.</div>
+                            <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'block',textAlign:'center',background:'#4A90D9',color:'#fff',borderRadius:'8px',padding:'0.45rem',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none'}}>
+                              Agregar lo que necesito →
+                            </a>
+                          </div>
+                        )}
 
                         {/* BLOQUE LOCAL COMERCIAL */}
                         {tieneLocal && (

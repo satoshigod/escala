@@ -207,11 +207,17 @@ export default function Workspace() {
       setBadgeTareas(esFundador ? porVerif.length : misPendientes.length)
       setTareasPorVerificar(porVerif.length)
 
-      // Tour de onboarding — solo para especialistas (no fundador), solo la primera vez
+      // Tour de onboarding — especialistas primera vez, fundadores en proyectos nuevos
       if (!esFundador && miPostulacionAceptada) {
-        const tourKey = 'escala_tour_workspace_' + user.id
+        const tourKey = 'escala_tour_especialista_' + user.id + '_' + pid
         const yaVioTour = localStorage.getItem(tourKey)
         if (!yaVioTour) setTourPaso(0)
+      } else if (esFundador) {
+        const params = new URLSearchParams(window.location.search)
+        const esNuevo = params.get('nuevo') === '1'
+        const tourKey = 'escala_tour_fundador_' + pid
+        const yaVioTour = localStorage.getItem(tourKey)
+        if (esNuevo && !yaVioTour) setTourPaso(0)
       }
 
       setCargando(false)
@@ -576,35 +582,104 @@ export default function Workspace() {
     </div>
   )
 
-  const TOUR_PASOS = [
+  const esEscenarioEquipos = proyecto?.escenario === 'otro'
+  const esEscenarioLocal = proyecto?.escenario === 'local_comercial'
+
+  // Tour para FUNDADORES — diferente segun escenario
+  const TOUR_PASOS_FUNDADOR = esEscenarioEquipos ? [
     {
-      titulo: '👋 Bienvenido a tu workspace',
-      texto: `Estás en el proyecto ${proyecto?.nombre}. Este es tu espacio de trabajo junto al equipo. Te mostramos rápidamente cómo funciona todo.`,
+      titulo: 'Tu proyecto esta listo',
+      texto: 'Creaste el proyecto. Ahora hay una sola cosa que hacer para conseguir el capital que necesitas.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: 'Ve a "Maquinas y activos"',
+      texto: 'Ese tab es donde agregas lo que quieres comprar: el horno, la nevera, el servidor. Los angeles ven exactamente que necesitas y pueden financiarlo.',
+      accion: 'Siguiente →',
+      highlight: 'presupuesto',
+    },
+    {
+      titulo: 'Tu decides a cambio de que',
+      texto: 'Al agregar el equipo eliges: parte del negocio, cuotas mensuales, o un porcentaje de tus ventas. Nada esta fijo de antemano.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: 'Los angeles te encontraran',
+      texto: 'Cuando agregues el primer item, Escala notifica automaticamente a los angeles que han financiado proyectos similares. El capital viene a ti.',
+      accion: 'Agregar lo que necesito →',
+      href: proyecto?.id ? '/proyectos/' + proyecto.id + '/workspace/presupuesto' : null,
+      esFinal: true,
+    },
+  ] : esEscenarioLocal ? [
+    {
+      titulo: 'Tu local esta en verificacion',
+      texto: 'Escala contactara al propietario del local para confirmar el arriendo y el precio. Esto toma entre 24 y 48 horas.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: 'Cuando tengas angel, reportas ventas diarias',
+      texto: 'Aqui vas a reportar cuanto vendiste cada dia. El sistema calcula cuanto le corresponde al angel y abona automaticamente a tu deuda.',
+      accion: 'Siguiente →',
+      highlight: 'local',
+    },
+    {
+      titulo: 'Te avisamos cuando haya novedades',
+      texto: 'Recibiras una notificacion cuando el local sea verificado y cuando un angel quiera financiarlo. Por ahora no necesitas hacer nada mas.',
+      accion: 'Entendido →',
+      esFinal: true,
+    },
+  ] : [
+    // Startup — proyecto con equipo
+    {
+      titulo: 'Tu proyecto ya aparece en el directorio',
+      texto: 'Especialistas y cofundadores ya pueden encontrarlo y postularse. El siguiente paso es decirles que perfil necesitas.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: 'Publica tu primer rol',
+      texto: 'Ve a "Mi equipo" y define que tipo de persona necesitas. Ellos trabajan a cambio de participacion en el negocio — sin pagar salario ahora.',
+      accion: 'Siguiente →',
+      highlight: 'equipo',
+    },
+    {
+      titulo: 'El equipo atrae al capital',
+      texto: 'Los angeles invierten cuando ven personas comprometidas construyendo el proyecto. Forma el equipo primero, el capital llega despues.',
+      accion: 'Publicar primer rol →',
+      href: proyecto?.id ? '/proyectos/' + proyecto.id + '/workspace?tab=roles' : null,
+      esFinal: true,
+    },
+  ]
+
+  // Tour para ESPECIALISTAS
+  const TOUR_PASOS = esFundador ? TOUR_PASOS_FUNDADOR : [
+    {
+      titulo: 'Bienvenido a tu workspace',
+      texto: `Estas en el proyecto ${proyecto?.nombre}. Este es tu espacio de trabajo junto al equipo.`,
       accion: 'Siguiente →',
       highlight: null,
     },
     {
-      titulo: '✅ Tus tareas',
-      texto: 'Aquí aparecen las tareas asignadas a tu rol. Debes marcarlas como "En progreso" cuando las inicias y "Completada" cuando las terminas. El fundador las verifica.',
+      titulo: 'Tus tareas',
+      texto: 'Aqui aparecen las tareas asignadas a tu rol. Marcalas como "En progreso" cuando las inicias y "Completada" cuando terminas. El fundador las verifica.',
       accion: 'Ver mis tareas →',
       highlight: 'tareas',
       href: proyecto?.id ? '/proyectos/' + proyecto.id + '/workspace/tareas' : null,
     },
     {
-      titulo: '💬 Chat del equipo',
-      texto: 'El chat es para coordinarte con el resto del equipo. Cuando completas una tarea, también se abre un hilo específico de esa tarea para subir documentos y hablar con el fundador.',
+      titulo: 'Chat del equipo',
+      texto: 'El chat es para coordinarte con el resto del equipo. Cuando completas una tarea se abre un hilo especifico para subir documentos y hablar con el fundador.',
       accion: 'Siguiente →',
       highlight: 'chat',
     },
     {
-      titulo: '📋 Tu aporte y participación',
-      texto: 'En "Mis aportes" puedes registrar el tiempo o servicios que estás aportando al proyecto. Eso construye tu participación económica futura.',
+      titulo: 'Tu aporte y participacion',
+      texto: 'En "Mis aportes" puedes registrar el tiempo o servicios que estas aportando al proyecto. Eso construye tu participacion economica futura.',
       accion: 'Siguiente →',
       highlight: 'aportes',
     },
     {
-      titulo: '🚀 ¡Listo para empezar!',
-      texto: 'Ya sabes lo básico. El primer paso es ir a Tareas, iniciar las que tienes asignadas y completarlas. El fundador te notificará si necesita algo más.',
+      titulo: 'Listo para empezar',
+      texto: 'El primer paso es ir a Tareas, iniciar las que tienes asignadas y completarlas. El fundador te avisara si necesita algo mas.',
       accion: 'Ir a mis tareas →',
       href: proyecto?.id ? '/proyectos/' + proyecto.id + '/workspace/tareas' : null,
       highlight: null,
@@ -613,8 +688,11 @@ export default function Workspace() {
   ]
 
   function cerrarTour() {
-    const tourKey = 'escala_tour_workspace_' + usuario?.id
-    localStorage.setItem(tourKey, '1')
+    if (esFundador) {
+      localStorage.setItem('escala_tour_fundador_' + proyecto?.id, '1')
+    } else {
+      localStorage.setItem('escala_tour_especialista_' + usuario?.id + '_' + proyecto?.id, '1')
+    }
     setTourPaso(null)
   }
 
@@ -635,7 +713,7 @@ export default function Workspace() {
   return (
     <div style={{minHeight:'100vh',background:'#0B1628',fontFamily:'Inter,sans-serif'}}>
 
-      {/* TOUR ONBOARDING — solo especialistas primera vez */}
+      {/* TOUR ONBOARDING — fundadores en proyectos nuevos, especialistas primera vez */}
       {tourPaso !== null && TOUR_PASOS[tourPaso] && (
         <>
           <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.7)',zIndex:1000,backdropFilter:'blur(2px)'}} onClick={cerrarTour}></div>
