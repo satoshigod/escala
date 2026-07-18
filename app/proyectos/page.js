@@ -950,6 +950,38 @@ export default function Proyectos() {
             ) : (
 
             <>
+            {/* PASO 0: Seleccion de escenario — lo primero que ve el usuario */}
+            {!form.escenario ? (
+              <div>
+                <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.5rem'}}>Nuevo proyecto</div>
+                <div style={{fontSize:'1.3rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.02em',marginBottom:'0.5rem'}}>¿Qué necesitas?</div>
+                <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Elige la opción que mejor describe lo que quieres hacer.</div>
+                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
+                  {[
+                    { id:'startup', icon:'💡', titulo:'Crear o crecer mi empresa', desc:'Tienes una idea o empresa que quieres hacer crecer con un equipo que trabaja por participación.', badge:'Equipo + capital', badgeColor:'#1D9E75' },
+                    { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante u otro negocio y necesitas quien financie el depósito y el arriendo.', badge:'Fondeo de local', badgeColor:'#4A90D9', destacado:true },
+                    { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo u otro activo. Un ángel lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
+                  ].map(op => (
+                    <div key={op.id}
+                      onClick={() => {
+                        actualizar('escenario', op.id)
+                        if (op.id === 'local_comercial' || op.id === 'otro') {
+                          actualizar('estado_financiacion', 'riesgo_compartido')
+                        }
+                      }}
+                      style={{cursor:'pointer',border:`2px solid ${op.badgeColor}33`,borderRadius:'14px',padding:'1.25rem 1rem',background:`${op.badgeColor}08`,position:'relative',transition:'all 0.15s'}}>
+                      {op.destacado && <div style={{position:'absolute',top:'-10px',left:'50%',transform:'translateX(-50%)',background:op.badgeColor,color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'2px 10px',borderRadius:'20px',whiteSpace:'nowrap'}}>NUEVO</div>}
+                      <div style={{fontSize:'1.75rem',marginBottom:'0.625rem'}}>{op.icon}</div>
+                      <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem',lineHeight:'1.3'}}>{op.titulo}</div>
+                      <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.75rem'}}>{op.desc}</div>
+                      <span style={{fontSize:'0.65rem',fontWeight:'700',background:`${op.badgeColor}22`,color:op.badgeColor,padding:'2px 8px',borderRadius:'10px'}}>{op.badge}</span>
+                    </div>
+                  ))}
+                </div>
+                <button style={s.btnCancel} onClick={() => setVista('lista')}>Cancelar</button>
+              </div>
+            ) : (
+            <>
             {/* Indicador de pasos */}
             <div style={{display:'flex',gap:'0.5rem',alignItems:'center',marginBottom:'1.25rem'}}>
               {[1,2].map(p => (
@@ -1004,37 +1036,13 @@ export default function Proyectos() {
             <label style={s.label}>¿Qué necesitas? *</label>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
               {[
-                {
-                  id: 'startup',
-                  icon: '💡',
-                  titulo: 'Crear o crecer mi empresa',
-                  desc: 'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo que trabaja por participación.',
-                  badge: 'Equipo + capital',
-                  badgeColor: '#1D9E75',
-                },
-                {
-                  id: 'local_comercial',
-                  icon: '🏪',
-                  titulo: 'Necesito un local',
-                  desc: 'Quieres montar una tienda, restaurante, frutería, almacén u otro negocio y necesitas que alguien financie el depósito y el arriendo del contrato.',
-                  badge: 'Fondeo de local',
-                  badgeColor: '#4A90D9',
-                  destacado: true,
-                },
-                {
-                  id: 'otro',
-                  icon: '🔧',
-                  titulo: 'Necesito equipos o maquinaria',
-                  desc: 'Necesitas una máquina, un horno, un vehículo, tecnología u otro activo para que tu negocio opere. Un ángel lo financia y tú lo pagas desde tus ingresos.',
-                  badge: 'Activos y capital',
-                  badgeColor: '#E8A020',
-                },
+                { id:'startup', icon:'💡', titulo:'Crear o crecer mi empresa', desc:'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo que trabaja por participación.', badge:'Equipo + capital', badgeColor:'#1D9E75' },
+                { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante, frutería, almacén u otro negocio y necesitas que alguien financie el depósito y el arriendo del contrato.', badge:'Fondeo de local', badgeColor:'#4A90D9', destacado:true },
+                { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo, tecnología u otro activo para que tu negocio opere. Un ángel lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
               ].map(op => (
-                <div
-                  key={op.id}
+                <div key={op.id}
                   onClick={() => {
                     actualizar('escenario', op.id)
-                    // local y maquinaria siempre son riesgo_compartido — no tiene sentido preguntar
                     if (op.id === 'local_comercial' || op.id === 'otro') {
                       actualizar('estado_financiacion', 'riesgo_compartido')
                     }
@@ -1286,7 +1294,9 @@ export default function Proyectos() {
               )}
             </div>
             </>
-            )}
+            )} {/* fin if escenario seleccionado */}
+            </>
+            )} {/* fin if no es local_comercial */}
           </div>
         )}
       </main>
