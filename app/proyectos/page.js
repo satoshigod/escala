@@ -129,6 +129,47 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
           <label style={s.label}>Nombre de tu negocio *</label>
           <input style={{ ...s.input }} value={calcPrev.nombre || ''} onChange={e => setCalcPrev(c => ({ ...c, nombre: e.target.value }))} placeholder="Ej: Tienda Lorena, Panadería El Trigo..." />
 
+          {/* Guia si no sabe el nombre */}
+          <div style={{ marginTop: '-0.625rem', marginBottom: '0.875rem' }}>
+            <button type="button" onClick={() => setCalcPrev(c => ({ ...c, mostrarGuiaNombre: !c.mostrarGuiaNombre }))} style={{ background: 'none', border: 'none', color: '#4A90D9', fontSize: '0.72rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif', padding: 0, textDecoration: 'underline' }}>
+              {calcPrev.mostrarGuiaNombre ? '✕ Cerrar ayuda' : '¿No sabes cómo llamarlo? Ayuda aquí'}
+            </button>
+            {calcPrev.mostrarGuiaNombre && (
+              <div style={{ background: 'rgba(74,144,217,0.06)', border: '1px solid rgba(74,144,217,0.2)', borderRadius: '10px', padding: '0.875rem 1rem', marginTop: '0.5rem' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: '600', color: '#4A90D9', marginBottom: '0.625rem' }}>El nombre puede ser simple:</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', marginBottom: '0.75rem' }}>
+                  {[
+                    '🛍️ Tu nombre + lo que vendes: "Ropa de María", "Panadería Juan"',
+                    '📍 El barrio o zona: "Tienda El Poblado", "Frutería Centro"',
+                    '✨ Algo que describes: "La Esquina del Pan", "Verduras Frescas"',
+                  ].map((tip, i) => (
+                    <div key={i} style={{ fontSize: '0.75rem', color: '#8FA3CC', lineHeight: '1.5' }}>{tip}</div>
+                  ))}
+                </div>
+                <div style={{ fontSize: '0.75rem', fontWeight: '600', color: '#4A90D9', marginBottom: '0.5rem' }}>¿Qué vas a vender?</div>
+                <input
+                  style={{ ...s.input, marginBottom: '0.5rem', fontSize: '0.82rem' }}
+                  value={calcPrev.guia_vende || ''}
+                  onChange={e => setCalcPrev(c => ({ ...c, guia_vende: e.target.value }))}
+                  placeholder="Ej: ropa para mujer, arepas y empanadas, frutas y verduras..."
+                />
+                <div style={{ fontSize: '0.75rem', fontWeight: '600', color: '#4A90D9', marginBottom: '0.5rem' }}>¿Cómo quieres que se llame?</div>
+                <input
+                  style={{ ...s.input, marginBottom: '0.75rem', fontSize: '0.82rem' }}
+                  value={calcPrev.guia_nombre_idea || ''}
+                  onChange={e => setCalcPrev(c => ({ ...c, guia_nombre_idea: e.target.value }))}
+                  placeholder="Ej: Tienda Lorena, La Puntada, El Rincón..."
+                />
+                <button type="button" onClick={() => {
+                  const nombre = calcPrev.guia_nombre_idea || calcPrev.guia_vende || ''
+                  if (nombre) setCalcPrev(c => ({ ...c, nombre, mostrarGuiaNombre: false }))
+                }} style={{ background: '#4A90D9', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.45rem 1rem', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                  Usar este nombre →
+                </button>
+              </div>
+            )}
+          </div>
+
           <label style={s.label}>¿En qué ciudad? *</label>
           <input style={{ ...s.input }} value={calcPrev.ciudad || ''} onChange={e => setCalcPrev(c => ({ ...c, ciudad: e.target.value }))} placeholder="Ej: Medellín, Bogotá, Cali..." />
 
