@@ -349,19 +349,50 @@ export default function AngelPage() {
 
 function TarjetaFondeo({ f, s, accionFondeo, enviando, mostrarComprobante, setMostrarComprobante, comprobante, setComprobante }) {
   const est = ESTADO_FONDEO[f.estado] || ESTADO_FONDEO.propuesta
-  const terminos = f.a_cambio_de === 'participacion' ? (f.pct_participacion + '% participacion') : f.a_cambio_de === 'deuda' ? (f.tasa_mensual + '% mensual') : (f.pct_revenue + '% revenue')
+  const monto = parseFloat(f.monto || 0)
+
+  // Calcular retorno esperado segun modelo
+  let terminos = ''
+  let retornoTexto = ''
+  let retornoColor = '#6B7280'
+  if (f.a_cambio_de === 'participacion') {
+    terminos = (f.pct_participacion || 0) + '% del negocio'
+    retornoTexto = 'Retorno variable segun valoracion futura del negocio'
+    retornoColor = '#4A90D9'
+  } else if (f.a_cambio_de === 'deuda') {
+    const tasa = parseFloat(f.tasa_mensual || 0)
+    const cuotaMes = Math.round(monto * tasa / 100)
+    const mesesParaPagar = tasa > 0 ? Math.ceil(100 / tasa) : 0
+    const totalRecuperar = monto + (cuotaMes * mesesParaPagar)
+    terminos = tasa + '% mensual'
+    retornoTexto = `~$${Math.round(cuotaMes).toLocaleString('es-CO')}/mes · Total a recuperar: $${Math.round(totalRecuperar).toLocaleString('es-CO')} en ~${mesesParaPagar} meses`
+    retornoColor = '#1D9E75'
+  } else if (f.a_cambio_de === 'revenue_share') {
+    const pct = parseFloat(f.pct_revenue || 0)
+    terminos = pct + '% de ventas'
+    retornoTexto = `Si el negocio vende $10M/mes recuperas $${Math.round(10000000 * pct / 100).toLocaleString('es-CO')}/mes`
+    retornoColor = '#E8A020'
+  }
   return (
     <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '1rem', marginBottom: '0.6rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.4rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
         <div>
           <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>{f.presupuesto_items?.nombre}</div>
-          <div style={{ fontSize: '0.72rem', color: '#6B7280' }}>{f.proyectos?.nombre} - {terminos}</div>
+          <div style={{ fontSize: '0.72rem', color: '#6B7280' }}>{f.proyectos?.nombre} · {terminos}</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>${Math.round(parseFloat(f.monto || 0)).toLocaleString('es-CO')}</span>
+          <span style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>${Math.round(monto).toLocaleString('es-CO')}</span>
           <span style={{ fontSize: '0.62rem', fontWeight: '700', background: est.bg, color: est.color, padding: '2px 7px', borderRadius: '20px' }}>{est.label}</span>
         </div>
       </div>
+
+      {/* Retorno esperado — C3.26 */}
+      {f.estado === 'verificado' && retornoTexto && (
+        <div style={{ background: `rgba(${retornoColor === '#1D9E75' ? '29,158,117' : retornoColor === '#4A90D9' ? '74,144,217' : '232,160,32'},0.08)`, borderRadius: '6px', padding: '0.5rem 0.75rem', marginBottom: '0.5rem', fontSize: '0.72rem', color: retornoColor }}>
+          💰 {retornoTexto}
+        </div>
+      )}
+
       <div style={{ fontSize: '0.7rem', color: '#4B5563' }}>{est.accion}</div>
       {f.estado === 'aceptado' && (
         <div style={{ marginTop: '0.75rem' }}>

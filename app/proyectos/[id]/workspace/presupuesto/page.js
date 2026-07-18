@@ -19,6 +19,36 @@ const CATEGORIAS = {
   otro: { label: 'Otro', emoji: '📋', color: '#6B7280', bg: 'rgba(107,114,128,0.08)', border: 'rgba(107,114,128,0.2)', desc: 'Logistica, propiedad intelectual, R&D y otros' },
 }
 
+// Diccionario de busqueda: palabras clave → categoria automatica + nombre sugerido
+const BUSQUEDA_EQUIPOS = [
+  { palabras: ['horno','panaderia','pizzeria','pasteleria'], cat: 'equipos_activos', sugerido: 'Horno industrial' },
+  { palabras: ['nevera','refrigerador','congelador','frio'], cat: 'equipos_activos', sugerido: 'Nevera industrial' },
+  { palabras: ['maquina coser','costura','textil','bordado'], cat: 'equipos_activos', sugerido: 'Maquina de coser industrial' },
+  { palabras: ['computador','portatil','laptop','pc','desktop'], cat: 'equipos_activos', sugerido: 'Computador' },
+  { palabras: ['servidor','server','hosting','nube','cloud'], cat: 'tecnologia', sugerido: 'Servidor' },
+  { palabras: ['camion','furgon','moto','vehiculo','carro','van','camioneta'], cat: 'equipos_activos', sugerido: 'Vehiculo de trabajo' },
+  { palabras: ['mesa','silla','escritorio','mueble','estante','vitrina','mostrador'], cat: 'equipos_activos', sugerido: 'Mobiliario' },
+  { palabras: ['caja registradora','pos','datafono','terminal'], cat: 'tecnologia', sugerido: 'Terminal de pagos' },
+  { palabras: ['camara','seguridad','cctv','vigilancia'], cat: 'equipos_activos', sugerido: 'Sistema de seguridad' },
+  { palabras: ['impresora','scanner','fotocopiadora','plotter'], cat: 'equipos_activos', sugerido: 'Impresora' },
+  { palabras: ['software','licencia','sistema','erp','crm','app','aplicacion'], cat: 'tecnologia', sugerido: 'Software o licencia' },
+  { palabras: ['empleado','trabajador','nomina','sueldo','salario','operario','vendedor','cajero'], cat: 'equipo', sugerido: 'Empleado' },
+  { palabras: ['publicidad','pauta','redes','instagram','facebook','google','ads','marketing'], cat: 'marketing_ventas', sugerido: 'Pauta publicitaria' },
+  { palabras: ['inventario','producto','mercancia','stock','materia prima','insumo'], cat: 'capital_trabajo', sugerido: 'Inventario inicial' },
+  { palabras: ['arriendo','local','bodega','oficina','sede'], cat: 'legal_operacion', sugerido: 'Arriendo' },
+  { palabras: ['registro','camara','rut','constitucion','notaria','escritura'], cat: 'legal_operacion', sugerido: 'Tramites legales' },
+  { palabras: ['gas','agua','luz','internet','telefono','servicios'], cat: 'legal_operacion', sugerido: 'Servicios publicos' },
+]
+
+function buscarCategoria(texto) {
+  if (!texto || texto.length < 2) return null
+  const q = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  for (const entry of BUSQUEDA_EQUIPOS) {
+    if (entry.palabras.some(p => q.includes(p))) return entry
+  }
+  return null
+}
+
 const SUBCATEGORIAS_OTRO = [
   { id: 'logistica', label: 'Logistica y distribucion' },
   { id: 'propiedad_intelectual', label: 'Propiedad intelectual' },
@@ -362,8 +392,34 @@ export default function PresupuestoPage() {
                 <button onClick={() => { setMostrarForm(false); setEditando(null); setError('') }} style={{ background: 'none', border: 'none', color: '#8FA3CC', fontSize: '1.25rem', cursor: 'pointer' }}>✕</button>
               </div>
 
+              {/* Buscador inteligente — detecta categoria automaticamente */}
+              <label style={s.label}>¿Qué necesitas? *</label>
+              <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
+                <span style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', fontSize: '1rem' }}>🔍</span>
+                <input
+                  style={{ ...s.input, paddingLeft: '2.25rem', marginBottom: 0 }}
+                  value={form.nombre}
+                  onChange={e => {
+                    const val = e.target.value
+                    const match = buscarCategoria(val)
+                    setForm(f => ({
+                      ...f,
+                      nombre: val,
+                      categoria: match ? match.cat : f.categoria,
+                    }))
+                  }}
+                  placeholder="Escribe qué necesitas: horno, empleado, servidor, nevera..."
+                />
+              </div>
+              {form.nombre && buscarCategoria(form.nombre) && (
+                <div style={{ background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '8px', padding: '0.625rem 0.875rem', marginBottom: '0.875rem', fontSize: '0.78rem', color: '#1D9E75', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>✓</span>
+                  <span>Categorizado automáticamente como <strong>{CATEGORIAS[buscarCategoria(form.nombre)?.cat]?.label}</strong></span>
+                </div>
+              )}
+
               {/* Selector de categoria */}
-              <label style={s.label}>Categoria *</label>
+              <label style={s.label}>Categoría *</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: '0.5rem', marginBottom: '0.875rem' }}>
                 {Object.entries(CATEGORIAS).map(([key, cat]) => (
                   <div key={key} onClick={() => setForm(f => ({ ...f, categoria: key, subcategoria: '' }))} style={{ cursor: 'pointer', border: form.categoria === key ? `2px solid ${cat.color}` : '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '0.625rem', textAlign: 'center', background: form.categoria === key ? cat.bg : 'rgba(255,255,255,0.03)' }}>
@@ -386,9 +442,6 @@ export default function PresupuestoPage() {
                   </div>
                 </div>
               )}
-
-              <label style={s.label}>¿Qué necesitas? *</label>
-              <input style={s.input} value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} placeholder="Ej: Horno, máquina de coser, servidor, primer empleado, publicidad..." />
 
               <label style={s.label}>Descripcion</label>
               <input style={s.input} value={form.descripcion} onChange={e => setForm(f => ({ ...f, descripcion: e.target.value }))} placeholder="Para que se va a usar este recurso..." />
@@ -498,35 +551,77 @@ export default function PresupuestoPage() {
               <label style={s.label}>Monto que quieres invertir (COP) *</label>
               <input style={s.input} type="number" value={formFondeo.monto} onChange={e => setFormFondeo(f => ({ ...f, monto: e.target.value }))} placeholder="5.000.000" />
 
-              <label style={s.label}>A cambio de *</label>
-              <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.875rem' }}>
+              <label style={s.label}>¿Qué le das al inversionista a cambio? *</label>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem', marginBottom: '0.875rem' }}>
                 {[
-                  { id: 'participacion', label: '% Participacion' },
-                  { id: 'deuda', label: 'Deuda con tasa' },
-                  { id: 'revenue_share', label: '% Revenue' },
-                ].map(op => (
-                  <div key={op.id} onClick={() => setFormFondeo(f => ({ ...f, a_cambio_de: op.id }))} style={{ flex: 1, cursor: 'pointer', border: formFondeo.a_cambio_de === op.id ? '2px solid #4A90D9' : '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '0.5rem', textAlign: 'center', background: formFondeo.a_cambio_de === op.id ? 'rgba(74,144,217,0.12)' : 'rgba(255,255,255,0.03)', fontSize: '0.72rem', color: formFondeo.a_cambio_de === op.id ? '#4A90D9' : '#8FA3CC', fontWeight: formFondeo.a_cambio_de === op.id ? '700' : '400' }}>
-                    {op.label}
-                  </div>
-                ))}
+                  {
+                    id: 'participacion',
+                    emoji: '🤝',
+                    titulo: 'Parte del negocio',
+                    desc: 'El inversionista tiene X% del proyecto. Si el negocio crece, su parte vale más.',
+                    ejemplo: (m) => m ? `Ej: por $${fmt(m)} le das 10% del negocio` : 'Ej: "por tu inversión tienes el 10% del negocio"',
+                    color: '#4A90D9',
+                  },
+                  {
+                    id: 'deuda',
+                    emoji: '💰',
+                    titulo: 'Le pago cuotas mensuales',
+                    desc: 'Le devuelves el dinero en cuotas con una tasa mensual acordada. Sin ceder parte del negocio.',
+                    ejemplo: (m) => m ? `Ej: $${fmt(m)} al 3%/mes = $${fmt(parseFloat(m)*0.03)}/mes` : 'Ej: "$5M al 3% mensual = $150.000/mes"',
+                    color: '#1D9E75',
+                  },
+                  {
+                    id: 'revenue_share',
+                    emoji: '📊',
+                    titulo: 'Un % de mis ventas',
+                    desc: 'Cada mes le das un % de lo que vende el negocio, hasta pagar todo. Si un mes vendes poco, pagas poco.',
+                    ejemplo: (m) => m ? `Ej: 5% de ventas hasta recuperar $${fmt(m)}` : 'Ej: "5% de las ventas mensuales hasta pagar todo"',
+                    color: '#E8A020',
+                  },
+                ].map(op => {
+                  const sel = formFondeo.a_cambio_de === op.id
+                  return (
+                    <div key={op.id} onClick={() => setFormFondeo(f => ({ ...f, a_cambio_de: op.id }))} style={{ cursor: 'pointer', border: `2px solid ${sel ? op.color : 'rgba(255,255,255,0.08)'}`, borderRadius: '10px', padding: '0.875rem 1rem', background: sel ? `rgba(${op.color === '#4A90D9' ? '74,144,217' : op.color === '#1D9E75' ? '29,158,117' : '232,160,32'},0.08)` : 'rgba(255,255,255,0.03)', transition: 'all 0.15s' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '3px' }}>
+                        <span style={{ fontSize: '1rem' }}>{op.emoji}</span>
+                        <span style={{ fontSize: '0.85rem', fontWeight: '700', color: sel ? op.color : '#fff' }}>{op.titulo}</span>
+                        {sel && <span style={{ marginLeft: 'auto', fontSize: '0.65rem', fontWeight: '700', color: op.color }}>Seleccionado ✓</span>}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#8FA3CC', lineHeight: '1.5', marginBottom: '4px' }}>{op.desc}</div>
+                      <div style={{ fontSize: '0.7rem', color: sel ? op.color : '#4B5563', fontStyle: 'italic' }}>{op.ejemplo(formFondeo.monto)}</div>
+                    </div>
+                  )
+                })}
               </div>
 
               {formFondeo.a_cambio_de === 'participacion' && (
                 <div>
-                  <label style={s.label}>% de participacion en el proyecto</label>
-                  <input style={s.input} type="number" step="0.1" value={formFondeo.pct_participacion} onChange={e => setFormFondeo(f => ({ ...f, pct_participacion: e.target.value }))} placeholder="5" />
+                  <label style={s.label}>¿Qué % del negocio le das? *</label>
+                  <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
+                    <input style={{ ...s.input, marginBottom: 0, paddingRight: '2rem' }} type="number" step="0.1" min="0.1" max="49" value={formFondeo.pct_participacion} onChange={e => setFormFondeo(f => ({ ...f, pct_participacion: e.target.value }))} placeholder="10" />
+                    <span style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>%</span>
+                  </div>
+                  {formFondeo.pct_participacion && <div style={{ fontSize: '0.72rem', color: '#4A90D9', marginBottom: '0.875rem' }}>El inversionista tendrá {formFondeo.pct_participacion}% del negocio. El restante {(100 - parseFloat(formFondeo.pct_participacion)).toFixed(1)}% es tuyo.</div>}
                 </div>
               )}
               {formFondeo.a_cambio_de === 'deuda' && (
                 <div>
-                  <label style={s.label}>Tasa mensual (%)</label>
-                  <input style={s.input} type="number" step="0.1" value={formFondeo.tasa_mensual} onChange={e => setFormFondeo(f => ({ ...f, tasa_mensual: e.target.value }))} placeholder="3" />
+                  <label style={s.label}>¿A qué tasa mensual? *</label>
+                  <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
+                    <input style={{ ...s.input, marginBottom: 0, paddingRight: '2rem' }} type="number" step="0.1" min="0.1" max="5" value={formFondeo.tasa_mensual} onChange={e => setFormFondeo(f => ({ ...f, tasa_mensual: e.target.value }))} placeholder="3" />
+                    <span style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>%</span>
+                  </div>
+                  {formFondeo.tasa_mensual && formFondeo.monto && <div style={{ fontSize: '0.72rem', color: '#1D9E75', marginBottom: '0.875rem' }}>Pagarías ${fmt(parseFloat(formFondeo.monto) * parseFloat(formFondeo.tasa_mensual) / 100)}/mes en intereses.</div>}
                 </div>
               )}
               {formFondeo.a_cambio_de === 'revenue_share' && (
                 <div>
-                  <label style={s.label}>% de los ingresos mensuales del proyecto</label>
-                  <input style={s.input} type="number" step="0.1" value={formFondeo.pct_revenue} onChange={e => setFormFondeo(f => ({ ...f, pct_revenue: e.target.value }))} placeholder="2" />
+                  <label style={s.label}>¿Qué % de tus ventas mensuales? *</label>
+                  <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
+                    <input style={{ ...s.input, marginBottom: 0, paddingRight: '2rem' }} type="number" step="0.1" min="0.1" max="30" value={formFondeo.pct_revenue} onChange={e => setFormFondeo(f => ({ ...f, pct_revenue: e.target.value }))} placeholder="5" />
+                    <span style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>%</span>
+                  </div>
+                  {formFondeo.pct_revenue && <div style={{ fontSize: '0.72rem', color: '#E8A020', marginBottom: '0.875rem' }}>Si vendes $10M/mes pagas ${fmt(10000000 * parseFloat(formFondeo.pct_revenue) / 100)}/mes al inversionista.</div>}
                 </div>
               )}
 

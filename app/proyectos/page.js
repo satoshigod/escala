@@ -126,6 +126,12 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
             Un inversionista de Escala pone el capital del local. Tú se lo devuelves desde las ventas diarias — sin banco, sin garante. Calcula cuánto necesitas:
           </div>
 
+          <label style={s.label}>Nombre de tu negocio *</label>
+          <input style={{ ...s.input }} value={calcPrev.nombre || ''} onChange={e => setCalcPrev(c => ({ ...c, nombre: e.target.value }))} placeholder="Ej: Tienda Lorena, Panadería El Trigo..." />
+
+          <label style={s.label}>¿En qué ciudad? *</label>
+          <input style={{ ...s.input }} value={calcPrev.ciudad || ''} onChange={e => setCalcPrev(c => ({ ...c, ciudad: e.target.value }))} placeholder="Ej: Medellín, Bogotá, Cali..." />
+
           <label style={s.label}>¿Cuánto vale el arriendo mensual?</label>
           <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
             <span style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>$</span>
@@ -181,13 +187,23 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
           <div style={s.btnRow}>
             <button style={s.btnCancel} onClick={onCancelar}>Cancelar</button>
             <button
-              style={{ ...s.btnVerde, opacity: calcCanon > 0 ? 1 : 0.4 }}
+              style={{ ...s.btnVerde, opacity: calcCanon > 0 && calcPrev.nombre && calcPrev.ciudad ? 1 : 0.4 }}
               onClick={() => {
-                if (!calcCanon) return
-                setDatos(d => ({ ...d, canon_mensual: calcPrev.canon, meses_deposito: calcPrev.meses, presupuesto_adecuacion: calcPrev.adecuacion || '', necesita_adecuacion: calcAdec > 0 }))
+                if (!calcCanon || !calcPrev.nombre || !calcPrev.ciudad) return
+                setDatos(d => ({ ...d,
+                  canon_mensual: calcPrev.canon,
+                  meses_deposito: calcPrev.meses,
+                  presupuesto_adecuacion: calcPrev.adecuacion || '',
+                  necesita_adecuacion: calcAdec > 0,
+                  nombre_negocio: calcPrev.nombre,
+                  ciudad: calcPrev.ciudad,
+                }))
                 setPaso(1)
               }}>
-              {calcCanon > 0 ? `Quiero conseguir $${fmtC(calcTotal)} →` : 'Ingresa el arriendo para continuar'}
+              {calcCanon > 0 && calcPrev.nombre && calcPrev.ciudad
+                ? `Conseguir $${fmtC(calcTotal)} para ${calcPrev.nombre} →`
+                : 'Completa los campos para continuar'
+              }
             </button>
           </div>
         </div>
