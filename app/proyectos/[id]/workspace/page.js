@@ -916,24 +916,118 @@ export default function Workspace() {
               </div>
             </div>
 
-            {/* Bloque de descubrimiento del presupuesto */}
-            <div style={{display:'flex',flexDirection:'column',gap:'0.75rem',marginBottom:'2rem'}}>
-              <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
-                <div>
-                  <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>💰 ¿Necesitas capital para algo específico?</div>
-                  <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega lo que necesitas: una máquina, un horno, un empleado, tecnología. Los ángeles lo fondean — tú decides a cambio de qué.</div>
+            {/* FINANCIAMIENTO EMBEBIDO — C3.25
+                Si hay items sin fondear, los muestra directamente aqui
+                Sin tener que ir al tab de Maquinas y activos */}
+            {(() => {
+              const itemsSinFondear = presupuestoItems.filter(i =>
+                i.estado_fondeo === 'sin_fondear' || i.estado_fondeo === 'parcialmente_fondeado'
+              )
+              const totalFaltante = itemsSinFondear.reduce((s, i) =>
+                s + (parseFloat(i.valor_total || 0) - parseFloat(i.monto_fondeado || 0)), 0
+              )
+              const fmtM = n => {
+                const v = parseFloat(n || 0)
+                if (v >= 1000000) return '$' + (v/1000000).toFixed(1) + 'M'
+                if (v >= 1000) return '$' + (v/1000).toFixed(0) + 'K'
+                return '$' + Math.round(v).toLocaleString('es-CO')
+              }
+
+              if (itemsSinFondear.length === 0 && presupuestoItems.length > 0) {
+                // Todo fondeado
+                return (
+                  <div style={{background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'0.875rem'}}>
+                    <span style={{fontSize:'1.25rem'}}>✅</span>
+                    <div>
+                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#1D9E75'}}>Todo fondeado</div>
+                      <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Todos los items del proyecto tienen capital asignado.</div>
+                    </div>
+                  </div>
+                )
+              }
+
+              if (itemsSinFondear.length > 0) {
+                return (
+                  <div style={{background:'rgba(74,144,217,0.04)',border:'1px solid rgba(74,144,217,0.18)',borderRadius:'14px',padding:'1.1rem 1.25rem',marginBottom:'1.5rem'}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.875rem',flexWrap:'wrap',gap:'0.5rem'}}>
+                      <div>
+                        <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>
+                          {itemsSinFondear.length === 1
+                            ? '1 cosa sin financiar'
+                            : itemsSinFondear.length + ' cosas sin financiar'}
+                        </div>
+                        <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>
+                          Falta conseguir {fmtM(totalFaltante)} — los angeles pueden financiar cada item por separado
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setTab('presupuesto')}
+                        style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.45rem 1rem',fontSize:'0.75rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                        Conseguir fondeo →
+                      </button>
+                    </div>
+
+                    {/* Items sin fondear — max 3 visibles */}
+                    <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
+                      {itemsSinFondear.slice(0, 3).map(item => {
+                        const fondeado = parseFloat(item.monto_fondeado || 0)
+                        const total = parseFloat(item.valor_total || 0)
+                        const faltante = total - fondeado
+                        const pct = total > 0 ? Math.round((fondeado / total) * 100) : 0
+                        const catLabel = {
+                          equipo: 'Equipo', equipos_activos: 'Maquinas y activos',
+                          tecnologia: 'Tecnologia', capital_trabajo: 'Capital de trabajo',
+                          marketing_ventas: 'Marketing', legal_operacion: 'Legal', otro: 'Otro'
+                        }[item.categoria] || item.categoria
+
+                        return (
+                          <div key={item.id} style={{background:'rgba(255,255,255,0.04)',borderRadius:'10px',padding:'0.75rem 0.875rem'}}>
+                            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'6px'}}>
+                              <div>
+                                <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff'}}>{item.nombre}</div>
+                                <div style={{fontSize:'0.65rem',color:'#6B7280'}}>{catLabel}</div>
+                              </div>
+                              <div style={{textAlign:'right',flexShrink:0}}>
+                                <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#E8A020'}}>{fmtM(faltante)}</div>
+                                <div style={{fontSize:'0.62rem',color:'#6B7280'}}>falta</div>
+                              </div>
+                            </div>
+                            <div style={{height:'3px',background:'rgba(255,255,255,0.06)',borderRadius:'2px',overflow:'hidden'}}>
+                              <div style={{height:'100%',width:pct+'%',background:'#4A90D9',borderRadius:'2px'}}></div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                      {itemsSinFondear.length > 3 && (
+                        <div style={{fontSize:'0.72rem',color:'#6B7280',textAlign:'center',padding:'0.25rem'}}>
+                          +{itemsSinFondear.length - 3} mas sin financiar
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+
+              // Sin presupuesto definido — CTA para agregar
+              return (
+                <div style={{background:'rgba(74,144,217,0.04)',border:'1px solid rgba(74,144,217,0.15)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
+                  <div>
+                    <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>¿Necesitas capital para algo especifico?</div>
+                    <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega lo que necesitas — una maquina, un empleado, tecnologia. Los angeles lo financian por item.</div>
+                  </div>
+                  <button onClick={() => setTab('presupuesto')} style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                    Agregar lo que necesito →
+                  </button>
                 </div>
-                <button onClick={() => setTab('presupuesto')} style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
-                  Ver presupuesto →
-                </button>
+              )
+            })()}
+
+            {esFundador && hitosPendientes > 0 && (
+              <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem',marginBottom:'1.5rem'}}>
+                <div style={{fontSize:'0.78rem',color:'#E8A020'}}>📋 Tienes <strong>{hitosPendientes} hito{hitosPendientes > 1 ? 's' : ''}</strong> pendientes — vincúlalos a items del presupuesto para que el fondeo desbloquee el avance automáticamente.</div>
+                <button onClick={() => setTab('hitos')} style={{background:'none',border:'1px solid rgba(232,160,32,0.4)',color:'#E8A020',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>Ver hitos</button>
               </div>
-              {esFundador && hitosPendientes > 0 && (
-                <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem'}}>
-                  <div style={{fontSize:'0.78rem',color:'#E8A020'}}>📋 Tienes <strong>{hitosPendientes} hito{hitosPendientes > 1 ? 's' : ''}</strong> pendientes — vincúlalos a items del presupuesto para que el fondeo desbloquee el avance automáticamente.</div>
-                  <button onClick={() => setTab('hitos')} style={{background:'none',border:'1px solid rgba(232,160,32,0.4)',color:'#E8A020',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>Ver hitos</button>
-                </div>
-              )}
-            </div>
+            )}
 
             <div style={{display:'flex',gap:'1rem',flexWrap:'wrap',marginBottom:'2rem'}}>
               <div style={{flex:'1 1 320px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
