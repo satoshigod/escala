@@ -9,11 +9,97 @@ import { supabase } from '../../../../../lib/supabase'
 
 const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
 
+function CalificacionMutua({ proyectoId, usuario, equipo }) {
+  const [califs, setCalifs] = useState({}) // { userId: { estrellas, comentario } }
+  const [enviados, setEnviados] = useState({})
+  const [enviando, setEnviando] = useState(false)
+
+  const personas = (equipo || []).filter(m => m.id !== usuario?.id).slice(0, 10)
+  if (!personas.length) return null
+
+  async function enviarCalif(destinatarioId) {
+    const c = califs[destinatarioId]
+    if (!c?.estrellas) return
+    setEnviando(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/calificaciones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({
+          proyecto_id: proyectoId,
+          de_usuario_id: usuario.id,
+          para_usuario_id: destinatarioId,
+          estrellas: c.estrellas,
+          comentario: c.comentario || '',
+        }),
+      })
+      const d = await res.json()
+      if (d.ok || d.calificacion) setEnviados(e => ({ ...e, [destinatarioId]: true }))
+    } catch (err) { console.error(err) }
+    setEnviando(false)
+  }
+
+  const pendientes = personas.filter(p => !enviados[p.id]).length
+
+  return (
+    <div style={{ maxWidth: '520px', margin: '0 auto', textAlign: 'left', background: 'rgba(232,160,32,0.06)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: '14px', padding: '1.25rem 1.5rem', marginBottom: '0.5rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.5rem' }}>
+        <span style={{ fontSize: '1.25rem' }}>⭐</span>
+        <div>
+          <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#fff' }}>Califica a tu equipo</div>
+          <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>Ayuda a que otros sepan con quién vale la pena trabajar. {pendientes > 0 ? `${pendientes} persona${pendientes > 1 ? 's' : ''} por calificar.` : '¡Todas enviadas!'}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1rem' }}>
+        {personas.map(persona => (
+          <div key={persona.id} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '0.875rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.625rem' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', fontWeight: '600', color: '#fff' }}>{persona.nombre}</div>
+                <div style={{ fontSize: '0.72rem', color: '#8FA3CC' }}>{persona.rol || 'Miembro del equipo'}</div>
+              </div>
+              {enviados[persona.id] && <span style={{ fontSize: '0.72rem', color: '#1D9E75', fontWeight: '600' }}>✓ Enviada</span>}
+            </div>
+
+            {!enviados[persona.id] && (
+              <>
+                <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '0.5rem' }}>
+                  {[1,2,3,4,5].map(n => (
+                    <span key={n} onClick={() => setCalifs(c => ({ ...c, [persona.id]: { ...c[persona.id], estrellas: n } }))}
+                      style={{ fontSize: '1.3rem', cursor: 'pointer', color: (califs[persona.id]?.estrellas || 0) >= n ? '#E8A020' : '#4B5563' }}>
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <input
+                  placeholder="Comentario opcional..."
+                  value={califs[persona.id]?.comentario || ''}
+                  onChange={e => setCalifs(c => ({ ...c, [persona.id]: { ...c[persona.id], comentario: e.target.value } }))}
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '0.4rem 0.625rem', fontSize: '0.78rem', color: '#fff', fontFamily: 'Inter,sans-serif', marginBottom: '0.5rem' }}
+                />
+                <button
+                  onClick={() => enviarCalif(persona.id)}
+                  disabled={!califs[persona.id]?.estrellas || enviando}
+                  style={{ background: califs[persona.id]?.estrellas ? '#E8A020' : 'rgba(255,255,255,0.06)', color: '#fff', border: 'none', borderRadius: '6px', padding: '0.4rem 1rem', fontSize: '0.78rem', fontWeight: '700', cursor: califs[persona.id]?.estrellas ? 'pointer' : 'not-allowed', fontFamily: 'Inter,sans-serif', opacity: califs[persona.id]?.estrellas ? 1 : 0.5 }}>
+                  Enviar calificacion
+                </button>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function CierrePage() {
   const { id } = useParams()
   const [usuario, setUsuario] = useState(null)
   const [esFundador, setEsFundador] = useState(false)
   const [datos, setDatos] = useState(null)
+  const [equipo, setEquipo] = useState([])
   const [cargando, setCargando] = useState(true)
   const [paso, setPaso] = useState(1) // 1: checklist, 2: confirmacion, 3: cerrado
   const [motivo, setMotivo] = useState('')
@@ -40,6 +126,18 @@ export default function CierrePage() {
     }
     const { data: proy } = await supabase.from('proyectos').select('fundador_id').eq('id', id).single()
     setEsFundador(proy?.fundador_id === user?.id)
+
+    // Cargar equipo para calificacion mutua
+    const { data: postulaciones } = await supabase
+      .from('postulaciones')
+      .select('postulante_id, perfiles!postulaciones_postulante_id_fkey(id, nombre), roles!postulaciones_rol_id_fkey(nombre)')
+      .eq('proyecto_id', id)
+      .eq('estado', 'aceptada')
+    setEquipo((postulaciones || []).map(p => ({
+      id: p.perfiles?.id,
+      nombre: p.perfiles?.nombre,
+      rol: p.roles?.nombre,
+    })).filter(p => p.id))
     setCargando(false)
   }
 
@@ -265,7 +363,11 @@ export default function CierrePage() {
                 </div>
               ))}
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+
+            {/* CALIFICACION MUTUA — C2.23 */}
+            <CalificacionMutua proyectoId={id} usuario={usuario} equipo={equipo} />
+
+            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', marginTop: '1.5rem' }}>
               <a href="/dashboard" style={{ background: '#1D9E75', color: '#fff', padding: '0.6rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: '700' }}>
                 Ir al dashboard
               </a>

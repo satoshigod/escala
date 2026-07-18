@@ -646,6 +646,7 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
             if (paso === 1 && !datos.nombre_negocio.trim()) { setError('Escribe el nombre de tu negocio'); return }
             if (paso === 1 && !datos.tipo_negocio) { setError('Selecciona qué vas a vender'); return }
             if (paso === 1 && !datos.ciudad.trim()) { setError('Escribe la ciudad del negocio'); return }
+            if (paso === 1 && (!datos.descripcion_negocio || datos.descripcion_negocio.trim().length < 50)) { setError('Describe tu negocio al inversionista (mínimo 50 caracteres)'); return }
             if (paso === 2 && !datos.direccion_local.trim()) { setError('Escribe la dirección del local'); return }
             if (paso === 2 && !datos.propietario_nombre.trim()) { setError('Escribe el nombre del propietario'); return }
             if (paso === 2 && !datos.propietario_telefono.trim()) { setError('Escribe el teléfono del propietario'); return }
@@ -1068,14 +1069,19 @@ export default function Proyectos() {
             ) : (
             <>
             {/* Indicador de pasos */}
-            <div style={{display:'flex',gap:'0.5rem',alignItems:'center',marginBottom:'1.25rem'}}>
-              {[1,2].map(p => (
-                <div key={p} style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
-                  <div style={{width:'28px',height:'28px',borderRadius:'50%',background:form.paso >= p ? '#1D9E75' : 'rgba(255,255,255,0.1)',color:form.paso >= p ? '#fff' : '#8FA3CC',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.78rem',fontWeight:'700'}}>{form.paso > p ? '✓' : p}</div>
-                  <span style={{fontSize:'0.75rem',color:form.paso >= p ? '#fff' : '#6B7280',fontWeight:form.paso === p ? '700' : '400'}}>{p === 1 ? 'Lo básico' : 'El equipo'}</span>
-                  {p < 2 && <div style={{width:'24px',height:'1px',background:'rgba(255,255,255,0.15)'}}></div>}
-                </div>
-              ))}
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1.25rem'}}>
+              <div style={{display:'flex',gap:'0.5rem',alignItems:'center'}}>
+                {[1,2].map(p => (
+                  <div key={p} style={{display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                    <div style={{width:'28px',height:'28px',borderRadius:'50%',background:form.paso >= p ? '#1D9E75' : 'rgba(255,255,255,0.1)',color:form.paso >= p ? '#fff' : '#8FA3CC',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.78rem',fontWeight:'700'}}>{form.paso > p ? '✓' : p}</div>
+                    <span style={{fontSize:'0.75rem',color:form.paso >= p ? '#fff' : '#6B7280',fontWeight:form.paso === p ? '700' : '400'}}>{p === 1 ? 'Lo básico' : 'El equipo'}</span>
+                    {p < 2 && <div style={{width:'24px',height:'1px',background:'rgba(255,255,255,0.15)'}}></div>}
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => actualizar('escenario', '')} style={{background:'none',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'6px',color:'#8FA3CC',fontSize:'0.72rem',cursor:'pointer',fontFamily:'Inter,sans-serif',padding:'3px 10px'}}>
+                ← Cambiar
+              </button>
             </div>
             <div style={s.formTitle}>{form.paso === 1 ? 'Cuéntanos sobre tu proyecto' : '¿Qué perfiles necesitas?'}</div>
             <div style={s.formSub}>Define tu proyecto y lo que necesitas. Aparecerá en el directorio para que especialistas y capitalistas puedan postularse.</div>

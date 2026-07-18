@@ -1396,6 +1396,25 @@ export default function Workspace() {
                 </a>
               )}
             </div>
+
+            {/* C5.9 — Estado vacio: sin equipo y sin roles publicados */}
+            {equipo.length === 0 && roles.filter(r=>r.estado==='abierto').length === 0 && esFundador && (
+              <div style={{background:'rgba(29,158,117,0.04)',border:'1px dashed rgba(29,158,117,0.2)',borderRadius:'14px',padding:'2rem',textAlign:'center',marginTop:'1.25rem'}}>
+                <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>👥</div>
+                <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.5rem'}}>Tu proyecto no tiene equipo todavia</div>
+                <div style={{fontSize:'0.82rem',color:'#8FA3CC',lineHeight:'1.6',maxWidth:'400px',margin:'0 auto 1.25rem'}}>
+                  Publica un rol y especialistas del directorio se postulan para trabajar contigo a cambio de participacion en el negocio.
+                </div>
+                <div style={{display:'flex',gap:'0.75rem',justifyContent:'center',flexWrap:'wrap'}}>
+                  <button onClick={() => { setTab('roles'); setMostrarFormRol(true) }} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.6rem 1.5rem',fontSize:'0.85rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
+                    + Publicar primer rol
+                  </button>
+                  <a href={'/proyectos/'+proyecto?.id} style={{background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.12)',color:'#8FA3CC',borderRadius:'8px',padding:'0.6rem 1.5rem',fontSize:'0.85rem',textDecoration:'none'}}>
+                    Ver proyecto publico
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
