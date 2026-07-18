@@ -196,7 +196,6 @@ export default function Workspace() {
           .then(d => { if (d.local) setLocalData(d.local) })
           .catch(() => {})
       }
-        .catch(() => {})
 
       // Cargar deuda pendiente (solo tiene datos si el proyecto pasó por Riesgo Compartido)
       const deudaRes = await fetch('/api/deuda?proyecto_id=' + pid)
