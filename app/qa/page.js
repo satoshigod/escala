@@ -6,37 +6,79 @@ if (typeof window !== 'undefined') window._supabase = supabase
 const PROYECTO_ESCALA = 'f31699bd-96b2-4a78-ac6a-08e7a0ad3fbf'
 const FUNDADOR_ID = 'a57b6849-1388-4186-8880-2ec31dd31af5'
 
-// Funcion de limpieza de emergencia — elimina TODOS los proyectos QA acumulados
+// Funcion de limpieza de emergencia — elimina TODOS los datos QA acumulados
 async function limpiarTodosProyectosQA() {
   const sb = window._supabase
   if (!sb) return 'Supabase no disponible'
 
-  const { data, error } = await sb
-    .from('proyectos')
-    .select('id, nombre')
-    .eq('fundador_id', FUNDADOR_ID)
-    .ilike('nombre', 'QA-%')
+  const resumen = []
+  let totalEliminado = 0
 
-  if (error) return 'Error buscando proyectos QA: ' + error.message
-  if (!data || data.length === 0) return 'No hay proyectos QA acumulados'
-
-  const eliminados = []
-  const errores = []
-
-  for (const p of data) {
-    const res = await fetch('/api/proyectos?id=' + p.id + '&fundador_id=' + FUNDADOR_ID, {
-      method: 'DELETE'
-    })
-    const d = await res.json()
-    if (d.ok) eliminados.push(p.nombre)
-    else errores.push(p.nombre + ': ' + d.error)
+  // 1. Proyectos QA (en cascada elimina roles, hitos, tareas, postulaciones, etc)
+  const { data: proyectosQA } = await sb
+    .from('proyectos').select('id, nombre')
+    .eq('fundador_id', FUNDADOR_ID).ilike('nombre', 'QA-%')
+  if (proyectosQA?.length) {
+    for (const p of proyectosQA) {
+      const res = await fetch('/api/proyectos?id=' + p.id + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+      const d = await res.json()
+      if (d.ok) totalEliminado++
+    }
+    resumen.push(proyectosQA.length + ' proyectos')
   }
 
-  let msg = ''
-  if (eliminados.length) msg += 'Eliminados (' + eliminados.length + '): ' + eliminados.join(', ')
-  if (errores.length) msg += '\nErrores: ' + errores.join(', ')
-  return msg || 'Listo'
+  // 2. Paises QA
+  const { data: paisesQA } = await sb.from('paises').select('id').ilike('nombre', 'QA-%')
+  if (paisesQA?.length) {
+    await sb.from('paises').delete().in('id', paisesQA.map(p => p.id))
+    resumen.push(paisesQA.length + ' paises')
+    totalEliminado += paisesQA.length
+  }
+
+  // 3. Categorias QA
+  const { data: catsQA } = await sb.from('categorias').select('id').ilike('nombre', 'QA-%')
+  if (catsQA?.length) {
+    await sb.from('categorias').delete().in('id', catsQA.map(c => c.id))
+    resumen.push(catsQA.length + ' categorias')
+    totalEliminado += catsQA.length
+  }
+
+  // 4. Especialidades QA
+  const { data: espQA } = await sb.from('especialidades').select('id').ilike('nombre', 'QA-%')
+  if (espQA?.length) {
+    await sb.from('especialidades').delete().in('id', espQA.map(e => e.id))
+    resumen.push(espQA.length + ' especialidades')
+    totalEliminado += espQA.length
+  }
+
+  // 5. Repartos QA del proyecto ESCALA
+  const { data: repartosQA } = await sb
+    .from('repartos').select('id')
+    .eq('proyecto_id', PROYECTO_ESCALA).ilike('descripcion', 'QA-%')
+  if (repartosQA?.length) {
+    await sb.from('reparto_lineas').delete().in('reparto_id', repartosQA.map(r => r.id))
+    await sb.from('repartos').delete().in('id', repartosQA.map(r => r.id))
+    resumen.push(repartosQA.length + ' repartos')
+    totalEliminado += repartosQA.length
+  }
+
+  // 6. Items de presupuesto QA del proyecto ESCALA
+  const { data: itemsQA } = await sb
+    .from('presupuesto_items').select('id')
+    .eq('proyecto_id', PROYECTO_ESCALA).ilike('nombre', 'QA-%')
+  if (itemsQA?.length) {
+    await sb.from('presupuesto_items').delete().in('id', itemsQA.map(i => i.id))
+    resumen.push(itemsQA.length + ' items presupuesto')
+    totalEliminado += itemsQA.length
+  }
+
+  // Limpiar variables globales window._qa*
+  Object.keys(window).filter(k => k.startsWith('_qa')).forEach(k => { window[k] = null })
+
+  if (totalEliminado === 0) return 'No hay datos QA acumulados'
+  return 'Eliminado: ' + resumen.join(', ') + ' (' + totalEliminado + ' registros)'
 }
+
 
 const GRUPOS = [
   {
