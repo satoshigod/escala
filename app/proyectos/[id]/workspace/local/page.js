@@ -8,6 +8,134 @@ import { supabase } from '../../../../../lib/supabase'
 
 const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
 
+function CalculadoraVentas({ local }) {
+  const [ventas, setVentas] = useState(local.ventas_dia_normal || '')
+  const [costo, setCosto] = useState(local.costo_producto || '')
+  const [precioVenta, setPrecioVenta] = useState(local.precio_venta || '')
+  const [abierto, setAbierto] = useState(false)
+
+  const ventasN = parseFloat(ventas || 0)
+  const costoN = parseFloat(costo || 0)
+  const precioN = parseFloat(precioVenta || 0)
+  const margenPct = precioN > 0 && costoN > 0 ? ((precioN - costoN) / precioN) * 100 : parseFloat(local.margen_pct || 0)
+  const fijoDia = parseFloat(local.gastos_fijos_mes || 0) / 30
+  const costoProductoDia = ventasN * (1 - margenPct / 100)
+  const excedente = ventasN - costoProductoDia - fijoDia
+  const pagoAngel = excedente > 0 ? excedente : 0
+  const teMeda = excedente
+
+  const enRojo = excedente <= 0
+  const colorSemaforo = enRojo ? '#E05555' : excedente < fijoDia * 0.5 ? '#E8A020' : '#1D9E75'
+
+  return (
+    <div style={{ ...s.card, marginTop: '0' }}>
+      <div
+        onClick={() => setAbierto(a => !a)}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
+      >
+        <div>
+          <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff', marginBottom: '2px' }}>
+            Calculadora — ¿me alcanza si vendo X?
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>
+            Simula cuanto te queda despues de pagar al angel
+          </div>
+        </div>
+        <span style={{ fontSize: '0.85rem', color: '#6B7280' }}>{abierto ? '▲' : '▼'}</span>
+      </div>
+
+      {abierto && (
+        <div style={{ marginTop: '1rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+            <div>
+              <label style={s.label}>¿Cuanto vendes hoy?</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>$</span>
+                <input
+                  style={{ ...s.input, paddingLeft: '1.75rem', marginBottom: 0 }}
+                  type="number"
+                  value={ventas}
+                  onChange={e => setVentas(e.target.value)}
+                  placeholder={local.ventas_dia_normal || '150.000'}
+                />
+              </div>
+            </div>
+            <div>
+              <label style={s.label}>Costo de lo que vendes</label>
+              <div style={{ position: 'relative' }}>
+                <span style={{ position: 'absolute', left: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>$</span>
+                <input
+                  style={{ ...s.input, paddingLeft: '1.75rem', marginBottom: 0 }}
+                  type="number"
+                  value={costo}
+                  onChange={e => setCosto(e.target.value)}
+                  placeholder={local.costo_producto || ''}
+                />
+              </div>
+            </div>
+          </div>
+
+          {ventasN > 0 && (
+            <div style={{ background: enRojo ? 'rgba(224,85,85,0.06)' : 'rgba(29,158,117,0.06)', border: `1px solid ${enRojo ? 'rgba(224,85,85,0.25)' : 'rgba(29,158,117,0.25)'}`, borderRadius: '10px', padding: '1rem', marginBottom: '0.75rem' }}>
+              {/* Semaforo */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', marginBottom: '0.875rem' }}>
+                <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: colorSemaforo, flexShrink: 0 }}></div>
+                <div style={{ fontSize: '0.82rem', fontWeight: '700', color: colorSemaforo }}>
+                  {enRojo ? 'Con estas ventas no cubres los gastos' : excedente < fijoDia * 0.5 ? 'Alcanza justo — margen ajustado' : 'Bien — hay excedente para el angel'}
+                </div>
+              </div>
+
+              {/* Desglose */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                {[
+                  { label: 'Ventas del dia', valor: `$${fmt(ventasN)}`, color: '#fff' },
+                  { label: `- Costo del producto (${Math.round(100 - margenPct)}%)`, valor: `-$${fmt(costoProductoDia)}`, color: '#E05555' },
+                  { label: '- Gastos fijos del dia', valor: `-$${fmt(fijoDia)}`, color: '#E05555' },
+                  { label: '= Excedente', valor: enRojo ? 'En rojo' : `$${fmt(excedente)}`, color: colorSemaforo, bold: true },
+                ].map(f => (
+                  <div key={f.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '0.8rem' }}>
+                    <span style={{ color: '#8FA3CC' }}>{f.label}</span>
+                    <span style={{ fontWeight: f.bold ? '700' : '500', color: f.color }}>{f.valor}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Resultado final */}
+              <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.04)', borderRadius: '8px' }}>
+                {enRojo ? (
+                  <div style={{ fontSize: '0.8rem', color: '#E05555', lineHeight: '1.5' }}>
+                    Con ${fmt(ventasN)} de ventas te faltan <strong>${fmt(Math.abs(excedente))}</strong> para cubrir los gastos. No hay pago al angel hoy — el deficit se acumula.
+                  </div>
+                ) : (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
+                      <span style={{ color: '#8FA3CC' }}>Pago al angel hoy</span>
+                      <span style={{ fontWeight: '700', color: '#4A90D9' }}>${fmt(pagoAngel)}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem' }}>
+                      <span style={{ color: '#8FA3CC' }}>Te queda para ti</span>
+                      <span style={{ fontWeight: '700', color: '#1D9E75' }}>$0 (el excedente va al angel hasta pagar todo)</span>
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: '#6B7280', marginTop: '6px' }}>
+                      Cuando termines de pagar, el excedente completo es tuyo.
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {!ventasN && (
+            <div style={{ fontSize: '0.8rem', color: '#6B7280', textAlign: 'center', padding: '0.875rem 0' }}>
+              Ingresa cuanto esperas vender para ver el calculo
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function PanelLocalComercial() {
   const { id } = useParams()
   const [local, setLocal] = useState(null)
@@ -253,6 +381,9 @@ export default function PanelLocalComercial() {
             Ver panel →
           </a>
         </div>
+
+        {/* CALCULADORA DE VENTAS Y UTILIDADES */}
+        {local && <CalculadoraVentas local={local} />}
 
         {/* Salida anticipada */}
         {local && local.fase_actual !== 'libre' && (
