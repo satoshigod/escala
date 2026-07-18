@@ -253,6 +253,50 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
               </div>
             ))}
           </div>
+
+          {/* Descripcion del negocio con guia de escritura */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label style={{ ...s.label, marginBottom: 0 }}>Describe tu negocio al inversionista *</label>
+            <button type="button" onClick={() => set('mostrar_guia', !datos.mostrar_guia)} style={{ background: 'rgba(29,158,117,0.15)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: '6px', padding: '0.3rem 0.7rem', fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', cursor: 'pointer', fontFamily: 'Inter,sans-serif', whiteSpace: 'nowrap' }}>
+              {datos.mostrar_guia ? '✕ Cerrar guía' : '✍️ Guía para escribir'}
+            </button>
+          </div>
+
+          {datos.mostrar_guia && (
+            <div style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '10px', padding: '1rem', marginBottom: '0.875rem' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: '600', color: '#1D9E75', marginBottom: '0.75rem' }}>Responde estas 3 preguntas y armamos la descripción:</div>
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginBottom: '0.3rem' }}>¿Qué vas a vender exactamente?</div>
+              <input style={{ ...s.input, marginBottom: '0.75rem' }} value={datos.guia_que || ''} onChange={e => set('guia_que', e.target.value)} placeholder="Ej: Vendo ropa para mujer hecha a mano en tallas extras" />
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginBottom: '0.3rem' }}>¿Por qué la gente te va a comprar a ti y no a otro?</div>
+              <input style={{ ...s.input, marginBottom: '0.75rem' }} value={datos.guia_diferencial || ''} onChange={e => set('guia_diferencial', e.target.value)} placeholder="Ej: No hay tiendas de tallas extras en el barrio y hay mucha demanda" />
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginBottom: '0.3rem' }}>¿A quién le vas a vender?</div>
+              <input style={{ ...s.input, marginBottom: '0.75rem' }} value={datos.guia_quien || ''} onChange={e => set('guia_quien', e.target.value)} placeholder="Ej: Mujeres entre 25 y 50 años del barrio El Poblado" />
+              <button type="button" onClick={() => {
+                const partes = []
+                if (datos.guia_que) partes.push(datos.guia_que.trim())
+                if (datos.guia_diferencial) partes.push(datos.guia_diferencial.trim())
+                if (datos.guia_quien) partes.push('Clientes principales: ' + datos.guia_quien.trim())
+                const desc = partes.join('. ') + (partes.length ? '.' : '')
+                set('descripcion_negocio', desc)
+                set('mostrar_guia', false)
+              }} style={{ background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.5rem 1rem', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                Armar descripción →
+              </button>
+            </div>
+          )}
+
+          <textarea
+            style={{ ...s.input, height: '90px', resize: 'vertical' }}
+            value={datos.descripcion_negocio || ''}
+            onChange={e => set('descripcion_negocio', e.target.value)}
+            placeholder="Ej: Vendo ropa para mujer en tallas extras hecha a mano. No hay tiendas especializadas en el barrio y hay mucha demanda. Mis clientes son mujeres entre 25 y 50 años del sector."
+          />
+          <div style={{ fontSize: '0.7rem', marginTop: '-0.75rem', marginBottom: '0.875rem', color: (datos.descripcion_negocio || '').length < 50 ? '#E85A20' : '#1D9E75' }}>
+            {(datos.descripcion_negocio || '').length < 50
+              ? `Muy corta — faltan ${50 - (datos.descripcion_negocio || '').length} caracteres`
+              : `✓ Buena descripción (${(datos.descripcion_negocio || '').length} caracteres)`}
+          </div>
+
         </div>
       )}
 
