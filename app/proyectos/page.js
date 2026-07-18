@@ -1195,17 +1195,18 @@ export default function Proyectos() {
                 )}
                 {form.pais && form.pais!=='__nuevo__' && <div style={{fontSize:'0.7rem',color:'#1D9E75',marginTop:'-0.5rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas regulatorias de {form.pais} al crear</div>}
               </div>
-              <div>
-                <label style={s.label} htmlFor="py-industria">Industria (opcional)</label>
-                <select id="py-industria" style={s.select} value={form.industria} onChange={e => actualizar('industria', e.target.value)}>
-                  <option value="">Selecciona industria...</option>
-                  {INDUSTRIAS_LIST.map(i => <option key={i} value={i}>{i}</option>)}
-                </select>
-                {form.industria && <div style={{fontSize:'0.7rem',color:'#E8A020',marginTop:'-0.75rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas comerciales de {form.industria} al crear</div>}
-              </div>
-            </div>
+              {form.escenario === 'startup' && (
+                <div>
+                  <label style={s.label} htmlFor="py-industria">Industria (opcional)</label>
+                  <select id="py-industria" style={s.select} value={form.industria} onChange={e => actualizar('industria', e.target.value)}>
+                    <option value="">Selecciona industria...</option>
+                    {INDUSTRIAS_LIST.map(i => <option key={i} value={i}>{i}</option>)}
+                  </select>
+                  {form.industria && <div style={{fontSize:'0.7rem',color:'#E8A020',marginTop:'-0.75rem',marginBottom:'0.875rem'}}>✓ Se cargarán las tareas comerciales de {form.industria} al crear</div>}
+                </div>
+              )}            </div>
 
-            {/* NIVEL DE AVANCE */}
+            {/* NIVEL DE AVANCE — todos los escenarios */}
             <label style={s.label}>¿En qué etapa está tu proyecto? *</label>
             <div style={{display:'flex',flexDirection:'column',gap:'0.5rem',marginBottom:'1.25rem'}}>
               {NIVELES_AVANCE.map(n => (
@@ -1222,34 +1223,42 @@ export default function Proyectos() {
               ))}
             </div>
 
-            {/* MODALIDAD */}
-            <label style={s.label}>Modalidad de trabajo</label>
-            <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.25rem',flexWrap:'wrap'}}>
-              {MODALIDADES.map(m => (
-                <div key={m.id}
-                  onClick={() => actualizar('modalidad_trabajo', form.modalidad_trabajo === m.id ? '' : m.id)}
-                  style={{flex:1,minWidth:'90px',textAlign:'center',padding:'0.75rem 0.5rem',borderRadius:'10px',border:`1px solid ${form.modalidad_trabajo === m.id ? '#1D9E75' : 'rgba(255,255,255,0.1)'}`,background:form.modalidad_trabajo === m.id ? 'rgba(29,158,117,0.12)' : 'rgba(255,255,255,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
-                  <div style={{fontSize:'1.25rem',marginBottom:'0.25rem'}}>{m.emoji}</div>
-                  <div style={{fontSize:'0.8rem',fontWeight:'600',color: form.modalidad_trabajo === m.id ? '#1D9E75' : '#fff'}}>{m.label}</div>
+            {/* MODALIDAD — solo startup */}
+            {form.escenario === 'startup' && (
+              <div>
+                <label style={s.label}>Modalidad de trabajo</label>
+                <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.25rem',flexWrap:'wrap'}}>
+                  {MODALIDADES.map(m => (
+                    <div key={m.id}
+                      onClick={() => actualizar('modalidad_trabajo', form.modalidad_trabajo === m.id ? '' : m.id)}
+                      style={{flex:1,minWidth:'90px',textAlign:'center',padding:'0.75rem 0.5rem',borderRadius:'10px',border:`1px solid ${form.modalidad_trabajo === m.id ? '#1D9E75' : 'rgba(255,255,255,0.1)'}`,background:form.modalidad_trabajo === m.id ? 'rgba(29,158,117,0.12)' : 'rgba(255,255,255,0.04)',cursor:'pointer',transition:'all 0.15s'}}>
+                      <div style={{fontSize:'1.25rem',marginBottom:'0.25rem'}}>{m.emoji}</div>
+                      <div style={{fontSize:'0.8rem',fontWeight:'600',color: form.modalidad_trabajo === m.id ? '#1D9E75' : '#fff'}}>{m.label}</div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
 
-            {/* ROLES BUSCADOS */}
-            <label style={s.label}>¿Qué perfiles necesitas? (elige los que apliquen)</label>
-            <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem',marginBottom:'1.5rem'}}>
-              {ROLES_DISPONIBLES.map(r => {
-                const sel = form.roles_buscados.includes(r.id)
-                return (
-                  <div key={r.id}
-                    onClick={() => toggleRol(r.id)}
-                    style={{display:'flex',alignItems:'center',gap:'0.4rem',padding:'0.5rem 0.875rem',borderRadius:'20px',border:`1px solid ${sel ? '#1D9E75' : 'rgba(255,255,255,0.12)'}`,background:sel ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.04)',cursor:'pointer',fontSize:'0.82rem',fontWeight: sel ? '700' : '400',color: sel ? '#1D9E75' : '#C8D4E8',transition:'all 0.15s'}}>
-                    <span>{r.emoji}</span> {r.id}
-                    {sel && <span style={{fontSize:'0.75rem'}}>✓</span>}
-                  </div>
-                )
-              })}
-            </div>
+            {/* PERFILES — solo startup */}
+            {form.escenario === 'startup' && (
+              <div>
+                <label style={s.label}>¿Qué perfiles necesitas? (elige los que apliquen)</label>
+                <div style={{display:'flex',flexWrap:'wrap',gap:'0.5rem',marginBottom:'1.5rem'}}>
+                  {ROLES_DISPONIBLES.map(r => {
+                    const sel = form.roles_buscados.includes(r.id)
+                    return (
+                      <div key={r.id}
+                        onClick={() => toggleRol(r.id)}
+                        style={{display:'flex',alignItems:'center',gap:'0.4rem',padding:'0.5rem 0.875rem',borderRadius:'20px',border:`1px solid ${sel ? '#1D9E75' : 'rgba(255,255,255,0.12)'}`,background:sel ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.04)',cursor:'pointer',fontSize:'0.82rem',fontWeight: sel ? '700' : '400',color: sel ? '#1D9E75' : '#C8D4E8',transition:'all 0.15s'}}>
+                        <span>{r.emoji}</span> {r.id}
+                        {sel && <span style={{fontSize:'0.75rem'}}>✓</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
 
             {mensaje && <div style={s.error}>{mensaje}</div>}
 

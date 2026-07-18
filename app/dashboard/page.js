@@ -1025,6 +1025,31 @@ export default function Dashboard() {
                           </div>
                         )}
 
+                        {/* NECESITO MAS — local y equipos */}
+                        {(p.escenario === 'local_comercial' || p.escenario === 'otro') && (
+                          <div style={{padding:'0.75rem 1rem',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+                            <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#AFA9EC',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'0.5rem'}}>Necesito mas</div>
+                            <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
+                              <a href={'/proyectos/'+p.id+'/workspace?tab=necesito_mas'} style={{fontSize:'0.7rem',fontWeight:'600',color:'#1D9E75',background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'20px',padding:'3px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
+                                👤 Empleado
+                              </a>
+                              {p.escenario === 'local_comercial' && (
+                                <a href={'/proyectos/'+p.id+'/workspace?tab=necesito_mas'} style={{fontSize:'0.7rem',fontWeight:'600',color:'#E8A020',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'20px',padding:'3px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
+                                  🔧 Equipo
+                                </a>
+                              )}
+                              {p.escenario === 'otro' && (
+                                <a href={'/proyectos/'+p.id+'/workspace?tab=necesito_mas'} style={{fontSize:'0.7rem',fontWeight:'600',color:'#4A90D9',background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'20px',padding:'3px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
+                                  🏪 Local
+                                </a>
+                              )}
+                              <a href={'/proyectos/'+p.id+'/workspace?tab=necesito_mas'} style={{fontSize:'0.7rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'20px',padding:'3px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
+                                📦 Capital
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
                         {/* Workspace completo siempre visible */}
                         <div style={{padding:'0.625rem 1rem',borderTop:'1px solid rgba(255,255,255,0.04)',display:'flex',justifyContent:'center'}}>
                           <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.72rem',color:'#6B7280',textDecoration:'none'}}>

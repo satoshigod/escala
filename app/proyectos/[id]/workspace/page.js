@@ -120,7 +120,7 @@ export default function Workspace() {
         return
       }
       const initialTab = new URLSearchParams(window.location.search).get('tab')
-      if (initialTab && ['resumen','hitos','equipo','aportes','presupuesto','economia','roles','tareas','chat'].includes(initialTab)) {
+      if (initialTab && ['resumen','hitos','equipo','aportes','presupuesto','economia','roles','tareas','chat','necesito_mas','local'].includes(initialTab)) {
         setTab(initialTab)
       }
 
@@ -543,6 +543,15 @@ export default function Workspace() {
       ),
       tooltip: ['Roles que buscan postulantes', 'Publicar nuevo rol'],
     },
+    necesito_mas: {
+      label: 'Necesito mas',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#AFA9EC' : '#AFA9EC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+      ),
+      tooltip: ['Agrega empleados, equipos o un local', 'Expande tu negocio cuando lo necesites'],
+    },
   }
 
   // Construir lista de tabs segun tipo de proyecto y rol
@@ -550,10 +559,11 @@ export default function Workspace() {
     'resumen', 'local', 'economia', 'chat',
     ...(esFundador ? ['hitos'] : []),
     'documentos',
+    ...(esFundador ? ['necesito_mas'] : []),
   ] : esFundador ? [
     'resumen', 'equipo', 'presupuesto', 'economia', 'tareas', 'chat',
+    ...(esEscenarioEquipos ? ['necesito_mas'] : []),
   ] : [
-    // Especialista: primero lo que le importa
     'tareas', 'resumen', 'aportes', 'economia', 'chat',
   ]
 
@@ -1549,6 +1559,86 @@ export default function Workspace() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* TAB: NECESITO MAS */}
+        {tab === 'necesito_mas' && (
+          <div>
+            <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>¿Que mas necesitas para tu negocio?</div>
+            <div style={{fontSize:'0.8rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Puedes agregar empleados, equipos o un local en cualquier momento — sin crear un proyecto nuevo.</div>
+
+            <div style={{display:'flex',flexDirection:'column',gap:'0.875rem'}}>
+
+              {/* Empleado */}
+              <div style={{background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.875rem'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'0.875rem'}}>
+                  <div style={{width:'40px',height:'40px',borderRadius:'10px',background:'rgba(29,158,117,0.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D9E75" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
+                  </div>
+                  <div>
+                    <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Necesito un empleado</div>
+                    <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Publica un rol y alguien del directorio se postula para trabajar a cambio de participacion en el negocio.</div>
+                  </div>
+                </div>
+                <button onClick={() => setTab('roles')} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                  Publicar rol →
+                </button>
+              </div>
+
+              {/* Equipo o maquina — solo si es local */}
+              {esLocalComercial && (
+                <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.875rem'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'0.875rem'}}>
+                    <div style={{width:'40px',height:'40px',borderRadius:'10px',background:'rgba(232,160,32,0.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8A020" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <div>
+                      <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Necesito un equipo o maquina</div>
+                      <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega el equipo que necesitas al presupuesto. Un angel lo financia por item — tu pagas desde los ingresos.</div>
+                    </div>
+                  </div>
+                  <button onClick={() => setTab('presupuesto')} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                    Agregar equipo →
+                  </button>
+                </div>
+              )}
+
+              {/* Local — solo si es proyecto de equipos */}
+              {esEscenarioEquipos && (
+                <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1.1rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.875rem'}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'0.875rem'}}>
+                    <div style={{width:'40px',height:'40px',borderRadius:'10px',background:'rgba(74,144,217,0.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A90D9" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </div>
+                    <div>
+                      <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Necesito un local</div>
+                      <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Un angel financia el deposito y el arriendo del local. Tu lo pagas desde las ventas diarias del negocio.</div>
+                    </div>
+                  </div>
+                  <a href="/proyectos?escenario=local_comercial" style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',textDecoration:'none'}}>
+                    Ver como funciona →
+                  </a>
+                </div>
+              )}
+
+              {/* Capital de trabajo */}
+              <div style={{background:'rgba(175,169,236,0.06)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1.1rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.875rem'}}>
+                <div style={{display:'flex',alignItems:'center',gap:'0.875rem'}}>
+                  <div style={{width:'40px',height:'40px',borderRadius:'10px',background:'rgba(175,169,236,0.15)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#AFA9EC" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                  </div>
+                  <div>
+                    <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Necesito capital de trabajo</div>
+                    <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Para inventario, insumos, materia prima o cualquier gasto operativo. Agregalo al presupuesto y un angel lo financia.</div>
+                  </div>
+                </div>
+                <button onClick={() => setTab('presupuesto')} style={{background:'rgba(175,169,236,0.2)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
+                  Agregar item →
+                </button>
+              </div>
+
+            </div>
           </div>
         )}
 
