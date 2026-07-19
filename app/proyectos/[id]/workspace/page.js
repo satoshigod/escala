@@ -1071,6 +1071,11 @@ export default function Workspace() {
 
                 {/* CTAs de acción para equipos */}
                 <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap',marginBottom:'0.5rem'}}>
+                  <a
+                    href={'/proyectos/' + proyecto?.id + '/workspace/equipos'}
+                    style={{background:'#1D9E75',color:'#fff',borderRadius:'10px',padding:'0.625rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                    📊 Reportar ventas del mes
+                  </a>
                   <button
                     onClick={() => setTab('leasing')}
                     style={{background:'rgba(175,169,236,0.12)',border:'1px solid rgba(175,169,236,0.3)',color:'#AFA9EC',borderRadius:'10px',padding:'0.625rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',display:'flex',alignItems:'center',gap:'0.5rem'}}>
