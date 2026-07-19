@@ -148,6 +148,8 @@ export default function AngelPage() {
     } catch (err) { setMensaje('Error: ' + err.message) }
     setFirmandoLeasing(null)
   }
+
+  const s = {
     page: { minHeight: '100vh', background: '#080F20', fontFamily: 'Inter,sans-serif', color: '#fff' },
     nav: { background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '0 1.5rem', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 },
     wrap: { maxWidth: '960px', margin: '0 auto', padding: '2rem 1.5rem' },
