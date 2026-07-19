@@ -41,6 +41,8 @@ export default function AngelPage() {
   const [mostrarComprobante, setMostrarComprobante] = useState(null)
   const [enviando, setEnviando] = useState(null)
   const [mensaje, setMensaje] = useState('')
+  const [contratosLeasing, setContratosLeasing] = useState([])
+  const [firmandoLeasing, setFirmandoLeasing] = useState(null)
 
   useEffect(() => { init() }, [])
 
@@ -73,6 +75,14 @@ export default function AngelPage() {
       .then(r => r.json())
       .then(d => { if (d.ok) setOportunidades(d.items || []) })
       .catch(() => {})
+
+    // Cargar contratos de leasing donde este angel es el inversionista
+    const { data: leasings } = await supabase
+      .from('contratos_leasing')
+      .select('*, proyectos:proyecto_id(id, nombre, ciudad)')
+      .or('angel_id.eq.' + user.id + ',estado.eq.pendiente_angel')
+      .order('created_at', { ascending: false })
+    setContratosLeasing(leasings || [])
 
     setCargando(false)
   }
@@ -117,7 +127,27 @@ export default function AngelPage() {
     finally { setEnviando(null) }
   }
 
-  const s = {
+  async function firmarLeasing(contratoId) {
+    setFirmandoLeasing(contratoId)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/contratos-leasing', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+        body: JSON.stringify({
+          id: contratoId,
+          angel_id: usuario.id,
+          estado: 'activo',
+          firmado_angel: true,
+          fecha_firma_angel: new Date().toISOString(),
+        }),
+      })
+      const d = await res.json()
+      if (d.ok) await init()
+      else setMensaje('Error al firmar: ' + d.error)
+    } catch (err) { setMensaje('Error: ' + err.message) }
+    setFirmandoLeasing(null)
+  }
     page: { minHeight: '100vh', background: '#080F20', fontFamily: 'Inter,sans-serif', color: '#fff' },
     nav: { background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '0 1.5rem', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50 },
     wrap: { maxWidth: '960px', margin: '0 auto', padding: '2rem 1.5rem' },
@@ -147,6 +177,7 @@ export default function AngelPage() {
           {[
             { id: 'portafolio', label: 'Portafolio' },
             { id: 'alertas', label: accion_requerida.length > 0 ? 'Alertas (' + accion_requerida.length + ')' : 'Alertas' },
+            { id: 'leasing', label: contratosLeasing.filter(c => c.estado === 'pendiente_angel').length > 0 ? 'Leasing (' + contratosLeasing.filter(c => c.estado === 'pendiente_angel').length + ')' : 'Leasing' },
             { id: 'oportunidades', label: 'Oportunidades' },
           ].map(t => (
             <button key={t.id} onClick={() => setTab(t.id)} style={{ background: tab === t.id ? 'rgba(255,255,255,0.1)' : 'none', border: tab === t.id ? '1px solid rgba(255,255,255,0.2)' : '1px solid transparent', color: tab === t.id ? '#fff' : '#8FA3CC', borderRadius: '8px', padding: '0.3rem 0.875rem', fontSize: '0.78rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
@@ -307,6 +338,123 @@ export default function AngelPage() {
           </div>
         )}
       </div>
+
+      {/* ====== TAB LEASING ====== */}
+      {tab === 'leasing' && (
+        <div style={{ maxWidth: '960px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#fff', marginBottom: '0.375rem' }}>Contratos de leasing de maquinaria</h2>
+          <p style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.5rem' }}>
+            Cuando una beneficiaria firma un contrato de maquinaria, aparece aqui para tu aprobacion y firma digital.
+          </p>
+
+          {contratosLeasing.filter(c => c.estado === 'pendiente_angel').length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#E8A020', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                Pendientes de tu firma
+              </div>
+              {contratosLeasing.filter(c => c.estado === 'pendiente_angel').map(c => (
+                <div key={c.id} style={{ background: 'rgba(232,160,32,0.06)', border: '1px solid rgba(232,160,32,0.25)', borderRadius: '14px', padding: '1.5rem', marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                    <div>
+                      <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff', marginBottom: '3px' }}>{c.tipo_equipo} · {c.marca} {c.modelo || ''}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>{c.proyectos?.nombre || 'Proyecto'} · {c.ciudad} · Contrato #{c.numero_contrato}</div>
+                    </div>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(232,160,32,0.15)', color: '#E8A020', padding: '3px 10px', borderRadius: '20px', flexShrink: 0 }}>Pendiente tu firma</span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: '0.5rem', marginBottom: '1.25rem' }}>
+                    {[
+                      { l: 'Beneficiaria', v: c.nombre_beneficiaria },
+                      { l: 'Cedula', v: c.cedula_beneficiaria },
+                      { l: 'Valor equipo', v: '$' + fmt(c.valor_equipo) + ' COP' },
+                      { l: '% excedente angel', v: c.pct_excedente + '%' },
+                      { l: 'Excedente est./mes', v: '$' + fmt(c.excedente_estimado) },
+                      { l: 'Meses estimados', v: '~' + c.meses_estimados },
+                    ].map(r => (
+                      <div key={r.l} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.625rem' }}>
+                        <div style={{ fontSize: '0.62rem', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '2px' }}>{r.l}</div>
+                        <div style={{ fontSize: '0.82rem', fontWeight: '600', color: '#fff' }}>{r.v || '—'}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {c.serial && (
+                    <div style={{ fontSize: '0.75rem', color: '#6B7280', marginBottom: '1rem' }}>
+                      Serial: <strong style={{ color: '#8FA3CC' }}>{c.serial}</strong>
+                    </div>
+                  )}
+
+                  <div style={{ background: 'rgba(175,169,236,0.06)', border: '1px solid rgba(175,169,236,0.2)', borderRadius: '8px', padding: '0.875rem', marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#AFA9EC', lineHeight: '1.65' }}>
+                      Al firmar confirmas que: (1) compras este equipo y lo entregas a <strong style={{ color: '#fff' }}>{c.nombre_beneficiaria}</strong>,
+                      (2) recibes el <strong style={{ color: '#fff' }}>{c.pct_excedente}%</strong> del excedente mensual hasta recuperar{' '}
+                      <strong style={{ color: '#fff' }}>${fmt(c.valor_equipo)} COP</strong>,
+                      (3) cuando se complete el pago la maquina pasa a nombre de la beneficiaria.
+                      Firma valida bajo Ley 527/1999 de Colombia.
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => firmarLeasing(c.id)}
+                    disabled={firmandoLeasing === c.id}
+                    style={{ width: '100%', background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '10px', padding: '0.875rem', fontSize: '0.92rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter,sans-serif', opacity: firmandoLeasing === c.id ? 0.7 : 1 }}>
+                    {firmandoLeasing === c.id ? 'Firmando...' : '✍️ Firmar y aprobar contrato'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {contratosLeasing.filter(c => c.estado === 'activo').length > 0 && (
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.75rem' }}>
+                Contratos activos
+              </div>
+              {contratosLeasing.filter(c => c.estado === 'activo').map(c => {
+                const abonado = parseFloat(c.capital_abonado || 0)
+                const total = parseFloat(c.valor_equipo || 0)
+                const pct = total > 0 ? Math.min(100, Math.round(abonado / total * 100)) : 0
+                return (
+                  <div key={c.id} style={{ background: 'rgba(29,158,117,0.04)', border: '1px solid rgba(29,158,117,0.15)', borderRadius: '12px', padding: '1.25rem', marginBottom: '0.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#fff', marginBottom: '2px' }}>{c.tipo_equipo} {c.marca}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#6B7280' }}>{c.nombre_beneficiaria} · #{c.numero_contrato}</div>
+                      </div>
+                      <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(29,158,117,0.15)', color: '#1D9E75', padding: '3px 10px', borderRadius: '20px' }}>Activo</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.5rem', marginBottom: '0.875rem' }}>
+                      {[
+                        { l: 'Abonado', v: '$' + fmt(abonado), c: '#1D9E75' },
+                        { l: 'Pendiente', v: '$' + fmt(total - abonado), c: '#E8A020' },
+                        { l: 'Recuperado', v: pct + '%', c: '#4A90D9' },
+                      ].map(k => (
+                        <div key={k.l} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.625rem', textAlign: 'center' }}>
+                          <div style={{ fontSize: '1rem', fontWeight: '800', color: k.c }}>{k.v}</div>
+                          <div style={{ fontSize: '0.62rem', color: '#6B7280', textTransform: 'uppercase', marginTop: '2px' }}>{k.l}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: '6px', height: '6px', overflow: 'hidden' }}>
+                      <div style={{ width: pct + '%', height: '100%', background: '#1D9E75', borderRadius: '6px' }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {contratosLeasing.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#4B5563', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '12px' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🔧</div>
+              <div style={{ fontSize: '0.88rem', color: '#6B7280', marginBottom: '0.5rem' }}>No tienes contratos de leasing todavia</div>
+              <div style={{ fontSize: '0.78rem', color: '#4B5563' }}>Cuando una beneficiaria firme un contrato de maquinaria, aparecera aqui</div>
+            </div>
+          )}
+
+          {mensaje && <div style={{ background: 'rgba(224,85,85,0.08)', border: '1px solid rgba(224,85,85,0.2)', borderRadius: '8px', padding: '0.75rem', color: '#E05555', fontSize: '0.82rem', marginTop: '1rem' }}>{mensaje}</div>}
+        </div>
+      )}
 
       {/* Modal fondeo */}
       {mostrarFondeo && (
