@@ -66,7 +66,7 @@ export default function Page() {
         <div style={{ marginBottom: '3rem' }}>
           {[
             { n: '1', c: '#D946EF', t: 'Aplicas y nos dices qué equipo necesitas', d: 'Nos cuentas qué tienes, cuántas clientas atiendes y qué equipo te falta — silla hidráulica, secadora, horno UV, cabina de ozono, plancha de vapor. Y cuánto cuesta.' },
-            { n: '2', c: '#4A90D9', t: 'Un inversionista compra el equipo', d: 'Un ángel inversionista compra el equipo específico que necesitas. Tú defines cuánto le pagas mensualmente — entre el 2.5% y el 4% del valor del equipo.' },
+            { n: '2', c: '#4A90D9', t: 'Un inversionista compra el equipo', d: 'Un ángel inversionista compra el equipo específico que necesitas. Juntos acuerdan qué porcentaje del excedente adicional que genera el equipo se abona al capital. Cuanto más produces, más rápido pagas.' },
             { n: '3', c: '#1D9E75', t: 'Atiendes más clientas y pagas desde lo que ganas', d: 'Empiezas a usar el equipo de inmediato. Cada mes pagas al inversionista con lo que produces. Cuando termines de pagar, el equipo es tuyo.' },
           ].map(p => (
             <div key={p.n} style={s.paso}>
@@ -89,8 +89,8 @@ export default function Page() {
             {[
               { l: 'Equipo que necesita', v: 'Secadora de casco profesional', c: '#fff' },
               { l: 'Valor', v: '$2.800.000 COP', c: '#fff' },
-              { l: 'Cuota mensual (3.5%)', v: '$98.000/mes', c: '#D946EF' },
-              { l: 'El equipo es suyo en', v: '~29 meses', c: '#1D9E75' },
+              { l: 'Excedente adicional/mes', v: '~$720.000', c: '#D946EF' },
+              { l: 'El equipo es suyo en', v: '~4-6 meses', c: '#1D9E75' },
             ].map(k => (
               <div key={k.l} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.75rem' }}>
                 <div style={{ fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '3px' }}>{k.l}</div>
@@ -99,7 +99,7 @@ export default function Page() {
             ))}
           </div>
           <div style={{ fontSize: '0.8rem', color: '#1D9E75', lineHeight: '1.5' }}>
-            Con la secadora nueva Sandra puede ofrecer hidrataciones a $60.000. Atendiendo 3 tratamientos/semana adicionales gana $720.000/mes más. La cuota mensual es el 14% de ese incremento.
+            Con la secadora nueva Sandra genera $720K/mes adicionales. Si el 80% de ese excedente va al angel, abona $576K/mes y recupera el equipo en menos de 5 meses.
           </div>
         </div>
 
@@ -147,7 +147,7 @@ export default function Page() {
         {[
           { p: '¿Necesito historial crediticio o codeudor?', r: 'No. No evaluamos historial bancario. Lo que nos importa es que tengas clientas reales y sepas usar el equipo.' },
           { p: '¿El equipo es mío desde el primer día?', r: 'Lo usas desde el primer día. El inversionista queda como propietario hasta que termines de pagar. Al llegar al 100%, pasa a tu nombre.' },
-          { p: '¿Qué pasa si un mes atiendo menos clientas?', r: 'Hablamos contigo. La cuota mensual está diseñada para ser asequible — entre el 2.5% y el 4% del valor del equipo, mucho menos de lo que produce el equipo nuevo.' },
+          { p: '¿Qué pasa si un mes atiendo menos clientas?', r: 'Hablamos contigo. El modelo está diseñado para que el excedente del equipo nuevo sea lo que paga al ángel. Si produces menos ese mes, el abono es menor. Si produces más, pagas más rápido.' },
           { p: '¿Cuánto tiempo toma el proceso?', r: 'Si tu perfil califica, entre 3 y 7 días hábiles. Una vez aprobado, el inversionista compra el equipo y te lo entregamos.' },
         ].map(f => (
           <div key={f.p} style={{ ...s.card, marginBottom: '0.75rem' }}>

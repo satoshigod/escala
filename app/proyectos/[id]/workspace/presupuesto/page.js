@@ -582,8 +582,8 @@ export default function PresupuestoPage() {
                     id: 'leasing_maquinaria',
                     emoji: '🔧',
                     titulo: 'El angel compra la maquina y yo la arriendo',
-                    desc: 'El inversionista compra el equipo y queda como propietario. Tu le pagas una cuota mensual de arriendo. Cuando termines de pagar, la maquina es tuya.',
-                    ejemplo: (m) => m ? `Ej: el angel compra $${fmt(m)}, tu pagas $${fmt(parseFloat(m)*0.035)}/mes (3.5%) hasta que la maquina es tuya` : 'Ej: angel compra la maquina, tu la arriendas y al final es tuya',
+                    desc: 'El angel compra el equipo y queda como propietario. Del excedente mensual, un % acordado se abona al capital. Cuanto mas produces, mas rapido pagas. Al terminar, el equipo es tuyo.',
+                    ejemplo: (m) => m ? `Ej: excedente $1M/mes → 60% al angel = $600K de abono. La maquina es tuya cuando el angel recupera $${fmt(m)}` : 'Ej: del excedente mensual, 60-80% abona al capital hasta pagar todo',
                     color: '#AFA9EC',
                   },
                 ].map(op => {
@@ -634,21 +634,22 @@ export default function PresupuestoPage() {
               )}
               {formFondeo.a_cambio_de === 'leasing_maquinaria' && (
                 <div>
-                  <label style={s.label}>¿Tasa mensual de arriendo? *</label>
-                  <span style={{ fontSize: '0.72rem', color: '#8FA3CC', display: 'block', marginBottom: '0.5rem' }}>Tipicamente entre 2.5% y 4% mensual sobre el valor de la maquina</span>
+                  <label style={s.label}>¿Qué % del excedente va al ángel? *</label>
+                  <span style={{ fontSize: '0.72rem', color: '#8FA3CC', display: 'block', marginBottom: '0.5rem' }}>Del excedente mensual (ingresos - costos - gastos fijos), este % se abona al capital hasta pagar todo.</span>
                   <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
-                    <input style={{ ...s.input, marginBottom: 0, paddingRight: '2rem' }} type="number" step="0.1" min="1" max="5" value={formFondeo.tasa_mensual} onChange={e => setFormFondeo(f => ({ ...f, tasa_mensual: e.target.value }))} placeholder="3.5" />
+                    <input style={{ ...s.input, marginBottom: 0, paddingRight: '2rem' }} type="number" step="5" min="20" max="80" value={formFondeo.pct_revenue} onChange={e => setFormFondeo(f => ({ ...f, pct_revenue: e.target.value }))} placeholder="60" />
                     <span style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>%</span>
                   </div>
-                  {formFondeo.tasa_mensual && formFondeo.monto && (
-                    <div style={{ background: 'rgba(175,169,236,0.08)', border: '1px solid rgba(175,169,236,0.2)', borderRadius: '8px', padding: '0.75rem', marginBottom: '0.875rem', fontSize: '0.75rem', color: '#AFA9EC', lineHeight: '1.6' }}>
-                      <div>Cuota mensual: <strong style={{ color: '#fff' }}>${fmt(parseFloat(formFondeo.monto) * parseFloat(formFondeo.tasa_mensual) / 100)}</strong></div>
-                      <div>Meses para pagar: ~<strong style={{ color: '#fff' }}>{Math.ceil(100 / parseFloat(formFondeo.tasa_mensual))} meses</strong></div>
-                      <div>Al terminar: <strong style={{ color: '#1D9E75' }}>la maquina es tuya</strong></div>
+                  {formFondeo.pct_revenue && formFondeo.monto && (
+                    <div style={{ background: 'rgba(175,169,236,0.08)', border: '1px solid rgba(175,169,236,0.2)', borderRadius: '8px', padding: '0.875rem', marginBottom: '0.875rem', fontSize: '0.75rem', color: '#AFA9EC', lineHeight: '1.7' }}>
+                      <div style={{ marginBottom: '4px' }}>Si tu excedente mensual es <strong style={{ color: '#fff' }}>$1.000.000</strong> → abono al ángel: <strong style={{ color: '#AFA9EC' }}>${fmt(1000000 * parseFloat(formFondeo.pct_revenue || 0) / 100)}</strong></div>
+                      <div style={{ marginBottom: '4px' }}>Si tu excedente mensual es <strong style={{ color: '#fff' }}>$2.000.000</strong> → abono al ángel: <strong style={{ color: '#AFA9EC' }}>${fmt(2000000 * parseFloat(formFondeo.pct_revenue || 0) / 100)}</strong></div>
+                      <div style={{ marginBottom: '8px', color: '#6B7280', fontSize: '0.7rem' }}>Cuando el ángel recupera ${fmt(parseFloat(formFondeo.monto))} → la máquina pasa a tu nombre</div>
+                      <div style={{ color: '#1D9E75', fontWeight: '600' }}>Si produces más, pagas más rápido. Si produces menos, pagas menos ese mes.</div>
                     </div>
                   )}
                   <div style={{ fontSize: '0.72rem', color: '#8FA3CC', lineHeight: '1.5', marginBottom: '0.875rem' }}>
-                    El angel compra la maquina y queda como propietario registrado. Tu la usas y le pagas la cuota mensual. Cuando termines de pagar el total, la maquina pasa a tu nombre automaticamente.
+                    El ángel compra la máquina y queda como propietario. Tú la usas y cada mes reportas tus ventas. El sistema calcula el excedente y abona automáticamente. Cuando el ángel recupera el total, la máquina es tuya.
                   </div>
                 </div>
               )}

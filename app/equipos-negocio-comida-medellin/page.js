@@ -66,7 +66,7 @@ export default function Page() {
         <div style={{ marginBottom: '3rem' }}>
           {[
             { n: '1', c: '#E8A020', t: 'Aplicas y nos dices qué equipo necesitas', d: 'Nos cuentas cuánto vendes hoy, cuánto podrías vender con el equipo nuevo y cuánto cuesta — freidora, horno, amasadora, estufa industrial, nevera, licuadora industrial.' },
-            { n: '2', c: '#4A90D9', t: 'Un inversionista compra el equipo', d: 'Un ángel inversionista compra el equipo específico que necesitas. Tú defines cuánto le pagas mensualmente — entre el 2.5% y el 4% del valor del equipo.' },
+            { n: '2', c: '#4A90D9', t: 'Un inversionista compra el equipo', d: 'Un ángel inversionista compra el equipo específico que necesitas. Juntos acuerdan qué porcentaje del excedente adicional que genera el equipo se abona al capital. Cuanto más produces, más rápido pagas.' },
             { n: '3', c: '#1D9E75', t: 'Produces más y pagas desde lo que vendes', d: 'Empiezas a usar el equipo de inmediato. Cada mes pagas al inversionista desde tus ventas. Cuando termines de pagar, el equipo es tuyo.' },
           ].map(p => (
             <div key={p.n} style={s.paso}>
@@ -89,8 +89,8 @@ export default function Page() {
             {[
               { l: 'Equipo que necesita', v: 'Freidora industrial 20L', c: '#fff' },
               { l: 'Valor', v: '$3.200.000 COP', c: '#fff' },
-              { l: 'Cuota mensual (3.5%)', v: '$112.000/mes', c: '#E8A020' },
-              { l: 'El equipo es suyo en', v: '~29 meses', c: '#1D9E75' },
+              { l: 'Excedente adicional/mes', v: '~$7.600.000', c: '#E8A020' },
+              { l: 'El equipo es suyo en', v: '~1-2 meses', c: '#1D9E75' },
             ].map(k => (
               <div key={k.l} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.75rem' }}>
                 <div style={{ fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '3px' }}>{k.l}</div>
@@ -99,7 +99,7 @@ export default function Page() {
             ))}
           </div>
           <div style={{ fontSize: '0.8rem', color: '#1D9E75', lineHeight: '1.5' }}>
-            Con la freidora nueva Patricia pasa de 80 a 250 empanadas/día a $1.500 c/u. Ingreso adicional: $255.000/día = $7.6M/mes. La cuota mensual es menos del 2% de ese incremento.
+            Con la freidora nueva Patricia pasa de 80 a 250 empanadas/dia. Excedente adicional: ~$7.6M/mes. Si el 80% de ese excedente va al angel, abona $6M/mes y recupera el equipo en menos de 2 meses.
           </div>
         </div>
 
@@ -155,7 +155,7 @@ export default function Page() {
         {[
           { p: '¿Necesito historial crediticio o codeudor?', r: 'No. No evaluamos tu historial bancario. Lo que nos importa es que tengas ventas reales y sepas usar el equipo.' },
           { p: '¿El equipo es mío desde el primer día?', r: 'Lo usas desde el primer día. El inversionista queda como propietario registrado hasta que termines de pagar. Al llegar al 100%, pasa a tu nombre.' },
-          { p: '¿Qué pasa si un mes vendo menos?', r: 'Hablamos contigo. La cuota mensual está diseñada para ser asequible — entre el 2.5% y el 4% del valor del equipo. Eso es mucho menos de lo que produce el equipo cada mes.' },
+          { p: '¿Qué pasa si un mes vendo menos?', r: 'Hablamos contigo. El modelo está diseñado para que el excedente del equipo nuevo sea lo que paga al ángel. Si vendes menos ese mes, el abono es menor. Si vendes más, pagas más rápido.' },
           { p: '¿Financia equipos usados o solo nuevos?', r: 'Principalmente equipos nuevos. En casos donde el equipo usado tiene garantía verificable y precio justo, también se puede evaluar.' },
           { p: '¿Cuánto tiempo toma el proceso?', r: 'Si tu perfil califica, entre 3 y 7 días hábiles. Una vez aprobado, el inversionista compra el equipo y te lo entregamos.' },
         ].map(f => (

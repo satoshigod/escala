@@ -34,7 +34,7 @@ export default function Page() {
           <span style={{ color: '#1D9E75' }}>Te la conseguimos.</span>
         </h1>
         <p style={s.sub}>
-          Un inversionista compra la maquina que necesitas. Tu la usas para producir mas y le pagas desde lo que ganas. Sin banco. Sin garante. Sin historial crediticio.
+          Un inversionista compra la maquina que necesitas. Tu la usas para producir mas y pagas al angel desde el excedente que genera la misma maquina. Sin banco. Sin garante. Sin historial crediticio.
         </p>
         <Link href="#aplica" style={s.btnVerde}>
           Quiero mi maquina →
@@ -66,8 +66,8 @@ export default function Page() {
         <div style={{ marginBottom: '3rem' }}>
           {[
             { n: '1', c: '#4A90D9', t: 'Aplicas y nos cuentas que maquina necesitas', d: 'Nos dices que tipo de maquina te falta — Juki, Jack, overlock, plana, cortadora — y cuanto cuesta aproximadamente. Nos muestras tus pedidos actuales.' },
-            { n: '2', c: '#1D9E75', t: 'Un inversionista compra la maquina', d: 'Un angel inversionista de nuestra red compra la maquina especifica que necesitas. Tu defines cuanto le pagas mensualmente — entre el 2.5% y el 4% del valor de la maquina.' },
-            { n: '3', c: '#E8A020', t: 'Produces mas y pagas desde lo que ganas', d: 'Empiezas a usar la maquina de inmediato. Cada mes le pagas al inversionista con lo que produces. Cuando termines de pagar, la maquina es tuya.' },
+            { n: '2', c: '#1D9E75', t: 'Un inversionista compra la maquina', d: 'Un angel inversionista compra la maquina especifica que necesitas. Juntos acuerdan que porcentaje del excedente mensual se abona al capital — tipicamente entre el 60% y el 80%. Cuanto mas produces, mas rapido pagas.' },
+            { n: '3', c: '#E8A020', t: 'Produces mas y el excedente abona al angel', d: 'Empiezas a usar la maquina de inmediato. Cada mes reportas tus ventas. Del excedente (ventas - costos - gastos), un porcentaje acordado va al angel como abono al capital. Si produces mas, pagas mas rapido. Cuando el angel recupera el total, la maquina es tuya.' },
           ].map(p => (
             <div key={p.n} style={s.paso}>
               <div style={s.numCircle(p.c)}>{p.n}</div>
@@ -89,8 +89,8 @@ export default function Page() {
             {[
               { l: 'Maquina que necesita', v: 'Overlock industrial Jack', c: '#fff' },
               { l: 'Valor', v: '$8.500.000 COP', c: '#fff' },
-              { l: 'Cuota mensual (3.5%)', v: '$297.500/mes', c: '#E8A020' },
-              { l: 'La maquina es suya en', v: '~29 meses', c: '#1D9E75' },
+              { l: 'Excedente adicional/mes', v: '~$1.000.000', c: '#E8A020' },
+              { l: 'La maquina es suya en', v: '~8-12 meses', c: '#1D9E75' },
             ].map(k => (
               <div key={k.l} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.75rem' }}>
                 <div style={{ fontSize: '0.65rem', color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '3px' }}>{k.l}</div>
@@ -99,7 +99,7 @@ export default function Page() {
             ))}
           </div>
           <div style={{ fontSize: '0.8rem', color: '#1D9E75', lineHeight: '1.5' }}>
-            Con la maquina nueva Maria puede cumplir los 150 pedidos. Su ingreso mensual sube de $1.2M a $2.2M. La cuota mensual es menos del 15% del incremento.
+            Con la maquina nueva Maria puede cumplir los 150 pedidos. Su excedente adicional es ~$1M/mes. Si el 80% de ese excedente va al angel, abona $800K/mes y recupera la maquina en menos de 11 meses — no en anos.
           </div>
         </div>
 
@@ -145,7 +145,7 @@ export default function Page() {
         {[
           { p: '¿Necesito historial crediticio o codeudor?', r: 'No. No evaluamos tu historial bancario. Lo que nos importa es que tengas pedidos reales y sepas operar la maquina.' },
           { p: '¿La maquina es mia desde el primer dia?', r: 'La usas desde el primer dia. El inversionista queda como propietario registrado hasta que termines de pagar. Al llegar al 100%, la maquina pasa a tu nombre.' },
-          { p: '¿Que pasa si un mes vendo poco?', r: 'Hablamos contigo. El modelo esta disenado para que la cuota sea asequible — entre el 2.5% y el 4% del valor de la maquina al mes. Eso es mucho menos de lo que produce la maquina.' },
+          { p: '¿Que pasa si un mes vendo poco?', r: 'Hablamos contigo. El modelo funciona sobre el excedente real — si vendes menos ese mes, el abono es menor. No hay cuota fija que te ahogue. Si vendes mas, pagas mas rapido y la maquina es tuya antes.' },
           { p: '¿Que tipo de maquinas financian?', r: 'Cualquier maquina industrial para confeccion: planas, overlock, cortadoras, maquinas para ropa de bano, botoneras, bordadoras. Marcas como Juki, Jack, Pegasus, Kansai, Brother, Singer.' },
           { p: '¿Cuanto tiempo toma el proceso?', r: 'Si tu perfil califica, el proceso de aprobacion toma entre 3 y 7 dias habiles. Una vez aprobado, el inversionista compra la maquina y te la entregamos.' },
         ].map(f => (
