@@ -1799,8 +1799,8 @@ export default function Workspace() {
             <div style={{ fontSize: '0.88rem', color: '#8FA3CC', marginBottom: '1.5rem', lineHeight: '1.6' }}>
               Flujo completo de contrato para leasing de maquinaria. Firma digital paso a paso en lenguaje simple.
             </div>
-            <a href={`/proyectos/${proyecto?.id}/workspace/leasing`} style={{ display: 'inline-block', background: '#AFA9EC', color: '#080F20', borderRadius: '10px', padding: '0.75rem 1.5rem', fontSize: '0.88rem', fontWeight: '700', textDecoration: 'none' }}>
-              📄 Abrir flujo de contrato →
+            <a href={'/proyectos/' + proyecto?.id + '/workspace/leasing'} style={{ display: 'inline-block', background: '#AFA9EC', color: '#080F20', borderRadius: '10px', padding: '0.75rem 1.5rem', fontSize: '0.88rem', fontWeight: '700', textDecoration: 'none' }}>
+              Abrir flujo de contrato
             </a>
           </div>
         )}
