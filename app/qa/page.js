@@ -51,7 +51,18 @@ async function limpiarTodosProyectosQA() {
     totalEliminado += espQA.length
   }
 
-  // 5. Repartos QA del proyecto ESCALA
+  // 5. Perfiles QA — cualquier perfil con nombre que empiece con QA- (excepto el fundador)
+  const { data: perfilesQA } = await sb.from('perfiles').select('id, user_id').ilike('nombre', 'QA-%').neq('id', FUNDADOR_ID)
+  if (perfilesQA?.length) {
+    for (const p of perfilesQA) {
+      // Usar funcion de eliminar usuario completo si existe
+      await sb.rpc('eliminar_usuario_completo', { uid: p.user_id }).catch(() => {})
+    }
+    resumen.push(perfilesQA.length + ' perfiles')
+    totalEliminado += perfilesQA.length
+  }
+
+  // 6. Repartos QA del proyecto ESCALA
   const { data: repartosQA } = await sb
     .from('repartos').select('id')
     .eq('proyecto_id', PROYECTO_ESCALA).ilike('descripcion', 'QA-%')
@@ -62,7 +73,7 @@ async function limpiarTodosProyectosQA() {
     totalEliminado += repartosQA.length
   }
 
-  // 6. Items de presupuesto QA del proyecto ESCALA
+  // 7. Items de presupuesto QA del proyecto ESCALA
   const { data: itemsQA } = await sb
     .from('presupuesto_items').select('id')
     .eq('proyecto_id', PROYECTO_ESCALA).ilike('nombre', 'QA-%')
@@ -608,7 +619,7 @@ const GRUPOS = [
       },
       {
         id: 'especialidades_post',
-        nombre: 'POST /api/especialidades — crear especialidad nueva',
+        nombre: 'POST /api/especialidades — crear y eliminar especialidad nueva',
         run: async () => {
           const nombre = 'QA-Especialidad-' + Date.now()
           const res = await fetch('/api/especialidades', {
@@ -618,7 +629,10 @@ const GRUPOS = [
           const data = await res.json()
           if (data.error) throw new Error(data.error)
           if (!data.especialidad || data.especialidad.nombre !== nombre) throw new Error('No se creó correctamente')
-          return 'Especialidad "' + nombre + '" creada con ID ' + data.especialidad.id.slice(0,8)
+          const id = data.especialidad.id
+          // Limpiar inmediatamente
+          await window._supabase.from('especialidades').delete().eq('id', id).catch(() => {})
+          return 'Especialidad creada y eliminada correctamente — sin residuos'
         }
       },
       {
@@ -648,7 +662,7 @@ const GRUPOS = [
       },
       {
         id: 'categorias_post',
-        nombre: 'POST /api/categorias — crear categoría nueva',
+        nombre: 'POST /api/categorias — crear y eliminar categoría nueva',
         run: async () => {
           const nombre = 'QA-Categoria-' + Date.now()
           const res = await fetch('/api/categorias', {
@@ -658,7 +672,10 @@ const GRUPOS = [
           const data = await res.json()
           if (data.error) throw new Error(data.error)
           if (!data.categoria || data.categoria.nombre !== nombre) throw new Error('No se creó correctamente')
-          return 'Categoría "' + nombre + '" creada con ID ' + data.categoria.id.slice(0,8)
+          const id = data.categoria.id
+          // Limpiar inmediatamente
+          await window._supabase.from('categorias').delete().eq('id', id).catch(() => {})
+          return 'Categoría creada y eliminada correctamente — sin residuos'
         }
       },
     ]
