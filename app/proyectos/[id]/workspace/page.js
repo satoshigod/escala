@@ -503,6 +503,8 @@ export default function Workspace() {
       ),
       tooltip: ['Contrato de leasing de maquinaria', 'Firma digital paso a paso', 'Estado de aprobacion del angel', 'Historial de abonos'],
     },
+    // Tab "Financiacion" — capital, aportes, economia, reparto
+    economia: {
       label: 'Financiacion',
       icon: (activo) => (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
