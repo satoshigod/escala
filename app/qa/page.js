@@ -1025,7 +1025,10 @@ const GRUPOS = [
           })
           const data = await res.json()
           if (data.error) throw new Error(data.error)
-          return 'País "' + nombre + '" creado — revisa correo de admin y campanita'
+          const id = data.pais?.id
+          // Eliminar inmediatamente — solo verificamos que la notificacion se disparó
+          if (id) await window._supabase.from('paises').delete().eq('id', id).catch(() => {})
+          return 'País creado y eliminado — revisa correo de admin y campanita'
         }
       },
       {
@@ -2586,6 +2589,42 @@ export default function QA() {
                     Limpiar resultados
                   </button>
                 )}
+                <button onClick={async () => {
+                  const sb = window._supabase
+                  if (!sb) { alert('Supabase no disponible'); return }
+                  
+                  let log = []
+                  
+                  // Paises QA
+                  const { data: paises } = await sb.from('paises').select('id,nombre').ilike('nombre', 'QA-%')
+                  log.push('Paises encontrados: ' + (paises?.length || 0))
+                  if (paises?.length) {
+                    const { error } = await sb.from('paises').delete().in('id', paises.map(p => p.id))
+                    log.push(error ? 'ERROR paises: ' + error.message : 'Paises eliminados: ' + paises.length)
+                  }
+                  
+                  // Especialidades QA
+                  const { data: esps } = await sb.from('especialidades').select('id,nombre').ilike('nombre', 'QA-%')
+                  log.push('Especialidades encontradas: ' + (esps?.length || 0))
+                  if (esps?.length) {
+                    const { error } = await sb.from('especialidades').delete().in('id', esps.map(e => e.id))
+                    log.push(error ? 'ERROR especialidades: ' + error.message : 'Especialidades eliminadas: ' + esps.length)
+                  }
+                  
+                  // Proyectos QA
+                  const { data: proyectos } = await sb.from('proyectos').select('id,nombre').eq('fundador_id', FUNDADOR_ID).ilike('nombre', 'QA-%')
+                  log.push('Proyectos encontrados: ' + (proyectos?.length || 0))
+                  if (proyectos?.length) {
+                    for (const p of proyectos) {
+                      await fetch('/api/proyectos?id=' + p.id + '&fundador_id=' + FUNDADOR_ID, { method: 'DELETE' })
+                    }
+                    log.push('Proyectos eliminados: ' + proyectos.length)
+                  }
+                  
+                  alert(log.join('\n'))
+                }} style={{background:'rgba(224,85,85,0.15)',color:'#E05555',border:'1px solid rgba(224,85,85,0.4)',borderRadius:'8px',padding:'0.6rem 1rem',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'700'}}>
+                  🧹 LIMPIAR AHORA (con log)
+                </button>
                 <button onClick={async () => {
                   const msg = await limpiarTodosProyectosQA()
                   alert(msg)
