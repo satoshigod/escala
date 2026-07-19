@@ -282,6 +282,30 @@ const CAPAS = [
       { num: 'C10.13', nombre: 'Regulacion por mercado: analisis de requisitos legales especificos para operar en Mexico, Chile, Peru, Ecuador, Argentina y Espana', done: false, valor: 0, quien: 'Ivan (decision legal)' },
     ]
   },
+  {
+    id: 'C11',
+    titulo: 'CAPA 11 — Primera Campana de Marketing',
+    descripcion: 'Campana de adquisicion de las primeras 10 beneficiarias del programa de maquinaria para confeccion en Medellin. Madres cabeza de familia del sector textil que necesitan una maquina adicional. Las 10 primeras son el activo de marketing de la segunda campana.',
+    color: '#D946EF',
+    estado: 'pendiente',
+    valor_total: 15000000,
+    valor_hecho: 0,
+    hitos: [
+      { num: 'C11.1', nombre: 'Landing /maquinaria-confeccion-medellin: sin lenguaje financiero. Historia: Tienes pedidos que no puedes cumplir porque te falta una maquina? 3 pasos simples. CTA Aplica para una maquina. Sin mencionar Escala en el hero.', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C11.2', nombre: 'Formulario de calificacion: nombre, ciudad, tipo de maquina que necesita, cuantos pedidos mensuales tiene, cuanto produce hoy vs cuanto podria producir con la maquina. WhatsApp automatico al enviar.', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: 'C11.3', nombre: 'Meta Ads TOFU: 3 creativos video 30s con historia real de confeccionista. Hook Tenia los pedidos pero no tenia la maquina. Segmentacion: mujeres 25-50, Medellin y Valle de Aburra, intereses confeccion / maquinas de coser / ropa interior / vestidos de bano.', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.4', nombre: 'Meta Ads MOFU: retargeting a quienes vieron 50%+ del video TOFU. Mostrar el modelo en 3 pasos: aplica → angel financia → pagas desde lo que produces. Sin banco, sin garante, sin historial.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.5', nombre: 'Meta Ads BOFU: retargeting a quienes visitaron la landing y no aplicaron. Testimonial de beneficiaria real cuando exista. Urgencia: cupos limitados para la primera ronda.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.6', nombre: 'WhatsApp flow de calificacion: mensaje automatico al aplicar, preguntas de calificacion, agendamiento de llamada. Filtrar las 10 con mejor perfil: tiene pedidos reales, sabe operar la maquina, puede reportar ventas diarias.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.7', nombre: 'Email sequence post-aplicacion: confirmacion → educacion del modelo → casos comparables → llamada a la accion. 5 emails en 7 dias.', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: 'C11.8', nombre: 'Contenido organico: 30 piezas para Instagram y TikTok. Angulos: el dia a dia de una confeccionista, cuanto gana, cuanto podria ganar con una maquina mas, el modelo Escala explicado simple.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.9', nombre: 'Seleccion y onboarding de las 10 primeras beneficiarias: llamada de calificacion, verificar pedidos reales, crear proyecto en Escala, agregar maquina al presupuesto, conectar con angel inversionista.', done: false, valor: 1000000, quien: 'Ivan' },
+      { num: 'C11.10', nombre: 'Documentar las 10 historias: video real de cada beneficiaria antes y despues. Numeros reales: cuanto producia, cuanto produce ahora, cuanto le paga al angel. Este contenido es el activo de marketing de la segunda campana.', done: false, valor: 2000000, quien: 'Ivan + Claude AI' },
+      { num: 'C11.11', nombre: 'Segunda campana: usar los 10 casos reales como creativos. ROI medido, historia real, cara real. Expansion a otros sectores y ciudades con el mismo modelo.', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.12', nombre: 'Google Ads: busquedas activas de maquinas de confeccion en Medellin. Keywords: maquina de coser industrial Medellin, maquina overlock precio Colombia, como comprar maquina sin credito. Capturar intencion de compra.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.13', nombre: 'Benchmarks y optimizacion semanal: CTR objetivo 3%+, CPL objetivo menos de $15.000 COP, tasa conversion landing 8%+, tasa calificacion 40%+. Reporte semanal con ajustes de segmentacion y creativos.', done: false, valor: 500000, quien: 'Claude AI + Ivan' },
+    ]
+  },
 ]
 
 export default function DesarrolloLimpio() {

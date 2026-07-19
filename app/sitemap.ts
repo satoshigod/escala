@@ -40,6 +40,7 @@ export default async function sitemap() {
     { url: `${BASE_URL}/financiar-negocio-local-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
     { url: `${BASE_URL}/capital-para-abrir-tienda`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
     { url: `${BASE_URL}/como-financiar-local-comercial`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },
+    { url: `${BASE_URL}/maquinaria-confeccion-medellin`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.95 },
     // Landing pages SEO — maquinaria y equipos
     { url: `${BASE_URL}/financiar-maquinaria-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
     { url: `${BASE_URL}/financiar-equipos-negocio`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.85 },

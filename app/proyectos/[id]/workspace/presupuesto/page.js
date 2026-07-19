@@ -578,6 +578,14 @@ export default function PresupuestoPage() {
                     ejemplo: (m) => m ? `Ej: 5% de ventas hasta recuperar $${fmt(m)}` : 'Ej: "5% de las ventas mensuales hasta pagar todo"',
                     color: '#E8A020',
                   },
+                  {
+                    id: 'leasing_maquinaria',
+                    emoji: '🔧',
+                    titulo: 'El angel compra la maquina y yo la arriendo',
+                    desc: 'El inversionista compra el equipo y queda como propietario. Tu le pagas una cuota mensual de arriendo. Cuando termines de pagar, la maquina es tuya.',
+                    ejemplo: (m) => m ? `Ej: el angel compra $${fmt(m)}, tu pagas $${fmt(parseFloat(m)*0.035)}/mes (3.5%) hasta que la maquina es tuya` : 'Ej: angel compra la maquina, tu la arriendas y al final es tuya',
+                    color: '#AFA9EC',
+                  },
                 ].map(op => {
                   const sel = formFondeo.a_cambio_de === op.id
                   return (
@@ -622,6 +630,26 @@ export default function PresupuestoPage() {
                     <span style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>%</span>
                   </div>
                   {formFondeo.pct_revenue && <div style={{ fontSize: '0.72rem', color: '#E8A020', marginBottom: '0.875rem' }}>Si vendes $10M/mes pagas ${fmt(10000000 * parseFloat(formFondeo.pct_revenue) / 100)}/mes al inversionista.</div>}
+                </div>
+              )}
+              {formFondeo.a_cambio_de === 'leasing_maquinaria' && (
+                <div>
+                  <label style={s.label}>¿Tasa mensual de arriendo? *</label>
+                  <span style={{ fontSize: '0.72rem', color: '#8FA3CC', display: 'block', marginBottom: '0.5rem' }}>Tipicamente entre 2.5% y 4% mensual sobre el valor de la maquina</span>
+                  <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
+                    <input style={{ ...s.input, marginBottom: 0, paddingRight: '2rem' }} type="number" step="0.1" min="1" max="5" value={formFondeo.tasa_mensual} onChange={e => setFormFondeo(f => ({ ...f, tasa_mensual: e.target.value }))} placeholder="3.5" />
+                    <span style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', color: '#8FA3CC', fontSize: '0.85rem' }}>%</span>
+                  </div>
+                  {formFondeo.tasa_mensual && formFondeo.monto && (
+                    <div style={{ background: 'rgba(175,169,236,0.08)', border: '1px solid rgba(175,169,236,0.2)', borderRadius: '8px', padding: '0.75rem', marginBottom: '0.875rem', fontSize: '0.75rem', color: '#AFA9EC', lineHeight: '1.6' }}>
+                      <div>Cuota mensual: <strong style={{ color: '#fff' }}>${fmt(parseFloat(formFondeo.monto) * parseFloat(formFondeo.tasa_mensual) / 100)}</strong></div>
+                      <div>Meses para pagar: ~<strong style={{ color: '#fff' }}>{Math.ceil(100 / parseFloat(formFondeo.tasa_mensual))} meses</strong></div>
+                      <div>Al terminar: <strong style={{ color: '#1D9E75' }}>la maquina es tuya</strong></div>
+                    </div>
+                  )}
+                  <div style={{ fontSize: '0.72rem', color: '#8FA3CC', lineHeight: '1.5', marginBottom: '0.875rem' }}>
+                    El angel compra la maquina y queda como propietario registrado. Tu la usas y le pagas la cuota mensual. Cuando termines de pagar el total, la maquina pasa a tu nombre automaticamente.
+                  </div>
                 </div>
               )}
 
