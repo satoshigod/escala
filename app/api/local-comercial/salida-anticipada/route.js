@@ -94,18 +94,36 @@ export async function POST(req) {
       .eq('id', local.id)
 
     // Registrar en ledger
-    await supabase.from('ledger_entries').insert([{
-      tipo: 'debito',
-      tipo_referencia: 'salida_anticipada_local',
-      referencia_id: local.id,
-      cuenta_origen: `operador:${user.id}`,
-      cuenta_destino: `local:${proyecto_id}`,
-      monto: monto_total,
-      monto_usd: monto_total / 4200,
-      moneda: 'COP',
-      descripcion: `Salida anticipada ${local.fase_actual} - capital $${Math.round(saldo_pendiente).toLocaleString('es-CO')} + penalidad $${Math.round(penalidad).toLocaleString('es-CO')}`,
-      idempotency_key: `salida-${proyecto_id}-${Date.now()}`,
-    }])
+    const idempotency_salida = `salida-${proyecto_id}-${new Date().toISOString().split('T')[0]}`
+    const comision_escala = Math.round(monto_total * 0.03)
+
+    await supabase.from('ledger_entries').insert([
+      {
+        tipo: 'debito',
+        tipo_referencia: 'salida_anticipada_local',
+        referencia_id: local.id,
+        cuenta_origen: `operador:${user.id}`,
+        cuenta_destino: `local:${proyecto_id}`,
+        monto: monto_total,
+        monto_usd: monto_total / 4200,
+        moneda: 'COP',
+        descripcion: `Salida anticipada ${local.fase_actual} - capital $${Math.round(saldo_pendiente).toLocaleString('es-CO')} + penalidad $${Math.round(penalidad).toLocaleString('es-CO')}`,
+        idempotency_key: idempotency_salida,
+      },
+      {
+        tipo: 'comision',
+        tipo_referencia: 'comision_escala',
+        referencia_id: local.id,
+        cuenta_origen: `operador:${user.id}`,
+        cuenta_destino: 'escala:comisiones',
+        monto: comision_escala,
+        monto_usd: comision_escala / 4200,
+        moneda: 'COP',
+        descripcion: `Comision Escala 3% salida anticipada ${local.fase_actual}`,
+        idempotency_key: `comision-${idempotency_salida}`,
+        comision_escala: comision_escala,
+      }
+    ])
 
     return NextResponse.json({
       ok: true,

@@ -136,8 +136,24 @@ export async function POST(request) {
       moneda: fondeo.moneda_destino,
       descripcion: `Fondeo ${proveedor.toUpperCase()} — Ref: ${referencia}`,
       idempotency_key: `fondeo_acreditado_${fondeo.id}`,
-      created_by: null, // sistema
+      created_by: null,
     })
+
+    // Comision Escala 3% sobre el fondeo recibido
+    const comision_escala = Math.round(monto_final * 0.03)
+    await supabase.from('ledger_entries').insert({
+      tipo: 'comision',
+      tipo_referencia: 'comision_escala',
+      referencia_id: fondeo.id,
+      cuenta_origen: `wallet:${fondeo.wallet_id}`,
+      cuenta_destino: 'escala:comisiones',
+      monto: comision_escala,
+      monto_usd: comision_escala / 4200,
+      moneda: 'COP',
+      descripcion: `Comision Escala 3% fondeo ${proveedor.toUpperCase()} ref ${referencia}`,
+      idempotency_key: `comision-fondeo-webhook-${fondeo.id}`,
+      comision_escala: comision_escala,
+    }).catch(() => {})
 
     // Actualizar estado del fondeo
     await supabase
