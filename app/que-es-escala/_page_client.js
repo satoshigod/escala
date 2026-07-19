@@ -22,22 +22,35 @@ const MODELOS = [
     color: '#4A90D9',
     bg: 'rgba(74,144,217,0.08)',
     border: 'rgba(74,144,217,0.25)',
-    badge: 'Nuevo',
-    desc: 'Quieres montar una tienda, restaurante, frutería, almacén de ropa u otro negocio de venta de productos y necesitas el capital para el depósito, el primer arriendo y las adecuaciones del local. Un inversionista de Escala financia ese capital. Tú reportas tus ventas cada día y pagas el excedente diario hasta cubrir la deuda con intereses. Cuando terminas de pagar, el negocio es completamente tuyo.',
+    desc: 'Quieres montar una tienda, restaurante, frutería, almacén de ropa u otro negocio de venta de productos y necesitas el capital para el depósito, el primer arriendo y las adecuaciones del local. Un inversionista financia ese capital. Tú reportas tus ventas cada día y pagas el excedente hasta cubrir el total. Cuando terminas de pagar, el negocio es completamente tuyo.',
     para: 'Emprendedores que tienen claro el negocio y el local pero no tienen el capital inicial para arrancar.',
     link: '/financiar-negocio-local-colombia',
     linkText: 'Cómo funciona el fondeo de locales →',
+  },
+  {
+    icon: '🔧',
+    titulo: 'Necesito una máquina',
+    subtitulo: 'Leasing desde el excedente',
+    color: '#AFA9EC',
+    bg: 'rgba(175,169,236,0.08)',
+    border: 'rgba(175,169,236,0.3)',
+    badge: 'Nuevo',
+    desc: 'Tienes los pedidos pero te falta la máquina o el equipo para producir más. Un ángel inversionista compra el equipo y queda como propietario. Tú lo usas desde el primer día y pagas desde el excedente que genera el mismo equipo. Sin banco, sin garante, sin cuota fija mensual. Cuando terminas de pagar, la máquina es tuya.',
+    para: 'Confeccionistas, cocineras, estilistas y cualquier persona con pedidos reales que necesita un equipo para producir más.',
+    ejemplos: ['Máquina overlock para confección · Medellín', 'Freidora industrial para empanadas', 'Silla hidráulica para salón de belleza', 'Horno panadero o amasadora'],
+    link: '/maquinaria-confeccion-medellin',
+    linkText: 'Ver programa Las 10 Máquinas →',
   },
 ]
 
 const PREGUNTAS = [
   {
     q: '¿Qué es Escala?',
-    a: 'Una plataforma donde personas con ideas, capital, conocimiento o trabajo pueden co-crear negocios reales. Cada aporte queda registrado y reconocido formalmente — ya sea participacion diferida para una startup o fondeo de capital para un negocio en un local.'
+    a: 'Una plataforma donde personas con ideas, capital, conocimiento o trabajo pueden co-crear negocios reales. Cada aporte queda registrado y reconocido — participación diferida para startups, fondeo de capital para locales, o leasing de maquinaria desde el excedente.'
   },
   {
     q: '¿Qué problema resuelve?',
-    a: 'La mayoría de buenos negocios no arrancan por falta de capital o equipo. Escala tiene dos soluciones: para startups, conecta con especialistas que trabajan por participación. Para negocios físicos, conecta con inversionistas que financian el local.'
+    a: 'La mayoría de buenos negocios no arrancan por falta de capital o equipo. Escala tiene tres soluciones: para startups, conecta con especialistas que trabajan por participación. Para negocios físicos, conecta con inversionistas que financian el local. Para quienes producen con equipos, conecta con ángeles que compran la máquina y reciben el pago desde el excedente.'
   },
   {
     q: '¿Cómo funciona la participación diferida?',
@@ -45,7 +58,11 @@ const PREGUNTAS = [
   },
   {
     q: '¿Cómo funciona el fondeo de locales?',
-    a: 'El operador ingresa los datos de su negocio y el local que quiere arrendar. Escala verifica la información, asigna una tasa de interés y publica el proyecto a su red de inversionistas. Cuando un inversionista acepta, el capital va directo al propietario del local. El operador reporta sus ventas diariamente y paga el excedente hasta cubrir la deuda.'
+    a: 'El operador ingresa los datos de su negocio y el local que quiere arrendar. Escala verifica la información y publica el proyecto a su red de inversionistas. Cuando un inversionista acepta, el capital va directo al propietario del local. El operador reporta sus ventas diariamente y paga el excedente hasta cubrir el total.'
+  },
+  {
+    q: '¿Cómo funciona el leasing de maquinaria?',
+    a: 'El ángel compra la máquina y queda como propietario registrado. La beneficiaria la usa desde el primer día y cada mes reporta sus ventas. Del excedente mensual (ventas menos costos y gastos), un porcentaje acordado se abona al capital. Si produce más, paga más rápido. Cuando el ángel recupera el total, la máquina pasa a nombre de la beneficiaria. Sin banco, sin garante, sin cuota fija.'
   },
   {
     q: '¿Qué es el Escala Score?',
@@ -53,7 +70,7 @@ const PREGUNTAS = [
   },
   {
     q: '¿Necesito capital para empezar?',
-    a: 'No. Si eres fundador de una startup, puedes publicar tu proyecto sin capital — los especialistas trabajan por participación. Si necesitas un local, el capital lo aporta un inversionista de Escala — tú pones el negocio y el trabajo.'
+    a: 'No. Si eres fundador de una startup, puedes publicar tu proyecto sin capital. Si necesitas un local o una máquina, el capital lo aporta un ángel inversionista. Tú pones el negocio, el trabajo y el conocimiento.'
   },
 ]
 
@@ -86,12 +103,12 @@ export default function QueEsEscala() {
 
         {/* Modelos de proyecto */}
         <div style={{marginBottom:'3rem'}}>
-          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.08em',textTransform:'uppercase',color:'#8FA3CC',marginBottom:'1rem'}}>Dos tipos de proyecto en Escala</div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))',gap:'1rem'}}>
+          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.08em',textTransform:'uppercase',color:'#8FA3CC',marginBottom:'1rem'}}>Tres modelos en Escala — elige el que se ajusta a ti</div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:'1rem'}}>
             {MODELOS.map(m => (
               <div key={m.titulo} style={{background:m.bg,border:`1px solid ${m.border}`,borderRadius:'14px',padding:'1.5rem',position:'relative'}}>
                 {m.badge && (
-                  <div style={{position:'absolute',top:'-10px',right:'1rem',background:m.color,color:'#fff',fontSize:'0.6rem',fontWeight:'700',padding:'2px 10px',borderRadius:'20px'}}>{m.badge}</div>
+                  <div style={{position:'absolute',top:'-10px',right:'1rem',background:m.color,color: m.color === '#AFA9EC' ? '#2D2866' : '#fff',fontSize:'0.6rem',fontWeight:'700',padding:'2px 10px',borderRadius:'20px'}}>{m.badge}</div>
                 )}
                 <div style={{display:'flex',alignItems:'center',gap:'0.75rem',marginBottom:'0.875rem'}}>
                   <span style={{fontSize:'1.75rem'}}>{m.icon}</span>
@@ -101,6 +118,15 @@ export default function QueEsEscala() {
                   </div>
                 </div>
                 <p style={{fontSize:'0.82rem',color:'#C8D4E8',lineHeight:'1.65',marginBottom:'0.875rem'}}>{m.desc}</p>
+                {m.ejemplos && (
+                  <div style={{marginBottom:'0.875rem'}}>
+                    {m.ejemplos.map(ej => (
+                      <div key={ej} style={{fontSize:'0.75rem',color:'#8FA3CC',padding:'3px 0',display:'flex',gap:'0.5rem',alignItems:'center'}}>
+                        <span style={{color:m.color}}>→</span>{ej}
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',background:'rgba(255,255,255,0.04)',borderRadius:'8px',padding:'0.5rem 0.75rem',marginBottom:'0.875rem'}}>
                   <strong style={{color:'#fff'}}>Para quién:</strong> {m.para}
                 </div>

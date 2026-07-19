@@ -142,6 +142,24 @@ export default function DirectorioInversionPage() {
           </div>
         )}
 
+        {/* Highlight: Programa Las 10 Máquinas */}
+        <div style={{ background: 'rgba(175,169,236,0.07)', border: '1px solid rgba(175,169,236,0.3)', borderRadius: '14px', padding: '1.25rem 1.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <span style={{ fontSize: '2rem', flexShrink: 0 }}>🔧</span>
+            <div>
+              <div style={{ fontSize: '0.65rem', fontWeight: '700', color: '#AFA9EC', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '2px' }}>Programa activo · Medellín</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: '800', color: '#fff', marginBottom: '3px' }}>Las 10 Máquinas — Confección Medellín</div>
+              <div style={{ fontSize: '0.78rem', color: '#8FA3CC', lineHeight: '1.5' }}>
+                Financia una máquina industrial para una confeccionista. Ella paga desde el excedente que genera la máquina.
+                Sin banco, sin cuota fija. Ticket desde <strong style={{ color: '#fff' }}>$3M COP</strong>. Retorno estimado en <strong style={{ color: '#AFA9EC' }}>8-12 meses</strong>.
+              </div>
+            </div>
+          </div>
+          <a href="/maquinaria-confeccion-medellin" style={{ background: '#AFA9EC', color: '#2D2866', borderRadius: '10px', padding: '0.625rem 1.25rem', textDecoration: 'none', fontSize: '0.82rem', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0 }}>
+            Ver programa →
+          </a>
+        </div>
+
         {/* Filtros */}
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>

@@ -1050,7 +1050,7 @@ export default function Workspace() {
             ) : esEscenarioEquipos ? (
               <div>
                 {/* EQUIPOS — items fondeados vs sin fondear */}
-                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:'0.875rem',marginBottom:'1.5rem'}}>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:'0.875rem',marginBottom:'1.25rem'}}>
                   <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{presupuestoItems.filter(i=>i.estado_fondeo==='fondeado').length}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Items financiados</div>
@@ -1067,6 +1067,20 @@ export default function Workspace() {
                     <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>${Math.round(presupuestoItems.reduce((s,i)=>s+parseFloat(i.valor_total||0)-parseFloat(i.monto_fondeado||0),0)).toLocaleString('es-CO')}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Falta conseguir</div>
                   </div>
+                </div>
+
+                {/* CTAs de acción para equipos */}
+                <div style={{display:'flex',gap:'0.75rem',flexWrap:'wrap',marginBottom:'0.5rem'}}>
+                  <button
+                    onClick={() => setTab('leasing')}
+                    style={{background:'rgba(175,169,236,0.12)',border:'1px solid rgba(175,169,236,0.3)',color:'#AFA9EC',borderRadius:'10px',padding:'0.625rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                    📄 Ver contrato de leasing
+                  </button>
+                  <a
+                    href={'/proyectos/' + proyecto?.id + '/workspace/leasing'}
+                    style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',color:'#AFA9EC',borderRadius:'10px',padding:'0.625rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',textDecoration:'none',display:'flex',alignItems:'center',gap:'0.5rem'}}>
+                    ✍️ Firmar contrato leasing
+                  </a>
                 </div>
               </div>
             ) : (
