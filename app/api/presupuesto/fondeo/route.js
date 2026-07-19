@@ -275,7 +275,8 @@ export async function PUT(req) {
         // Registrar en ledger como credito al proyecto
         const comision_escala = Math.round(monto * 0.03)
 
-        await supabase.from('ledger_entries').insert({\n          tipo: 'credito',
+        await supabase.from('ledger_entries').insert({
+          tipo: 'credito',
           tipo_referencia: 'fondeo_presupuesto',
           referencia_id: fondeo_id,
           cuenta_origen: `angel:${fondeo.inversionista_id}`,
