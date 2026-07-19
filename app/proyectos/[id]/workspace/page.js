@@ -489,8 +489,20 @@ export default function Workspace() {
       ),
       tooltip: ['Equipos y maquinas que necesitas', 'Tecnologia, software, inventario', 'Pedir fondeo por cada item', 'Ver que esta fondeado y que no'],
     },
-    // Tab "Financiacion" — capital, aportes, economia, reparto
-    economia: {
+    // Tab "Contrato leasing" — solo para proyectos de equipos con modelo leasing
+    leasing: {
+      label: 'Contrato leasing',
+      icon: (activo) => (
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#AFA9EC' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14,2 14,8 20,8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10,9 9,9 8,9"/>
+        </svg>
+      ),
+      tooltip: ['Contrato de leasing de maquinaria', 'Firma digital paso a paso', 'Estado de aprobacion del angel', 'Historial de abonos'],
+    },
       label: 'Financiacion',
       icon: (activo) => (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={activo ? '#1D9E75' : '#8FA3CC'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -1779,6 +1791,18 @@ export default function Workspace() {
 
         {tab === 'presupuesto' && (
           <PresupuestoTab proyectoId={proyecto?.id} esFundador={proyecto?.fundador_id === usuario?.id} usuarioId={usuario?.id} />
+        )}
+
+        {tab === 'leasing' && (
+          <div style={{ padding: '1.5rem 0' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#AFA9EC', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Contrato de leasing</div>
+            <div style={{ fontSize: '0.88rem', color: '#8FA3CC', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+              Flujo completo de contrato para leasing de maquinaria. Firma digital paso a paso en lenguaje simple.
+            </div>
+            <a href={`/proyectos/${proyecto?.id}/workspace/leasing`} style={{ display: 'inline-block', background: '#AFA9EC', color: '#080F20', borderRadius: '10px', padding: '0.75rem 1.5rem', fontSize: '0.88rem', fontWeight: '700', textDecoration: 'none' }}>
+              📄 Abrir flujo de contrato →
+            </a>
+          </div>
         )}
 
       </main>

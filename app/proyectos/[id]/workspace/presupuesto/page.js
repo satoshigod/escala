@@ -656,14 +656,25 @@ export default function PresupuestoPage() {
 
               {error && <div style={{ fontSize: '0.8rem', color: '#E05555', marginBottom: '0.75rem', padding: '0.625rem', background: 'rgba(224,85,85,0.08)', borderRadius: '8px' }}>{error}</div>}
 
-              <div style={{ display: 'flex', gap: '0.75rem' }}>
-                <button onClick={proponerFondeo} disabled={guardando} style={{ ...s.btn('#4A90D9'), flex: 1, opacity: guardando ? 0.7 : 1 }}>
-                  {guardando ? 'Enviando...' : 'Hacer mi propuesta →'}
-                </button>
-                <button onClick={() => { setMostrarFondeoModal(null); setError('') }} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.6rem 1rem', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
-                  Cancelar
-                </button>
-              </div>
+              {formFondeo.a_cambio_de === 'leasing_maquinaria' ? (
+                <div>
+                  <a href={`/proyectos/${proyectoId}/workspace/leasing`} style={{ display: 'block', textAlign: 'center', background: '#AFA9EC', color: '#080F20', borderRadius: '10px', padding: '0.75rem 1.5rem', fontSize: '0.88rem', fontWeight: '700', textDecoration: 'none', marginBottom: '0.625rem' }}>
+                    📄 Ir al contrato de leasing →
+                  </a>
+                  <div style={{ fontSize: '0.72rem', color: '#8FA3CC', textAlign: 'center', lineHeight: '1.5' }}>
+                    El modelo de leasing tiene su propio flujo de contrato. Haz clic para completarlo paso a paso.
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <button onClick={proponerFondeo} disabled={guardando} style={{ ...s.btn('#4A90D9'), flex: 1, opacity: guardando ? 0.7 : 1 }}>
+                    {guardando ? 'Enviando...' : 'Hacer mi propuesta →'}
+                  </button>
+                  <button onClick={() => { setMostrarFondeoModal(null); setError('') }} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: '#8FA3CC', borderRadius: '8px', padding: '0.6rem 1rem', fontSize: '0.82rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+                    Cancelar
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
