@@ -71,6 +71,24 @@ export async function POST(request) {
 
   if (errReporte) return Response.json({ error: errReporte.message }, { status: 500 })
 
+  // Comision Escala 3% sobre el abono real
+  if (abonoReal > 0) {
+    const comisionEscala = Math.round(abonoReal * 0.03)
+    await supabaseAdmin.from('ledger_entries').insert({
+      tipo: 'comision',
+      tipo_referencia: 'comision_escala',
+      referencia_id: reporte.id,
+      cuenta_origen: `proyecto:${proyecto_id}`,
+      cuenta_destino: 'escala:comisiones',
+      monto: comisionEscala,
+      monto_usd: comisionEscala / 4200,
+      moneda: 'COP',
+      descripcion: `Comision Escala 3% reporte leasing ${fecha_mes}`,
+      idempotency_key: `comision-leasing-${contrato_id}-${fecha_mes}`,
+      comision_escala: comisionEscala,
+    }).catch(() => {})
+  }
+
   // Actualizar contrato con nuevo capital
   await supabaseAdmin
     .from('contratos_leasing')

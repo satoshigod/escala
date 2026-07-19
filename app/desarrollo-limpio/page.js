@@ -111,7 +111,7 @@ const CAPAS = [
       { num: 'C3.15', nombre: 'Admin finanzas: panel consolidado /admin/finanzas — capital en movimiento, transferencias por verificar, locales en mora, fondeos recientes. Solo admin', done: true, valor: 4000000, quien: 'Claude AI' },
       { num: 'C3.16', nombre: 'Variables Vercel: BREB_WEBHOOK_SECRET, BINANCE_WEBHOOK_SECRET', done: false, valor: 0, quien: 'Ivan' },
       { num: 'C3.17', nombre: 'Modelo inversion arriendos: inversionista financia deposito + meses de arriendo con contrato automatico y waterfall desde ingresos del negocio', done: false, valor: 4000000, quien: 'Claude AI' },
-      { num: 'C3.18', nombre: 'Modelo inversion maquinaria: inversionista compra el activo, queda como propietario con leasing/renting al proyecto, recibe cuota mensual desde waterfall', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C3.18', nombre: 'Modelo inversion maquinaria: inversionista compra el activo, queda como propietario con leasing/renting al proyecto, recibe cuota mensual desde waterfall', done: true, valor: 4000000, quien: 'Claude AI' },
       { num: 'C3.19', nombre: 'SPEI (Mexico): integracion con PSP mexicano para fondeos en MXN', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
       { num: 'C3.20', nombre: 'Khipu / Fintoc (Chile): integracion para fondeos en CLP', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
       { num: 'C3.21', nombre: 'Wompi (Colombia): PSE + tarjetas debito/credito para Colombia', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
@@ -249,7 +249,7 @@ const CAPAS = [
     valor_total: 23000000,
     valor_hecho: 0,
     hitos: [
-      { num: 'C9.1', nombre: 'Comision por transaccion: 2-4% sobre cada pago ejecutado en el motor financiero — campo comision_escala ya existe en el ledger, solo falta activarlo en el flujo de ejecucion', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C9.1', nombre: 'Comision por transaccion: 2-4% sobre cada pago ejecutado en el motor financiero — campo comision_escala ya existe en el ledger, solo falta activarlo en el flujo de ejecucion', done: true, valor: 1000000, quien: 'Claude AI' },
       { num: 'C9.2', nombre: 'Suscripcion Pro: plan de pago para fundadores con mas de 3 proyectos activos — acceso a IA matching, contratos ilimitados, analytics avanzados y soporte prioritario', done: false, valor: 3000000, quien: 'Claude AI' },
       { num: 'C9.3', nombre: 'Escala for Teams: plan empresarial para companias que quieran usar Escala para gestionar proyectos internos y proveedores externos — prerequisito: Capa 1 multi-tenant', done: false, valor: 5000000, quien: 'Claude AI' },
       { num: 'C9.4', nombre: 'Revenue share con partners: cuando un partner institucional (family office, cooperativa, empresa) trae inversores o especialistas, Escala comparte un % de las comisiones generadas', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },

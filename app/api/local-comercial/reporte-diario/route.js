@@ -162,6 +162,8 @@ export async function POST(req) {
 
     // 6. Registrar en ledger si hubo pago
     if (pago_inversionista > 0) {
+      const comision_escala = Math.round(pago_inversionista * 0.03)
+
       await supabase
         .from('ledger_entries')
         .insert([
@@ -176,6 +178,19 @@ export async function POST(req) {
             moneda: 'COP',
             descripcion: `Pago dia ${hoy} - intereses $${intereses_dia} + capital $${abono_capital}`,
             idempotency_key: `ledger-${idempotency_key}`,
+          },
+          {
+            tipo: 'comision',
+            tipo_referencia: 'comision_escala',
+            referencia_id: reporte.id,
+            cuenta_origen: `operador:${user.id}`,
+            cuenta_destino: 'escala:comisiones',
+            monto: comision_escala,
+            monto_usd: comision_escala / 4200,
+            moneda: 'COP',
+            descripcion: `Comision Escala 3% sobre pago dia ${hoy}`,
+            idempotency_key: `comision-${idempotency_key}`,
+            comision_escala: comision_escala,
           }
         ])
 

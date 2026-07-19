@@ -273,8 +273,9 @@ export async function PUT(req) {
         const idempotency_key = `fondeo-presupuesto-${fondeo_id}-verificado`
 
         // Registrar en ledger como credito al proyecto
-        await supabase.from('ledger_entries').insert({
-          tipo: 'credito',
+        const comision_escala = Math.round(monto * 0.03)
+
+        await supabase.from('ledger_entries').insert({\n          tipo: 'credito',
           tipo_referencia: 'fondeo_presupuesto',
           referencia_id: fondeo_id,
           cuenta_origen: `angel:${fondeo.inversionista_id}`,
@@ -285,6 +286,21 @@ export async function PUT(req) {
           descripcion: `Fondeo verificado: ${fondeo.presupuesto_items?.nombre} — ${fondeo.a_cambio_de}`,
           idempotency_key,
         }).select().single()
+
+        // Comision Escala 3% sobre el fondeo
+        await supabase.from('ledger_entries').insert({
+          tipo: 'comision',
+          tipo_referencia: 'comision_escala',
+          referencia_id: fondeo_id,
+          cuenta_origen: `proyecto:${fondeo.proyecto_id}`,
+          cuenta_destino: 'escala:comisiones',
+          monto: comision_escala,
+          monto_usd: comision_escala / 4200,
+          moneda: 'COP',
+          descripcion: `Comision Escala 3% sobre fondeo ${fondeo.presupuesto_items?.nombre}`,
+          idempotency_key: `comision-fondeo-${fondeo_id}`,
+          comision_escala: comision_escala,
+        }).catch(() => {}) // No bloquea si falla
 
         // Buscar o crear wallet del proyecto
         const { data: walletExistente } = await supabase
