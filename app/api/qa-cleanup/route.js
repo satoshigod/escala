@@ -15,14 +15,14 @@ export async function DELETE(req) {
   const resumen = []
   let total = 0
 
-  // Paises QA
-  const { data: paises } = await supabaseAdmin
-    .from('paises').select('id,nombre').ilike('nombre', 'QA-%')
+  // Paises QA — tabla correcta es paises_regulatorios
+  const { data: paises, error: ep } = await supabaseAdmin
+    .from('paises_regulatorios').select('id,nombre').ilike('nombre', 'QA-%')
   if (paises?.length) {
-    const { error } = await supabaseAdmin.from('paises').delete().in('id', paises.map(p => p.id))
+    const { error } = await supabaseAdmin.from('paises_regulatorios').delete().in('id', paises.map(p => p.id))
     if (!error) { resumen.push(paises.length + ' paises'); total += paises.length }
     else resumen.push('ERROR paises: ' + error.message)
-  } else resumen.push('paises: 0')
+  } else resumen.push('paises: 0' + (ep ? ' err:' + ep.message : ''))
 
   // Especialidades QA
   const { data: esps } = await supabaseAdmin

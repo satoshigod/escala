@@ -111,3 +111,14 @@ export async function POST(request) {
     return Response.json({ error: 'Error inesperado: ' + e.message }, { status: 500 })
   }
 }
+
+// DELETE — eliminar país (solo para QA y admin)
+export async function DELETE(request) {
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get('id')
+  if (!id) return Response.json({ error: 'Falta id' }, { status: 400 })
+
+  const { error } = await supabase.from('paises_regulatorios').delete().eq('id', id)
+  if (error) return Response.json({ error: error.message }, { status: 500 })
+  return Response.json({ ok: true })
+}

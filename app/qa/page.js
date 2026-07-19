@@ -27,10 +27,10 @@ async function limpiarTodosProyectosQA() {
     resumen.push(proyectosQA.length + ' proyectos')
   }
 
-  // 2. Paises QA
-  const { data: paisesQA } = await sb.from('paises').select('id').ilike('nombre', 'QA-%')
+  // 2. Paises QA — tabla correcta es paises_regulatorios
+  const { data: paisesQA } = await sb.from('paises_regulatorios').select('id').ilike('nombre', 'QA-%')
   if (paisesQA?.length) {
-    await sb.from('paises').delete().in('id', paisesQA.map(p => p.id))
+    await sb.from('paises_regulatorios').delete().in('id', paisesQA.map(p => p.id))
     resumen.push(paisesQA.length + ' paises')
     totalEliminado += paisesQA.length
   }
@@ -1027,7 +1027,7 @@ const GRUPOS = [
           if (data.error) throw new Error(data.error)
           const id = data.pais?.id
           // Eliminar inmediatamente — solo verificamos que la notificacion se disparó
-          if (id) await window._supabase.from('paises').delete().eq('id', id).catch(() => {})
+          if (id) await window._supabase.from('paises_regulatorios').delete().eq('id', id).catch(() => {})
           return 'País creado y eliminado — revisa correo de admin y campanita'
         }
       },
