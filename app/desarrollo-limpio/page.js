@@ -42,8 +42,8 @@ const CAPAS = [
     descripcion: 'El nucleo de Escala. Todo lo que permite crear, ejecutar y cerrar un proyecto: roles, hitos, tareas, equipo, contratos, workspace, documentos, chat y cierre formal. Es el producto principal.',
     color: '#1D9E75',
     estado: 'progreso',
-    valor_total: 62900000,
-    valor_hecho: 37900000,
+    valor_total: 65900000,
+    valor_hecho: 40900000,
     hitos: [
       { num: 'C2.1', nombre: 'API proyectos — GET (con roles, paginacion), POST (con nivel_avance, modalidad_trabajo, roles_buscados, validacion ownership), DELETE (solo fundador)', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: 'C2.2', nombre: 'Publicacion de proyectos — formulario con 5 niveles de avance, 3 modalidades, 9 roles buscados, validacion descripcion 80+ chars, guia de escritura gratuita', done: true, valor: 1500000, quien: 'Claude AI' },
@@ -81,6 +81,8 @@ const CAPAS = [
       { num: 'C2.34', nombre: 'Tres tarjetas visuales para modelo de retorno del inversionista: Parte del negocio / Le pago cuotas / Un % de mis ventas. Cada tarjeta muestra descripcion, ejemplo concreto con monto real y calculo automatico del impacto.', done: true, valor: 1000000, quien: 'Claude AI' },
       { num: 'C2.35', nombre: 'Notificacion proactiva a angeles compatibles (C5.10): al crear un item en el presupuesto, detecta angeles que han invertido en el mismo sector o categoria con rango de monto similar (0.3x-5x). Les envia notificacion email+push+in-app con nombre del item, monto y proyecto. Sin esperar a que el angel entre al directorio.', done: true, valor: 1000000, quien: 'Claude AI' },
       { num: 'C2.36', nombre: 'Wizard local simplificado: paso 0 pide nombre del negocio, ciudad, arriendo, deposito y adecuaciones. CTA muestra el monto exacto con el nombre del negocio. Pre-llena todo el wizard.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.37', nombre: 'Formulario creacion limpio por escenario: modalidad trabajo y perfiles solo en startup. Industria solo en startup. Etapa del proyecto en todos. Local y equipos tienen lenguaje propio para Tipo A/B. estado_financiacion auto riesgo_compartido para local y equipos.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C2.38', nombre: 'Tab Necesito mas permanente en workspace de local y equipos: empleado (publicar rol), equipo (presupuesto), local (nuevo proyecto), capital de trabajo. Bloque compacto equivalente en dashboard con pills de acceso rapido por escenario.', done: true, valor: 2000000, quien: 'Claude AI' },
     ]
   },
   {
@@ -89,8 +91,8 @@ const CAPAS = [
     descripcion: 'Todo lo relacionado con dinero en Escala. Wallets, ledger inmutable, fondeos, pagos, presupuesto por item CAPEX/OPEX, reparto economico, waterfall de locales comerciales, modelos de maquinaria y arriendos, comisiones y proveedores de pago por pais.',
     color: '#E8A020',
     estado: 'progreso',
-    valor_total: 68000000,
-    valor_hecho: 43000000,
+    valor_total: 65000000,
+    valor_hecho: 40000000,
     hitos: [
       { num: 'C3.1', nombre: 'SQL motor financiero: exchange_rates, wallets, ledger_entries (doble partida inmutable), fondeos, payment_requests, financial_audit — 9 monedas, RLS en todas las tablas', done: true, valor: 3000000, quien: 'Claude AI' },
       { num: 'C3.2', nombre: 'Motor central lib/financiero/ledger.js: registrarMovimiento() idempotente, calcularSaldo() siempre desde ledger, tasaDelDia(), obtenerOCrearWallet(), registrarAuditoria()', done: true, valor: 3000000, quien: 'Claude AI' },
@@ -114,9 +116,7 @@ const CAPAS = [
       { num: 'C3.20', nombre: 'Khipu / Fintoc (Chile): integracion para fondeos en CLP', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
       { num: 'C3.21', nombre: 'Wompi (Colombia): PSE + tarjetas debito/credito para Colombia', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
       { num: 'C3.22', nombre: 'Stripe (Internacional): USD/EUR para Espana, Ecuador y usuarios internacionales', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
-            { num: 'C2.37', nombre: 'Formulario creacion limpio por escenario: modalidad trabajo y perfiles solo en startup. Industria solo en startup. Etapa del proyecto en todos. Local y equipos tienen lenguaje propio para Tipo A/B. estado_financiacion auto riesgo_compartido para local y equipos.', done: true, valor: 1000000, quien: 'Claude AI' },
-      { num: 'C2.38', nombre: 'Tab Necesito mas permanente en workspace de local y equipos: empleado (publicar rol), equipo (presupuesto), local (nuevo proyecto), capital de trabajo. Bloque compacto equivalente en dashboard con pills de acceso rapido por escenario.', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: 'C3.23', nombre: 'BENCHMARK: Fondeo en 48 horas como promesa central. Una vez el angel acepta y transfiere, Escala verifica y acredita en menos de 48 horas. Mostrar en todo momento cuanto falta para ese plazo. Hacer del tiempo la propuesta de valor principal. (Leccion: Duckfund — "fondos en 48h" es su eslogan principal, no un beneficio secundario)', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C3.23', nombre: 'BENCHMARK: Fondeo en 48 horas como promesa central. Una vez el angel acepta y transfiere, Escala verifica y acredita en menos de 48 horas. Mostrar en todo momento cuanto falta para ese plazo. Hacer del tiempo la propuesta de valor principal. (Leccion: Duckfund — fondos en 48h es su eslogan principal, no un beneficio secundario)', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
       { num: 'C3.24', nombre: 'BENCHMARK: Financiar el 100% incluyendo costos adicionales. Cuando el emprendedor agrega un equipo al presupuesto, incluir automaticamente un buffer para instalacion, transporte y puesta en marcha (tipicamente 15-20% adicional). El angel ve el monto total real. (Leccion: Crest Capital — financia 100% incluyendo soft costs de instalacion y entrega)', done: false, valor: 500000, quien: 'Claude AI' },
       { num: 'C3.25', nombre: 'Financiamiento embebido en tab Mi proyecto: muestra items sin fondear con barras de progreso, monto faltante por item y boton Conseguir fondeo directo. Si todo esta fondeado muestra confirmacion verde. Si no hay presupuesto muestra CTA para agregar. Sin tener que ir al tab Maquinas y activos.', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: 'C3.26', nombre: 'Panel angel con retorno esperado: deuda muestra cuota mensual y total a recuperar en N meses. Revenue share muestra pago mensual estimado a $10M ventas. Equity muestra porcentaje del negocio. Color por modelo.', done: true, valor: 1500000, quien: 'Claude AI' },
