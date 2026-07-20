@@ -103,13 +103,41 @@ export default function QueEsEscala() {
 
         {/* Modelos de proyecto */}
         <div style={{marginBottom:'3rem'}}>
-          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.08em',textTransform:'uppercase',color:'#8FA3CC',marginBottom:'1rem'}}>Tres modelos en Escala — elige el que se ajusta a ti</div>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(280px,1fr))',gap:'1rem'}}>
-            {MODELOS.map(m => (
-              <div key={m.titulo} style={{background:m.bg,border:`1px solid ${m.border}`,borderRadius:'14px',padding:'1.5rem',position:'relative'}}>
+          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.08em',textTransform:'uppercase',color:'#8FA3CC',marginBottom:'0.5rem'}}>Tres modelos en Escala — elige el que se ajusta a ti</div>
+          <div style={{fontSize:'0.72rem',color:'#4B5563',marginBottom:'1rem',display:'flex',alignItems:'center',gap:'0.375rem'}}>
+            <span>←</span> desliza para ver los tres <span>→</span>
+          </div>
+          {/* Scroll horizontal en móvil, grid en desktop */}
+          <div style={{
+            display:'flex',
+            gap:'1rem',
+            overflowX:'auto',
+            paddingBottom:'0.75rem',
+            scrollSnapType:'x mandatory',
+            WebkitOverflowScrolling:'touch',
+            msOverflowStyle:'none',
+            scrollbarWidth:'none',
+          }}>
+            {MODELOS.map((m, idx) => (
+              <div key={m.titulo} style={{
+                background:m.bg,
+                border:`1px solid ${m.border}`,
+                borderRadius:'14px',
+                padding:'1.5rem',
+                position:'relative',
+                flexShrink:0,
+                width:'min(85vw, 320px)',
+                scrollSnapAlign:'start',
+              }}>
                 {m.badge && (
                   <div style={{position:'absolute',top:'-10px',right:'1rem',background:m.color,color: m.color === '#AFA9EC' ? '#2D2866' : '#fff',fontSize:'0.6rem',fontWeight:'700',padding:'2px 10px',borderRadius:'20px'}}>{m.badge}</div>
                 )}
+                {/* Indicador de posición */}
+                <div style={{display:'flex',gap:'4px',marginBottom:'0.875rem'}}>
+                  {MODELOS.map((_,i) => (
+                    <div key={i} style={{width: i===idx ? '16px' : '6px', height:'4px',borderRadius:'2px',background: i===idx ? m.color : 'rgba(255,255,255,0.15)',transition:'width 0.2s'}} />
+                  ))}
+                </div>
                 <div style={{display:'flex',alignItems:'center',gap:'0.75rem',marginBottom:'0.875rem'}}>
                   <span style={{fontSize:'1.75rem'}}>{m.icon}</span>
                   <div>
