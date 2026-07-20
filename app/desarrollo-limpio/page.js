@@ -234,7 +234,7 @@ const CAPAS = [
       { num: 'C8.8', nombre: 'Meta App configurada — App ID: 4534429656788672, permisos pages_manage_posts + instagram_content_publish. Pendiente: verificacion negocio Meta', done: true, valor: 500000, quien: 'Claude AI + Ivan' },
       { num: 'C8.9', nombre: 'Meta Business Verification — completar para mover la app a produccion. Requiere RUT o Camara de Comercio de Escala', done: false, valor: 0, quien: 'Ivan' },
       { num: 'C8.10', nombre: 'Username personalizado Facebook — cambiar profile.php?id=... por facebook.com/EscalaNetwork una vez la pagina tenga 100 seguidores', done: false, valor: 0, quien: 'Ivan' },
-      { num: 'C8.11', nombre: 'Blog completo: 10 articulos adicionales por pais y sector (Colombia, Mexico, Chile, Espana)', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C8.11', nombre: 'Blog completo: 10 articulos adicionales por pais y sector (Colombia, Mexico, Chile, Espana)', done: true, valor: 2000000, quien: 'Claude AI + Ivan' },
       { num: 'C8.12', nombre: 'SEO programatico: paginas generadas automaticamente por ciudad + industria + rol (ej: desarrollador-startup-bogota, contador-para-startups-medellin)', done: false, valor: 3000000, quien: 'Claude AI' },
       { num: 'C8.13', nombre: 'Hreflang y localizacion: indicadores de idioma/pais en todas las landing pages para SEO internacional', done: false, valor: 1000000, quien: 'Claude AI' },
       { num: 'C8.14', nombre: 'Estrategia de entrada por pais: plan de landings, partners y SEO local para Espana, Argentina, Peru, Ecuador y USA Hispanic', done: false, valor: 0, quien: 'Ivan + Claude AI' },
