@@ -14,12 +14,12 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Escala — El sistema operativo para construir empresas",
+    default: "Escala — En Escala encuentras lo que tu negocio o empresa necesita",
     template: "%s | Escala",
   },
-  description: "El sistema operativo para construir empresas. La infraestructura que reúne talento, capital, especialistas e inteligencia artificial para aumentar las probabilidades de construir empresas exitosas.",
+  description: "En Escala encuentras lo que tu negocio o empresa necesita — talento, capital, especialistas, tecnología, maquinaria y financiamiento en un solo lugar. Colombia y LATAM.",
   keywords: [
-    "sistema operativo empresa", "construir empresa sin capital", "maquinaria sin banco Colombia",
+    "negocio empresa Colombia", "construir empresa sin capital", "maquinaria sin banco Colombia",
     "leasing maquinaria excedente", "financiar local comercial Colombia", "startup sin capital",
     "cofundador Colombia", "angel investor Colombia", "crear empresa Medellin",
     "programa maquinaria Medellin", "confeccion sin banco", "equipo salon belleza Medellin",
@@ -44,17 +44,17 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Escala — El sistema operativo para construir empresas",
+    title: "Escala — En Escala encuentras lo que tu negocio o empresa necesita",
     description: "La infraestructura que reúne talento, capital, especialistas e IA para aumentar las probabilidades de construir empresas exitosas.",
     url: "https://escala.network",
     siteName: "Escala",
-    images: [{ url: "https://escala.network/brand/og-default.png?v=3", width: 1200, height: 630, alt: "Escala — El sistema operativo para construir empresas" }],
+    images: [{ url: "https://escala.network/brand/og-default.png?v=3", width: 1200, height: 630, alt: "Escala — En Escala encuentras lo que tu negocio o empresa necesita" }],
     locale: "es_CO",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Escala — El sistema operativo para construir empresas",
+    title: "Escala — En Escala encuentras lo que tu negocio o empresa necesita",
     description: "Talento, capital, especialistas e IA para construir empresas exitosas. Colombia y LATAM.",
     images: ["https://escala.network/brand/og-default.png"],
     creator: "@joinescala",
