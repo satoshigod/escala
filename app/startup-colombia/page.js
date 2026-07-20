@@ -87,7 +87,7 @@ export default function StartupColombiaPage() {
             { icon: '💰', title: 'Sin capital inicial', desc: 'El modelo de participación diferida permite que tu equipo trabaje por equity, no por salario, mientras validan el negocio.' },
             { icon: '⚖️', title: 'Contratos legales', desc: 'Contratos automáticos adaptados al marco legal colombiano. Protege tu idea y tu equipo desde el día uno.' },
             { icon: '🌟', title: 'Ángeles inversionistas', desc: 'Conecta con ángeles inversionistas que financian hitos específicos de tu startup a cambio de participación.' },
-            { icon: '📊', title: 'Gestión completa', desc: 'Tareas, hitos, aportes, ingresos y contratos en un solo lugar. El sistema operativo de tu startup.' },
+            { icon: '📊', title: 'Gestión completa', desc: 'Tareas, hitos, aportes, ingresos y contratos en un solo lugar. Todo lo que necesita tu startup en un solo lugar.' },
           ].map(item => (
             <div key={item.title} style={s.card}>
               <div style={s.cardIcon}>{item.icon}</div>

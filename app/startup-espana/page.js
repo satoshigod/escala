@@ -1,7 +1,7 @@
 import Link from 'next/link'
 export const metadata = {
   title: 'Crear startup en España sin capital — Escala',
-  description: 'La plataforma para crear empresas en España sin dinero inicial. El equipo trabaja por participacion, los inversionistas aportan capital por item. Sin deuda, sin banco.',
+  description: 'La plataforma donde encuentras lo que necesitas para crear o hacer crecer tu empresa en España — talento, capital y especialistas en un solo lugar.',
   keywords: ['startup España', 'crear empresa España sin capital', 'emprendimiento España', 'financiacion startups España', 'inversores angel España'],
 }
 const s = {

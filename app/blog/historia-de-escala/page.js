@@ -3,7 +3,7 @@ export const metadata = {
   title: 'La Historia de Escala — Cómo Construimos el Sistema Operativo para Crear Empresas',
   description: 'De la idea a la plataforma. Cómo Ivan Correa empezó a construir Escala desde Medellín, qué problemas intentamos resolver, y qué hemos aprendido construyendo en producción.',
   keywords: ['historia escala network', 'escala startup colombia', 'ivan correa escala', 'participacion diferida colombia', 'crear empresa colaborativa'],
-  openGraph: { title: 'La Historia de Escala', description: 'Cómo nació el sistema operativo para crear empresas colaborativas en Latinoamérica.', url: 'https://escala.network/blog/historia-de-escala', images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }] },
+  openGraph: { title: 'La Historia de Escala', description: 'Cómo nació la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa.', url: 'https://escala.network/blog/historia-de-escala', images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }] },
   alternates: { canonical: 'https://escala.network/blog/historia-de-escala' },
 }
 
@@ -36,7 +36,7 @@ export default function HistoriaEscalaPage() {
           <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>Julio 2026 · 8 min de lectura</span>
         </div>
 
-        <h1 style={s.h1}>La historia de Escala: cómo construimos el sistema operativo para crear empresas</h1>
+        <h1 style={s.h1}>La historia de Escala: cómo construimos la plataforma para crear y hacer crecer negocios y empresas</h1>
 
         <div style={s.highlight}>
           "¿Qué pasaría si el talento y el capital pudieran encontrarse en un solo lugar, con reglas claras y sin intermediarios?" — Esa pregunta fue el punto de partida.

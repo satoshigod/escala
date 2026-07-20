@@ -10,7 +10,7 @@ export const metadata = {
 const ARTICULOS = [
   {
     slug: 'historia-de-escala',
-    titulo: 'La historia de Escala: cómo construimos el sistema operativo para crear empresas',
+    titulo: 'La historia de Escala: cómo construimos la plataforma para crear y hacer crecer negocios y empresas',
     descripcion: 'De la idea a la plataforma. Cómo Ivan Correa empezó a construir Escala desde Medellín, qué problemas intentamos resolver y qué hemos aprendido.',
     fecha: 'Julio 2026', categoria: 'Sobre Escala', tiempo: '8 min', destacado: true,
   },

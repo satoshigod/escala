@@ -54,7 +54,7 @@ export default function QueEsParticipacionDiferidaPage() {
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '2.5rem', marginTop: '2.5rem' }}>
           <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#8FA3CC', marginBottom: '1.25rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Más artículos</div>
           {[
-            { href: '/blog/historia-de-escala', titulo: 'La historia de Escala: cómo construimos el sistema operativo para crear empresas' },
+            { href: '/blog/historia-de-escala', titulo: 'La historia de Escala: cómo construimos la plataforma para crear y hacer crecer negocios y empresas' },
             { href: '/blog/como-crear-una-startup-sin-dinero', titulo: 'Cómo crear una startup sin dinero en Latinoamérica' },
           ].map(a => <a key={a.href} href={a.href} style={{ display: 'block', fontSize: '0.88rem', color: '#4A90D9', textDecoration: 'none', marginBottom: '0.5rem' }}>{a.titulo} →</a>)}
         </div>

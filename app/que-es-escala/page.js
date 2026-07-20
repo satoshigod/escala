@@ -2,12 +2,12 @@
 import QueEsEscalaClientePage from './_page_client'
 
 export const metadata = {
-  title: 'Qué es Escala — Startups y Negocios en Local Comercial sin Capital Inicial',
-  description: 'Escala tiene dos modelos: equity diferido para startups (el equipo trabaja por participación) y fondeo de locales (un inversionista financia tu negocio y recupera desde las ventas diarias). Sin banco, sin garante.',
+  title: 'Qué es Escala — La plataforma para crear, hacer crecer o mejorar tu negocio o empresa',
+  description: 'Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa — talento, capital, especialistas, tecnología, maquinaria y financiamiento en un solo lugar.',
   keywords: ['que es escala', 'crear empresa sin capital', 'financiar local comercial colombia', 'participacion diferida startup', 'fondeo negocio local', 'startup latinoamerica'],
   openGraph: {
-    title: 'Qué es Escala — Startups y Negocios en Local sin Capital',
-    description: 'Dos modelos: equity diferido para startups y fondeo de locales comerciales. Sin banco, sin garante.',
+    title: 'Qué es Escala — La plataforma para tu negocio o empresa',
+    description: 'La plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa.',
     url: 'https://escala.network/que-es-escala',
     images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }],
   },

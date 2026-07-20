@@ -1,7 +1,7 @@
 import Link from 'next/link'
 export const metadata = {
   title: 'Crear startup en Argentina sin capital — Escala',
-  description: 'La plataforma para crear empresas en Argentina sin dinero inicial. El equipo trabaja por participacion, los inversionistas aportan capital por item. Sin deuda, sin banco.',
+  description: 'La plataforma donde encuentras lo que necesitas para crear o hacer crecer tu empresa en Argentina — talento, capital y especialistas en un solo lugar.',
   keywords: ['startup Argentina', 'crear empresa Argentina sin capital', 'emprendimiento Argentina', 'financiacion startups Argentina', 'inversores angel Argentina'],
 }
 const s = {

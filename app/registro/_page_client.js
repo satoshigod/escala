@@ -80,7 +80,7 @@ export default function Registro() {
     <main style={s.wrap}>
       <div style={s.card}>
         <a href="/" style={{ textDecoration: 'none' }}><div style={s.logo}>Esca<span style={s.logoSpan}>la</span></div></a>
-        <div style={s.sub}>Plataforma de empresas colaborativas</div>
+        <div style={s.sub}>La plataforma para tu negocio o empresa</div>
 
         <a href="/que-es-escala" style={{ display: 'block', fontSize: '0.78rem', color: '#1D9E75', textDecoration: 'none', marginBottom: '1.5rem', marginTop: '-1rem' }}>¿Primera vez? Entiende cómo funciona en 2 minutos →</a>
 

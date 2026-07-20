@@ -46,7 +46,7 @@ const MODELOS = [
 const PREGUNTAS = [
   {
     q: '¿Qué es Escala?',
-    a: 'Una plataforma donde personas con ideas, capital, conocimiento o trabajo pueden co-crear negocios reales. Cada aporte queda registrado y reconocido — participación diferida para startups, fondeo de capital para locales, o leasing de maquinaria desde el excedente.'
+    a: 'Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa. Si estás empezando, si ya tienes algo y quieres más, o si tienes un problema que no sabes cómo resolver — aquí encuentras el talento, el capital, los especialistas, la tecnología, la maquinaria y el financiamiento para lograrlo.'
   },
   {
     q: '¿Qué problema resuelve?',

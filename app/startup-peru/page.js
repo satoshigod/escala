@@ -1,7 +1,7 @@
 import Link from 'next/link'
 export const metadata = {
   title: 'Crear startup en Perú sin capital — Escala',
-  description: 'La plataforma para crear empresas en Perú sin dinero inicial. El equipo trabaja por participacion, los inversionistas aportan capital por item. Sin deuda, sin banco.',
+  description: 'La plataforma donde encuentras lo que necesitas para crear o hacer crecer tu empresa en Perú — talento, capital y especialistas en un solo lugar.',
   keywords: ['startup Perú', 'crear empresa Perú sin capital', 'emprendimiento Perú', 'financiacion startups Perú', 'inversores angel Perú'],
 }
 const s = {
