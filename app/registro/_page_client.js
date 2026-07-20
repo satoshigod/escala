@@ -10,11 +10,24 @@ export default function Registro() {
   const [nombre, setNombre] = useState('')
   const [mensaje, setMensaje] = useState('')
   const [cargando, setCargando] = useState(false)
+  const [intent, setIntent] = useState('')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     if (params.get('modo') === 'login') setModo('login')
+    const i = params.get('intent')
+    if (i) setIntent(i)
   }, [])
+
+  // Mensaje contextual segun lo que la persona eligio en la home
+  const intentInfo = {
+    capital:   { icon: '💰', titulo: 'Necesitas capital para crecer',      texto: 'Crea tu cuenta y publica lo que tu negocio necesita. Los inversionistas de Escala podrán financiarlo.' },
+    talento:   { icon: '🤝', titulo: 'Necesitas contratar talento',        texto: 'Crea tu cuenta y encuentra al diseñador, contador, desarrollador o especialista que buscas — trabajan por participación.' },
+    crear:     { icon: '💡', titulo: 'Quieres empezar tu empresa',         texto: 'Crea tu cuenta y arma tu equipo sin pagar salarios por adelantado. Cada quien gana participación.' },
+    proyectos: { icon: '🎯', titulo: 'Quieres conseguir proyectos',        texto: 'Crea tu cuenta, muestra lo que sabes hacer y postúlate a proyectos reales. Ganas participación por tu trabajo.' },
+    resolver:  { icon: '🧩', titulo: 'Tienes un problema que resolver',     texto: 'Crea tu cuenta y encuentra al especialista o la solución que necesitas para tu negocio o empresa.' },
+  }
+  const info = intent && intentInfo[intent]
 
   async function registrarse() {
     setCargando(true)
@@ -32,9 +45,9 @@ export default function Registro() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: data.user.id, email, nombre })
       }).catch(() => {})
-      window.location.href = '/onboarding'
+      window.location.href = intent ? `/onboarding?intent=${intent}` : '/onboarding'
     } else {
-      window.location.href = '/onboarding'
+      window.location.href = intent ? `/onboarding?intent=${intent}` : '/onboarding'
     }
     setCargando(false)
   }
@@ -83,6 +96,17 @@ export default function Registro() {
         <div style={s.sub}>La plataforma para tu negocio o empresa</div>
 
         <a href="/que-es-escala" style={{ display: 'block', fontSize: '0.78rem', color: '#1D9E75', textDecoration: 'none', marginBottom: '1.5rem', marginTop: '-1rem' }}>¿Primera vez? Entiende cómo funciona en 2 minutos →</a>
+
+        {/* Banner contextual segun la necesidad elegida en la home */}
+        {info && esRegistro && (
+          <div style={{ background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: '10px', padding: '0.875rem 1rem', marginBottom: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+            <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>{info.icon}</span>
+            <div>
+              <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#fff', marginBottom: '0.2rem' }}>{info.titulo}</div>
+              <div style={{ fontSize: '0.75rem', color: '#8FA3CC', lineHeight: 1.5 }}>{info.texto}</div>
+            </div>
+          </div>
+        )}
 
         {/* Tabs sin salto — usan el mismo formulario */}
         <div style={s.tabs}>
