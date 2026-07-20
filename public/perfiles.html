@@ -576,85 +576,127 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <a href="/registro" class="mc" onclick="closeMenu()">Registrarme gratis →</a>
 </div>
 
-<div class="container" style="padding-top:6.5rem;padding-bottom:0;">
-  <a href="index.html" style="color:var(--g5);font-size:0.82rem;text-decoration:none;font-weight:600;">← Volver al inicio</a>
-</div>
-<section class="perfiles" id="perfiles">
-<div class="container">
-  <span class="ey">Tu perfil en Escala</span>
-  <h2 class="ttl">¿Desde dónde llegas?</h2>
-  <p class="sub">Cualquier persona puede ser el punto de origen. Selecciona tu perfil y descubre tu camino.</p>
 
-  <div class="ptabs">
-    <div class="ptab act" id="tab-ideador" onclick="selPerfil('ideador',this)"><div class="ptab-i">💡</div><div class="ptab-l">Ideador</div><div class="ptab-s">Tengo la idea</div></div>
-    <div class="ptab" id="tab-capitalista" onclick="selPerfil('capitalista',this)"><div class="ptab-i">💰</div><div class="ptab-l">Capitalista</div><div class="ptab-s">Tengo capital</div></div>
-    <div class="ptab" id="tab-especialista" onclick="selPerfil('especialista',this)"><div class="ptab-i">🔧</div><div class="ptab-l">Especialista</div><div class="ptab-s">Tengo habilidades</div></div>
-    <div class="ptab" id="tab-ejecutor" onclick="selPerfil('ejecutor',this)"><div class="ptab-i">⚙️</div><div class="ptab-l">Ejecutor</div><div class="ptab-s">Sé construir</div></div>
-    <div class="ptab" id="tab-angel" onclick="selPerfil('angel',this)"><div class="ptab-i">🌟</div><div class="ptab-l">Ángel de Impulso</div><div class="ptab-s">Quiero impulsar</div></div>
-    <div class="ptab" id="tab-mentor" onclick="selPerfil('mentor',this)"><div class="ptab-i">🧭</div><div class="ptab-l">Mentor</div><div class="ptab-s">Aporto experiencia</div></div>
-    <div class="ptab" id="tab-empresa" onclick="selPerfil('empresa',this)"><div class="ptab-i">🏢</div><div class="ptab-l">Empresa</div><div class="ptab-s">Represento una empresa</div></div>
-  </div>
 
-  <div class="pc act" id="pc-ideador">
-    <div class="pc-panel"><div class="pc-ey">Tu perfil</div><div class="pc-name">El ideador</div><div class="pc-desc">Tienes una idea y la convicción de que funciona. No necesitas tenerlo todo — solo el equipo y la estructura correcta.</div><span class="pc-tl">Lo que aportas</span><div class="pc-tags"><span class="tag tg">Idea</span><span class="tag tg">Modelo de negocio</span><span class="tag tg">Visión</span></div><span class="pc-tl">Lo que encuentras</span><div class="pc-tags"><span class="tag ta">Equipo completo</span><span class="tag ta">Capital</span><span class="tag ta">Estructura legal</span></div></div>
-    <div class="pc-steps"><div class="pstep"><div class="pstep-n">1</div><div><div class="pstep-t">Publicas el proyecto</div><div class="pstep-d">Describes la idea, los recursos que tienes y los que necesitas. Sin costo.</div></div></div><div class="pstep"><div class="pstep-n">2</div><div><div class="pstep-t">La plataforma mapea tus brechas</div><div class="pstep-d">Detecta qué roles faltan y conecta con especialistas y capitalistas.</div></div></div><div class="pstep"><div class="pstep-n">3</div><div><div class="pstep-t">El equipo firma contratos</div><div class="pstep-d">Cada aportante entra con precio, actividades y carril definido.</div></div></div><div class="pstep"><div class="pstep-n">4</div><div><div class="pstep-t">Construyen juntos</div><div class="pstep-d">Todo se registra. Cuando llega el capitalista, los datos ya existen.</div></div></div></div>
-  </div>
 
-  <div class="pc" id="pc-capitalista">
-    <div class="pc-panel"><div class="pc-ey">Tu perfil</div><div class="pc-name">El capitalista</div><div class="pc-desc">Tienes capital y no sabes dónde ponerlo con confianza. Aquí llegas cuando los datos de ejecución ya existen.</div><span class="pc-tl">Lo que aportas</span><div class="pc-tags"><span class="tag tg">Capital</span><span class="tag tg">Red de contactos</span><span class="tag tg">Visión</span></div><span class="pc-tl">Lo que encuentras</span><div class="pc-tags"><span class="tag ta">Equipos validados</span><span class="tag ta">Datos reales</span><span class="tag ta">Due diligence hecho</span></div></div>
-    <div class="pc-steps"><div class="pstep"><div class="pstep-n">1</div><div><div class="pstep-t">Exploras proyectos activos</div><div class="pstep-d">Ves métricas reales: horas, entregables cumplidos, calidad del equipo.</div></div></div><div class="pstep"><div class="pstep-n">2</div><div><div class="pstep-t">El due diligence ya está hecho</div><div class="pstep-d">Semanas de ejecución real antes de que pongas un peso.</div></div></div><div class="pstep"><div class="pstep-n">3</div><div><div class="pstep-t">Defines los carriles con el ejecutor</div><div class="pstep-d">Juntos deciden quién continúa como socio y quién se liquida.</div></div></div><div class="pstep"><div class="pstep-n">4</div><div><div class="pstep-t">Acceso a deal flow exclusivo</div><div class="pstep-d">Solo proyectos que superaron la etapa pre-operativa con evidencia.</div></div></div></div>
-  </div>
-
-  <div class="pc" id="pc-especialista">
-    <div class="pc-panel"><div class="pc-ey">Tu perfil</div><div class="pc-name">El especialista</div><div class="pc-desc">Eres abogado, contador, programador, diseñador. Quieres participar en algo más grande sin renunciar a tu empleo. Siempre ganas algo.</div><span class="pc-tl">Lo que aportas</span><div class="pc-tags"><span class="tag tg">Conocimiento profesional</span><span class="tag tg">Experiencia</span><span class="tag tg">Tiempo disponible</span></div><span class="pc-tl">Lo que ganas siempre</span><div class="pc-tags"><span class="tag ta">Ingreso adicional</span><span class="tag ta">Experiencia emprendedora</span><span class="tag ta">Posibilidad de equity</span></div></div>
-    <div class="pc-steps"><div class="pstep"><div class="pstep-n">1</div><div><div class="pstep-t">Entras a precio mínimo (−50%)</div><div class="pstep-d">Tu aporte queda registrado con contrato digital desde el inicio.</div></div></div><div class="pstep"><div class="pstep-n">2</div><div><div class="pstep-t">Ejecutas actividades concretas</div><div class="pstep-d">Tareas reales con valor base definido en pesos colombianos.</div></div></div><div class="pstep"><div class="pstep-n">3</div><div><div class="pstep-t">Evaluación al llegar el capital</div><div class="pstep-d">Ejecutor y capitalista definen tu carril de compensación.</div></div></div><div class="pstep"><div class="pstep-n">4</div><div><div class="pstep-t">Siempre ganas algo</div><div class="pstep-d">A: equity · B: 50% pactado + experiencia · C: cash al precio pleno</div></div></div></div>
-  </div>
-
-  <div class="pc" id="pc-ejecutor">
-    <div class="pc-panel"><div class="pc-ey">Tu perfil</div><div class="pc-name">El ejecutor</div><div class="pc-desc">Sabes construir empresas pero no tienes idea propia o capital. Buscas proyectos donde tu capacidad operativa sea el activo más valioso.</div><span class="pc-tl">Lo que aportas</span><div class="pc-tags"><span class="tag tg">Ejecución</span><span class="tag tg">Liderazgo</span><span class="tag tg">Gestión de equipos</span></div><span class="pc-tl">Lo que necesitas</span><div class="pc-tags"><span class="tag ta">Proyecto con potencial</span><span class="tag ta">Capital de arranque</span></div></div>
-    <div class="pc-steps"><div class="pstep"><div class="pstep-n">1</div><div><div class="pstep-t">Exploras proyectos publicados</div><div class="pstep-d">Filtras por industria, etapa y tipo. Te postulas donde encajas.</div></div></div><div class="pstep"><div class="pstep-n">2</div><div><div class="pstep-t">Coordinas como Gerente de Proyecto</div><div class="pstep-d">Diriges abogado, contador, diseñador y marketing.</div></div></div><div class="pstep"><div class="pstep-n">3</div><div><div class="pstep-t">Tu pago se activa al operar</div><div class="pstep-d">Precio de mercado completo al primer hito de facturación.</div></div></div><div class="pstep"><div class="pstep-n">4</div><div><div class="pstep-t">Evaluación para ser socio</div><div class="pstep-d">Junto al capitalista deciden si continúas como accionista.</div></div></div></div>
-  </div>
-
-  <div class="pc" id="pc-angel">
-    <div class="pc-panel"><div class="pc-ey">Un rol único en Escala</div><div class="pc-name">Ángel de Impulso</div><div class="pc-desc">Financia un hito específico — la constitución, el logo, la primera campaña — sin esperar equity ni devolución. Recibe visibilidad total y prioridad si el proyecto abre una ronda.</div><span class="pc-tl">Lo que aporta</span><div class="pc-tags"><span class="tag tg">Capital para un hito</span><span class="tag tg">Mentoría</span><span class="tag tg">Contactos</span></div><span class="pc-tl">Lo que recibe</span><div class="pc-tags"><span class="tag ta">Expediente del proyecto</span><span class="tag ta">Seguimiento de hitos</span><span class="tag ta">Prioridad en rondas</span></div><div class="pc-note"><div class="pc-note-t">La diferencia clave</div><div class="pc-note-d">No es una donación — es un impulso rastreable. Cada peso queda asociado a un hito específico con fecha y evidencia.</div></div></div>
-    <div class="pc-steps"><div class="pstep"><div class="pstep-n">1</div><div><div class="pstep-t">Exploras proyectos con hitos sin cubrir</div><div class="pstep-d">Ves proyectos reales con necesidades concretas: una Cámara de Comercio, un logo, una primera campaña.</div></div></div><div class="pstep"><div class="pstep-n">2</div><div><div class="pstep-t">Financias el hito que eliges</div><div class="pstep-d">Tu aporte va directo al hito. Escala lo registra con fecha, valor y responsable.</div></div></div><div class="pstep"><div class="pstep-n">3</div><div><div class="pstep-t">Accedes al expediente del proyecto</div><div class="pstep-d">Ves los avances y los indicadores. Sabes exactamente qué impacto generó tu aporte.</div></div></div><div class="pstep"><div class="pstep-n">4</div><div><div class="pstep-t">Prioridad en rondas futuras</div><div class="pstep-d">Los Ángeles de Impulso tienen acceso preferente antes que cualquier inversionista externo.</div></div></div></div>
-  </div>
-
-  <div class="pc" id="pc-mentor">
-    <div class="pc-panel"><div class="pc-ey">Tu perfil</div><div class="pc-name">El mentor</div><div class="pc-desc">Tienes años de experiencia en un sector y quieres que eso genere valor patrimonial. Orientas a los fundadores en decisiones clave sin ejecutar tareas operativas.</div><span class="pc-tl">Lo que aportas</span><div class="pc-tags"><span class="tag tg">Experiencia estratégica</span><span class="tag tg">Red de contactos</span><span class="tag tg">Visión de industria</span></div><span class="pc-tl">Lo que recibes</span><div class="pc-tags"><span class="tag ta">Pequeñas participaciones</span><span class="tag ta">Ingreso por mentoría</span><span class="tag ta">Acceso a proyectos tempranos</span></div></div>
-    <div class="pc-steps"><div class="pstep"><div class="pstep-n">1</div><div><div class="pstep-t">Exploras proyectos que necesitan guía</div><div class="pstep-d">Filtras por industria donde tienes experiencia real. Te postulas como mentor.</div></div></div><div class="pstep"><div class="pstep-n">2</div><div><div class="pstep-t">Defines el alcance de tu mentoría</div><div class="pstep-d">Sesiones estratégicas, revisión de decisiones clave, apertura de puertas. Sin operación diaria.</div></div></div><div class="pstep"><div class="pstep-n">3</div><div><div class="pstep-t">Tu experiencia queda registrada como aporte</div><div class="pstep-d">Cada sesión tiene valor definido. El contrato especifica qué recibes a cambio.</div></div></div><div class="pstep"><div class="pstep-n">4</div><div><div class="pstep-t">Participación proporcional a tu impacto</div><div class="pstep-d">Si el proyecto prospera, tu participación crece con él. 35 años de experiencia merecen más que honorarios.</div></div></div></div>
-  </div>
-
-  <div class="pc" id="pc-empresa">
-    <div class="pc-panel"><div class="pc-ey">Tu perfil</div><div class="pc-name">La empresa</div><div class="pc-desc">Representas una empresa que puede actuar en múltiples roles: fundadora, ejecutora, prestadora de servicios, ángel de impulso o mentora estratégica. Según el proyecto, eliges cómo participar.</div><span class="pc-tl">Lo que aportas</span><div class="pc-tags"><span class="tag tg">Capacidad operativa</span><span class="tag tg">Capital</span><span class="tag tg">Infraestructura existente</span></div><span class="pc-tl">Lo que encuentras</span><div class="pc-tags"><span class="tag ta">Proyectos para ejecutar</span><span class="tag ta">Hitos para financiar</span><span class="tag ta">Equipos para complementar</span></div></div>
-    <div class="pc-steps"><div class="pstep"><div class="pstep-n">1</div><div><div class="pstep-t">Registras tu empresa con su perfil real</div><div class="pstep-d">Defines qué capacidades tiene tu empresa, qué industrias domina y qué tipo de proyectos le interesan.</div></div></div><div class="pstep"><div class="pstep-n">2</div><div><div class="pstep-t">Decides tu rol proyecto a proyecto</div><div class="pstep-d">En un proyecto eres ejecutora. En otro eres ángel de impulso. En otro eres mentora. La plataforma lo gestiona.</div></div></div><div class="pstep"><div class="pstep-n">3</div><div><div class="pstep-t">Tus aportes quedan registrados institucionalmente</div><div class="pstep-d">La empresa acumula reputación, historial y participaciones verificables en múltiples proyectos.</div></div></div><div class="pstep"><div class="pstep-n">4</div><div><div class="pstep-t">Participación proporcional al aporte</div><div class="pstep-d">Tu empresa recibe equity, success fees o pagos diferidos según el modelo que acuerde con cada proyecto.</div></div></div></div>
-  </div>
+<section style="background:var(--navy);padding:8rem 2rem 5rem;text-align:center;position:relative;">
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(29,158,117,0.1) 0%,transparent 70%);pointer-events:none;"></div>
+<div class="container" style="max-width:720px;position:relative;">
+  <div class="eyebrow" style="color:var(--green);background:rgba(29,158,117,0.12);border-color:rgba(29,158,117,0.25);">¿Desde dónde llegas?</div>
+  <h1 style="font-size:clamp(2.2rem,5vw,3.5rem);font-weight:900;letter-spacing:-0.035em;line-height:1.1;color:#fff;margin-bottom:1.25rem;">En Escala hay un lugar<br>para cada perfil.</h1>
+  <p style="font-size:1rem;color:var(--dark-muted);line-height:1.75;">Fundadores, especialistas, productoras y ángeles. Cada uno entra con lo que tiene y recibe según lo que aporta.</p>
 </div>
 </section>
-<section class="registro" id="registro">
-<div class="container">
-<div class="reg-inner">
-  <div class="reg-head">
-    <span style="display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);padding:0.35rem 1rem;border-radius:20px;margin-bottom:1.25rem;">Registro gratuito</span>
-    <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-0.035em;color:#fff;line-height:1.05;margin-bottom:1rem;">Tu próximo paso no<br>requiere renunciar a nada</h2>
-    <p style="font-size:0.95rem;color:var(--dm);line-height:1.7;max-width:460px;margin-inline:auto;">Crea tu cuenta en menos de 2 minutos. Elige tu perfil, define lo que aportas y empieza a construir o a unirte a proyectos reales.</p>
-  </div>
-  <div class="reg-form" style="text-align:center;padding:2rem 0;">
-    <a href="/registro" class="sub-btn" style="display:inline-block;text-decoration:none;font-size:1rem;padding:1rem 2.5rem;">
-      <span>🚀</span> <span>Crear mi cuenta en Escala →</span>
-    </a>
-    <p style="text-align:center;font-size:0.72rem;color:var(--dm);margin-top:0.875rem;line-height:1.5;opacity:0.8;">Gratuito · Sin compromisos · Tu tiempo y conocimiento se convierten en participación real.</p>
-    <div style="margin-top:2rem;display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
-      <a href="/buscar" style="font-size:0.82rem;color:var(--green);text-decoration:none;font-weight:600;">Ver proyectos activos →</a>
-      <a href="/que-es-escala" style="font-size:0.82rem;color:var(--dm);text-decoration:none;">¿Cómo funciona?</a>
+
+<section style="background:var(--cream);padding:5rem 2rem;">
+<div class="container" style="max-width:1000px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
+
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:16px;overflow:hidden;">
+      <div style="background:var(--navy);padding:1.5rem;">
+        <div style="font-size:1.75rem;margin-bottom:0.5rem;">💡</div>
+        <h3 style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">Fundador</h3>
+        <p style="font-size:0.78rem;color:var(--dark-muted);">Tienes la idea y el liderazgo</p>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1.25rem;">Publicas tu proyecto, defines los roles que necesitas y el modelo de compensación. Los especialistas aplican. Cuando aceptas, el contrato se genera automáticamente.</p>
+        <div style="display:flex;flex-direction:column;gap:0.375rem;margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Crea proyectos de startup, local o maquinaria</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Recibe postulaciones de especialistas</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Gestiona tu equipo desde el workspace</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Reporta ventas y gestiona el reparto</div>
+        </div>
+        <a href="/registro" style="display:block;text-align:center;background:var(--navy);color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Crear mi proyecto →</a>
+      </div>
     </div>
+
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:16px;overflow:hidden;">
+      <div style="background:#1E3560;padding:1.5rem;">
+        <div style="font-size:1.75rem;margin-bottom:0.5rem;">🔧</div>
+        <h3 style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">Especialista</h3>
+        <p style="font-size:0.78rem;color:var(--dark-muted);">Tienes conocimiento y tiempo</p>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1.25rem;">Aplicas a roles en proyectos que te interesan. Trabajas por participación diferida en lugar de salario. Cuando el proyecto genera, cobras según lo que aportaste.</p>
+        <div style="display:flex;flex-direction:column;gap:0.375rem;margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Desarrolladores, diseñadores, contadores</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Abogados, marketers, ejecutores</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Sin renunciar a tu empleo actual</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Score de reputación basado en resultados</div>
+        </div>
+        <a href="/registro" style="display:block;text-align:center;background:#1E3560;color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Ver proyectos disponibles →</a>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:16px;overflow:hidden;">
+      <div style="background:#534AB7;padding:1.5rem;">
+        <div style="font-size:1.75rem;margin-bottom:0.5rem;">🏭</div>
+        <h3 style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">Productora / Beneficiaria</h3>
+        <p style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Tienes los pedidos, falta el equipo</p>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1.25rem;">Confeccionistas, cocineras, estilistas. Ya tienes clientes y demanda real. Lo que necesitas es el equipo para producir más. Un ángel lo compra y tú lo pagas desde el excedente que genera.</p>
+        <div style="display:flex;flex-direction:column;gap:0.375rem;margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:#534AB7;">→</span>Sin banco ni historial crediticio</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:#534AB7;">→</span>Usas el equipo desde el primer día</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:#534AB7;">→</span>Pagas desde lo que produce</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:#534AB7;">→</span>Al terminar, el equipo es tuyo</div>
+        </div>
+        <a href="/programa-maquinaria" style="display:block;text-align:center;background:#534AB7;color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Ver programa de maquinaria →</a>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:16px;overflow:hidden;">
+      <div style="background:#E8A020;padding:1.5rem;">
+        <div style="font-size:1.75rem;margin-bottom:0.5rem;">✦</div>
+        <h3 style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">Ángel</h3>
+        <p style="font-size:0.78rem;color:rgba(255,255,255,0.7);">Tienes capital y quieres que sirva</p>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1.25rem;">Tres formas de participar: financias un hito puntual sin retorno, compras una máquina que se paga desde el excedente, o fondeas un local que se recupera desde las ventas.</p>
+        <div style="display:flex;flex-direction:column;gap:0.375rem;margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--amber);">→</span>Impulso: desde $120.000 sin retorno</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--amber);">→</span>Maquinaria: recuperas en 1-12 meses</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--amber);">→</span>Local: recuperas capital + retorno</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--amber);">→</span>Plataforma gestiona todo</div>
+        </div>
+        <a href="impulso.html" style="display:block;text-align:center;background:var(--amber);color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Ver modalidades de ángel →</a>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:16px;overflow:hidden;">
+      <div style="background:var(--green);padding:1.5rem;">
+        <div style="font-size:1.75rem;margin-bottom:0.5rem;">🏪</div>
+        <h3 style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:0.25rem;">Operador de local</h3>
+        <p style="font-size:0.78rem;color:rgba(255,255,255,0.7);">Tienes el negocio, falta el capital</p>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1.25rem;">Quieres abrir una tienda, restaurante o salón pero no tienes el depósito y los primeros arriendos. Un ángel los financia. Tú reportas ventas diarias y pagas el excedente.</p>
+        <div style="display:flex;flex-direction:column;gap:0.375rem;margin-bottom:1.25rem;">
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Sin historial crediticio</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Reporte diario simple</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>3 fases: Repago → Regalía → Libre</div>
+          <div style="font-size:0.8rem;color:var(--gray-700);display:flex;gap:0.5rem;"><span style="color:var(--green);">→</span>Al terminar, el negocio es tuyo</div>
+        </div>
+        <a href="/financiar-negocio-local-colombia" style="display:block;text-align:center;background:var(--green);color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Ver cómo funciona →</a>
+      </div>
+    </div>
+
+    <div style="background:var(--navy);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;display:flex;flex-direction:column;justify-content:center;text-align:center;">
+      <div style="font-size:1.75rem;margin-bottom:0.875rem;">⚡</div>
+      <h3 style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.5rem;">¿No sabes cuál eres?</h3>
+      <p style="font-size:0.82rem;color:var(--dark-muted);line-height:1.6;margin-bottom:1.25rem;">Crea tu cuenta y la plataforma te guía. Puedes empezar como especialista y luego publicar tu propio proyecto.</p>
+      <a href="/registro" style="background:rgba(255,255,255,0.1);color:#fff;padding:0.75rem;border-radius:8px;font-size:0.85rem;font-weight:700;text-decoration:none;border:1px solid rgba(255,255,255,0.2);">Crear cuenta gratis →</a>
+    </div>
+
   </div>
 </div>
-</div>
 </section>
+
+
 <footer>
   <div class="foot-logo" style="display:flex;align-items:center"><img src="/brand/isotipo.svg" alt="Escala" width="28" height="28" style="display:inline-block;vertical-align:middle;margin-right:6px">Esca<span>la</span></div>
-  <p>El sistema operativo para empresas colaborativas · Colombia 2026</p>
+  <p>El sistema operativo para crear empresas · Colombia 2026</p>
   <div class="foot-links">
     <a href="proyectos.html">Proyectos</a>
     <a href="impulso.html">Ángel de Impulso</a>

@@ -576,218 +576,142 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <a href="/registro" class="mc" onclick="closeMenu()">Registrarme gratis →</a>
 </div>
 
-<div class="container" style="padding-top:6.5rem;padding-bottom:0;">
-  <a href="index.html" style="color:var(--g5);font-size:0.82rem;text-decoration:none;font-weight:600;">← Volver al inicio</a>
-</div>
-<section class="casos" id="casos">
-<div class="container">
-  <span class="ey">Ejemplos ilustrativos del modelo</span>
-  <h2 class="ttl">Así se vería un proyecto<br>construido en Escala.</h2>
-  <p class="sub">Ejemplos de cómo se estructurarían los contratos, el valor registrado y las reglas — para ilustrar el modelo, no casos ya ejecutados en la plataforma.</p>
 
-  <div class="casos-tabs">
-    <button class="ctab act" onclick="filtCasos('todos',this)">Todos</button>
-    <button class="ctab" onclick="filtCasos('intercambio',this)">Intercambios</button>
-    <button class="ctab" onclick="filtCasos('creacion',this)">Empresas creadas</button>
-  </div>
 
-  <div class="casos-grid" id="casos-grid">
 
-    <!-- ABOGADO / PINTOR -->
-    <div class="caso-c" data-tipo="intercambio">
-      <div class="cc-top" style="background:var(--navy);">
-        <div class="cc-type">Ejemplo — intercambio de servicios</div>
-        <div class="cc-actors">
-          <div class="tc"><div style="font-size:1.25rem;">⚖️</div><div class="cc-act-name">Abogado</div><div class="cc-act-sub">15 años, derecho comercial</div></div>
-          <div class="cc-arrow">↔</div>
-          <div class="tc"><div style="font-size:1.25rem;">🎨</div><div class="cc-act-name">Pintor</div><div class="cc-act-sub">Maestro de obra</div></div>
-        </div>
-      </div>
-      <div class="cc-body">
-        <div class="cc-prob">El problema</div>
-        <div class="cc-desc">El abogado necesita remodelar su apartamento. El pintor necesita constituir su empresa. Los dos tienen lo que el otro necesita — ninguno tiene el dinero para pagarlo.</div>
-        <div class="cc-nums" style="background:var(--gl);">
-          <div><div class="cc-nl">Aporta abogado</div><div class="cc-nv">$2.500.000</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Recibe cada uno</div><div class="cc-nv">$2.500.000</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RESTAURANTE / INFLUENCER -->
-    <div class="caso-c" data-tipo="intercambio">
-      <div class="cc-top" style="background:var(--navy);">
-        <div class="cc-type">Ejemplo — intercambio de servicios</div>
-        <div class="cc-actors">
-          <div class="tc"><div style="font-size:1.25rem;">🍽️</div><div class="cc-act-name">Restaurante</div><div class="cc-act-sub">10 años, sin digital</div></div>
-          <div class="cc-arrow">↔</div>
-          <div class="tc"><div style="font-size:1.25rem;">📱</div><div class="cc-act-name">Influencer</div><div class="cc-act-sub">45K seguidores locales</div></div>
-        </div>
-      </div>
-      <div class="cc-body">
-        <div class="cc-prob">El problema</div>
-        <div class="cc-desc">El restaurante tiene producto excelente pero clientela estancada. El influencer tiene audiencia pero no tiene ingreso estable. Se asocian: contenido 12 meses a cambio del 15% de nuevos ingresos.</div>
-        <div class="cc-nums" style="background:var(--pl);">
-          <div><div class="cc-nl">Nuevos ingresos mes 3</div><div class="cc-nv">+$4.200.000</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Comisión influencer</div><div class="cc-nv">$630.000</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- FINCA / AGENTE -->
-    <div class="caso-c" data-tipo="intercambio">
-      <div class="cc-top" style="background:var(--navy);">
-        <div class="cc-type">Ejemplo — intercambio de servicios</div>
-        <div class="cc-actors">
-          <div class="tc"><div style="font-size:1.25rem;">🌾</div><div class="cc-act-name">Finca cafetera</div><div class="cc-act-sub">50 ha, sin exportación</div></div>
-          <div class="cc-arrow">↔</div>
-          <div class="tc"><div style="font-size:1.25rem;">🤝</div><div class="cc-act-name">Agente comercial</div><div class="cc-act-sub">Red en Europa y EE.UU.</div></div>
-        </div>
-      </div>
-      <div class="cc-body">
-        <div class="cc-prob">El problema</div>
-        <div class="cc-desc">La finca produce café de alta calidad pero solo vende a intermediarios. El agente tiene compradores internacionales pero no tiene producto. Se asocian con comisión sobre ventas internacionales.</div>
-        <div class="cc-nums" style="background:var(--al);">
-          <div><div class="cc-nl">Precio local kg</div><div class="cc-nv">$8.000</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Precio exportación</div><div class="cc-nv" style="color:var(--green);">$32.000</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CONSIGNACIÓN -->
-    <div class="caso-c" data-tipo="intercambio">
-      <div class="cc-top" style="background:var(--navy);">
-        <div class="cc-type">Ejemplo — necesidad de capital</div>
-        <div class="cc-actors">
-          <div class="tc"><div style="font-size:1.25rem;">👙</div><div class="cc-act-name">Marca de vestidos</div><div class="cc-act-sub">5 almacenes la aceptaron</div></div>
-          <div class="cc-arrow">→</div>
-          <div class="tc"><div style="font-size:1.25rem;">🌟</div><div class="cc-act-name">Ángel de Impulso</div><div class="cc-act-sub">Financia el inventario</div></div>
-        </div>
-      </div>
-      <div class="cc-body">
-        <div class="cc-prob">El problema</div>
-        <div class="cc-desc">5 almacenes aceptaron la colección en consignación. El problema: necesita producir 300 unidades sin recibir dinero hasta que se vendan. No falta mercado — falta capital de trabajo por 90 días.</div>
-        <div class="nota" style="margin:0;">"Necesitamos producir 300 vestidos para 5 puntos de venta que ya nos aceptaron. Capital por 90 días mientras se vende el inventario."</div>
-        <div class="cc-nums mt1" style="background:var(--gl);">
-          <div><div class="cc-nl">Capital necesario</div><div class="cc-nv">$12.000.000</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Canales conseguidos</div><div class="cc-nv" style="color:var(--green);">5 almacenes</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VETAPP -->
-    <div class="caso-c" data-tipo="creacion">
-      <div class="cc-top" style="background:#0A1530;">
-        <div class="cc-type" style="color:var(--green);">Ejemplo — empresa creada desde cero</div>
-        <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.2rem;">VetApp</div>
-        <div style="font-size:0.72rem;color:var(--dm);">App gestión clínicas veterinarias · 4.200 veterinarias en Colombia</div>
-      </div>
-      <div class="cc-body">
-        <div style="display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.875rem;">
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">💡 Carlos — Ideador</span><span style="color:var(--amber);font-weight:600;">Equity fundador</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">💻 Diego — Programador</span><span style="color:var(--purple);font-weight:600;">$15M diferido</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">🎨 Laura — Diseñadora</span><span style="color:var(--purple);font-weight:600;">$4M diferido</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">⚖️ Andrés — Abogado</span><span style="color:var(--purple);font-weight:600;">$1.4M diferido</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;"><span style="color:var(--g5);">💰 Mateo — Inversionista</span><span style="color:var(--amber);font-weight:600;">$30M capital</span></div>
-        </div>
-        <div class="cc-nums" style="background:var(--gl);">
-          <div><div class="cc-nl">Resultado mes 18</div><div class="cc-nv">80 clínicas</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Ingresos anuales</div><div class="cc-nv" style="color:var(--green);">$24M ARR</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CONSTRUCTORA -->
-    <div class="caso-c" data-tipo="creacion">
-      <div class="cc-top" style="background:#0A1530;">
-        <div class="cc-type" style="color:var(--green);">Ejemplo — empresa creada desde cero</div>
-        <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.2rem;">Constructora Modular SAS</div>
-        <div style="font-size:0.72rem;color:var(--dm);">Casas prefabricadas VIS · Mercado colombiano</div>
-      </div>
-      <div class="cc-body">
-        <div style="display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.875rem;">
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">🏛️ Arq. Ramírez — Diseños</span><span style="color:var(--purple);font-weight:600;">$8M + equity</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">🏗️ Constructor Gómez — Obra</span><span style="color:var(--purple);font-weight:600;">$25M + equity</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">📣 Marketing — Ventas</span><span style="color:var(--purple);font-weight:600;">$6M diferido</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;"><span style="color:var(--g5);">💰 Inversionista finca raíz</span><span style="color:var(--amber);font-weight:600;">$50M capital</span></div>
-        </div>
-        <div class="cc-nums" style="background:var(--gl);">
-          <div><div class="cc-nl">Primer proyecto</div><div class="cc-nv">12 casas</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Utilidad por casa</div><div class="cc-nv" style="color:var(--green);">$18M c/u</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- POS RESTAURANTES -->
-    <div class="caso-c" data-tipo="creacion">
-      <div class="cc-top" style="background:#0A1530;">
-        <div class="cc-type" style="color:var(--green);">Ejemplo — empresa creada desde cero</div>
-        <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.2rem;">POS Restaurantes</div>
-        <div style="font-size:0.72rem;color:var(--dm);">Software punto de venta · SaaS $89.000/mes</div>
-      </div>
-      <div class="cc-body">
-        <div style="display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.875rem;">
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">💻 Dev senior — Backend</span><span style="color:var(--purple);font-weight:600;">$20M + 25%</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">🎨 Diseñadora UX — UI</span><span style="color:var(--purple);font-weight:600;">$8M + 10%</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">💡 Fundador — Idea + ventas</span><span style="color:var(--amber);font-weight:600;">40% equity</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;"><span style="color:var(--g5);">💰 Ángel investor</span><span style="color:var(--amber);font-weight:600;">$15M · 25%</span></div>
-        </div>
-        <div class="cc-nums" style="background:var(--gl);">
-          <div><div class="cc-nl">MRR mes 12</div><div class="cc-nv">$5.3M</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Clientes activos</div><div class="cc-nv" style="color:var(--green);">60 restaurantes</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- EKIVIBE -->
-    <div class="caso-c" data-tipo="creacion">
-      <div class="cc-top" style="background:#7A4F0A;">
-        <div class="cc-type" style="color:#FCD68A;">Ejemplo — empresa creada desde cero</div>
-        <div style="font-size:1rem;font-weight:800;color:#fff;margin-bottom:0.2rem;">🐴 Ekivibe</div>
-        <div style="font-size:0.72rem;color:rgba(255,255,255,0.6);">Snacks naturales para caballos · 400.000 caballos en Colombia</div>
-      </div>
-      <div class="cc-body">
-        <div class="cc-desc" style="font-style:italic;">"Mi hija ama los caballos. Empezó a hacer galletas naturales para venderlas y comprarse el suyo algún día. Ese es Ekivibe."</div>
-        <div style="display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.875rem;">
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">🐴 Fundadora — Receta + clientes</span><span style="color:var(--amber);font-weight:600;">Equity fundadora</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;border-bottom:1px solid var(--g1);"><span style="color:var(--g5);">💵 Inversionista — Capital</span><span style="color:var(--amber);font-weight:600;">$8M → Acciones</span></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.75rem;padding:0.35rem 0;"><span style="color:var(--g5);">🐎 Veterinario + Diseñador</span><span style="color:var(--purple);font-weight:600;">Diferido</span></div>
-        </div>
-        <div class="cc-nums" style="background:var(--al);">
-          <div><div class="cc-nl">Mercado colombiano</div><div class="cc-nv">400K caballos</div></div>
-          <div style="text-align:right;"><div class="cc-nl-v">Precio por paquete</div><div class="cc-nv">$15K–$25K</div></div>
-        </div>
-        <a href="proyectos.html" class="cc-link" style="background:var(--amber);color:#fff;">Ver proyecto completo →</a>
-      </div>
-    </div>
-
-  </div>
-  <div class="tc mt2"><a href="proyectos.html" style="color:var(--green);font-weight:600;font-size:0.875rem;border-bottom:1px solid rgba(29,158,117,0.3);padding-bottom:2px;">Ver proyectos activos en Escala →</a></div>
+<section style="background:var(--navy);padding:8rem 2rem 5rem;text-align:center;position:relative;">
+<div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(29,158,117,0.1) 0%,transparent 70%);pointer-events:none;"></div>
+<div class="container" style="max-width:720px;position:relative;">
+  <div class="eyebrow" style="color:var(--green);background:rgba(29,158,117,0.12);border-color:rgba(29,158,117,0.25);">Casos reales</div>
+  <h1 style="font-size:clamp(2.2rem,5vw,3.5rem);font-weight:900;letter-spacing:-0.035em;line-height:1.1;color:#fff;margin-bottom:1.25rem;">Negocios reales.<br>Personas reales.</h1>
+  <p style="font-size:1rem;color:var(--dark-muted);line-height:1.75;">Estos son los perfiles que Escala conecta con capital, equipos y herramientas. No son casos cerrados — son los modelos activos en la plataforma hoy.</p>
 </div>
 </section>
-<section class="registro" id="registro">
-<div class="container">
-<div class="reg-inner">
-  <div class="reg-head">
-    <span style="display:inline-block;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);background:rgba(29,158,117,0.12);border:1px solid rgba(29,158,117,0.25);padding:0.35rem 1rem;border-radius:20px;margin-bottom:1.25rem;">Registro gratuito</span>
-    <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:-0.035em;color:#fff;line-height:1.05;margin-bottom:1rem;">Tu próximo paso no<br>requiere renunciar a nada</h2>
-    <p style="font-size:0.95rem;color:var(--dm);line-height:1.7;max-width:460px;margin-inline:auto;">Crea tu cuenta en menos de 2 minutos. Elige tu perfil, define lo que aportas y empieza a construir o a unirte a proyectos reales.</p>
+
+<section style="background:var(--cream);padding:5rem 2rem;">
+<div class="container" style="max-width:1000px;">
+  <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#534AB7;display:block;margin-bottom:0.75rem;">Programa Las 10 Máquinas — Medellín</span>
+  <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);font-weight:900;letter-spacing:-0.03em;color:var(--navy);margin-bottom:3rem;line-height:1.1;">Maquinaria que se paga<br>desde lo que produce</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-bottom:2rem;">
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:14px;overflow:hidden;">
+      <div style="background:#534AB7;padding:1.25rem 1.5rem;">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:0.25rem;">Confección · Medellín</div>
+        <div style="font-size:1.1rem;font-weight:800;color:#fff;">Lorena — Taller satélite</div>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1rem;">Produce vestidos de baño y ropa interior para marcas de Medellín. Su máquina plana da para 90 unidades/mes. Tiene pedidos para 180.</p>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Equipo que necesita</span><span style="font-weight:600;color:var(--navy);">Overlock Jack</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Valor del equipo</span><span style="font-weight:600;color:var(--navy);">$8.500.000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Excedente adicional/mes</span><span style="font-weight:600;color:#534AB7;">~$1.000.000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">La máquina es suya en</span><span style="font-weight:600;color:var(--green);">~8-12 meses</span></div>
+        </div>
+        <a href="/maquinaria-confeccion-medellin" style="display:block;text-align:center;background:#534AB7;color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Ver programa confección →</a>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:14px;overflow:hidden;">
+      <div style="background:#BE185D;padding:1.25rem 1.5rem;">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.6);margin-bottom:0.25rem;">Belleza · Medellín</div>
+        <div style="font-size:1.1rem;font-weight:800;color:#fff;">Sandra — Salón en casa</div>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1rem;">Hace cabello a 25 clientas fijas. Sin secadora de casco profesional no puede ofrecer tratamientos de hidratación que cobran $60.000 por sesión.</p>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Equipo que necesita</span><span style="font-weight:600;color:var(--navy);">Secadora de casco</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Valor del equipo</span><span style="font-weight:600;color:var(--navy);">$2.800.000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Excedente adicional/mes</span><span style="font-weight:600;color:#BE185D;">~$720.000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">El equipo es suyo en</span><span style="font-weight:600;color:var(--green);">~4-6 meses</span></div>
+        </div>
+        <a href="/equipos-salon-belleza-medellin" style="display:block;text-align:center;background:#BE185D;color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Ver programa belleza →</a>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:14px;overflow:hidden;">
+      <div style="background:var(--amber);padding:1.25rem 1.5rem;">
+        <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:0.25rem;">Comida · Medellín</div>
+        <div style="font-size:1.1rem;font-weight:800;color:#fff;">Patricia — Empanadas en Belén</div>
+      </div>
+      <div style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--gray-500);line-height:1.65;margin-bottom:1rem;">Vende 80 empanadas al día desde su casa a $1.500 cada una. Con freidora industrial puede hacer 250 por día. El equipo cuesta $3.200.000.</p>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Equipo que necesita</span><span style="font-weight:600;color:var(--navy);">Freidora industrial</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Valor del equipo</span><span style="font-weight:600;color:var(--navy);">$3.200.000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">Excedente adicional/mes</span><span style="font-weight:600;color:var(--amber);">~$7.600.000</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:0.82rem;"><span style="color:var(--gray-500);">El equipo es suyo en</span><span style="font-weight:600;color:var(--green);">~1-2 meses</span></div>
+        </div>
+        <a href="/equipos-negocio-comida-medellin" style="display:block;text-align:center;background:var(--amber);color:#fff;padding:0.625rem;border-radius:8px;font-size:0.82rem;font-weight:700;text-decoration:none;">Ver programa comida →</a>
+      </div>
+    </div>
   </div>
-  <div class="reg-form" style="text-align:center;padding:2rem 0;">
-    <a href="/registro" class="sub-btn" style="display:inline-block;text-decoration:none;font-size:1rem;padding:1rem 2.5rem;">
-      <span>🚀</span> <span>Crear mi cuenta en Escala →</span>
-    </a>
-    <p style="text-align:center;font-size:0.72rem;color:var(--dm);margin-top:0.875rem;line-height:1.5;opacity:0.8;">Gratuito · Sin compromisos · Tu tiempo y conocimiento se convierten en participación real.</p>
-    <div style="margin-top:2rem;display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;">
-      <a href="/buscar" style="font-size:0.82rem;color:var(--green);text-decoration:none;font-weight:600;">Ver proyectos activos →</a>
-      <a href="/que-es-escala" style="font-size:0.82rem;color:var(--dm);text-decoration:none;">¿Cómo funciona?</a>
+  <div style="text-align:center;"><a href="/programa-maquinaria" style="background:var(--navy);color:#fff;padding:0.875rem 2rem;border-radius:8px;font-size:0.88rem;font-weight:700;text-decoration:none;">Ver todos los programas de maquinaria →</a></div>
+</div>
+</section>
+
+<section style="background:#fff;padding:5rem 2rem;">
+<div class="container" style="max-width:1000px;">
+  <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:0.75rem;">Negocios en un local</span>
+  <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);font-weight:900;letter-spacing:-0.03em;color:var(--navy);margin-bottom:3rem;line-height:1.1;">El local arranca.<br>El negocio es tuyo al terminar.</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;">
+    <div>
+      <p style="font-size:0.9rem;color:var(--gray-500);line-height:1.75;margin-bottom:1.25rem;">Un emprendedor tiene el negocio claro — sabe qué va a vender, conoce el mercado, tiene experiencia. Lo que no tiene es el depósito y los primeros arriendos para abrir el local.</p>
+      <p style="font-size:0.9rem;color:var(--gray-500);line-height:1.75;margin-bottom:1.25rem;">Un ángel financia ese capital inicial. El operador reporta sus ventas cada día en la plataforma. Del excedente diario, un porcentaje va al ángel. Cuando el ángel recupera el total, el negocio pasa completamente al operador.</p>
+      <div style="background:var(--green-light);border-left:4px solid var(--green);border-radius:0 10px 10px 0;padding:1rem 1.25rem;font-size:0.82rem;color:#0F6E56;line-height:1.6;">
+        <strong>El modelo tiene 3 fases:</strong> Repago (paga el capital), Regalía (paga retorno) y Libre (el negocio es completamente del operador).
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.875rem;">
+      <div style="background:var(--cream);border:1px solid var(--gray-300);border-radius:10px;padding:1.1rem;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">Tienda de ropa o calzado</div>
+        <div style="font-size:0.75rem;color:var(--gray-500);">Local en barrio o centro comercial pequeño. Ticket: $8M-$25M COP.</div>
+      </div>
+      <div style="background:var(--cream);border:1px solid var(--gray-300);border-radius:10px;padding:1.1rem;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">Restaurante o punto de comida</div>
+        <div style="font-size:0.75rem;color:var(--gray-500);">Almuerzos, comida rápida, comida típica. Ticket: $6M-$20M COP.</div>
+      </div>
+      <div style="background:var(--cream);border:1px solid var(--gray-300);border-radius:10px;padding:1.1rem;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">Salón de belleza o barbería</div>
+        <div style="font-size:0.75rem;color:var(--gray-500);">Local propio, no desde casa. Escala financia el salto. Ticket: $5M-$15M COP.</div>
+      </div>
+      <a href="/financiar-negocio-local-colombia" style="display:block;text-align:center;background:var(--green);color:#fff;padding:0.75rem;border-radius:8px;font-size:0.85rem;font-weight:700;text-decoration:none;">Ver cómo funciona el local →</a>
     </div>
   </div>
 </div>
+</section>
+
+<section style="background:var(--cream);padding:5rem 2rem;">
+<div class="container" style="max-width:1000px;">
+  <span style="font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:0.75rem;">Startups y empresas</span>
+  <h2 style="font-size:clamp(1.6rem,3vw,2.2rem);font-weight:900;letter-spacing:-0.03em;color:var(--navy);margin-bottom:1rem;line-height:1.1;">El equipo trabaja.<br>Cobra cuando el proyecto genera.</h2>
+  <p style="font-size:0.9rem;color:var(--gray-500);line-height:1.75;max-width:640px;margin-bottom:3rem;">Desarrolladores, diseñadores, contadores, abogados y otros especialistas trabajan por participación diferida en lugar de salario inmediato. El fundador construye su equipo sin capital. El especialista cobra cuando la empresa genera.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;">
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:10px;padding:1.25rem;">
+      <div style="font-size:1.25rem;margin-bottom:0.5rem;">💻</div>
+      <div style="font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">App para veterinarias</div>
+      <div style="font-size:0.78rem;color:var(--gray-500);">Desarrollador + diseñador trabajando por participación en una plataforma de gestión veterinaria.</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:10px;padding:1.25rem;">
+      <div style="font-size:1.25rem;margin-bottom:0.5rem;">🛒</div>
+      <div style="font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">Plataforma de pagos</div>
+      <div style="font-size:0.78rem;color:var(--gray-500);">Equipo técnico construyendo solución fintech con participación diferida hasta el primer ingreso.</div>
+    </div>
+    <div style="background:#fff;border:1px solid var(--gray-300);border-radius:10px;padding:1.25rem;">
+      <div style="font-size:1.25rem;margin-bottom:0.5rem;">🐴</div>
+      <div style="font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">Ekivibe — snacks caballos</div>
+      <div style="font-size:0.78rem;color:var(--gray-500);">Startup de snacks para caballos. Especialista de marketing trabajando por participación.</div>
+    </div>
+    <div style="background:var(--green-light);border:1px solid rgba(29,158,117,0.3);border-radius:10px;padding:1.25rem;">
+      <div style="font-size:1.25rem;margin-bottom:0.5rem;">⚡</div>
+      <div style="font-size:0.88rem;font-weight:700;color:var(--navy);margin-bottom:0.25rem;">Escala — el proyecto piloto</div>
+      <div style="font-size:0.78rem;color:var(--gray-500);">Escala misma se construyó con este modelo. Es el caso más completo disponible.</div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:2rem;"><a href="/proyectos" style="background:var(--navy);color:#fff;padding:0.875rem 2rem;border-radius:8px;font-size:0.88rem;font-weight:700;text-decoration:none;">Ver proyectos activos →</a></div>
 </div>
 </section>
+
+
 <footer>
   <div class="foot-logo" style="display:flex;align-items:center"><img src="/brand/isotipo.svg" alt="Escala" width="28" height="28" style="display:inline-block;vertical-align:middle;margin-right:6px">Esca<span>la</span></div>
-  <p>El sistema operativo para empresas colaborativas · Colombia 2026</p>
+  <p>El sistema operativo para crear empresas · Colombia 2026</p>
   <div class="foot-links">
     <a href="proyectos.html">Proyectos</a>
     <a href="impulso.html">Ángel de Impulso</a>
