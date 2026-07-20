@@ -328,6 +328,12 @@ nav{
 .ptabs{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem;margin:2rem 0 1.5rem;}
 @media(min-width:640px){.ptabs{grid-template-columns:repeat(3,1fr);}}
 @media(min-width:900px){.ptabs{grid-template-columns:repeat(5,1fr);}}
+.ptabs-need{grid-template-columns:repeat(1,1fr)!important;}
+@media(min-width:640px){.ptabs-need{grid-template-columns:repeat(2,1fr)!important;}}
+@media(min-width:900px){.ptabs-need{grid-template-columns:repeat(4,1fr)!important;}}
+.ptabs-need .ptab{min-height:150px;text-align:left;align-items:flex-start;}
+.ptabs-need .ptab-l{font-size:0.88rem;font-weight:700;margin-bottom:0.35rem;}
+.ptabs-need .ptab-s{font-size:0.75rem;line-height:1.4;opacity:0.75;}
 .ptab{
   background:var(--white);border:1px solid var(--g3);
   border-radius:10px;padding:0.875rem 0.75rem;
@@ -825,19 +831,22 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
 </section>
 <section class="perfiles" id="perfiles">
 <div class="container">
-  <span class="ey">Tu perfil en Escala</span>
-  <h2 class="ttl">¿Desde dónde llegas?</h2>
-  <p class="sub">Cualquier persona puede ser el punto de origen. Elige tu perfil y descubre tu camino completo.</p>
+  <span class="ey">¿Qué necesitas?</span>
+  <h2 class="ttl">Dinos qué buscas y te llevamos ahí.</h2>
+  <p class="sub">No importa cómo te definas. Escoge lo que necesitas hoy — cada camino te lleva a lo que ya existe en Escala.</p>
 
-  <div class="ptabs">
-    <a href="perfiles.html#ideador" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">💡</div><div class="ptab-l">Ideador</div><div class="ptab-s">Tengo la idea</div></div></a>
-    <a href="perfiles.html#capitalista" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">💰</div><div class="ptab-l">Capitalista</div><div class="ptab-s">Tengo capital</div></div></a>
-    <a href="perfiles.html#especialista" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🔧</div><div class="ptab-l">Especialista</div><div class="ptab-s">Tengo habilidades</div></div></a>
-    <a href="perfiles.html#ejecutor" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">⚙️</div><div class="ptab-l">Ejecutor</div><div class="ptab-s">Sé construir</div></div></a>
-    <a href="perfiles.html#angel" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🌟</div><div class="ptab-l">Angel Inversionista</div><div class="ptab-s">Quiero impulsar</div></div></a>
-    <a href="perfiles.html#mentor" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🧭</div><div class="ptab-l">Mentor</div><div class="ptab-s">Aporto experiencia</div></div></a>
-    <a href="perfiles.html#empresa" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🏢</div><div class="ptab-l">Empresa</div><div class="ptab-s">Represento una empresa</div></div></a>
+  <div class="ptabs ptabs-need">
+    <a href="/registro?intent=capital" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">💰</div><div class="ptab-l">Necesito capital para crecer</div><div class="ptab-s">Consigue quién financie tu negocio o empresa</div></div></a>
+    <a href="/registro?intent=talento" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🤝</div><div class="ptab-l">Necesito contratar talento</div><div class="ptab-s">Un diseñador, un contador, un desarrollador…</div></div></a>
+    <a href="/programa-maquinaria" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🔧</div><div class="ptab-l">Necesito una máquina para producir más</div><div class="ptab-s">Un ángel la compra, tú pagas desde lo que produce</div></div></a>
+    <a href="/financiar-negocio-local-colombia" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🏪</div><div class="ptab-l">Necesito un local para mi negocio</div><div class="ptab-s">Financiamos el arriendo, pagas desde tus ventas</div></div></a>
+    <a href="/registro?intent=crear" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">💡</div><div class="ptab-l">Quiero empezar mi empresa desde cero</div><div class="ptab-s">Arma tu equipo sin pagar salarios por adelantado</div></div></a>
+    <a href="/registro?intent=proyectos" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🎯</div><div class="ptab-l">Quiero conseguir proyectos y clientes</div><div class="ptab-s">Ofrece lo que sabes y gana participación</div></div></a>
+    <a href="/directorio-inversion" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">📈</div><div class="ptab-l">Quiero invertir y ver retorno</div><div class="ptab-s">Pon tu capital en negocios reales con respaldo</div></div></a>
+    <a href="/registro?intent=resolver" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🧩</div><div class="ptab-l">Tengo un problema que resolver</div><div class="ptab-s">Encuentra al especialista o la solución que necesitas</div></div></a>
   </div>
+
+  <p style="font-size:0.8rem;color:var(--dm);text-align:center;margin-top:0.5rem;">¿No sabes cuál eres? <a href="/registro" style="color:var(--gr);font-weight:600;text-decoration:none;">Crea tu cuenta</a> y la plataforma te guía.</p>
 </div>
 </section>
 <section class="casos" id="ejemplos">
