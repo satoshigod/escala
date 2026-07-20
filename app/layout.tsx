@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Escala — Escala es la plataforma donde encuentras lo que tu negocio o empresa necesita",
+    default: "Escala — Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa",
     template: "%s | Escala",
   },
-  description: "Escala es la plataforma donde encuentras lo que tu negocio o empresa necesita — talento, capital, especialistas, tecnología, maquinaria y financiamiento en un solo lugar. Colombia y LATAM.",
+  description: "Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa — talento, capital, especialistas, tecnología, maquinaria y financiamiento en un solo lugar. Colombia y LATAM.",
   keywords: [
     "negocio empresa Colombia", "construir empresa sin capital", "maquinaria sin banco Colombia",
     "leasing maquinaria excedente", "financiar local comercial Colombia", "startup sin capital",
@@ -44,17 +44,17 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Escala — Escala es la plataforma donde encuentras lo que tu negocio o empresa necesita",
+    title: "Escala — Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa",
     description: "La infraestructura que reúne talento, capital, especialistas e IA para aumentar las probabilidades de construir empresas exitosas.",
     url: "https://escala.network",
     siteName: "Escala",
-    images: [{ url: "https://escala.network/brand/og-default.png?v=3", width: 1200, height: 630, alt: "Escala — Escala es la plataforma donde encuentras lo que tu negocio o empresa necesita" }],
+    images: [{ url: "https://escala.network/brand/og-default.png?v=3", width: 1200, height: 630, alt: "Escala — Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa" }],
     locale: "es_CO",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Escala — Escala es la plataforma donde encuentras lo que tu negocio o empresa necesita",
+    title: "Escala — Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa",
     description: "Talento, capital, especialistas e IA para construir empresas exitosas. Colombia y LATAM.",
     images: ["https://escala.network/brand/og-default.png"],
     creator: "@joinescala",
