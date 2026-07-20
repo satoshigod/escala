@@ -14,15 +14,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Escala — Crea tu empresa con el equipo correcto",
+    default: "Escala — El sistema operativo para construir empresas",
     template: "%s | Escala",
   },
-  description: "Escala es la plataforma para crear empresas reales. Conecta fundadores con cofundadores, especialistas, inversores y mentores. Publica tu proyecto, forma tu equipo y ejecuta sin capital inicial.",
+  description: "El sistema operativo para construir empresas. La infraestructura que reúne talento, capital, especialistas e inteligencia artificial para aumentar las probabilidades de construir empresas exitosas.",
   keywords: [
-    "crear empresa", "cofundador", "buscar cofundador", "crear startup",
-    "encontrar inversionistas", "especialistas para startups", "plataforma emprendimiento",
-    "crear empresa Colombia", "crear empresa México", "startup latinoamerica",
-    "buscar socio de negocios", "encontrar CTO", "levantar inversión",
+    "sistema operativo empresa", "construir empresa sin capital", "maquinaria sin banco Colombia",
+    "leasing maquinaria excedente", "financiar local comercial Colombia", "startup sin capital",
+    "cofundador Colombia", "angel investor Colombia", "crear empresa Medellin",
+    "programa maquinaria Medellin", "confeccion sin banco", "equipo salon belleza Medellin",
   ],
   authors: [{ name: "Escala", url: "https://escala.network" }],
   creator: "Escala Network",
@@ -44,8 +44,8 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
   },
   openGraph: {
-    title: "Escala — Crea tu empresa con el equipo correcto",
-    description: "La plataforma para crear empresas reales. Conecta con cofundadores, especialistas e inversores en Colombia, México, Chile y más.",
+    title: "Escala — El sistema operativo para construir empresas",
+    description: "La infraestructura que reúne talento, capital, especialistas e IA para aumentar las probabilidades de construir empresas exitosas.",
     url: "https://escala.network",
     siteName: "Escala",
     images: [{ url: "https://escala.network/brand/og-default.png?v=3", width: 1200, height: 630, alt: "Escala — El sistema operativo para construir empresas" }],
@@ -54,8 +54,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Escala — Crea tu empresa con el equipo correcto",
-    description: "La plataforma para crear empresas reales. Cofundadores, especialistas e inversores en un solo lugar.",
+    title: "Escala — El sistema operativo para construir empresas",
+    description: "Talento, capital, especialistas e IA para construir empresas exitosas. Colombia y LATAM.",
     images: ["https://escala.network/brand/og-default.png"],
     creator: "@joinescala",
   },
