@@ -155,7 +155,7 @@ export default function DirectorioInversionPage() {
               </div>
             </div>
           </div>
-          <a href="/maquinaria-confeccion-medellin" style={{ background: '#AFA9EC', color: '#2D2866', borderRadius: '10px', padding: '0.625rem 1.25rem', textDecoration: 'none', fontSize: '0.82rem', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0 }}>
+          <a href="/programa-maquinaria" style={{ background: '#AFA9EC', color: '#2D2866', borderRadius: '10px', padding: '0.625rem 1.25rem', textDecoration: 'none', fontSize: '0.82rem', fontWeight: '700', whiteSpace: 'nowrap', flexShrink: 0 }}>
             Ver programa →
           </a>
         </div>

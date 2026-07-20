@@ -38,7 +38,7 @@ const MODELOS = [
     desc: 'Tienes los pedidos pero te falta la máquina o el equipo para producir más. Un ángel inversionista compra el equipo y queda como propietario. Tú lo usas desde el primer día y pagas desde el excedente que genera el mismo equipo. Sin banco, sin garante, sin cuota fija mensual. Cuando terminas de pagar, la máquina es tuya.',
     para: 'Confeccionistas, cocineras, estilistas y cualquier persona con pedidos reales que necesita un equipo para producir más.',
     ejemplos: ['Máquina overlock para confección · Medellín', 'Freidora industrial para empanadas', 'Silla hidráulica para salón de belleza', 'Horno panadero o amasadora'],
-    link: '/maquinaria-confeccion-medellin',
+    link: '/programa-maquinaria',
     linkText: 'Ver programa Las 10 Máquinas →',
   },
 ]
