@@ -367,10 +367,9 @@ export default function LeasingPage({ params }) {
           ))}
         </div>
 
-        <div style={{ ...s.card, borderColor: 'rgba(175,169,236,0.2)', marginBottom: '1rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#8FA3CC', lineHeight: '1.6' }}>
-            <strong style={{ color: '#AFA9EC' }}>Firma electrónica válida:</strong> Al hacer clic en "Firmar contrato" se registra tu nombre, número de cédula, dirección IP, fecha y hora exacta de la firma. Este registro tiene validez legal en Colombia bajo la Ley 527 de 1999 de Comercio Electrónico.
-          </div>
+        {/* Nota sobre firma con Auco */}
+        <div style={{ background: 'rgba(175,169,236,0.05)', border: '1px solid rgba(175,169,236,0.15)', borderRadius: '10px', padding: '0.875rem', marginBottom: '1.25rem', fontSize: '0.78rem', color: '#8FA3CC', lineHeight: '1.6' }}>
+          <strong style={{ color: '#AFA9EC' }}>Firma electrónica válida:</strong> Al marcar cada punto y firmar, Escala registra tu consentimiento con validez legal bajo la Ley 527 de 1999. El contrato se envía por WhatsApp y email para que ambas partes lo firmen digitalmente.
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
