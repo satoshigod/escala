@@ -1040,7 +1040,7 @@ export default function Proyectos() {
             {!form.escenario ? (
               <div>
                 <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.5rem'}}>Nuevo proyecto</div>
-                <div style={{fontSize:'1.3rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.02em',marginBottom:'0.5rem'}}>¿Qué necesitas?</div>
+                <div style={{fontSize:'1.3rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.02em',marginBottom:'0.5rem'}}>¿Qué quieres hacer?</div>
                 <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:'1.5rem'}}>Elige la opción que mejor describe lo que quieres hacer.</div>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
                   {[
@@ -1124,7 +1124,7 @@ export default function Proyectos() {
               </div>
             )}
 
-            <label style={s.label}>¿Qué necesitas? *</label>
+            <label style={s.label}>¿Qué quieres hacer? *</label>
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
               {[
                 { id:'startup', icon:'💡', titulo:'Crear o crecer mi empresa', desc:'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo que trabaja por participación.', badge:'Equipo + capital', badgeColor:'#1D9E75' },
