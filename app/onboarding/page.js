@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const roles = [
-  { id: 'ideador',      icon: '💡', label: 'Ideador / Fundador',  desc: 'Tengo una idea de negocio',              ejemplo: 'Publicas tu proyecto y armas equipo sin necesidad de tener dinero para contratar' },
+  { id: 'ideador',      icon: '💡', label: 'Fundador',  desc: 'Tengo una idea de negocio',              ejemplo: 'Publicas tu proyecto y armas equipo sin necesidad de tener dinero para contratar' },
   { id: 'especialista', icon: '🔧', label: 'Especialista',         desc: 'Tengo conocimiento profesional',          ejemplo: 'Abogado, contador, diseñador, programador — tu tiempo se convierte en participación futura' },
-  { id: 'ejecutor',     icon: '⚙️', label: 'Ejecutor / Gerente',  desc: 'Sé construir y operar empresas',          ejemplo: 'Coordinas al equipo, ejecutas el día a día y haces que el proyecto avance' },
-  { id: 'capitalista',  icon: '💰', label: 'Capitalista',          desc: 'Tengo capital para invertir',             ejemplo: 'Aportas dinero a un proyecto y tu inversión queda registrada como participación' },
-  { id: 'angel',        icon: '🌟', label: 'Ángel de Impulso',    desc: 'Quiero financiar una meta',                ejemplo: 'Pagas algo puntual (un registro de marca, un MVP) sin financiar toda la empresa' },
+  { id: 'ejecutor',     icon: '⚙️', label: 'Gerente de Proyecto',  desc: 'Sé construir y operar empresas',          ejemplo: 'Coordinas al equipo, ejecutas el día a día y haces que el proyecto avance' },
+  { id: 'capitalista',  icon: '💰', label: 'Inversionista',          desc: 'Tengo capital para invertir',             ejemplo: 'Aportas dinero a un proyecto y tu inversión queda registrada como participación' },
+  { id: 'angel',        icon: '🌟', label: 'Inversionista',    desc: 'Quiero financiar una meta',                ejemplo: 'Pagas algo puntual (un registro de marca, un MVP) sin financiar toda la empresa' },
   { id: 'mentor',       icon: '🧭', label: 'Mentor',               desc: 'Quiero aportar experiencia estratégica', ejemplo: 'Orientas a los fundadores en comercial, finanzas o tecnología sin ejecutar tareas operativas' },
   { id: 'empresa',      icon: '🏢', label: 'Empresa',              desc: 'Represento una empresa',                  ejemplo: 'Puedes actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora según el proyecto' },
 ]

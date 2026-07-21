@@ -93,7 +93,7 @@ export default function StartupMexicoPage() {
           {[
             ['¿Qué tipo de empresa conviene para una startup en México?', 'La SAPI (Sociedad Anónima Promotora de Inversión) es la forma más común para startups que buscan inversión en México. Para etapas muy tempranas, muchos emprendedores empiezan con una SAS o una empresa más sencilla.'],
             ['¿Cómo funciona la participación diferida en México?', 'Los cofundadores y especialistas aportan trabajo a cambio de un porcentaje del éxito del proyecto. La valoración del equity se define cuando la empresa empieza a generar ingresos, no antes.'],
-            ['¿Hay inversionistas ángel para startups mexicanas en Escala?', 'Sí. Los Ángeles de Impulso de Escala pueden financiar metas específicas de tu startup. No son fondos VC — son personas que apuestan por proyectos concretos a cambio de participación.'],
+            ['¿Hay inversionistas ángel para startups mexicanas en Escala?', 'Sí. Los Inversionistas de Escala pueden financiar metas específicas de tu startup. No son fondos VC — son personas que apuestan por proyectos concretos a cambio de participación.'],
           ].map(([q, a]) => (
             <div key={q} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '1.25rem 0' }}>
               <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>{q}</h3>

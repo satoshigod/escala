@@ -692,7 +692,7 @@ const MODALIDADES = [
 ]
 
 const ROLES_DISPONIBLES = [
-  { id: 'Capitalista',    emoji: '💰' },
+  { id: 'Capitalista',    emoji: '💰', label: 'Inversionista' },
   { id: 'Cofundador',     emoji: '🤝' },
   { id: 'Desarrollador',  emoji: '💻' },
   { id: 'Diseñador',      emoji: '🎨' },
@@ -1084,7 +1084,7 @@ export default function Proyectos() {
               </button>
             </div>
             <div style={s.formTitle}>{form.paso === 1 ? 'Cuéntanos sobre tu proyecto' : '¿Qué perfiles necesitas?'}</div>
-            <div style={s.formSub}>Define tu proyecto y lo que necesitas. Aparecerá en el directorio para que especialistas y capitalistas puedan postularse.</div>
+            <div style={s.formSub}>Define tu proyecto y lo que necesitas. Aparecerá en el directorio para que especialistas e inversionistas puedan postularse.</div>
 
             <label style={s.label} htmlFor="py-nombre">Nombre del proyecto *</label>
             <input id="py-nombre" style={s.input} value={form.nombre} onChange={e => actualizar('nombre', e.target.value)} placeholder="Ej: VetApp, Ekivibe, POS Restaurantes..." />
@@ -1350,7 +1350,7 @@ export default function Proyectos() {
                       <div key={r.id}
                         onClick={() => toggleRol(r.id)}
                         style={{display:'flex',alignItems:'center',gap:'0.4rem',padding:'0.5rem 0.875rem',borderRadius:'20px',border:`1px solid ${sel ? '#1D9E75' : 'rgba(255,255,255,0.12)'}`,background:sel ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.04)',cursor:'pointer',fontSize:'0.82rem',fontWeight: sel ? '700' : '400',color: sel ? '#1D9E75' : '#C8D4E8',transition:'all 0.15s'}}>
-                        <span>{r.emoji}</span> {r.id}
+                        <span>{r.emoji}</span> {r.label || r.id}
                         {sel && <span style={{fontSize:'0.75rem'}}>✓</span>}
                       </div>
                     )

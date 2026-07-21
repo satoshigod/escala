@@ -105,7 +105,7 @@ export default function StartupColombiaPage() {
             ['¿Cómo constituyo una empresa SAS en Colombia?', 'La SAS (Sociedad por Acciones Simplificada) es el tipo de empresa más usado por startups en Colombia. Se puede constituir por documento privado ante la DIAN y la Cámara de Comercio. Escala tiene el workspace de constitución para guiarte paso a paso.'],
             ['¿Puedo crear una startup en Colombia sin dinero?', 'Sí. El modelo de participación diferida de Escala permite que fundadores y especialistas trabajen por equity, evitando la necesidad de capital para pagar salarios en etapa temprana.'],
             ['¿Qué tipo de proyectos hay en Escala Colombia?', 'Tecnología, salud, educación, fintech, agro, comercio electrónico y más. Los proyectos son de todo el país — Bogotá, Medellín, Cali, Barranquilla y ciudades intermedias.'],
-            ['¿Cómo funciona la inversión ángel en Colombia?', 'Los Ángeles de Impulso en Escala financian metas específicas de tu startup a cambio de un porcentaje del éxito del proyecto cuando genere ingresos. No es un préstamo, es una apuesta por tu equipo.'],
+            ['¿Cómo funciona la inversión ángel en Colombia?', 'Los Inversionistas en Escala financian metas específicas de tu startup a cambio de un porcentaje del éxito del proyecto cuando genere ingresos. No es un préstamo, es una apuesta por tu equipo.'],
           ].map(([q, a]) => (
             <div key={q} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '1.25rem 0' }}>
               <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>{q}</h3>

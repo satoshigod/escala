@@ -36,11 +36,11 @@ export default function PerfilPublico() {
   }, [])
 
   const rolLabels = {
-    ideador: '💡 Ideador',
-    capitalista: '💰 Capitalista',
+    ideador: '💡 Fundador',
+    capitalista: '💰 Inversionista',
     especialista: '🔧 Especialista',
-    ejecutor: '⚙️ Ejecutor',
-    angel: '🌟 Ángel de Impulso',
+    ejecutor: '⚙️ Gerente de Proyecto',
+    angel: '🌟 Inversionista',
     mentor: '🧭 Mentor',
     empresa: '🏢 Empresa'
   }

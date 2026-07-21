@@ -67,7 +67,7 @@ export default function FinanciarNegocioLocalPage() {
           {[
             { num: '01', titulo: 'Cuéntanos sobre tu negocio y el local', desc: 'Llegas a la plataforma con el local que ya tienes visto. Nos das los datos del propietario, el valor del arriendo y nos cuentas qué vas a vender y cuánto esperas vender por día.' },
             { num: '02', titulo: 'Escala verifica el local y te asigna una tasa', desc: 'Llamamos al propietario para confirmar la información. Revisamos que los números de tu negocio sean reales. Te asignamos una tasa entre la usura convencional y la usura de plataformas digitales según tu perfil.' },
-            { num: '03', titulo: 'Un inversionista financia tu local', desc: 'Tu proyecto aparece en nuestra red de Ángeles de Impulso. Cuando uno acepta, el capital va directo al propietario del local. Tú firmas el contrato de arrendamiento y abres tu negocio.' },
+            { num: '03', titulo: 'Un inversionista financia tu local', desc: 'Tu proyecto aparece en nuestra red de Inversionistas. Cuando uno acepta, el capital va directo al propietario del local. Tú firmas el contrato de arrendamiento y abres tu negocio.' },
             { num: '04', titulo: 'Reportas tus ventas cada día', desc: 'Cada noche antes de cerrar, reportas en la app cuánto vendiste — en efectivo y por BREB. Escala calcula cuánto le corresponde al inversionista ese día y te dice cuánto transferir.' },
             { num: '05', titulo: 'Cuando pagas la deuda, el negocio es tuyo', desc: 'Una vez que el inversionista recupera su capital más los intereses, entras a la fase de participacion (un pequeño porcentaje de tus ventas por unos meses más). Después de eso, el negocio es completamente tuyo.' },
           ].map(paso => (

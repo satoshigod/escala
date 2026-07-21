@@ -1900,7 +1900,7 @@ function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
           proyecto_id: proyectoId,
           aportante_id: usuarioId,
           tipo: 'capital',
-          descripcion: costo.nombre + ' — financiado como Ángel de Impulso',
+          descripcion: costo.nombre + ' — financiado como Inversionista',
           valor: costo.valor,
           fecha: new Date().toISOString().split('T')[0]
         })

@@ -4,7 +4,7 @@ import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 
 const roles = ['todos', 'especialista', 'ejecutor', 'ideador', 'capitalista', 'angel', 'mentor', 'empresa']
-const rolLabel = { todos: 'Todos', especialista: 'Especialista', ejecutor: 'Ejecutor', ideador: 'Ideador', capitalista: 'Capitalista', angel: 'Ángel de Impulso', mentor: 'Mentor', empresa: 'Empresa' }
+const rolLabel = { todos: 'Todos', especialista: 'Especialista', ejecutor: 'Gerente de Proyecto', ideador: 'Fundador', capitalista: 'Inversionista', angel: 'Inversionista', mentor: 'Mentor', empresa: 'Empresa' }
 
 export default function Directorio() {
   const [usuario, setUsuario] = useState(null)

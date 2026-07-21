@@ -75,10 +75,10 @@ const PREGUNTAS = [
 ]
 
 const ROLES = [
-  { icon: '💡', nombre: 'Ideador / Fundador', desc: 'Tiene una idea o empresa existente y busca equipo. No necesariamente aporta capital.' },
-  { icon: '💰', nombre: 'Capitalista', desc: 'Aporta capital a proyectos con potencial a cambio de participación accionaria o retorno financiero.' },
+  { icon: '💡', nombre: 'Fundador', desc: 'Tiene una idea o empresa existente y busca equipo. No necesariamente pone capital.' },
+  { icon: '💰', nombre: 'Inversionista', desc: 'Pone capital en proyectos con potencial a cambio de participación o retorno financiero.' },
   { icon: '🔧', nombre: 'Especialista', desc: 'Aporta conocimiento o servicios profesionales — abogados, contadores, diseñadores, programadores.' },
-  { icon: '⚙️', nombre: 'Ejecutor / Gerente de Proyecto', desc: 'Administrador operativo: asigna tareas, verifica entregables, mantiene el proyecto organizado.' },
+  { icon: '⚙️', nombre: 'Gerente de Proyecto', desc: 'Coordina el día a día: asigna tareas, verifica entregas y mantiene el proyecto organizado.' },
   { icon: '🌟', nombre: 'Angel Inversionista', desc: 'Financia una meta puntual o un negocio completo en local sin financiar toda la empresa.' },
   { icon: '🧭', nombre: 'Mentor', desc: 'Aporta experiencia estratégica sin ejecutar tareas operativas.' },
   { icon: '🏢', nombre: 'Empresa', desc: 'Puede actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora.' },

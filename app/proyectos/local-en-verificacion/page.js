@@ -33,7 +33,7 @@ function Contenido() {
           {[
             { num: '1', titulo: 'Verificamos el local', desc: 'Llamamos al propietario para confirmar la dirección, el valor del arriendo y los meses de depósito.', estado: 'activo', color: '#4A90D9' },
             { num: '2', titulo: 'Revisamos tu proyección', desc: 'Un asesor de Escala revisa si los números que pusiste son coherentes con el tipo de negocio.', estado: 'pendiente', color: '#6B7280' },
-            { num: '3', titulo: 'Publicamos a inversionistas', desc: `Tu proyecto aparece para los Ángeles de Impulso con el capital requerido${capital ? `: $${fmt(capital)}` : ''}.`, estado: 'pendiente', color: '#6B7280' },
+            { num: '3', titulo: 'Publicamos a inversionistas', desc: `Tu proyecto aparece para los Inversionistas con el capital requerido${capital ? `: $${fmt(capital)}` : ''}.`, estado: 'pendiente', color: '#6B7280' },
             { num: '4', titulo: 'Un ángel financia el proyecto', desc: 'Cuando un inversionista acepta, el capital llega al propietario del local y tu negocio arranca.', estado: 'pendiente', color: '#6B7280' },
           ].map(paso => (
             <div key={paso.num} style={{ display: 'flex', gap: '0.875rem', alignItems: 'flex-start' }}>

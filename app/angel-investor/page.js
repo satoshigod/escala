@@ -1,9 +1,9 @@
 // app/angel-investor/page.js
 export const metadata = {
-  title: 'Ángel Investor en Latinoamérica — Invierte en Startups por Metas',
-  description: 'Invierte en startups latinoamericanas por metas específicas. En Escala los Ángeles de Impulso financian metas puntuales del proyecto a cambio de participación. Sin riesgo total, con impacto real.',
+  title: 'Inversionista en Latinoamérica — Invierte en Startups por Metas',
+  description: 'Invierte en startups latinoamericanas por metas específicas. En Escala los Inversionistas financian metas puntuales del proyecto a cambio de participación. Sin riesgo total, con impacto real.',
   keywords: ['angel investor colombia', 'angel investor latinoamerica', 'invertir en startups colombia', 'inversion angel startup', 'angel investor mexico', 'inversion temprana startup latam'],
-  openGraph: { title: 'Ángel Investor en Latinoamérica — Escala', description: 'Invierte en startups por metas específicas. Sin riesgo total, con impacto real.', url: 'https://escala.network/angel-investor', images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }] },
+  openGraph: { title: 'Inversionista en Latinoamérica — Escala', description: 'Invierte en startups por metas específicas. Sin riesgo total, con impacto real.', url: 'https://escala.network/angel-investor', images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }] },
   alternates: { canonical: 'https://escala.network/angel-investor' },
 }
 const s = {
@@ -34,7 +34,7 @@ export default function AngelInvestorPage() {
       <section style={s.hero}>
         <div style={s.tag}>⚡ Angel Inversionista</div>
         <h1 style={s.h1}>Invierte en startups latinoamericanas por metas, no a ciegas.</h1>
-        <p style={s.sub}>En Escala los Ángeles de Impulso financian momentos específicos de un proyecto — el NIT, el MVP, el primer cliente — a cambio de participación. No es una ronda formal. Es una apuesta quirúrgica por el equipo y el momento.</p>
+        <p style={s.sub}>En Escala los Inversionistas financian momentos específicos de un proyecto — el NIT, el MVP, el primer cliente — a cambio de participación. No es una ronda formal. Es una apuesta quirúrgica por el equipo y el momento.</p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
           <a href="/registro" style={s.btn}>Quiero ser Angel Inversionista →</a>
           <a href="/buscar" style={s.btn2}>Ver proyectos activos</a>

@@ -133,7 +133,7 @@ export default function LatinosUSAPage() {
             {
               num: '03',
               titulo: 'Un inversionista latino financia lo que el banco rechaza',
-              desc: 'Para negocios que necesitan local, equipos o capital de trabajo, los Ángeles de Impulso de Escala — inversionistas en Colombia, México, Chile — fondean el proyecto. Tú pagas desde los ingresos del negocio.',
+              desc: 'Para negocios que necesitan local, equipos o capital de trabajo, los Inversionistas de Escala — inversionistas en Colombia, México, Chile — fondean el proyecto. Tú pagas desde los ingresos del negocio.',
             },
             {
               num: '04',

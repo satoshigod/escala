@@ -3,11 +3,11 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const ROLES = [
-  { value: 'ideador',      icon: '💡', titulo: 'Ideador / Fundador',  desc: 'Tengo una idea de negocio' },
+  { value: 'ideador',      icon: '💡', titulo: 'Fundador',  desc: 'Tengo una idea de negocio' },
   { value: 'especialista', icon: '🔧', titulo: 'Especialista',         desc: 'Tengo conocimiento profesional' },
-  { value: 'ejecutor',     icon: '⚙️', titulo: 'Ejecutor / Gerente',  desc: 'Sé construir y operar empresas' },
-  { value: 'capitalista',  icon: '💰', titulo: 'Capitalista',          desc: 'Tengo capital para invertir' },
-  { value: 'angel',        icon: '🌟', titulo: 'Ángel de Impulso',    desc: 'Quiero financiar una meta' },
+  { value: 'ejecutor',     icon: '⚙️', titulo: 'Gerente de Proyecto',  desc: 'Sé construir y operar empresas' },
+  { value: 'capitalista',  icon: '💰', titulo: 'Inversionista',          desc: 'Tengo capital para invertir' },
+  { value: 'angel',        icon: '🌟', titulo: 'Inversionista',    desc: 'Quiero financiar una meta' },
   { value: 'mentor',       icon: '🧭', titulo: 'Mentor',               desc: 'Quiero aportar experiencia estratégica' },
   { value: 'empresa',      icon: '🏢', titulo: 'Empresa',              desc: 'Represento una empresa' },
 ]
