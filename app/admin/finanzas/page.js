@@ -65,7 +65,7 @@ export default function AdminFinanzasPage() {
       <div style={s.wrap}>
         <div style={{ marginBottom: '1.5rem' }}>
           <h1 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff', marginBottom: '0.4rem' }}>Panel financiero — Escala</h1>
-          <p style={{ fontSize: '0.82rem', color: '#8FA3CC' }}>Capital en movimiento, fondeos pendientes, locales activos y alertas de mora.</p>
+          <p style={{ fontSize: '0.82rem', color: '#8FA3CC' }}>Capital en movimiento, financiamientos pendientes, locales activos y alertas de mora.</p>
         </div>
 
         {/* Alertas criticas */}

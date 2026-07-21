@@ -25,7 +25,7 @@ const MODELOS = [
     desc: 'Quieres montar una tienda, restaurante, frutería, almacén de ropa u otro negocio de venta de productos y necesitas el capital para el depósito, el primer arriendo y las adecuaciones del local. Un inversionista financia ese capital. Tú reportas tus ventas cada día y pagas el excedente hasta cubrir el total. Cuando terminas de pagar, el negocio es completamente tuyo.',
     para: 'Emprendedores que tienen claro el negocio y el local pero no tienen el capital inicial para arrancar.',
     link: '/financiar-negocio-local-colombia',
-    linkText: 'Cómo funciona el fondeo de locales →',
+    linkText: 'Cómo funciona el financiamiento de locales →',
   },
   {
     icon: '🔧',

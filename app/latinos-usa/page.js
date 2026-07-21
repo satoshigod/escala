@@ -155,7 +155,7 @@ export default function LatinosUSAPage() {
       {/* MODELO LOCAL COMERCIAL PARA USA */}
       <section style={s.section}>
         <div style={{ background: 'rgba(74,144,217,0.06)', border: '1px solid rgba(74,144,217,0.2)', borderRadius: '16px', padding: '2rem', marginBottom: '3rem' }}>
-          <div style={{ display: 'inline-block', background: 'rgba(74,144,217,0.15)', border: '1px solid rgba(74,144,217,0.3)', color: '#4A90D9', fontSize: '0.7rem', fontWeight: '700', padding: '0.25rem 0.75rem', borderRadius: '20px', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1rem' }}>Fondeo para tu local en USA</div>
+          <div style={{ display: 'inline-block', background: 'rgba(74,144,217,0.15)', border: '1px solid rgba(74,144,217,0.3)', color: '#4A90D9', fontSize: '0.7rem', fontWeight: '700', padding: '0.25rem 0.75rem', borderRadius: '20px', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '1rem' }}>Financiamiento para tu local en USA</div>
           <h2 style={{ fontSize: '1.4rem', fontWeight: '800', color: '#fff', marginBottom: '0.75rem', letterSpacing: '-0.02em' }}>
             Quieres abrir tu taquería, tu salon, tu tienda — pero el deposito y el primer mes no los tienes
           </h2>
@@ -258,7 +258,7 @@ export default function LatinosUSAPage() {
           {[
             ['¿Necesito tener visa o ciudadanía para usar Escala?', 'No. Escala es una plataforma que conecta personas — no hace ninguna verificación migratoria. Lo que importa es tu proyecto y tu compromiso con el equipo que se une a él.'],
             ['¿El equipo de LATAM puede trabajar legalmente para un negocio en USA?', 'Sí. Los contratos de participación diferida son acuerdos entre personas naturales o empresas — no son contratos laborales. El especialista en Colombia trabaja como contratista independiente para un proyecto, independientemente del país donde opere el negocio.'],
-            ['¿El inversionista de Escala puede financiar un negocio en USA?', 'Sí. El modelo de fondeo de local comercial de Escala funciona para negocios en cualquier país. Un inversionista en Bogotá puede financiar el depósito y los meses de arriendo del contrato de una taquería en Houston — el repago es desde los ingresos diarios del negocio.'],
+            ['¿El inversionista de Escala puede financiar un negocio en USA?', 'Sí. El modelo de financiamiento de local comercial de Escala funciona para negocios en cualquier país. Un inversionista en Bogotá puede financiar el depósito y los meses de arriendo del contrato de una taquería en Houston — el repago es desde los ingresos diarios del negocio.'],
             ['¿En qué idioma funciona Escala?', 'En español. Toda la plataforma, los contratos, el workspace y el soporte son en español. Para el mercado latino — dentro y fuera de USA — el idioma no es una barrera.'],
             ['¿Qué pasa cuando el negocio empiece a generar ingresos en USA?', 'Cada participante recibe según lo que aportó y lo que acordaron al inicio — documentado en el contrato de participación diferida. Cómo se distribuye fiscalmente en USA depende de la estructura legal que elijan (LLC, S-Corp, etc.) — para eso Escala conecta con contadores especializados.'],
           ].map(([q, a]) => (
@@ -290,7 +290,7 @@ export default function LatinosUSAPage() {
           © 2026 Escala Network ·{' '}
           <a href="/startup-colombia" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Colombia</a> ·{' '}
           <a href="/startup-mexico" style={{ color: '#8FA3CC', textDecoration: 'none' }}>México</a> ·{' '}
-          <a href="/financiar-negocio-local-colombia" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Fondeo local</a> ·{' '}
+          <a href="/financiar-negocio-local-colombia" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Financiar local</a> ·{' '}
           <a href="/que-es-escala" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Qué es Escala</a>
         </div>
       </footer>

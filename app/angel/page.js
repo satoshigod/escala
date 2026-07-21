@@ -468,7 +468,7 @@ export default function AngelPage() {
             </div>
             <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '0.875rem', marginBottom: '1rem', fontSize: '0.82rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC', marginBottom: '3px' }}><span>Proyecto</span><span style={{ color: '#fff' }}>{mostrarFondeo.proyectos?.nombre}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC' }}><span>Falta fondear</span><span style={{ color: '#E8A020', fontWeight: '600' }}>${fmt(mostrarFondeo.faltante)}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC' }}><span>Falta financiar</span><span style={{ color: '#E8A020', fontWeight: '600' }}>${fmt(mostrarFondeo.faltante)}</span></div>
             </div>
             <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#8FA3CC', display: 'block', marginBottom: '4px' }}>Monto a invertir (COP)</label>
             <input style={s.input} type="number" value={formFondeo.monto} onChange={e => setFormFondeo(f => ({ ...f, monto: e.target.value }))} placeholder="5000000" />

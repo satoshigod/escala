@@ -29,7 +29,7 @@ export default function Page() {
         <div style={s.callout}>
           <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#E8A020', marginBottom: '0.75rem' }}>Tres modelos de retorno para el angel en Escala</div>
           <p style={{ ...s.p, marginBottom: '0.5rem' }}><strong style={{color:'#fff'}}>Participación diferida:</strong> el ángel invierte en una startup y recibe % de las acciones. Cobra cuando la empresa vende, distribuye dividendos o cierra.</p>
-          <p style={{ ...s.p, marginBottom: '0.5rem' }}><strong style={{color:'#fff'}}>Fondeo de local:</strong> el ángel financia el arriendo del local y recupera su capital más el retorno acordado desde las ventas diarias del operador.</p>
+          <p style={{ ...s.p, marginBottom: '0.5rem' }}><strong style={{color:'#fff'}}>Financiamiento de local:</strong> el ángel financia el arriendo del local y recupera su capital más el retorno acordado desde las ventas diarias del operador.</p>
           <p style={{ ...s.p, marginBottom: 0 }}><strong style={{color:'#fff'}}>Leasing de maquinaria:</strong> el ángel compra la máquina y recupera su inversión desde el excedente mensual que genera el equipo.</p>
         </div>
         <h2 style={s.h2}>Como conectar con un angel en Colombia</h2>

@@ -72,7 +72,7 @@ export default function SolicitarPagoPage() {
     if (!form.beneficiario_email.trim()) { setError('Ingresa el correo del beneficiario'); return }
     if (!form.monto || parseFloat(form.monto) <= 0) { setError('Ingresa un monto válido'); return }
     if (!form.concepto.trim()) { setError('Ingresa el concepto del pago'); return }
-    if (!walletSeleccionado) { setError('No tienes un wallet activo. Primero fondea tu wallet.'); return }
+    if (!walletSeleccionado) { setError('No tienes una billetera activa. Primero recárgala.'); return }
 
     const { data: { session } } = await supabase.auth.getSession()
     if (!session) return

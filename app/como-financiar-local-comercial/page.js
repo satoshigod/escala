@@ -23,7 +23,7 @@ export default function ComoFinanciarLocalComercialPage() {
         <a href="/" style={s.logo}>Esca<span style={{ color: '#1D9E75' }}>la</span></a>
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <a href="/blog" style={{ color: '#8FA3CC', fontSize: '0.85rem', textDecoration: 'none' }}>Blog</a>
-          <a href="/registro" style={{ background: '#1D9E75', color: '#fff', padding: '0.4rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', textDecoration: 'none' }}>Solicitar fondeo</a>
+          <a href="/registro" style={{ background: '#1D9E75', color: '#fff', padding: '0.4rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', textDecoration: 'none' }}>Solicitar financiamiento</a>
         </div>
       </nav>
       <article style={s.article}>

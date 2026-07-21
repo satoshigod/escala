@@ -544,7 +544,7 @@ export default function PresupuestoPage() {
                   <span>Ya fondeado</span><span style={{ color: '#1D9E75', fontWeight: '600' }}>${fmt(mostrarFondeoModal.monto_fondeado)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', fontWeight: '700', color: '#fff', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span>Falta fondear</span><span style={{ color: '#E8A020' }}>${fmt(parseFloat(mostrarFondeoModal.valor_total) - parseFloat(mostrarFondeoModal.monto_fondeado))}</span>
+                  <span>Falta financiar</span><span style={{ color: '#E8A020' }}>${fmt(parseFloat(mostrarFondeoModal.valor_total) - parseFloat(mostrarFondeoModal.monto_fondeado))}</span>
                 </div>
               </div>
 

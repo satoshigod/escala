@@ -1,7 +1,7 @@
 import Link from 'next/link'
 export const metadata = {
   title: 'Como montar una tienda sin capital en Colombia — Escala Blog',
-  description: 'Guia paso a paso para abrir una tienda, restaurante o negocio de venta sin tener el capital inicial. Modelo de fondeo desde ventas diarias con Escala.',
+  description: 'Guia paso a paso para abrir una tienda, restaurante o negocio de venta sin tener el capital inicial. Modelo de financiamiento desde ventas diarias con Escala.',
   keywords: ['como montar tienda sin capital', 'abrir negocio sin dinero colombia', 'financiar local comercial colombia', 'montar restaurante sin capital', 'abrir tienda sin banco'],
 }
 const s = {
@@ -24,7 +24,7 @@ export default function Page() {
         <div style={s.meta}>Escala · Julio 2026 · 6 min de lectura</div>
         <p style={s.p}>El mayor obstaculo para abrir una tienda en Colombia no es la idea ni el conocimiento — es el deposito del local, los primeros meses de arriendo y el inventario inicial. Ese capital inicial es el que frena a la mayoria.</p>
         <p style={s.p}>Escala tiene un modelo especifico para este caso: un inversionista pone el capital del arriendo y tu lo pagas desde las ventas diarias del negocio.</p>
-        <h2 style={s.h2}>Como funciona el modelo de fondeo desde ventas</h2>
+        <h2 style={s.h2}>Como funciona el modelo de financiamiento desde ventas</h2>
         {[
           { n:'1', t:'Describes el negocio y el local', d:'Que vas a vender, en que ciudad, cuanto vale el arriendo mensual y cuantos meses de deposito pide el propietario.' },
           { n:'2', t:'Un inversionista pone el capital', d:'El inversionista financia el deposito, el primer mes de arriendo y las adecuaciones necesarias. Ese capital queda registrado como deuda con el inversionista.' },

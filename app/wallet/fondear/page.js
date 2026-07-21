@@ -102,7 +102,7 @@ export default function FondearPage() {
         body: JSON.stringify({ proveedor, moneda: monedaM, monto: montoNum }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Error iniciando fondeo'); return }
+      if (!res.ok) { setError(data.error || 'Error iniciando el financiamiento'); return }
 
       setFondeo(data.fondeo)
       setInstrucciones(data.instrucciones)

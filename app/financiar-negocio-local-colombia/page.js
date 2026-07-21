@@ -31,12 +31,12 @@ export default function FinanciarNegocioLocalPage() {
         <a href="/" style={s.logo}>Esca<span style={{ color: '#1D9E75' }}>la</span></a>
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <a href="/como-funciona" style={{ color: '#8FA3CC', fontSize: '0.85rem', textDecoration: 'none' }}>Cómo funciona</a>
-          <a href="/registro" style={{ background: '#1D9E75', color: '#fff', padding: '0.4rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', textDecoration: 'none' }}>Solicitar fondeo</a>
+          <a href="/registro" style={{ background: '#1D9E75', color: '#fff', padding: '0.4rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', textDecoration: 'none' }}>Solicitar financiamiento</a>
         </div>
       </nav>
 
       <section style={s.hero}>
-        <div style={s.tag}>🏪 Fondeo para locales comerciales</div>
+        <div style={s.tag}>🏪 Financiamiento para locales comerciales</div>
         <h1 style={s.h1}>Tienes el negocio claro y el local visto. Solo te falta quien financie el arriendo.</h1>
         <p style={s.sub}>Escala financia el depósito, el los meses de arriendo del contrato y las adecuaciones de tu local. No necesitas banco, no necesitas garante. Pagas desde los ingresos diarios de tu negocio — cuando vendes, pagas.</p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>

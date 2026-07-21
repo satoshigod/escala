@@ -25,7 +25,7 @@ export default function CapitalParaAbrirTiendaPage() {
       <nav style={s.nav}>
         <a href="/" style={s.logo}>Esca<span style={{ color: '#1D9E75' }}>la</span></a>
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-          <a href="/financiar-negocio-local-colombia" style={{ color: '#8FA3CC', fontSize: '0.85rem', textDecoration: 'none' }}>Fondeo local</a>
+          <a href="/financiar-negocio-local-colombia" style={{ color: '#8FA3CC', fontSize: '0.85rem', textDecoration: 'none' }}>Financiar local</a>
           <a href="/registro" style={{ background: '#1D9E75', color: '#fff', padding: '0.4rem 1rem', borderRadius: '8px', fontSize: '0.85rem', fontWeight: '600', textDecoration: 'none' }}>Comenzar</a>
         </div>
       </nav>
@@ -90,7 +90,7 @@ export default function CapitalParaAbrirTiendaPage() {
       <footer style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '2rem 1.5rem', textAlign: 'center' }}>
         <div style={{ fontSize: '0.78rem', color: '#8FA3CC' }}>
           © 2026 Escala Network ·{' '}
-          <a href="/financiar-negocio-local-colombia" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Fondeo local</a> ·{' '}
+          <a href="/financiar-negocio-local-colombia" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Financiar local</a> ·{' '}
           <a href="/como-financiar-local-comercial" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Como financiar local</a> ·{' '}
           <a href="/registro" style={{ color: '#8FA3CC', textDecoration: 'none' }}>Registro</a>
         </div>
