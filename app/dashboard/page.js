@@ -785,7 +785,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Tus impulsos</div>
+            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Tus inversiones</div>
             {misImpulsos.length === 0 ? (
               <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(175,169,236,0.2)',borderRadius:'12px',padding:'2.5rem',textAlign:'center'}}>
                 <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>🌟</div>

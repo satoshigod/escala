@@ -194,7 +194,7 @@ export default function AngelPage() {
 
       <div style={s.wrap}>
         <div style={{ marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.68rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#AFA9EC', marginBottom: '0.4rem' }}>Angel de Impulso</div>
+          <div style={{ fontSize: '0.68rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#AFA9EC', marginBottom: '0.4rem' }}>Inversionista</div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em' }}>Mi portafolio</h1>
         </div>
 

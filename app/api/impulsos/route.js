@@ -55,7 +55,7 @@ export async function POST(request) {
           email: proyecto.data.perfiles.email,
           nombre: proyecto.data.perfiles.nombre,
         }, {
-          angel_nombre: angel.data?.nombre || 'Un Ángel de Impulso',
+          angel_nombre: angel.data?.nombre || 'Un inversionista',
           hito_nombre: hito.data?.nombre || descripcion || 'un hito',
           proyecto_nombre: proyecto.data.nombre,
           proyecto_id,

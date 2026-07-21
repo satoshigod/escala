@@ -37,8 +37,8 @@ export const DEFINICIONES_LOGROS = {
   },
   primer_impulso: {
     emoji: '⚡',
-    titulo: 'Ángel de Impulso',
-    desc: 'Financiaste tu primer hito como Ángel de Impulso.',
+    titulo: 'Primera donación',
+    desc: 'Financiaste tu primer hito.',
     color: '#F59E0B',
   },
   primer_aporte_verificado: {

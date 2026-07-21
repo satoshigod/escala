@@ -105,7 +105,7 @@ export default function DirectorioInversionPage() {
 
         {/* Header */}
         <div style={{ marginBottom: '2rem' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A90D9', marginBottom: '0.5rem' }}>Angel de Impulso</div>
+          <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#4A90D9', marginBottom: '0.5rem' }}>Inversionista</div>
           <h1 style={{ fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>Negocios que necesitan tu capital</h1>
           <p style={{ fontSize: '0.88rem', color: '#8FA3CC', lineHeight: '1.6', maxWidth: '600px' }}>
             Emprendedores reales que necesitan una máquina, un local, un empleado o tecnología para arrancar. Tú pones el capital, ellos ponen el trabajo. Defines tú a cambio de qué.
