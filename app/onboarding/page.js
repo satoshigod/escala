@@ -149,6 +149,7 @@ export default function Onboarding() {
     titulo: { fontSize: '1.4rem', fontWeight: '800', color: '#fff', marginBottom: '0.4rem', letterSpacing: '-0.02em' },
     subtitulo: { fontSize: '0.85rem', color: '#8FA3CC', marginBottom: '2rem', lineHeight: '1.6' },
     label: { display: 'block', fontSize: '0.72rem', fontWeight: '600', color: '#8FA3CC', marginBottom: '0.4rem', letterSpacing: '0.04em', textTransform: 'uppercase' },
+    opcional: { textTransform: 'none', fontWeight: '400', color: '#6B7280', letterSpacing: 'normal' },
     input: { width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', marginBottom: '1rem', fontFamily: 'Inter, sans-serif' },
     textarea: { width: '100%', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '0.75rem 1rem', color: '#fff', fontSize: '0.9rem', outline: 'none', boxSizing: 'border-box', marginBottom: '1rem', fontFamily: 'Inter, sans-serif', resize: 'vertical', minHeight: '80px' },
     btn: { width: '100%', background: '#1D9E75', color: '#fff', border: 'none', borderRadius: '8px', padding: '0.9rem', fontSize: '0.95rem', fontWeight: '700', cursor: 'pointer', fontFamily: 'Inter, sans-serif' },
@@ -182,7 +183,7 @@ export default function Onboarding() {
             <label style={s.label} htmlFor="ob-ciudad">Ciudad</label>
             <input id="ob-ciudad" style={s.input} value={form.ciudad} onChange={e => actualizar('ciudad', e.target.value)} placeholder="Medellín, Bogotá, Cali..." />
 
-            <label style={s.label} htmlFor="ob-pais">País de jurisdicción</label>
+            <label style={s.label} htmlFor="ob-pais">País de jurisdicción <span style={s.opcional}>· opcional</span></label>
             <select id="ob-pais" style={{...s.input, background:'#1a2a4a'}} value={form.pais} onChange={e => { if(e.target.value==='__nuevo__'){setMostrarNuevoPais(true)}else{actualizar('pais',e.target.value);setMostrarNuevoPais(false)} }}>
               <option value="">Selecciona tu país...</option>
               {paisesDB.map(p => <option key={p.nombre} value={p.nombre}>{p.bandera||'🌐'} {p.nombre}</option>)}
@@ -194,7 +195,7 @@ export default function Onboarding() {
                 <button onClick={crearNuevoPais} disabled={creandoPais||!nuevoPaisNombre.trim()} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>{creandoPais?'...':'Agregar'}</button>
               </div>
             )}
-            <label style={s.label} htmlFor="ob-whatsapp">WhatsApp</label>
+            <label style={s.label} htmlFor="ob-whatsapp">WhatsApp <span style={s.opcional}>· opcional</span></label>
             <input id="ob-whatsapp" style={s.input} value={form.whatsapp} onChange={e => actualizar('whatsapp', e.target.value)} placeholder="+57 300 123 4567" />
 
             <button style={s.btn} onClick={() => form.nombre && form.ciudad ? setPaso(2) : setMensaje('Completa nombre y ciudad')}>
@@ -225,7 +226,7 @@ export default function Onboarding() {
               ))}
             </div>
 
-            <label style={s.label} htmlFor="ob-especialidad">Tu especialidad o profesión</label>
+            <label style={s.label} htmlFor="ob-especialidad">Tu especialidad o profesión <span style={s.opcional}>· opcional</span></label>
             <select id="ob-especialidad" style={{...s.input, background:'#1a2a4a'}} value={form.especialidad} onChange={e => { if(e.target.value==='__nueva__'){setMostrarNuevaEspecialidad(true)}else{actualizar('especialidad',e.target.value);setMostrarNuevaEspecialidad(false)} }}>
               <option value="">Selecciona tu especialidad...</option>
               {especialidadesDB.map(esp => <option key={esp.nombre} value={esp.nombre}>{esp.nombre}</option>)}
@@ -250,17 +251,17 @@ export default function Onboarding() {
           <>
             <div style={s.paso}>Paso 3 de 3 — Tu aporte</div>
             <div style={s.titulo}>¿Qué tienes y qué buscas?</div>
-            <div style={s.subtitulo}>Esto nos ayuda a conectarte con los proyectos correctos.</div>
+            <div style={s.subtitulo}>Opcional. Puedes completarlo ahora o más tarde desde tu perfil. Nos ayuda a conectarte con los proyectos correctos.</div>
 
-            <label style={s.label} htmlFor="ob-aporto">¿Qué tienes para aportar?</label>
+            <label style={s.label} htmlFor="ob-aporto">¿Qué tienes para aportar? <span style={s.opcional}>· opcional</span></label>
             <textarea id="ob-aporto" style={s.textarea} value={form.lo_que_aporto} onChange={e => actualizar('lo_que_aporto', e.target.value)} placeholder="Ej: 10 años de experiencia en derecho comercial, contactos en el sector financiero..." />
 
-            <label style={s.label} htmlFor="ob-busco">¿Qué buscas en Escala?</label>
+            <label style={s.label} htmlFor="ob-busco">¿Qué buscas en Escala? <span style={s.opcional}>· opcional</span></label>
             <textarea id="ob-busco" style={s.textarea} value={form.lo_que_busco} onChange={e => actualizar('lo_que_busco', e.target.value)} placeholder="Ej: Un proyecto con potencial donde mi conocimiento se convierta en participación..." />
 
             <button style={s.btnSec} onClick={() => setPaso(2)}>← Volver</button>
             <button style={{ ...s.btn, background: cargando ? '#0F6E56' : '#1D9E75' }} onClick={guardar} disabled={cargando}>
-              {cargando ? 'Guardando...' : 'Completar mi perfil →'}
+              {cargando ? 'Guardando...' : 'Finalizar y entrar →'}
             </button>
             {mensaje && <div style={s.error}>{mensaje}</div>}
           </>
