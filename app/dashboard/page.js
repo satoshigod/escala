@@ -260,12 +260,18 @@ export default function Dashboard() {
 
   async function cambiarEstado(id, estado) {
     setActualizando(id)
-    await fetch('/api/postulaciones', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, estado })
-    })
-    setPostulacionesRecibidas(prev => prev.map(p => p.id === id ? {...p, estado} : p))
+    try {
+      const res = await fetch('/api/postulaciones', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, estado })
+      })
+      const data = await res.json()
+      if (data.error) { alert('No se pudo actualizar la postulación: ' + data.error); setActualizando(null); return }
+      setPostulacionesRecibidas(prev => prev.map(p => p.id === id ? {...p, estado} : p))
+    } catch (e) {
+      alert('No se pudo actualizar la postulación: ' + e.message)
+    }
     setActualizando(null)
   }
 
