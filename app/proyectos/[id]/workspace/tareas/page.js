@@ -239,6 +239,7 @@ export default function Tareas() {
     })
     const data = await res.json()
     if (!data.error) setTareas(t => t.map(x => x.id === tarea.id ? data.tarea : x))
+    else alert('No se pudo actualizar la tarea: ' + (data.error || 'intenta de nuevo'))
     setActualizando(null)
     // Al completar o verificar, el backend abre/actualiza el hilo automáticamente
     // con un mensaje del sistema — si el hilo ya está abierto, lo recargamos.
@@ -269,12 +270,18 @@ export default function Tareas() {
     setEnviandoHilo(true)
     const contenido = textoHilo.trim()
     setTextoHilo('')
-    await fetch('/api/mensajes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ proyecto_id: proyecto.id, autor_id: usuario.id, contenido, tarea_id: tarea.id })
-    })
-    await cargarHilo(tarea.id)
+    try {
+      const res = await fetch('/api/mensajes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ proyecto_id: proyecto.id, autor_id: usuario.id, contenido, tarea_id: tarea.id })
+      })
+      const data = await res.json()
+      if (data.error) { alert('No se pudo enviar el mensaje: ' + data.error); setTextoHilo(contenido); setEnviandoHilo(false); return }
+      await cargarHilo(tarea.id)
+    } catch (e) {
+      alert('No se pudo enviar el mensaje: ' + e.message); setTextoHilo(contenido)
+    }
     setEnviandoHilo(false)
   }
 
@@ -330,6 +337,8 @@ export default function Tareas() {
       setTareas(t => [...t, data.tarea])
       setNuevaTarea({ nombre: '', descripcion: '', categoria: '', asignado_a: '', razon_creacion: '' })
       setMostrarNueva(false)
+    } else {
+      alert('No se pudo crear la tarea: ' + (data.error || 'intenta de nuevo'))
     }
     setCreando(false)
   }
@@ -349,6 +358,8 @@ export default function Tareas() {
       setMostrarInicializar(false)
       setRolInicializar('')
       setMiembroInicializar('')
+    } else {
+      alert('No se pudieron crear las tareas del rol: ' + (data.error || 'intenta de nuevo'))
     }
     setCreando(false)
   }

@@ -725,8 +725,8 @@ const fases = [
   {
     titulo: 'Auditoría de user flows - ejecución (Dashboard y Workplace, 2026-07-21)',
     estado: 'progreso',
-    valor_total: 6400000,
-    valor_hecho: 2900000,
+    valor_total: 6800000,
+    valor_hecho: 3300000,
     hitos: [
       { num: '43.1', nombre: 'D1 (bug, dashboard): el total de ingresos del fundador siempre mostraba $0. En cargar() se usaba primerProyectoFundado (null en el closure de montaje, se define después desde estado aún vacío) en vez del primerProyecto calculado desde los datos frescos. Fix: calcular primerProyecto desde data.misProyectos (activo, o el primero) y usarlo para el fetch de /api/ingresos. Grupo Bug.', done: true, valor: 400000, quien: 'Claude AI' },
       { num: '43.2', nombre: 'D2 (UX por perfil, dashboard): accesos rápidos filtrados por rol. Antes todos veían todas las acciones (un especialista veía Crear proyecto, Registrar ingreso, Crear meta, Invitar, Invertir). Ahora fundador ve acciones de fundador, inversionista las suyas, y colaborador (especialista/gerente/mentor) ve Buscar proyectos, Mis postulaciones, Mi perfil (rutas ya existentes). Grupo UX.', done: true, valor: 500000, quien: 'Claude AI' },
@@ -736,6 +736,7 @@ const fases = [
       { num: '43.7', nombre: 'Cierre auditoría Dashboard: wallet y panel de notificaciones auditados (limpios, sin cambios). Fix: el aviso "mensajes sin leer" solo aparecía para fundadores y enrutaba al proyecto del fundador; ahora también aparece para especialistas y enruta al proyecto en que están activos (primerProyectoFundado || proyectoActivo). Dashboard queda auditado completo. Grupo UX/Bug.', done: true, valor: 300000, quien: 'Claude AI' },
       { num: '43.6', nombre: 'Auditoría y ejecución de las 12 sub-pantallas del Workplace (resumen, tareas, chat, capital, presupuesto, reparto, equipos, leasing, local, constitución, documentos, cierre) y sus flujos por actor. Por tandas con hallazgos priorizados. Grupo UX. PENDIENTE.', done: false, valor: 3100000, quien: 'Claude AI' },
       { num: '43.8', nombre: 'Workplace tanda 1 (workspace/page.js): feedback de error en las 4 acciones núcleo que fallaban en silencio. completarHito, resolverDeuda, crearHito y registrarAporte hacían if(!data.error){...} sin else, así que ante un fallo el usuario no veía nada. Ahora muestran alerta de error (mismo patrón que eliminarRol/salirProyecto). Grupo Confiabilidad/UX.', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '43.9', nombre: 'Workplace tanda 2 (sub-pantalla tareas, flujo núcleo de alto tráfico): feedback de error en 4 handlers que fallaban en silencio. cambiarEstado (cambiar estado de tarea), crearTarea, inicializarRol hacían if(!data.error) sin else. enviarMensajeHilo era fire-and-forget y perdía el texto del mensaje si fallaba: ahora chequea la respuesta, avisa y RESTAURA el texto para no perderlo. Grupo Confiabilidad.', done: true, valor: 400000, quien: 'Claude AI' },
     ]
   }
 ]
