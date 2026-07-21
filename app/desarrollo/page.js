@@ -96,8 +96,8 @@ const CAPAS = [
     descripcion: 'Todo lo relacionado con dinero en Escala. Wallets, ledger inmutable, fondeos, pagos, presupuesto por item CAPEX/OPEX, reparto economico, waterfall de locales comerciales, modelos de maquinaria y arriendos, comisiones y proveedores de pago por pais.',
     color: '#E8A020',
     estado: 'progreso',
-    valor_total: 67000000,
-    valor_hecho: 42000000,
+    valor_total: 68500000,
+    valor_hecho: 43500000,
     hitos: [
       { num: 'C3.1', nombre: 'SQL motor financiero: exchange_rates, wallets, ledger_entries (doble partida inmutable), fondeos, payment_requests, financial_audit — 9 monedas, RLS en todas las tablas', done: true, valor: 3000000, quien: 'Claude AI' },
       { num: 'C3.2', nombre: 'Motor central lib/financiero/ledger.js: registrarMovimiento() idempotente, calcularSaldo() siempre desde ledger, tasaDelDia(), obtenerOCrearWallet(), registrarAuditoria()', done: true, valor: 3000000, quien: 'Claude AI' },
@@ -126,6 +126,7 @@ const CAPAS = [
       { num: 'C3.25', nombre: 'Financiamiento embebido en tab Mi proyecto: muestra items sin fondear con barras de progreso, monto faltante por item y boton Conseguir fondeo directo. Si todo esta fondeado muestra confirmacion verde. Si no hay presupuesto muestra CTA para agregar. Sin tener que ir al tab Maquinas y activos.', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: 'C3.26', nombre: 'Panel angel con retorno esperado: deuda muestra cuota mensual y total a recuperar en N meses. Revenue share muestra pago mensual estimado a $10M ventas. Equity muestra porcentaje del negocio. Color por modelo.', done: true, valor: 1500000, quien: 'Claude AI' },
       { num: 'C3.27', nombre: 'CUSTODIA (fundacion): Escala custodia y paga TODO. Modelo de dos tramos con confirmacion manual para todos los flujos de recursos (local, maquina, arriendo, fondeo, reparto). Antes el ledger movia directo pagador->receptor y algunos flujos (reporte-diario) disparaban el "recibido" al REPORTAR, no al PAGAR. Nuevo: tabla ordenes_pago con maquina de estados (pendiente_pago -> pago_reportado -> en_custodia -> pago_emitido -> completado), helper lib/financiero/custodia.js que registra 2 asientos de ledger (pagador->escala:custodia en [3], escala:custodia->receptor en [5]) via registrarMovimiento idempotente, y 5 eventos de notificacion. El "recibido" real del receptor SOLO ocurre en [5]. Tramos del medio los confirma el admin. REQUIERE SQL en Supabase (tabla ordenes_pago + RLS). Pendiente: APIs de transicion, UI por tramo, y cablear cada flujo (piloto: local).', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C3.28', nombre: 'CUSTODIA (fase 2 - APIs + UI de transicion): endpoint /api/custodia (POST con acciones reportar_pago (pagador), confirmar_recepcion y emitir_pago (solo admin), confirmar_recibido (receptor o admin), cancelar; GET por rol pagador/receptor/admin). Pagina /custodia adaptativa por rol: "tienes que pagar a Escala" con boton Ya pague, "Escala te va a pagar" con Confirmar que recibi, y cola admin (confirmar recepcion / marcar que Escala pago). Cada boton avisa en error. Pendiente fase 3: cablear cada flujo (piloto local).', done: true, valor: 1500000, quien: 'Claude AI' },
     ]
   },
   {
