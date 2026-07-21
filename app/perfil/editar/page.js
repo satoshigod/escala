@@ -71,7 +71,7 @@ function CertDocumentos({ usuario, perfil, setPerfil }) {
         <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff'}}>Documentos profesionales — Contador (Colombia)</div>
       </div>
       <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'1.25rem',lineHeight:'1.6'}}>
-        Subir estos documentos sube tu Escala Score y le da más confianza a los fundadores. Son opcionales, pero los proyectos más formales los suelen pedir.
+        Subir estos documentos sube tu Reputación Escala y le da más confianza a los fundadores. Son opcionales, pero los proyectos más formales los suelen pedir.
       </div>
       {mensaje && <div style={{fontSize:'0.75rem',fontWeight:'600',color:'#1D9E75',marginBottom:'1rem'}}>{mensaje}</div>}
       <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>

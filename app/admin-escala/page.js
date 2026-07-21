@@ -333,7 +333,7 @@ export default function AdminEscala() {
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>
                   {perfiles.length > 0 ? Math.round(perfiles.reduce((s,p)=>s+(p.escala_score||0),0)/perfiles.length) : 0}
                 </div>
-                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Score promedio de la red</div>
+                <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Reputación promedio de la red</div>
               </div>
               <div style={{background: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? 'rgba(232,160,32,0.1)' : 'rgba(255,255,255,0.04)', border: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? '1px solid rgba(232,160,32,0.3)' : '1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? '#E8A020' : '#fff'}}>

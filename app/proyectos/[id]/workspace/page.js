@@ -1034,7 +1034,7 @@ export default function Workspace() {
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Completado</div>
                   </div>
                   <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
-                    <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#fff',textTransform:'capitalize'}}>{localData.fase_actual === 'repago' ? 'Repago' : localData.fase_actual === 'regalia' ? 'Regalía' : 'Libre'}</div>
+                    <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#fff',textTransform:'capitalize'}}>{localData.fase_actual === 'repago' ? 'Pagando capital' : localData.fase_actual === 'regalia' ? 'Pagando retorno' : 'Negocio libre'}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Fase actual</div>
                   </div>
                 </div>

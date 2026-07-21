@@ -233,7 +233,7 @@ export default function PanelLocalComercial() {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
             <div>
               <div style={{ fontSize: '0.68rem', fontWeight: '700', color: '#8FA3CC', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
-                {local.fase_actual === 'repago' ? 'Fase 1 - Pagando al inversionista' : local.fase_actual === 'regalia' ? 'Fase 2 - Regalía' : 'Fase 3 - Libre'}
+                {local.fase_actual === 'repago' ? 'Fase 1 - Pagando el capital' : local.fase_actual === 'regalia' ? 'Fase 2 - Pagando el retorno' : 'Fase 3 - Negocio libre'}
               </div>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff', letterSpacing: '-0.03em' }}>
                 ${fmt(saldo_pendiente)}

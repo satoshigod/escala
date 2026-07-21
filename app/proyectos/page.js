@@ -606,7 +606,7 @@ function WizardLocalComercial({ onCancelar, onPublicar }) {
                   <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff' }}>+ ${fmt(totalArriendosAnio() * 0.04)}</div>
                 </div>
                 <div style={{ background: 'rgba(232,160,32,0.06)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: '8px', padding: '0.75rem' }}>
-                  <div style={{ fontSize: '0.68rem', color: '#E8A020', fontWeight: '700', marginBottom: '4px' }}>Durante la regalía</div>
+                  <div style={{ fontSize: '0.68rem', color: '#E8A020', fontWeight: '700', marginBottom: '4px' }}>Durante el retorno</div>
                   <div style={{ fontSize: '0.72rem', color: '#C8D4E8', marginBottom: '4px' }}>Tasa pactada pendiente + 8% del total de arriendos del año</div>
                   <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#fff' }}>+ ${fmt(totalArriendosAnio() * 0.08)}</div>
                 </div>

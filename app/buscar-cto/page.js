@@ -66,7 +66,7 @@ export default function BuscarCTOPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
           {[
             ['¿Qué porcentaje de participación le doy a un CTO?', 'Depende del stage y de cuánto construye. Un CTO que entra desde cero en una startup sin producto puede recibir entre 10% y 30%. Uno que entra cuando ya hay tracción, entre 3% y 15%. No hay regla fija — se negocia en Escala con transparencia total.'],
-            ['¿Cómo encuentro al CTO correcto en Escala?', 'Publica tu proyecto y el rol de Desarrollador Full-Stack (o CTO) con una descripción clara del producto que necesitas construir. Los desarrolladores que encajen se postulan. Revisas su perfil, su Escala Score y su historial de proyectos antes de aceptar a alguien.'],
+            ['¿Cómo encuentro al CTO correcto en Escala?', 'Publica tu proyecto y el rol de Desarrollador Full-Stack (o CTO) con una descripción clara del producto que necesitas construir. Los desarrolladores que encajen se postulan. Revisas su perfil, su Reputación Escala y su historial de proyectos antes de aceptar a alguien.'],
             ['¿El CTO puede rechazar tareas o cambiar el stack tecnológico?', 'Sí. Un cofundador técnico tiene voz en las decisiones técnicas — eso es parte del trato. Si quieres solo ejecución sin criterio, un freelancer es lo que necesitas. Si quieres a alguien que co-construya el producto, necesitas un CTO.'],
             ['¿Qué pasa si el CTO se va antes de tiempo?', 'El contrato de participación en Escala puede incluir cláusulas de vesting — la participación se gana progresivamente según el tiempo y las metas completadas. Si el CTO se va antes, solo se lleva la parte que ganó, no la totalidad.'],
           ].map(([q, a]) => (

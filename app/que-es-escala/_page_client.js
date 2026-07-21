@@ -65,7 +65,7 @@ const PREGUNTAS = [
     a: 'El ángel compra la máquina y queda como propietario registrado. La beneficiaria la usa desde el primer día y cada mes reporta sus ventas. Del excedente mensual (ventas menos costos y gastos), un porcentaje acordado se abona al capital. Si produce más, paga más rápido. Cuando el ángel recupera el total, la máquina pasa a nombre de la beneficiaria. Sin banco, sin garante, sin cuota fija.'
   },
   {
-    q: '¿Qué es el Escala Score?',
+    q: '¿Qué es el Reputación Escala?',
     a: 'Tu reputación construida con hechos reales — tareas completadas y verificadas, roles aceptados, proyectos cerrados exitosamente. Sube con cada aporte real y determina qué tan confiable eres para inversionistas y fundadores.'
   },
   {

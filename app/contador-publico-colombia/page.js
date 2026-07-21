@@ -103,7 +103,7 @@ export default function ContadorPublicoColombiaPage() {
           {[
             ['¿Es legal trabajar por participación como contador en Colombia?', 'Sí. El contrato de participación diferida es una modalidad contractual válida en Colombia. No reemplaza tu ejercicio profesional independiente — es una forma de estructurar la compensación con el cliente.'],
             ['¿Qué tareas contables suelen pedir las startups?', 'Las más frecuentes son: obtención del NIT ante la DIAN, apertura de libros contables, configuración de facturación electrónica, definición del régimen tributario, apertura de cuenta bancaria empresarial y declaraciones de renta e IVA.'],
-            ['¿Necesito tener Tarjeta Profesional para unirme?', 'No es obligatorio para crear perfil o postularte. Pero sí te recomendamos subirla — los proyectos más formales la exigen y sube tu Escala Score, que determina qué tan alto apareces en los resultados.'],
+            ['¿Necesito tener Tarjeta Profesional para unirme?', 'No es obligatorio para crear perfil o postularte. Pero sí te recomendamos subirla — los proyectos más formales la exigen y sube tu Reputación Escala, que determina qué tan alto apareces en los resultados.'],
             ['¿Cómo sé que el proyecto es serio antes de aceptar?', 'Cada proyecto en Escala tiene un resumen del estado de avance, los roles que ya tiene cubiertos y el historial de actividad. Puedes hablar con el fundador antes de aceptar y revisar el contrato.'],
             ['¿Puedo trabajar en varios proyectos al mismo tiempo?', 'Sí. Muchos contadores en Escala tienen 2 o 3 proyectos activos simultáneamente, dependiendo de la carga de trabajo de cada uno. Tú defines tu disponibilidad en el perfil.'],
           ].map(([q, a]) => (

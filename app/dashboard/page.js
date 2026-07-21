@@ -322,7 +322,7 @@ export default function Dashboard() {
     },
     {
       titulo: '🔍 Busca especialistas en el directorio',
-      texto: 'También puedes ir al directorio, filtrar por especialidad, revisar el Escala Score de cada persona y contactarla directamente para invitarla a tu proyecto.',
+      texto: 'También puedes ir al directorio, filtrar por especialidad, revisar el Reputación Escala de cada persona y contactarla directamente para invitarla a tu proyecto.',
       accion: 'Ver directorio →',
       href: '/directorio',
     },
@@ -651,7 +651,7 @@ export default function Dashboard() {
               </div>
               <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{perfil?.escala_score || 0}</div>
-                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Escala Score</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Reputación Escala</div>
               </div>
             </div>
             {bandeja.length > 0 && (
@@ -901,7 +901,7 @@ export default function Dashboard() {
                               <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#E8A020',textTransform:'uppercase',letterSpacing:'0.05em'}}>📍 Local comercial</div>
                               <div style={{display:'flex',alignItems:'center',gap:'6px'}}>
                                 <div style={{width:'8px',height:'8px',borderRadius:'50%',background:semaforoColor}}></div>
-                                <span style={{fontSize:'0.7rem',color:semaforoColor,fontWeight:'600'}}>{local.fase_actual === 'libre' ? 'Libre' : local.fase_actual === 'regalia' ? 'Regalía' : 'Repago'}</span>
+                                <span style={{fontSize:'0.7rem',color:semaforoColor,fontWeight:'600'}}>{local.fase_actual === 'libre' ? 'Negocio libre' : local.fase_actual === 'regalia' ? 'Pagando retorno' : 'Pagando capital'}</span>
                               </div>
                             </div>
                             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.5rem',marginBottom:'0.75rem'}}>
@@ -1195,7 +1195,7 @@ export default function Dashboard() {
 
             {/* Score — activo reputacional, mayor prominencia */}
             <a href="/score" style={{textDecoration:'none',background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'12px',padding:'1rem',display:'block'}}>
-              <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#AFA9EC',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.3rem'}}>Escala Score</div>
+              <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#AFA9EC',textTransform:'uppercase',letterSpacing:'0.06em',marginBottom:'0.3rem'}}>Reputación Escala</div>
               <div style={{fontFamily:'monospace',fontSize:'1.8rem',fontWeight:'700',color:'#AFA9EC',lineHeight:1}}>{perfil?.escala_score || 0}</div>
               <div style={{fontSize:'0.68rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Tu reputación verificable →</div>
             </a>

@@ -17,7 +17,7 @@ export default function Page() {
       beneficios={[
         { icon: '💼', titulo: 'Especialistas de todo tipo', texto: 'Desarrolladores, diseñadores, contadores, abogados, marketers. El talento que tu proyecto necesita.' },
         { icon: '📈', titulo: 'Trabajan por participación', texto: 'En lugar de un salario que no puedes pagar, acuerdan una participación futura. Ganan cuando ganas.' },
-        { icon: '⭐', titulo: 'Reputación verificada', texto: 'Cada especialista tiene un score basado en su historial real de trabajo en la plataforma.' },
+        { icon: '⭐', titulo: 'Reputación verificada', texto: 'Cada especialista tiene una reputación basada en su historial real real de trabajo en la plataforma.' },
         { icon: '📝', titulo: 'Contrato automático', texto: 'Cuando aceptas a alguien, el contrato de participación se genera solo, con validez legal.' },
       ]}
       pasos={[

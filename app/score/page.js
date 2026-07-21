@@ -87,7 +87,7 @@ export default function Score() {
         <div style={{marginBottom:'2rem'}}>
           <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Reputación verificable</div>
           <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.3rem'}}>Tu reputación verificable</div>
-          <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Tu Escala Score</div>
+          <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Tu Reputación Escala</div>
           <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginTop:'0.3rem',lineHeight:'1.6'}}>Mide tu historial real en la plataforma — tareas cumplidas, proyectos completados y calificaciones de colaboradores. Sube con actividad verificada, no con declaraciones.</div>
           <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginTop:'0.3rem'}}>No lo que dices que sabes hacer — lo que hiciste, verificado por quienes trabajaron contigo.</div>
         </div>

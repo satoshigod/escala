@@ -152,7 +152,7 @@ export default function Metricas() {
         {/* TARJETAS RESUMEN */}
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem',marginBottom:'2rem'}}>
           {[
-            { label:'Escala Score', valor: perfil?.escala_score || 0, color:'#AFA9EC', icon:'⭐' },
+            { label:'Reputación Escala', valor: perfil?.escala_score || 0, color:'#AFA9EC', icon:'⭐' },
             { label:'Participaciones activas', valor: participaciones, color:'#1D9E75', icon:'🤝' },
             { label:'Proyectos', valor: proyectos.length, color:'#E8A020', icon:'🚀' },
             { label:'Valor total aportado', valor: '$'+totalValor.toLocaleString(), color:'#fff', icon:'💰', esTexto: true },

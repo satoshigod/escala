@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
     if (!p) return { title: 'Perfil en Escala' }
 
     const titulo = `${p.nombre} — ${p.especialidad || p.rol_principal || 'Especialista'} en Escala`
-    const descripcion = `${p.nombre} es ${p.especialidad || p.rol_principal || 'especialista'} en Escala${p.ciudad ? `, basado en ${p.ciudad}` : ''}. Escala Score: ${p.escala_score || 0}. Conéctate en la plataforma para crear empresas.`
+    const descripcion = `${p.nombre} es ${p.especialidad || p.rol_principal || 'especialista'} en Escala${p.ciudad ? `, basado en ${p.ciudad}` : ''}. Reputación Escala: ${p.escala_score || 0}. Conéctate en la plataforma para crear empresas.`
 
     return {
       title: titulo,

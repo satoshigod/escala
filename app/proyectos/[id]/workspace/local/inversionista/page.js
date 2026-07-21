@@ -168,7 +168,7 @@ export default function PanelInversionistaLocal() {
           <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#fff', marginBottom: '0.75rem' }}>Opcion de salida anticipada del operador</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             <div style={{ background: 'rgba(224,85,85,0.06)', border: '1px solid rgba(224,85,85,0.2)', borderRadius: '10px', padding: '1rem' }}>
-              <div style={{ fontSize: '0.68rem', color: '#E05555', fontWeight: '700', marginBottom: '6px' }}>Si sale en Fase 1 (repago)</div>
+              <div style={{ fontSize: '0.68rem', color: '#E05555', fontWeight: '700', marginBottom: '6px' }}>Si sale en Fase 1 (pagando capital)</div>
               <div style={{ fontSize: '0.75rem', color: '#C8D4E8', marginBottom: '8px', lineHeight: '1.5' }}>Tasa pactada pendiente + 4% del total de arriendos del año</div>
               <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff' }}>+ ${fmt(canon_anio * 0.04)}</div>
             </div>

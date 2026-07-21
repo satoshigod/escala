@@ -64,7 +64,7 @@ export default function HistoriaEscalaPage() {
             'Motor financiero multi-moneda (9 monedas)',
             'Sistema de contratos automáticos',
             'Workspace completo por proyecto',
-            'Sistema de badges y Escala Score',
+            'Sistema de insignias y Reputación Escala',
             'Notificaciones en tiempo real',
             'SEO en 10+ landing pages',
           ].map(item => <span key={item} style={s.stat}>{item}</span>)}

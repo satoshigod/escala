@@ -309,7 +309,7 @@ export default function Admin() {
                             <div>
                               <a href={'/perfil/' + p.postulante_id} style={{fontSize:'0.9rem',fontWeight:'700',color:'#1D9E75',textDecoration:'none',display:'block',marginBottom:'0.2rem'}}>{p.perfiles?.nombre || 'Usuario'} →</a>
                               <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>{p.perfiles?.ciudad || ''} · {p.perfiles?.especialidad || p.perfiles?.rol_principal || ''}</div>
-                              <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'2px'}}>Score: {p.perfiles?.escala_score || 0} · {new Date(p.created_at).toLocaleDateString('es-CO')}</div>
+                              <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'2px'}}>Reputación: {p.perfiles?.escala_score || 0} · {new Date(p.created_at).toLocaleDateString('es-CO')}</div>
                             </div>
                             <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flexWrap:'wrap'}}>
                               <span style={{fontSize:'0.75rem',fontWeight:'700',padding:'0.3rem 0.875rem',borderRadius:'20px',background:`rgba(${p.estado==='aceptada'?'29,158,117':p.estado==='rechazada'?'216,90,48':'232,160,32'},0.15)`,color:estadoColor[p.estado]}}>

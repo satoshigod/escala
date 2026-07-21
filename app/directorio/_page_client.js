@@ -143,7 +143,7 @@ export default function Directorio() {
               </select>
               <select value={scoreMinimo} onChange={e => setScoreMinimo(e.target.value)} style={{background:'#1a2a4a',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.82rem',outline:'none',fontFamily:'Inter,sans-serif'}}>
                 <option value="">Cualquier score</option>
-                <option value="20">Score 20+</option>
+                <option value="20">Reputación 20+</option>
                 <option value="50">Score 50+</option>
                 <option value="80">Score 80+</option>
               </select>
