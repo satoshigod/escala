@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 
-const roles = ['todos', 'especialista', 'ejecutor', 'ideador', 'capitalista', 'angel', 'mentor', 'empresa']
+const roles = ['todos', 'especialista', 'ejecutor', 'ideador', 'capitalista', 'mentor', 'empresa']
 const rolLabel = { todos: 'Todos', especialista: 'Especialista', ejecutor: 'Gerente de Proyecto', ideador: 'Fundador', capitalista: 'Inversionista', angel: 'Inversionista', mentor: 'Mentor', empresa: 'Empresa' }
 
 export default function Directorio() {
@@ -63,7 +63,7 @@ export default function Directorio() {
         p.lo_que_aporto?.toLowerCase().includes(q)
       )
     }
-    if (rolFiltro !== 'todos') resultado = resultado.filter(p => p.rol_principal === rolFiltro)
+    if (rolFiltro !== 'todos') resultado = resultado.filter(p => rolFiltro === 'capitalista' ? (p.rol_principal === 'capitalista' || p.rol_principal === 'angel') : p.rol_principal === rolFiltro)
     if (ciudadFiltro) resultado = resultado.filter(p => p.ciudad?.toLowerCase().includes(ciudadFiltro.toLowerCase()))
     if (paisFiltro) resultado = resultado.filter(p => p.pais === paisFiltro)
     if (especialidadFiltro) resultado = resultado.filter(p => p.especialidad === especialidadFiltro)

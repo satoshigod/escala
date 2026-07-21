@@ -198,7 +198,7 @@ export default function ReporteEquiposPage() {
             <div style={{ fontSize: '0.85rem', fontWeight: '700', color: '#1D9E75', marginBottom: '0.75rem' }}>✅ Reporte registrado</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', fontSize: '0.82rem' }}>
               <div><span style={{ color: '#6B7280' }}>Excedente del mes: </span><strong style={{ color: '#fff' }}>${fmt(resultado.excedente)}</strong></div>
-              <div><span style={{ color: '#6B7280' }}>Abono al angel: </span><strong style={{ color: '#AFA9EC' }}>${fmt(resultado.abono_angel)}</strong></div>
+              <div><span style={{ color: '#6B7280' }}>Abono al inversionista: </span><strong style={{ color: '#AFA9EC' }}>${fmt(resultado.abono_angel)}</strong></div>
               <div><span style={{ color: '#6B7280' }}>Pendiente ahora: </span><strong style={{ color: '#E8A020' }}>${fmt(resultado.capital_pendiente_nuevo)}</strong></div>
               {resultado.meses_restantes && <div><span style={{ color: '#6B7280' }}>Meses estimados: </span><strong style={{ color: '#fff' }}>~{resultado.meses_restantes}</strong></div>}
             </div>

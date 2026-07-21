@@ -7,10 +7,9 @@ const roles = [
   { id: 'ideador',      icon: '💡', label: 'Fundador',  desc: 'Tengo una idea de negocio',              ejemplo: 'Publicas tu proyecto y armas equipo sin necesidad de tener dinero para contratar' },
   { id: 'especialista', icon: '🔧', label: 'Especialista',         desc: 'Tengo conocimiento profesional',          ejemplo: 'Abogado, contador, diseñador, programador — tu tiempo se convierte en participación futura' },
   { id: 'ejecutor',     icon: '⚙️', label: 'Gerente de Proyecto',  desc: 'Sé construir y operar empresas',          ejemplo: 'Coordinas al equipo, ejecutas el día a día y haces que el proyecto avance' },
-  { id: 'capitalista',  icon: '💰', label: 'Inversionista',          desc: 'Tengo capital para invertir',             ejemplo: 'Aportas dinero a un proyecto y tu inversión queda registrada como participación' },
-  { id: 'angel',        icon: '🌟', label: 'Inversionista',    desc: 'Quiero financiar una meta',                ejemplo: 'Pagas algo puntual (un registro de marca, un MVP) sin financiar toda la empresa' },
+  { id: 'capitalista',  icon: '💰', label: 'Inversionista',          desc: 'Tengo capital para invertir',             ejemplo: 'Aportas capital a un proyecto (como participación, deuda o revenue share) o financias una meta puntual, como una máquina o un local' },
   { id: 'mentor',       icon: '🧭', label: 'Mentor',               desc: 'Quiero aportar experiencia estratégica', ejemplo: 'Orientas a los fundadores en comercial, finanzas o tecnología sin ejecutar tareas operativas' },
-  { id: 'empresa',      icon: '🏢', label: 'Empresa',              desc: 'Represento una empresa',                  ejemplo: 'Puedes actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora según el proyecto' },
+  { id: 'empresa',      icon: '🏢', label: 'Empresa',              desc: 'Represento una empresa',                  ejemplo: 'Puedes actuar como fundadora, ejecutora, prestadora de servicios, inversionista o mentora según el proyecto' },
 ]
 
 export default function Onboarding() {
