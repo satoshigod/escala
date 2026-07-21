@@ -267,6 +267,7 @@ export default function Workspace() {
     })
     const data = await res.json()
     if (!data.error) setHitos(h => h.map(x => x.id === hito.id ? data.hito : x))
+    else alert('No se pudo actualizar el hito: ' + (data.error || 'intenta de nuevo'))
     setActualizando(null)
   }
 
@@ -286,6 +287,8 @@ export default function Workspace() {
           total_pendiente: prev.total_pendiente - Number(item?.valor || 0),
         }
       })
+    } else {
+      alert('No se pudo resolver: ' + (data.error || 'intenta de nuevo'))
     }
   }
 
@@ -301,6 +304,7 @@ export default function Workspace() {
     })
     const data = await res.json()
     if (!data.error) { setHitos(h => [...h, data.hito]); setNuevoHito('') }
+    else alert('No se pudo crear el hito: ' + (data.error || 'intenta de nuevo'))
     setCreandoHito(false)
   }
 
@@ -325,6 +329,8 @@ export default function Workspace() {
     if (!data.error) {
       setAportes(a => [data.aporte, ...a])
       setNuevoAporte({ descripcion: '', valor: '', tipo: 'horas' })
+    } else {
+      alert('No se pudo registrar el aporte: ' + (data.error || 'intenta de nuevo'))
     }
     setRegistrando(false)
   }
