@@ -4,7 +4,7 @@ import { supabase } from '../../../lib/supabase'
 
 const modalidadLabels = {
   equity: 'Equity', deuda_diferida: 'Deuda diferida', success_fee: 'Success Fee',
-  hibrido: 'Híbrido', regalias: 'Regalías', bonos_hitos: 'Bonos por hitos',
+  hibrido: 'Híbrido', regalias: 'Regalías', bonos_hitos: 'Bonos por metas',
   nueva_unidad: 'Nueva unidad', convertible: 'Deuda convertible'
 }
 
@@ -138,7 +138,7 @@ export default function ProyectoDetalle() {
         {/* HITOS COMPLETADOS */}
         {hitos.length > 0 && (
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'2rem'}}>
-            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'1rem'}}>Avance del proyecto — hitos completados</div>
+            <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#1D9E75',letterSpacing:'0.08em',textTransform:'uppercase',marginBottom:'1rem'}}>Avance del proyecto — metas completadas</div>
             <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
               {hitos.map((h, i) => (
                 <div key={h.id} style={{display:'flex',gap:'0.75rem',alignItems:'center'}}>

@@ -375,8 +375,8 @@ export default function EditarPerfil() {
               </div>
               <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
                 <div>
-                  <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.1rem'}}>Hitos</div>
-                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Cuando se completa un hito en tus proyectos</div>
+                  <div style={{fontSize:'0.82rem',fontWeight:'600',color:'#fff',marginBottom:'0.1rem'}}>Metas</div>
+                  <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Cuando se completa una meta en tus proyectos</div>
                 </div>
                 <div style={{display:'flex',gap:'0.5rem',flexShrink:0}}>
                   <button onClick={()=>toggleCategoria('email','hitos')} style={{fontSize:'0.65rem',fontWeight:'700',padding:'0.2rem 0.6rem',borderRadius:'20px',border:'none',cursor:'pointer',fontFamily:'Inter,sans-serif',background:(prefs.categorias_email_desactivadas||[]).includes('hitos') ? 'rgba(255,255,255,0.08)' : 'rgba(29,158,117,0.2)',color:(prefs.categorias_email_desactivadas||[]).includes('hitos') ? '#8FA3CC' : '#1D9E75'}}>

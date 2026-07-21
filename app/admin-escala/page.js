@@ -88,7 +88,7 @@ export default function AdminEscala() {
   }
 
   async function eliminarProyecto(id, nombre) {
-    const primeraConfirmacion = confirm('¿Eliminar el proyecto "' + nombre + '"?\n\nEsto borrará también sus roles, tareas, postulaciones, hitos, aportes y mensajes. Esta acción no se puede deshacer.')
+    const primeraConfirmacion = confirm('¿Eliminar el proyecto "' + nombre + '"?\n\nEsto borrará también sus roles, tareas, postulaciones, metas, aportes y mensajes. Esta acción no se puede deshacer.')
     if (!primeraConfirmacion) return
 
     const textoEsperado = nombre.trim()

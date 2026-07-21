@@ -85,8 +85,8 @@ export default function StartupChilePage() {
             { icon: '🤝', title: 'Cofundadores en Chile', desc: 'Accede a una red de emprendedores, desarrolladores, diseñadores y especialistas listos para unirse a tu proyecto desde cualquier ciudad de Chile.' },
             { icon: '💰', title: 'Sin capital inicial', desc: 'El modelo de participación diferida permite que tu equipo trabaje por equity, no por salario, mientras validan el negocio y llegan los primeros ingresos.' },
             { icon: '📄', title: 'Contratos automáticos', desc: 'Contratos de participación adaptados al marco legal. Protege tu idea y tu equipo desde el primer día sin necesitar a un abogado desde el inicio.' },
-            { icon: '✅', title: 'Gestión de tareas y hitos', desc: 'Workspace completo para gestionar las tareas de cada miembro, registrar aportes y hacer seguimiento al avance del proyecto.' },
-            { icon: '🌟', title: 'Inversión ángel', desc: 'Conecta con Ángeles de Impulso que financian hitos específicos de tu startup a cambio de participación, sin necesidad de levantar una ronda formal.' },
+            { icon: '✅', title: 'Gestión de tareas y metas', desc: 'Workspace completo para gestionar las tareas de cada miembro, registrar aportes y hacer seguimiento al avance del proyecto.' },
+            { icon: '🌟', title: 'Inversión ángel', desc: 'Conecta con Ángeles de Impulso que financian metas específicas de tu startup a cambio de participación, sin necesidad de levantar una ronda formal.' },
             { icon: '🌎', title: 'Red latinoamericana', desc: 'Escala opera en Chile, Colombia, México, Argentina, Perú, España y más. Tu proyecto puede atraer talento y capital de toda la región.' },
           ].map(item => (
             <div key={item.title} style={s.card}>

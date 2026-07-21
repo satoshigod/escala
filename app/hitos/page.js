@@ -91,7 +91,7 @@ export default function Hitos() {
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:'2rem',flexWrap:'wrap',gap:'1rem'}}>
           <div>
             <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Expediente del proyecto</div>
-            <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Hitos del proyecto</div>
+            <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Metas del proyecto</div>
             <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginTop:'0.3rem'}}>{completados} completado{completados!==1?'s':''} · {pendientes} pendiente{pendientes!==1?'s':''}</div>
           </div>
           {vista === 'lista' && proyectos.length > 0 && (
@@ -115,16 +115,16 @@ export default function Hitos() {
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
             <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🎯</div>
             <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>No tienes proyectos publicados</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Solo el fundador puede crear hitos.</div>
-            <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Hitos</a><a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a>
+            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Solo el fundador puede crear metas.</div>
+            <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Metas</a><a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a>
           </div>
         ) : (
           <>
             {vista === 'nuevo' && (
               <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'14px',padding:'1.75rem',marginBottom:'1.5rem'}}>
-                <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.5rem'}}>Crear nuevo hito</div>
+                <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.5rem'}}>Crear nueva meta</div>
 
-                <label style={{display:'block',fontSize:'0.72rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.4rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="hi-nombre">Nombre del hito *</label>
+                <label style={{display:'block',fontSize:'0.72rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.4rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="hi-nombre">Nombre de la meta *</label>
                 <input id="hi-nombre" value={form.nombre} onChange={e => setForm(f=>({...f,nombre:e.target.value}))} placeholder="Ej: Constitución SAS, Primera venta, MVP lanzado..." style={{width:'100%',background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.75rem 1rem',color:'#fff',fontSize:'0.9rem',outline:'none',boxSizing:'border-box',fontFamily:'Inter,sans-serif',marginBottom:'1rem'}} />
 
                 <label style={{display:'block',fontSize:'0.72rem',fontWeight:'600',color:'#8FA3CC',marginBottom:'0.4rem',letterSpacing:'0.04em',textTransform:'uppercase'}} htmlFor="hi-descripcion">Descripción (opcional)</label>
@@ -135,7 +135,7 @@ export default function Hitos() {
                 <div style={{display:'flex',gap:'0.75rem'}}>
                   <button onClick={() => {setVista('lista');setMensaje('')}} style={{background:'transparent',color:'#8FA3CC',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.75rem 1.25rem',fontSize:'0.875rem',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cancelar</button>
                   <button onClick={crearHito} disabled={enviando} style={{flex:1,background:enviando?'#0F6E56':'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.875rem',fontSize:'0.95rem',fontWeight:'700',cursor:enviando?'not-allowed':'pointer',fontFamily:'Inter,sans-serif'}}>
-                    {enviando ? 'Creando...' : 'Crear hito →'}
+                    {enviando ? 'Creando...' : 'Crear meta →'}
                   </button>
                 </div>
               </div>
@@ -144,8 +144,8 @@ export default function Hitos() {
             {hitos.length === 0 && vista === 'lista' ? (
               <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
                 <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🎯</div>
-                <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin hitos todavía</div>
-                <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Los hitos marcan el avance del proyecto. Crea el primero.</div>
+                <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin metas todavía</div>
+                <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Las metas marcan el avance del proyecto. Crea la primera.</div>
                 <button onClick={() => setVista('nuevo')} style={{background:'#1D9E75',color:'#fff',border:'none',padding:'0.75rem 1.5rem',borderRadius:'8px',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>+ Crear primer hito</button>
               </div>
             ) : (

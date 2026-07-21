@@ -146,7 +146,7 @@ export default function BuscarCofundadorPage() {
           ['¿Es gratis buscar cofundador en Escala?', 'Sí. Publicar tu proyecto, explorar el directorio y conectar con cofundadores potenciales es completamente gratuito. Escala cobra una comisión solo cuando se ejecutan pagos reales entre las partes.'],
           ['¿En qué países está disponible Escala?', 'Actualmente en Colombia, México, Chile, Argentina, Perú, Ecuador y España. El modelo de participación diferida aplica en todos los países.'],
           ['¿Cómo se define la participación del cofundador?', 'La participación se negocia directamente entre las partes. Escala no fija ni sugiere porcentajes — eso depende del rol, la dedicación y el aporte de cada cofundador. La valoración del equity se define en el momento en que la empresa genere ingresos.'],
-          ['¿Qué pasa si el cofundador no cumple?', 'Escala registra tareas, hitos y entregas verificables. El contrato generado incluye cláusulas de incumplimiento que protegen al fundador y al cofundador.'],
+          ['¿Qué pasa si el cofundador no cumple?', 'Escala registra tareas, metas y entregas verificables. El contrato generado incluye cláusulas de incumplimiento que protegen al fundador y al cofundador.'],
         ].map(([q, a]) => (
           <div key={q} style={s.faqItem}>
             <h3 style={s.faqQ}>{q}</h3>

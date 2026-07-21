@@ -305,7 +305,7 @@ export default function CierrePage() {
               <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#fff', marginBottom: '1rem' }}>Resumen del proyecto</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.82rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#8FA3CC' }}>Hitos completados</span>
+                  <span style={{ color: '#8FA3CC' }}>Metas completadas</span>
                   <span style={{ color: '#1D9E75', fontWeight: '600' }}>{resumen.hitos_completados}/{resumen.hitos_total}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>

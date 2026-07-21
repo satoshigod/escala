@@ -79,7 +79,7 @@ const ROLES = [
   { icon: '💰', nombre: 'Capitalista', desc: 'Aporta capital a proyectos con potencial a cambio de participación accionaria o retorno financiero.' },
   { icon: '🔧', nombre: 'Especialista', desc: 'Aporta conocimiento o servicios profesionales — abogados, contadores, diseñadores, programadores.' },
   { icon: '⚙️', nombre: 'Ejecutor / Gerente de Proyecto', desc: 'Administrador operativo: asigna tareas, verifica entregables, mantiene el proyecto organizado.' },
-  { icon: '🌟', nombre: 'Angel Inversionista', desc: 'Financia un hito puntual o un negocio completo en local sin financiar toda la empresa.' },
+  { icon: '🌟', nombre: 'Angel Inversionista', desc: 'Financia una meta puntual o un negocio completo en local sin financiar toda la empresa.' },
   { icon: '🧭', nombre: 'Mentor', desc: 'Aporta experiencia estratégica sin ejecutar tareas operativas.' },
   { icon: '🏢', nombre: 'Empresa', desc: 'Puede actuar como fundadora, ejecutora, prestadora de servicios, ángel o mentora.' },
 ]

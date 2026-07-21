@@ -67,7 +67,7 @@ const fases = [
     valor_total: 1400000,
     valor_hecho: 0,
     hitos: [
-      { num: 'C5.1', nombre: 'Definir perfil de Ángel de Impulso y mecánica de financiamiento por hito', done: false, valor: 300000, quien: 'Comercial Escala' },
+      { num: 'C5.1', nombre: 'Definir perfil de Ángel de Impulso y mecánica de financiamiento por meta', done: false, valor: 300000, quien: 'Comercial Escala' },
       { num: 'C5.2', nombre: 'Canal de adquisición para mentores — comunidades de ejecutivos senior', done: false, valor: 300000, quien: 'Comercial Escala' },
       { num: 'C5.3', nombre: 'Propuesta de valor para empresas aliadas — acceso a talento y proyectos', done: false, valor: 350000, quien: 'Comercial Escala' },
       { num: 'C5.4', nombre: 'Programa piloto con primeros 10 ángeles y 5 empresas aliadas', done: false, valor: 450000, quien: 'Comercial Escala' },

@@ -99,7 +99,7 @@ export default function CrearEmpresaSinCapitalPage() {
             { icon: '💻', title: 'Desarrollador Full-Stack', desc: 'Construye tu producto digital — app, plataforma, MVP — sin necesidad de contratarlo a precio de mercado.' },
             { icon: '🎨', title: 'Diseñador UX/UI', desc: 'Identidad visual, prototipo, interfaz de usuario. El producto visual que necesitas para lanzar.' },
             { icon: '📣', title: 'Community Manager', desc: 'Redes sociales, contenido, comunidad de primeros usuarios. La voz de tu marca desde el día uno.' },
-            { icon: '💼', title: 'Gerente de Proyecto', desc: 'Alguien que organiza el equipo, gestiona los hitos y mantiene el proyecto en movimiento.' },
+            { icon: '💼', title: 'Gerente de Proyecto', desc: 'Alguien que organiza el equipo, gestiona las metas y mantiene el proyecto en movimiento.' },
           ].map(item => (
             <div key={item.title} style={s.card}>
               <div style={s.cardIcon}>{item.icon}</div>

@@ -23,7 +23,7 @@ const jsonLd = {
     { '@type': 'HowToStep', name: 'Publicar tu idea', text: 'Describe tu proyecto en Escala: qué problema resuelve, a quién va dirigido y qué perfiles necesitas.' },
     { '@type': 'HowToStep', name: 'Encontrar cofundadores', text: 'El directorio te conecta con especialistas que pueden unirse a tu proyecto por participación diferida.' },
     { '@type': 'HowToStep', name: 'Definir la participación', text: 'Negocia el porcentaje de cada cofundador según su rol y dedicación. Escala genera el contrato automáticamente.' },
-    { '@type': 'HowToStep', name: 'Ejecutar y constituir', text: 'Gestiona tareas, hitos y pagos desde Escala. Cuando la empresa esté lista, el workspace de constitución te guía.' },
+    { '@type': 'HowToStep', name: 'Ejecutar y constituir', text: 'Gestiona tareas, metas y pagos desde Escala. Cuando la empresa esté lista, el workspace de constitución te guía.' },
   ],
 }
 
@@ -76,7 +76,7 @@ export default function CrearEmpresaPage() {
             { n: '1', icon: '💡', title: 'Publica tu idea', desc: 'Describe tu proyecto: qué problema resuelve, a quién va dirigido, el sector y los perfiles que necesitas. Es gratis y tarda menos de 5 minutos.' },
             { n: '2', icon: '🤝', title: 'Encuentra tu equipo', desc: 'El directorio de Escala conecta tu proyecto con cofundadores y especialistas disponibles en Colombia, México, Chile y más países.' },
             { n: '3', icon: '📄', title: 'Define la participación', desc: 'Negocia el porcentaje de cada cofundador según su rol. Escala genera el contrato legal automáticamente con 15 cláusulas adaptadas a tu país.' },
-            { n: '4', icon: '🚀', title: 'Ejecuta y constituye', desc: 'Gestiona tareas, hitos y pagos desde Escala. El workspace de constitución te guía paso a paso para registrar tu empresa formalmente.' },
+            { n: '4', icon: '🚀', title: 'Ejecuta y constituye', desc: 'Gestiona tareas, metas y pagos desde Escala. El workspace de constitución te guía paso a paso para registrar tu empresa formalmente.' },
           ].map(step => (
             <div key={step.n} style={{ display: 'flex', gap: '1.25rem', padding: '1.5rem', background: 'rgba(255,255,255,0.04)', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: 'rgba(29,158,117,0.15)', border: '1px solid rgba(29,158,117,0.3)', color: '#1D9E75', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', flexShrink: 0, fontSize: '1.1rem' }}>{step.n}</div>
@@ -97,7 +97,7 @@ export default function CrearEmpresaPage() {
             { title: 'No es un empleo', desc: 'Los especialistas no son empleados — son cofundadores o colaboradores con participación. Sin nómina, sin riesgo laboral en etapas tempranas.' },
             { title: 'No es una agencia', desc: 'Escala no ejecuta proyectos por ti. Te conecta con las personas correctas y te da la infraestructura para que tu equipo opere.' },
             { title: 'No es un fondo', desc: 'Escala no invierte dinero en tu startup. Te conecta con personas que invierten tiempo, conocimiento o capital propio a cambio de participación.' },
-            { title: 'Es tu sistema operativo', desc: 'Contratos, tareas, hitos, pagos, constitución y equipo en un solo lugar. Todo lo que necesita una empresa en etapa temprana.' },
+            { title: 'Es tu sistema operativo', desc: 'Contratos, tareas, metas, pagos, constitución y equipo en un solo lugar. Todo lo que necesita una empresa en etapa temprana.' },
           ].map(item => (
             <div key={item.title} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '1.5rem' }}>
               <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#1D9E75', marginBottom: '0.5rem' }}>{item.title}</h3>

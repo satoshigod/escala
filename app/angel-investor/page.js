@@ -1,9 +1,9 @@
 // app/angel-investor/page.js
 export const metadata = {
-  title: 'Ángel Investor en Latinoamérica — Invierte en Startups por Hitos',
-  description: 'Invierte en startups latinoamericanas por hitos específicos. En Escala los Ángeles de Impulso financian momentos puntuales del proyecto a cambio de participación. Sin riesgo total, con impacto real.',
+  title: 'Ángel Investor en Latinoamérica — Invierte en Startups por Metas',
+  description: 'Invierte en startups latinoamericanas por metas específicas. En Escala los Ángeles de Impulso financian metas puntuales del proyecto a cambio de participación. Sin riesgo total, con impacto real.',
   keywords: ['angel investor colombia', 'angel investor latinoamerica', 'invertir en startups colombia', 'inversion angel startup', 'angel investor mexico', 'inversion temprana startup latam'],
-  openGraph: { title: 'Ángel Investor en Latinoamérica — Escala', description: 'Invierte en startups por hitos específicos. Sin riesgo total, con impacto real.', url: 'https://escala.network/angel-investor', images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }] },
+  openGraph: { title: 'Ángel Investor en Latinoamérica — Escala', description: 'Invierte en startups por metas específicas. Sin riesgo total, con impacto real.', url: 'https://escala.network/angel-investor', images: [{ url: 'https://escala.network/brand/og-default.png?v=3', width: 1200, height: 630 }] },
   alternates: { canonical: 'https://escala.network/angel-investor' },
 }
 const s = {
@@ -33,7 +33,7 @@ export default function AngelInvestorPage() {
       </nav>
       <section style={s.hero}>
         <div style={s.tag}>⚡ Angel Inversionista</div>
-        <h1 style={s.h1}>Invierte en startups latinoamericanas por hitos, no en ciegas.</h1>
+        <h1 style={s.h1}>Invierte en startups latinoamericanas por metas, no a ciegas.</h1>
         <p style={s.sub}>En Escala los Ángeles de Impulso financian momentos específicos de un proyecto — el NIT, el MVP, el primer cliente — a cambio de participación. No es una ronda formal. Es una apuesta quirúrgica por el equipo y el momento.</p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
           <a href="/registro" style={s.btn}>Quiero ser Angel Inversionista →</a>
@@ -44,10 +44,10 @@ export default function AngelInvestorPage() {
         <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff', marginBottom: '1.5rem' }}>¿Cómo funciona el Angel Inversionista?</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '3rem' }}>
           {[
-            { num: '01', titulo: 'Explora proyectos activos', desc: 'Ve el directorio de proyectos en Escala — cada uno tiene su equipo, hitos completados, avance real y el perfil del fundador. No hay pitch decks genéricos, hay trabajo documentado.' },
-            { num: '02', titulo: 'Elige un hito específico para financiar', desc: 'Cada proyecto tiene hitos definidos — constitución legal, MVP, primera venta, primer empleado. Tú eliges cuál quieres financiar y cuánto estás dispuesto a poner.' },
-            { num: '03', titulo: 'Acuerda la participación con el fundador', desc: 'El fundador propone un porcentaje de participación por el capital que aportas para ese hito. Todo queda documentado en la plataforma y respaldado por contrato.' },
-            { num: '04', titulo: 'El hito se completa — tú lo verificas', desc: 'Cuando el fundador marca el hito como completado, tú lo verificas en la plataforma. Tu inversión se libera solo cuando hay resultado real.' },
+            { num: '01', titulo: 'Explora proyectos activos', desc: 'Ve el directorio de proyectos en Escala — cada uno tiene su equipo, metas completadas, avance real y el perfil del fundador. No hay pitch decks genéricos, hay trabajo documentado.' },
+            { num: '02', titulo: 'Elige una meta específica para financiar', desc: 'Cada proyecto tiene metas definidas — constitución legal, MVP, primera venta, primer empleado. Tú eliges cuál quieres financiar y cuánto estás dispuesto a poner.' },
+            { num: '03', titulo: 'Acuerda la participación con el fundador', desc: 'El fundador propone un porcentaje de participación por el capital que aportas para esa meta. Todo queda documentado en la plataforma y respaldado por contrato.' },
+            { num: '04', titulo: 'La meta se completa — tú lo verificas', desc: 'Cuando el fundador marca la meta como completada, tú lo verificas en la plataforma. Tu inversión se libera solo cuando hay resultado real.' },
             { num: '05', titulo: 'Tu participación crece con la empresa', desc: 'A medida que la empresa crece, tu participación se convierte en valor real — en ingresos distribuidos, en equity al levantar una ronda, o al vender la empresa.' },
           ].map(step => (
             <div key={step.num} style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', padding: '1.25rem' }}>

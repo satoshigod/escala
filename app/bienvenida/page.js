@@ -7,7 +7,7 @@ const ROLES = [
   { value: 'especialista', icon: '🔧', titulo: 'Especialista',         desc: 'Tengo conocimiento profesional' },
   { value: 'ejecutor',     icon: '⚙️', titulo: 'Ejecutor / Gerente',  desc: 'Sé construir y operar empresas' },
   { value: 'capitalista',  icon: '💰', titulo: 'Capitalista',          desc: 'Tengo capital para invertir' },
-  { value: 'angel',        icon: '🌟', titulo: 'Ángel de Impulso',    desc: 'Quiero financiar un hito' },
+  { value: 'angel',        icon: '🌟', titulo: 'Ángel de Impulso',    desc: 'Quiero financiar una meta' },
   { value: 'mentor',       icon: '🧭', titulo: 'Mentor',               desc: 'Quiero aportar experiencia estratégica' },
   { value: 'empresa',      icon: '🏢', titulo: 'Empresa',              desc: 'Represento una empresa' },
 ]

@@ -40,7 +40,7 @@ export default function Calendario() {
 
       setTareas(tareasData || [])
 
-      // Hitos de mis proyectos
+      // Metas de mis proyectos
       if (misIds.length > 0) {
         const { data: hitosData } = await supabase
           .from('hitos')
@@ -105,7 +105,7 @@ export default function Calendario() {
       <main style={{maxWidth:'1100px',margin:'0 auto',padding:'2rem 1.25rem'}}>
         <div style={{marginBottom:'1.75rem'}}>
           <div style={{fontSize:'1.5rem',fontWeight:'900',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>Calendario</div>
-          <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>Tareas e hitos organizados por fecha.</div>
+          <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>Tareas y metas organizadas por fecha.</div>
         </div>
 
         {mensaje && (
@@ -197,7 +197,7 @@ export default function Calendario() {
                       <div style={{fontSize:'0.82rem',color:'#fff',marginBottom:'0.1rem'}}>{h.nombre}</div>
                       <div style={{fontSize:'0.68rem',color:'#E8A020'}}>{h.proyectos?.nombre}</div>
                     </div>
-                    <span style={{fontSize:'0.65rem',padding:'0.2rem 0.5rem',borderRadius:'10px',background:'rgba(232,160,32,0.15)',color:'#E8A020'}}>Hito</span>
+                    <span style={{fontSize:'0.65rem',padding:'0.2rem 0.5rem',borderRadius:'10px',background:'rgba(232,160,32,0.15)',color:'#E8A020'}}>Meta</span>
                   </div>
                 ))}
               </div>

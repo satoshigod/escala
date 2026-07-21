@@ -726,11 +726,11 @@ export default function Dashboard() {
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'0.875rem',marginBottom:'1.75rem'}}>
               <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{misImpulsos.length}</div>
-                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Hitos financiados</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Metas financiadas</div>
               </div>
               <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{misImpulsos.filter(i=>!i.hitos?.completado).length}</div>
-                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Hitos pendientes</div>
+                <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Metas pendientes</div>
               </div>
               <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>${misImpulsos.reduce((s,i)=>s+(i.monto||0),0).toLocaleString()}</div>
@@ -828,7 +828,7 @@ export default function Dashboard() {
                         </div>
                         <div style={{display:'flex',gap:'0.4rem',flexShrink:0}}>
                           <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',textDecoration:'none'}}>Workspace</a>
-                          <div style={{position:'relative',display:'inline-block'}} title={'Publicar rol · Hitos · Aportes'}>
+                          <div style={{position:'relative',display:'inline-block'}} title={'Publicar rol · Metas · Aportes'}>
                             <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',color:'#8FA3CC',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>···</a>
                           </div>
                         </div>

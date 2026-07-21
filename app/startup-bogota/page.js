@@ -49,7 +49,7 @@ export default function StartupBogotaPage() {
             { icon: '🧾', title: 'Contadores con NIT DIAN', desc: 'Obtención de NIT, régimen tributario, facturación electrónica y contabilidad para startups bogotanas.' },
             { icon: '💻', title: 'Desarrolladores tech', desc: 'Full-stack, mobile y de IA con experiencia en proyectos de Bogotá. Muchos con experiencia en empresas como Rappi, Platzi y Bancolombia.' },
             { icon: '🎨', title: 'Diseñadores UX/UI', desc: 'Identidad visual y producto para que tu startup se vea profesional desde el día uno en el mercado capitalino.' },
-            { icon: '📈', title: 'Gerentes de proyecto', desc: 'Coordinación del equipo, gestión de hitos y seguimiento al avance. Para que tu startup no se quede en el papel.' },
+            { icon: '📈', title: 'Gerentes de proyecto', desc: 'Coordinación del equipo, gestión de metas y seguimiento al avance. Para que tu startup no se quede en el papel.' },
           ].map(item => (
             <div key={item.title} style={s.card}>
               <div style={{ fontSize: '1.75rem', marginBottom: '0.75rem' }}>{item.icon}</div>

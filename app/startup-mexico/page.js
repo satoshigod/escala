@@ -74,9 +74,9 @@ export default function StartupMexicoPage() {
             { icon: '🤝', title: 'Red de cofundadores en México', desc: 'Encuentra emprendedores y especialistas mexicanos que complementan tus habilidades y comparten tu visión.' },
             { icon: '💸', title: 'Sin capital para empezar', desc: 'Trabaja con tu equipo por participación diferida. No necesitas pagar salarios para tener un equipo comprometido.' },
             { icon: '📄', title: 'Constitución empresarial', desc: 'Workspace para gestionar los pasos de constitución de tu empresa en México, con guía específica para SAPI y otras formas.' },
-            { icon: '🌟', title: 'Ángeles inversionistas', desc: 'Accede a inversionistas ángel que financian hitos puntuales de tu startup a cambio de participación en los resultados.' },
+            { icon: '🌟', title: 'Ángeles inversionistas', desc: 'Accede a inversionistas ángel que financian metas puntuales de tu startup a cambio de participación en los resultados.' },
             { icon: '⚖️', title: 'Contratos automáticos', desc: 'Contratos legales generados automáticamente, adaptados al marco legal mexicano para proteger a todas las partes.' },
-            { icon: '📊', title: 'Operación completa', desc: 'Gestión de tareas, hitos, pagos y contratos en un solo lugar. Todo lo que necesita tu startup para operar.' },
+            { icon: '📊', title: 'Operación completa', desc: 'Gestión de tareas, metas, pagos y contratos en un solo lugar. Todo lo que necesita tu startup para operar.' },
           ].map(item => (
             <div key={item.title} style={s.card}>
               <div style={s.cardIcon}>{item.icon}</div>
@@ -93,7 +93,7 @@ export default function StartupMexicoPage() {
           {[
             ['¿Qué tipo de empresa conviene para una startup en México?', 'La SAPI (Sociedad Anónima Promotora de Inversión) es la forma más común para startups que buscan inversión en México. Para etapas muy tempranas, muchos emprendedores empiezan con una SAS o una empresa más sencilla.'],
             ['¿Cómo funciona la participación diferida en México?', 'Los cofundadores y especialistas aportan trabajo a cambio de un porcentaje del éxito del proyecto. La valoración del equity se define cuando la empresa empieza a generar ingresos, no antes.'],
-            ['¿Hay inversionistas ángel para startups mexicanas en Escala?', 'Sí. Los Ángeles de Impulso de Escala pueden financiar hitos específicos de tu startup. No son fondos VC — son personas que apuestan por proyectos concretos a cambio de participación.'],
+            ['¿Hay inversionistas ángel para startups mexicanas en Escala?', 'Sí. Los Ángeles de Impulso de Escala pueden financiar metas específicas de tu startup. No son fondos VC — son personas que apuestan por proyectos concretos a cambio de participación.'],
           ].map(([q, a]) => (
             <div key={q} style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '1.25rem 0' }}>
               <h3 style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>{q}</h3>

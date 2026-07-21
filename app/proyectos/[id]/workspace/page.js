@@ -466,7 +466,7 @@ export default function Workspace() {
           <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
         </svg>
       ),
-      tooltip: ['Estado general e hitos del proyecto', 'Publicar un nuevo rol', 'Registrar ingresos', 'Cerrar el proyecto'],
+      tooltip: ['Estado general y metas del proyecto', 'Publicar un nuevo rol', 'Registrar ingresos', 'Cerrar el proyecto'],
     },
     // Tab "Mi equipo" — personas, contratos, roles
     equipo: {
@@ -561,7 +561,7 @@ export default function Workspace() {
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
         </svg>
       ),
-      tooltip: ['Las metas del proyecto', 'Completar hitos desbloquea el fondeo'],
+      tooltip: ['Las metas del proyecto', 'Completar metas desbloquea el financiamiento'],
     },
     documentos: {
       label: 'Documentos',
@@ -1092,11 +1092,11 @@ export default function Workspace() {
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'1rem',marginBottom:'1.5rem'}}>
                 <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                   <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{hitosCompletados}</div>
-                  <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Hitos completados</div>
+                  <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Metas completadas</div>
                 </div>
                 <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                   <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{hitosPendientes}</div>
-                  <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Hitos pendientes</div>
+                  <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Metas pendientes</div>
                 </div>
                 <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
                   <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff'}}>{equipo.length + 1}</div>
@@ -1218,7 +1218,7 @@ export default function Workspace() {
             {esFundador && hitosPendientes > 0 && (
               <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem',marginBottom:'1.5rem'}}>
                 <div style={{fontSize:'0.78rem',color:'#E8A020'}}>📋 Tienes <strong>{hitosPendientes} hito{hitosPendientes > 1 ? 's' : ''}</strong> pendientes — vincúlalos a items del presupuesto para que el fondeo desbloquee el avance automáticamente.</div>
-                <button onClick={() => setTab('hitos')} style={{background:'none',border:'1px solid rgba(232,160,32,0.4)',color:'#E8A020',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>Ver hitos</button>
+                <button onClick={() => setTab('hitos')} style={{background:'none',border:'1px solid rgba(232,160,32,0.4)',color:'#E8A020',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>Ver metas</button>
               </div>
             )}
 
@@ -1242,7 +1242,7 @@ export default function Workspace() {
 
             {hitos.length > 0 && (
               <div style={{marginBottom:'2rem'}}>
-                <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'1rem',paddingBottom:'0.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>Próximos hitos</div>
+                <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'1rem',paddingBottom:'0.5rem',borderBottom:'1px solid rgba(255,255,255,0.08)'}}>Próximas metas</div>
                 {hitos.filter(h => !h.completado).slice(0,3).map(h => (
                   <div key={h.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
                     <div style={{display:'flex',gap:'0.75rem',alignItems:'center'}}>
@@ -1342,7 +1342,7 @@ export default function Workspace() {
           <div>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.5rem'}}>
               <div>
-                <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff'}}>Hitos del proyecto</div>
+                <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff'}}>Metas del proyecto</div>
                 <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginTop:'0.2rem'}}>{hitosCompletados} completados · {hitosPendientes} pendientes</div>
               </div>
             </div>
@@ -1383,9 +1383,9 @@ export default function Workspace() {
 
             {esFundador && (
               <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
-                <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>+ Crear nuevo hito</div>
+                <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>+ Crear nueva meta</div>
                 <div style={{display:'flex',gap:'0.75rem'}}>
-                  <input value={nuevoHito} onChange={e=>setNuevoHito(e.target.value)} onKeyDown={e=>e.key==='Enter'&&crearHito()} placeholder="Nombre del hito..." style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif'}}/>
+                  <input value={nuevoHito} onChange={e=>setNuevoHito(e.target.value)} onKeyDown={e=>e.key==='Enter'&&crearHito()} placeholder="Nombre de la meta..." style={{flex:1,background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.15)',borderRadius:'8px',padding:'0.65rem 1rem',color:'#fff',fontSize:'0.875rem',outline:'none',fontFamily:'Inter,sans-serif'}}/>
                   <button onClick={crearHito} disabled={creandoHito||!nuevoHito.trim()} style={{background:'#1D9E75',color:'#fff',border:'none',borderRadius:'8px',padding:'0.65rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
                     {creandoHito ? '...' : 'Crear'}
                   </button>

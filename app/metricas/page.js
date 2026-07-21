@@ -228,9 +228,9 @@ export default function Metricas() {
 
           {/* HITOS */}
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem'}}>
-            <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Hitos de mis proyectos</div>
+            <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Metas de mis proyectos</div>
             {hitos.length === 0 ? (
-              <div style={{textAlign:'center',color:'#8FA3CC',fontSize:'0.78rem',padding:'1.5rem'}}>Sin hitos registrados</div>
+              <div style={{textAlign:'center',color:'#8FA3CC',fontSize:'0.78rem',padding:'1.5rem'}}>Sin metas registradas</div>
             ) : (
               <>
                 <div style={{display:'flex',gap:'1.5rem',alignItems:'center',marginBottom:'1.25rem'}}>
