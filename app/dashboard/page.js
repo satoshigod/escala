@@ -479,7 +479,7 @@ export default function Dashboard() {
                     {notificaciones.length === 0 ? (
                       <div style={{padding:'2.5rem 1.5rem',textAlign:'center'}}>
                         <div style={{fontSize:'1.6rem',marginBottom:'0.5rem'}}>🔔</div>
-                        <div style={{color:'#fff',fontWeight:'700',fontSize:'0.82rem',marginBottom:'0.3rem'}}>Sin notificaciones por ahora</div>
+                        <div style={{color:'#fff',fontWeight:'700',fontSize:'0.82rem',marginBottom:'0.3rem'}}>No tienes notificaciones nuevas</div>
                         <div style={{color:'#8FA3CC',fontSize:'0.72rem'}}>Aquí verás cuando te acepten en un rol, cuando alguien se postule a tu proyecto, o cuando haya actividad importante.</div>
                       </div>
                     ) : (
@@ -591,7 +591,7 @@ export default function Dashboard() {
             <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Carga de trabajo por persona</div>
             {cargaEquipo.length === 0 ? (
               <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center',color:'#8FA3CC',fontSize:'0.82rem'}}>
-                Sin tareas asignadas en tu equipo todavía.
+                Tu equipo aún no tiene tareas asignadas.
               </div>
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:'0.5rem',marginBottom:'1.75rem'}}>
@@ -742,7 +742,7 @@ export default function Dashboard() {
             {misImpulsos.length === 0 ? (
               <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(175,169,236,0.2)',borderRadius:'12px',padding:'2.5rem',textAlign:'center'}}>
                 <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>🌟</div>
-                <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Aún no has financiado ningún hito</div>
+                <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Aún no has invertido en ningún proyecto</div>
                 <div style={{color:'#8FA3CC',fontSize:'0.82rem',marginBottom:'1.25rem'}}>Explora proyectos y financia metas concretas (un logo, un dominio, una campaña) sin invertir en toda la empresa.</div>
                 <a href="/buscar" style={{background:'#AFA9EC',color:'#0D1B3E',padding:'0.65rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'800',display:'inline-block'}}>Explorar proyectos →</a>
               </div>

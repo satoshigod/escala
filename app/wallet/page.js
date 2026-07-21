@@ -206,7 +206,7 @@ export default function WalletPage() {
               <div style={{ textAlign:'center', padding:'40px 0' }}>
                 <div style={{ fontSize:'32px', marginBottom:'12px' }}>💼</div>
                 <div style={{ fontSize:'14px', color:'rgba(255,255,255,0.6)', marginBottom:'16px' }}>
-                  Aún no tienes un wallet activo
+                  Aún no tienes una billetera activa
                 </div>
                 <a href="/wallet/fondear" style={{ ...s.btnGreen, display:'inline-block', textDecoration:'none', padding:'10px 24px' }}>
                   Fondear para empezar
@@ -260,7 +260,7 @@ export default function WalletPage() {
                 ))}
                 {movimientos.length === 0 && (
                   <div style={{ fontSize:'11px', color:'rgba(255,255,255,0.25)', textAlign:'center', padding:'20px 0' }}>
-                    Sin movimientos aún
+                    Aún no hay movimientos
                   </div>
                 )}
               </div>

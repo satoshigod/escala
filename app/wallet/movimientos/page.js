@@ -175,7 +175,7 @@ export default function MovimientosPage() {
             ) : sqlPendiente || movimientos.length === 0 ? (
               <div style={s.emptyState}>
                 <div style={{ fontSize: '28px', marginBottom: '10px' }}>📋</div>
-                {sqlPendiente ? 'Módulo financiero pendiente de activación' : 'Sin movimientos aún'}
+                {sqlPendiente ? 'Módulo financiero pendiente de activación' : 'Aún no hay movimientos'}
                 {!sqlPendiente && filtro !== 'todos' && (
                   <div style={{ marginTop: '8px' }}>
                     <button style={s.filterBtn} onClick={() => setFiltro('todos')}>Ver todos</button>

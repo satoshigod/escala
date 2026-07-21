@@ -292,7 +292,7 @@ export default function Admin() {
               Object.keys(postulaciones).length === 0 ? (
                 <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
                   <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📭</div>
-                  <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin postulaciones todavía</div>
+                  <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Aún no te has postulado a ningún proyecto</div>
                   <div style={{color:'#8FA3CC',fontSize:'0.85rem'}}>Agrega especialidades/roles a tu proyecto para empezar a recibir postulaciones.</div>
                 </div>
               ) : (

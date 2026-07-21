@@ -103,7 +103,7 @@ export default function Postulaciones() {
 
           {ofertas.length === 0 ? (
             <div style={{background:'rgba(255,255,255,0.02)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.75rem',textAlign:'center'}}>
-              <div style={{color:'#8FA3CC',fontSize:'0.82rem'}}>Sin ofertas por ahora. Cuando un fundador te invite a su proyecto, aparecerá aquí.</div>
+              <div style={{color:'#8FA3CC',fontSize:'0.82rem'}}>Aún no tienes invitaciones. Cuando un fundador te invite a su proyecto, aparecerá aquí.</div>
             </div>
           ) : (
             <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
@@ -144,7 +144,7 @@ export default function Postulaciones() {
           {misPostulaciones.length === 0 ? (
             <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
               <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📋</div>
-              <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin postulaciones todavía</div>
+              <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Aún no te has postulado a ningún proyecto</div>
               <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Explora los proyectos activos y postúlate a los roles que te interesen.</div>
               <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>
             </div>
