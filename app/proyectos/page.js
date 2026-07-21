@@ -1046,12 +1046,12 @@ export default function Proyectos() {
                   {[
                     { id:'startup', icon:'💡', titulo:'Crear o crecer mi empresa', desc:'Tienes una idea o empresa que quieres hacer crecer con un equipo que trabaja por participación.', badge:'Equipo + capital', badgeColor:'#1D9E75' },
                     { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante u otro negocio y necesitas quien financie el depósito y el arriendo.', badge:'Financiar local', badgeColor:'#4A90D9', destacado:true },
-                    { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo u otro activo. Un inversionista lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
+                    { id:'maquinaria', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo u otro activo. Un inversionista lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
                   ].map(op => (
                     <div key={op.id}
                       onClick={() => {
                         actualizar('escenario', op.id)
-                        if (op.id === 'local_comercial' || op.id === 'otro') {
+                        if (op.id === 'local_comercial' || op.id === 'maquinaria') {
                           actualizar('estado_financiacion', 'riesgo_compartido')
                         }
                       }}
@@ -1129,12 +1129,12 @@ export default function Proyectos() {
               {[
                 { id:'startup', icon:'💡', titulo:'Crear o crecer mi empresa', desc:'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo que trabaja por participación.', badge:'Equipo + capital', badgeColor:'#1D9E75' },
                 { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante, frutería, almacén u otro negocio y necesitas que alguien financie el depósito y el arriendo del contrato.', badge:'Financiar local', badgeColor:'#4A90D9', destacado:true },
-                { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo, tecnología u otro activo para que tu negocio opere. Un inversionista lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
+                { id:'maquinaria', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo, tecnología u otro activo para que tu negocio opere. Un inversionista lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
               ].map(op => (
                 <div key={op.id}
                   onClick={() => {
                     actualizar('escenario', op.id)
-                    if (op.id === 'local_comercial' || op.id === 'otro') {
+                    if (op.id === 'local_comercial' || op.id === 'maquinaria') {
                       actualizar('estado_financiacion', 'riesgo_compartido')
                     }
                   }}
@@ -1182,7 +1182,7 @@ export default function Proyectos() {
               </div>
             )}
 
-            {form.escenario === 'otro' && (
+            {form.escenario === 'maquinaria' && (
               <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.25rem'}}>
                 <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#E8A020',marginBottom:'0.75rem'}}>🔧 Así funciona — en 4 pasos</div>
                 <div style={{display:'flex',flexDirection:'column',gap:'0.5rem'}}>
@@ -1216,7 +1216,7 @@ export default function Proyectos() {
                   </div>
                 </div>
               </div>
-            ) : form.escenario === 'otro' ? (
+            ) : form.escenario === 'maquinaria' ? (
               <div>
                 <label style={s.label}>¿Ya tienes este negocio funcionando? *</label>
                 <div style={s.tipoGrid}>

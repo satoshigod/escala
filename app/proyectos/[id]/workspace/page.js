@@ -638,7 +638,7 @@ export default function Workspace() {
     </div>
   )
 
-  const esEscenarioEquipos = proyecto?.escenario === 'otro'
+  const esEscenarioEquipos = (proyecto?.escenario === 'maquinaria' || proyecto?.escenario === 'otro')
   const esEscenarioLocal = proyecto?.escenario === 'local_comercial'
 
   // Tour para FUNDADORES — diferente segun escenario

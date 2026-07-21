@@ -884,7 +884,7 @@ export default function Dashboard() {
                         </div>
 
                         {/* PROYECTO DE EQUIPOS SIN ITEMS — CTA para empezar */}
-                        {!tieneLocal && esGenerico && p.escenario === 'otro' && (
+                        {!tieneLocal && esGenerico && (p.escenario === 'maquinaria' || p.escenario === 'otro') && (
                           <div style={{padding:'0.875rem 1rem',background:'rgba(74,144,217,0.04)',borderTop:'1px solid rgba(74,144,217,0.12)'}}>
                             <div style={{fontSize:'0.72rem',fontWeight:'700',color:'#4A90D9',marginBottom:'0.375rem'}}>🔧 Agrega lo que necesitas comprar</div>
                             <div style={{fontSize:'0.75rem',color:'#8FA3CC',lineHeight:'1.5',marginBottom:'0.625rem'}}>Todavia no has agregado ningun equipo o maquina. Ese es el primer paso para conseguir el capital.</div>
@@ -1026,7 +1026,7 @@ export default function Dashboard() {
                         )}
 
                         {/* NECESITO MAS — local y equipos */}
-                        {(p.escenario === 'local_comercial' || p.escenario === 'otro') && (
+                        {(p.escenario === 'local_comercial' || (p.escenario === 'maquinaria' || p.escenario === 'otro')) && (
                           <div style={{padding:'0.75rem 1rem',borderTop:'1px solid rgba(255,255,255,0.06)'}}>
                             <div style={{fontSize:'0.65rem',fontWeight:'700',color:'#AFA9EC',textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:'0.5rem'}}>Necesito mas</div>
                             <div style={{display:'flex',gap:'0.5rem',flexWrap:'wrap'}}>
@@ -1038,7 +1038,7 @@ export default function Dashboard() {
                                   🔧 Equipo
                                 </a>
                               )}
-                              {p.escenario === 'otro' && (
+                              {(p.escenario === 'maquinaria' || p.escenario === 'otro') && (
                                 <a href={'/proyectos/'+p.id+'/workspace?tab=necesito_mas'} style={{fontSize:'0.7rem',fontWeight:'600',color:'#4A90D9',background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'20px',padding:'3px 9px',textDecoration:'none',whiteSpace:'nowrap'}}>
                                   🏪 Local
                                 </a>

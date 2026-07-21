@@ -2373,7 +2373,7 @@ const GRUPOS = [
               nombre: 'QA-Equipos-Escenario-' + Date.now(),
               descripcion: 'Proyecto QA para verificar que equipos guarda escenario y tipo correctamente en el backend',
               tipo: 'B', sector: 'Manufactura', fundador_id: session.user.id,
-              escenario: 'otro',
+              escenario: 'maquinaria',
               estado_financiacion: 'riesgo_compartido'
             })
           })
@@ -2383,8 +2383,8 @@ const GRUPOS = [
           const esc = data.proyecto.escenario
           await fetch('/api/proyectos?id=' + data.proyecto.id + '&fundador_id=' + session.user.id, { method: 'DELETE' }).catch(() => {})
           if (tipo !== 'B') throw new Error('tipo=' + tipo + ', esperaba B')
-          if (esc !== 'otro') throw new Error('escenario=' + esc + ', esperaba otro')
-          return 'OK — equipos con tipo=B, escenario=otro, proyecto eliminado'
+          if (esc !== 'maquinaria') throw new Error('escenario=' + esc + ', esperaba maquinaria')
+          return 'OK — equipos con tipo=B, escenario=maquinaria, proyecto eliminado'
         }
       },
     ]
