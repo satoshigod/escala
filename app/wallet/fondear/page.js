@@ -1,5 +1,5 @@
 'use client'
-// app/wallet/fondear/page.js — Fondear wallet
+// app/wallet/fondear/page.js — Recargar mi billetera
 // Flujo en 3 pasos: método → monto → instrucciones
 
 import { useState, useEffect } from 'react'
@@ -133,7 +133,7 @@ export default function FondearPage() {
 
       <div style={s.main}>
         <div style={s.form}>
-          <div style={s.pageTitle}>Fondear wallet</div>
+          <div style={s.pageTitle}>Recargar mi billetera</div>
           <div style={s.pageSub}>Elige el método y el monto para acreditar fondos</div>
 
           {/* Steps */}
@@ -176,7 +176,7 @@ export default function FondearPage() {
           {/* Paso 2: Monto */}
           {paso === 2 && (
             <>
-              <div style={s.fieldLabel}>Monto a fondear en {metodo?.moneda}</div>
+              <div style={s.fieldLabel}>Monto a recargar en {metodo?.moneda}</div>
               <div style={s.amountWrap}>
                 <div style={s.amountPrefix}>{metodo?.moneda} {metodo?.moneda === 'COP' ? '$' : metodo?.moneda === 'EUR' ? '€' : '$'}</div>
                 <input

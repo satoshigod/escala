@@ -206,7 +206,7 @@ export default function DirectorioInversionPage() {
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
                       <div style={{ fontSize: '1.25rem', fontWeight: '800', color: '#fff', letterSpacing: '-0.02em' }}>${fmt(item.faltante)}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#6B7280' }}>falta fondear de ${fmt(item.valor_total)}</div>
+                      <div style={{ fontSize: '0.7rem', color: '#6B7280' }}>falta financiar de ${fmt(item.valor_total)}</div>
                     </div>
                   </div>
 
@@ -214,7 +214,7 @@ export default function DirectorioInversionPage() {
                     <span style={{ fontSize: '0.65rem', fontWeight: '700', background: prio.bg, color: prio.color, padding: '2px 8px', borderRadius: '20px' }}>{prio.label}</span>
                     <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(255,255,255,0.06)', color: '#8FA3CC', padding: '2px 8px', borderRadius: '20px' }}>{item.tipo_gasto?.toUpperCase()}</span>
                     <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(255,255,255,0.06)', color: '#8FA3CC', padding: '2px 8px', borderRadius: '20px' }}>{cat.label}</span>
-                    {pct_fondeado > 0 && <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(29,158,117,0.12)', color: '#1D9E75', padding: '2px 8px', borderRadius: '20px' }}>{pct_fondeado}% fondeado</span>}
+                    {pct_fondeado > 0 && <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(29,158,117,0.12)', color: '#1D9E75', padding: '2px 8px', borderRadius: '20px' }}>{pct_fondeado}% financiado</span>}
                   </div>
 
                   {pct_fondeado > 0 && (
@@ -256,7 +256,7 @@ export default function DirectorioInversionPage() {
               </div>
               <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '0.875rem', marginBottom: '1rem', fontSize: '0.82rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC' }}><span>Proyecto</span><span style={{ color: '#fff' }}>{mostrarFondeo.proyectos?.nombre}</span></div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC', marginTop: '4px' }}><span>Falta fondear</span><span style={{ color: '#E8A020', fontWeight: '600' }}>${fmt(mostrarFondeo.faltante)}</span></div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#8FA3CC', marginTop: '4px' }}><span>Falta financiar</span><span style={{ color: '#E8A020', fontWeight: '600' }}>${fmt(mostrarFondeo.faltante)}</span></div>
               </div>
               <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#8FA3CC', display: 'block', marginBottom: '4px' }}>Monto a invertir (COP) *</label>
               <input style={{ ...s.input, width: '100%', marginBottom: '0.875rem', boxSizing: 'border-box' }} type="number" value={formFondeo.monto} onChange={e => setFormFondeo(f => ({ ...f, monto: e.target.value }))} placeholder="5.000.000" />

@@ -169,7 +169,7 @@ export default function WalletPage() {
             <div style={s.sideLabel}>Mi dinero</div>
             <a href="/wallet" style={s.sideActive}>💼 Wallet</a>
             <a href="/wallet/movimientos" style={s.sideItem}>📋 Movimientos</a>
-            <a href="/wallet/fondear" style={{ ...s.sideItem }}>⬇️ Fondear</a>
+            <a href="/wallet/fondear" style={{ ...s.sideItem }}>⬇️ Recargar</a>
           </div>
           <div style={s.sideSection}>
             <div style={s.sideLabel}>Pagos</div>
@@ -238,7 +238,7 @@ export default function WalletPage() {
                 </div>
                 <div style={s.actRow}>
                   <button style={s.btnGreen} onClick={() => window.location.href='/wallet/fondear'}>
-                    ⬇️ Fondear
+                    ⬇️ Recargar
                   </button>
                   <button style={s.btnOutline} onClick={() => window.location.href='/wallet/pagos/solicitar'}>
                     📤 Solicitar pago

@@ -86,7 +86,7 @@ export default function PagosPage() {
         </div>
         <div style={{ display: 'flex', gap: '2px' }}>
           <a href="/wallet" style={s.navItem}>Wallet</a>
-          <a href="/wallet/fondear" style={s.navItem}>Fondear</a>
+          <a href="/wallet/fondear" style={s.navItem}>Recargar</a>
           <a href="/wallet/movimientos" style={s.navItem}>Historial</a>
           <a href="/wallet/pagos" style={s.navActive}>Pagos</a>
         </div>
@@ -99,7 +99,7 @@ export default function PagosPage() {
             <div style={s.sideLabel}>Mi dinero</div>
             <a href="/wallet" style={s.sideItem}>💼 Wallet</a>
             <a href="/wallet/movimientos" style={s.sideItem}>📋 Movimientos</a>
-            <a href="/wallet/fondear" style={s.sideItem}>⬇️ Fondear</a>
+            <a href="/wallet/fondear" style={s.sideItem}>⬇️ Recargar</a>
           </div>
           <div style={s.sideSection}>
             <div style={s.sideLabel}>Pagos</div>

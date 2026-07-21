@@ -321,7 +321,7 @@ export default function AngelPage() {
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
                       <div style={{ fontSize: '1rem', fontWeight: '800', color: '#fff' }}>${fmt(item.faltante)}</div>
-                      <div style={{ fontSize: '0.65rem', color: '#6B7280' }}>falta fondear</div>
+                      <div style={{ fontSize: '0.65rem', color: '#6B7280' }}>falta financiar</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.75rem' }}>

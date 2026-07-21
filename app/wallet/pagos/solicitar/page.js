@@ -155,7 +155,7 @@ export default function SolicitarPagoPage() {
           {sqlPendiente && (
             <div style={s.alertBox}>
               ⚠️ El módulo financiero aún no está activo. Primero debes fondear tu wallet.
-              <div style={{ marginTop: '8px' }}><a href="/wallet/fondear" style={{ color: '#F0B429' }}>Ir a fondear →</a></div>
+              <div style={{ marginTop: '8px' }}><a href="/wallet/fondear" style={{ color: '#F0B429' }}>Ir a recargar →</a></div>
             </div>
           )}
 

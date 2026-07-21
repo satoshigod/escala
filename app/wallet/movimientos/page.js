@@ -119,7 +119,7 @@ export default function MovimientosPage() {
         </div>
         <div style={s.nav}>
           <a href="/wallet" style={s.navItem}>Wallet</a>
-          <a href="/wallet/fondear" style={s.navItem}>Fondear</a>
+          <a href="/wallet/fondear" style={s.navItem}>Recargar</a>
           <a href="/wallet/movimientos" style={s.navActive}>Historial</a>
           <a href="/wallet/pagos/solicitar" style={s.navItem}>Pagos</a>
         </div>
@@ -132,7 +132,7 @@ export default function MovimientosPage() {
             <div style={s.sideLabel}>Mi dinero</div>
             <a href="/wallet" style={s.sideItem}>💼 Wallet</a>
             <a href="/wallet/movimientos" style={s.sideActive}>📋 Movimientos</a>
-            <a href="/wallet/fondear" style={s.sideItem}>⬇️ Fondear</a>
+            <a href="/wallet/fondear" style={s.sideItem}>⬇️ Recargar</a>
           </div>
           <div style={s.sideSection}>
             <div style={s.sideLabel}>Pagos</div>
