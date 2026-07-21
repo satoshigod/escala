@@ -105,7 +105,7 @@ export default function Carril() {
       <main style={{maxWidth:'900px',margin:'0 auto',padding:'2rem 1.25rem'}}>
         <div style={{marginBottom:'2rem'}}>
           <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#E8A020',marginBottom:'0.4rem'}}>Modelo de compensación</div>
-          <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Confirmar cumplimiento y forma de pago</div>
+          <div style={{fontSize:'clamp(1.4rem,3vw,2rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Pagar a mi equipo</div>
           <div style={{fontSize:'0.85rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Un solo filtro decide si hay pago: ¿cumplió lo pactado? Si sí, elige cómo se paga según el estado del proyecto.</div>
         </div>
 
@@ -113,7 +113,7 @@ export default function Carril() {
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
             <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📋</div>
             <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin postulaciones aceptadas</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Aquí verás a cada especialista aceptado en tus proyectos, para confirmar su cumplimiento y forma de pago.</div>
+            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Aquí confirmas si cada especialista de tus proyectos cumplió su trabajo y decides cómo pagarle.</div>
             <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>
           </div>
         ) : (

@@ -1758,7 +1758,7 @@ export default function Workspace() {
               <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.6',marginBottom:'1rem'}}>
                 No cumplió → no se paga nada. Cumplió → se paga según el estado del proyecto: <strong style={{color:'#fff'}}>{proyecto?.estado_financiacion === 'con_recursos' ? 'Con Recursos (cash o acciones)' : 'Riesgo Compartido (acciones o deuda como pasivo)'}</strong>.
               </div>
-              <a href="/carril" style={{display:'inline-block',fontSize:'0.78rem',color:'#1D9E75',fontWeight:'600',textDecoration:'none'}}>Confirmar cumplimiento y forma de pago →</a>
+              <a href="/carril" style={{display:'inline-block',fontSize:'0.78rem',color:'#1D9E75',fontWeight:'600',textDecoration:'none'}}>Confirmar trabajo y pagar al especialista →</a>
             </div>
 
             {(deuda.pendiente.length > 0 || deuda.resuelta.length > 0) && (

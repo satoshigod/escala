@@ -1244,7 +1244,7 @@ export default function Dashboard() {
                   🔍 Buscar especialista
                 </a>
                 <a href="/carril" style={{display:'flex',alignItems:'center',gap:'0.5rem',background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'8px',padding:'0.55rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#E8A020',fontWeight:'600'}}>
-                  ⚡ Cumplimiento y pago
+                  ⚡ Pagar a mi equipo
                 </a>
               </div>
               {/* Secundarias */}
