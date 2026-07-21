@@ -58,7 +58,7 @@ export default function ProyectoDetalle() {
     })
     const data = await res.json()
     if (data.error) {
-      setMsgRol({ [rol.id]: 'Ya te postulaste a este rol' })
+      setMsgRol({ [rol.id]: data.error })
     } else {
       setMsgRol({ [rol.id]: '✅ Postulación enviada' })
       setMisPostulaciones(prev => [...prev, rol.id])

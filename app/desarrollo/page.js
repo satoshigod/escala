@@ -42,8 +42,8 @@ const CAPAS = [
     descripcion: 'El nucleo de Escala. Todo lo que permite crear, ejecutar y cerrar un proyecto: roles, hitos, tareas, equipo, contratos, workspace, documentos, chat y cierre formal. Es el producto principal.',
     color: '#1D9E75',
     estado: 'progreso',
-    valor_total: 75500000,
-    valor_hecho: 50500000,
+    valor_total: 77000000,
+    valor_hecho: 52000000,
     hitos: [
       { num: 'C2.1', nombre: 'API proyectos — GET (con roles, paginacion), POST (con nivel_avance, modalidad_trabajo, roles_buscados, validacion ownership), DELETE (solo fundador)', done: true, valor: 2000000, quien: 'Claude AI' },
       { num: 'C2.2', nombre: 'Publicacion de proyectos — formulario con 5 niveles de avance, 3 modalidades, 9 roles buscados, validacion descripcion 80+ chars, guia de escritura gratuita', done: true, valor: 1500000, quien: 'Claude AI' },
@@ -86,6 +86,7 @@ const CAPAS = [
       { num: 'C2.39', nombre: 'Auditoria UX v2 (comite de producto): escenarios y roles. Eliminado el eco doble "Que necesitas?" (el selector de proyecto pasa a "Que quieres hacer?"), intent del home propagado al onboarding, onboarding con progressive profiling (campos no esenciales marcados opcional + completar despues desde el perfil), recuperacion de contrasena por email (reset nativo de Supabase Auth + correo por Resend), y migracion del id de escenario de maquinaria de "otro" a "maquinaria" (patron expand-migrate-contract, SQL corrido y verificado).', done: true, valor: 4600000, quien: 'Claude AI + Ivan' },
       { num: 'C2.40', nombre: 'Auditoria de user flows (Dashboard): dashboard por perfil (accesos rapidos filtrados por rol; el colaborador ve Buscar proyectos / Mis postulaciones / Mi perfil), acciones de proyecto en la tarjeta (Publicar / Cerrar / Eliminar, ya soportadas por el backend), fix del bug de ingresos en $0 del fundador, aviso de mensajes sin leer tambien para especialistas, y "..." enganoso eliminado de la tarjeta compacta.', done: true, valor: 3000000, quien: 'Claude AI' },
       { num: 'C2.41', nombre: 'Auditoria de user flows (Workplace): confiabilidad de acciones. Feedback de error en handlers que fallaban en silencio (eje workspace, tareas, chat, leasing, constitucion; chat y mensajes restauran el texto si falla) y fix del "Cargando..." infinito sin sesion en 7 sub-pantallas (equipos, reparto, capital, cierre, presupuesto, local, local/inversionista).', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.42', nombre: 'Auditoria de user flows (flujo de postulacion del especialista: descubrir -> postularse -> aceptar). responderOferta (aceptar/rechazar invitacion) actualizaba la UI a "aceptada" sin chequear el PATCH: falso positivo en una accion que crea contrato. Ahora solo actualiza si tuvo exito y avisa en error. postularse mostraba "Ya te postulaste" ante CUALQUIER error (red, servidor, rol lleno): ahora la API devuelve mensaje amigable solo para el duplicado real (constraint 23505) y el front muestra el error verdadero.', done: true, valor: 1500000, quien: 'Claude AI' },
     ]
   },
   {

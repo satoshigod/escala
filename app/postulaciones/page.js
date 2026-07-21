@@ -27,12 +27,18 @@ export default function Postulaciones() {
 
   async function responderOferta(id, estado) {
     setActualizando(id)
-    await fetch('/api/postulaciones', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, estado })
-    })
-    setOfertas(o => o.map(x => x.id === id ? { ...x, estado } : x))
+    try {
+      const res = await fetch('/api/postulaciones', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, estado })
+      })
+      const data = await res.json()
+      if (data.error) { alert('No se pudo responder la invitación: ' + data.error); setActualizando(null); return }
+      setOfertas(o => o.map(x => x.id === id ? { ...x, estado } : x))
+    } catch (e) {
+      alert('No se pudo responder la invitación: ' + e.message)
+    }
     setActualizando(null)
   }
 

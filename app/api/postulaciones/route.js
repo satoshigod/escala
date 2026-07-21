@@ -37,7 +37,12 @@ export async function POST(request) {
     .select('*, perfiles ( nombre, email ), roles ( nombre, proyecto_id, proyectos ( nombre, fundador_id, perfiles ( nombre, email ) ) )')
     .single()
 
-  if (error) return Response.json({ error: error.message }, { status: 500 })
+  if (error) {
+    if (error.code === '23505' || /duplicate|unique|ya existe/i.test(error.message || '')) {
+      return Response.json({ error: 'Ya te postulaste a este rol' }, { status: 409 })
+    }
+    return Response.json({ error: error.message }, { status: 500 })
+  }
 
   // Notificación al fundador — solo si fue el postulante quien aplicó. Si fue el fundador
   // quien creó la oferta (invitación), no tiene sentido notificarlo de su propia acción;
