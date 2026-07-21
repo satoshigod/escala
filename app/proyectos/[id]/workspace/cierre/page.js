@@ -113,7 +113,7 @@ export default function CierrePage() {
     const { data: { user } } = await supabase.auth.getUser()
     setUsuario(user)
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    if (!session) { setCargando(false); return }
 
     const res = await fetch(`/api/cierre?proyecto_id=${id}`, {
       headers: { Authorization: `Bearer ${session.access_token}` }

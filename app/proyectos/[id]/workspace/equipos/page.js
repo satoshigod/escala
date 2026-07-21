@@ -35,7 +35,7 @@ export default function ReporteEquiposPage() {
 
   async function cargar() {
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    if (!session) { setCargando(false); return }
 
     // Cargar contrato de leasing activo del proyecto
     const { data: contratos } = await supabase

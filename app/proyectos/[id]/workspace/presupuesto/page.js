@@ -113,7 +113,7 @@ export default function PresupuestoPage() {
     setEsFundador(esFund)
 
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    if (!session) { setCargando(false); return }
 
     const res = await fetch(`/api/presupuesto?proyecto_id=${id}`, {
       headers: { Authorization: `Bearer ${session.access_token}` }

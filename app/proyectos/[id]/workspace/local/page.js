@@ -162,7 +162,7 @@ export default function PanelLocalComercial() {
 
   async function cargar() {
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    if (!session) { setCargando(false); return }
     const res = await fetch(`/api/local-comercial/reporte-diario?proyecto_id=${id}`, {
       headers: { Authorization: `Bearer ${session.access_token}` }
     })

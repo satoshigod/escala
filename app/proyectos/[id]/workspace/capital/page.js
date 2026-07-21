@@ -40,7 +40,7 @@ export default function CapitalWorkspacePage() {
     setEsFundador(esFund)
 
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
+    if (!session) { setCargando(false); return }
 
     // Fondeos del proyecto
     const { data: fondeoData } = await supabase
