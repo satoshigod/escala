@@ -79,6 +79,11 @@ export default async function sitemap() {
     { url: `${BASE_URL}/blog/diferencia-prestamo-inversion-participacion`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
     { url: `${BASE_URL}/blog/como-montar-tienda-sin-capital`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
     { url: `${BASE_URL}/blog/equipos-maquinaria-financiacion-colombia`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.75 },
+    { url: `${BASE_URL}/necesito-capital`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/contratar-talento`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/conseguir-proyectos`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/empezar-empresa`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
+    { url: `${BASE_URL}/resolver-problema`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
   ]
 
   // Proyectos públicos
