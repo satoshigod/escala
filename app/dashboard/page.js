@@ -59,7 +59,7 @@ function WalletWidgetSidebar() {
         <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:'0.75rem'}}>Cargando...</div>
       )}
       <div style={{display:'flex',gap:'0.4rem'}}>
-        <a href="/wallet/fondear" style={{flex:1,padding:'0.4rem',background:'rgba(29,158,117,0.15)',color:'#1D9E75',borderRadius:'6px',fontSize:'0.72rem',fontWeight:'600',textDecoration:'none',textAlign:'center'}}>Fondear</a>
+        <a href="/wallet/fondear" style={{flex:1,padding:'0.4rem',background:'rgba(29,158,117,0.15)',color:'#1D9E75',borderRadius:'6px',fontSize:'0.72rem',fontWeight:'600',textDecoration:'none',textAlign:'center'}}>Recargar</a>
         <a href="/wallet" style={{flex:1,padding:'0.4rem',background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.08)',color:'#8FA3CC',borderRadius:'6px',fontSize:'0.72rem',textDecoration:'none',textAlign:'center'}}>Ver →</a>
       </div>
     </div>
@@ -1012,7 +1012,7 @@ export default function Dashboard() {
                         {/* Total capital requerido si hay items */}
                         {items.length > 0 && (
                           <div style={{padding:'0.5rem 1rem',borderTop:'1px solid rgba(255,255,255,0.04)',display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                            <span style={{fontSize:'0.7rem',color:'#6B7280'}}>Total por fondear</span>
+                            <span style={{fontSize:'0.7rem',color:'#6B7280'}}>Total por financiar</span>
                             <span style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff'}}>${fmt(items.reduce((s,i)=>s+(parseFloat(i.valor_total||0)-parseFloat(i.monto_fondeado||0)),0))}</span>
                           </div>
                         )}

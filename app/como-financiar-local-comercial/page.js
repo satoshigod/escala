@@ -40,7 +40,7 @@ export default function ComoFinanciarLocalComercialPage() {
         <h2 style={s.h2}>Opcion 3 — Fintechs de credito rapido</h2>
         <p style={s.p}>Empresas como Addi, Sempli o Bold Capital ofrecen creditos empresariales con menos requisitos que los bancos. La contra es que las tasas son altas (entre el 3% y el 5% mensual sobre el saldo) y el pago es en cuotas fijas independientemente de si el negocio vendio mucho o poco ese mes.</p>
 
-        <h2 style={s.h2}>Opcion 4 — Modelo de fondeo Escala</h2>
+        <h2 style={s.h2}>Opcion 4 — Modelo de financiamiento Escala</h2>
         <p style={s.p}>El modelo de Escala es diferente a todas las anteriores. Un inversionista de la red de Escala paga directamente al propietario del local — el deposito, el primer mes de arriendo y las adecuaciones necesarias. A cambio, tu te comprometes a reportar tus ventas diariamente y a pagar el excedente diario (ventas menos costos) hasta cubrir la deuda con los intereses.</p>
         <p style={s.p}>La diferencia clave es que el pago es variable segun las ventas. Si un dia vendes poco, pagas poco. Si vendes mucho, pagas mas y sales mas rapido de la deuda. Cuando terminas de pagar, el negocio es completamente tuyo.</p>
 
@@ -52,7 +52,7 @@ export default function ComoFinanciarLocalComercialPage() {
         </div>
 
         <div style={{ margin: '2.5rem 0', textAlign: 'center' }}>
-          <a href="/registro" style={s.btn}>Solicitar fondeo en Escala →</a>
+          <a href="/registro" style={s.btn}>Solicitar financiamiento en Escala →</a>
         </div>
 
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '2rem', marginTop: '2rem' }}>

@@ -246,7 +246,7 @@ export default function PresupuestoPage() {
         {data?.resumen && (
           <div style={{ marginBottom: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#8FA3CC', marginBottom: '6px' }}>
-              <span>Progreso de fondeo</span>
+              <span>Progreso de financiamiento</span>
               <span>{data.resumen.pct_fondeado}% — ${fmt(data.resumen.total_fondeado)} de ${fmt(data.resumen.total_presupuesto)}</span>
             </div>
             <div style={{ height: '8px', background: 'rgba(255,255,255,0.08)', borderRadius: '4px', overflow: 'hidden' }}>

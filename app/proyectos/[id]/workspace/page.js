@@ -1217,7 +1217,7 @@ export default function Workspace() {
 
             {esFundador && hitosPendientes > 0 && (
               <div style={{background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'0.875rem 1.25rem',display:'flex',alignItems:'center',justifyContent:'space-between',gap:'0.75rem',marginBottom:'1.5rem'}}>
-                <div style={{fontSize:'0.78rem',color:'#E8A020'}}>📋 Tienes <strong>{hitosPendientes} hito{hitosPendientes > 1 ? 's' : ''}</strong> pendientes — vincúlalos a items del presupuesto para que el fondeo desbloquee el avance automáticamente.</div>
+                <div style={{fontSize:'0.78rem',color:'#E8A020'}}>📋 Tienes <strong>{hitosPendientes} hito{hitosPendientes > 1 ? 's' : ''}</strong> pendientes — vincúlalos a partes del presupuesto para que el financiamiento desbloquee el avance automáticamente.</div>
                 <button onClick={() => setTab('hitos')} style={{background:'none',border:'1px solid rgba(232,160,32,0.4)',color:'#E8A020',borderRadius:'6px',padding:'0.35rem 0.875rem',fontSize:'0.75rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>Ver metas</button>
               </div>
             )}
@@ -1254,7 +1254,7 @@ export default function Workspace() {
                     </button>
                   </div>
                 ))}
-                <button onClick={() => setTab('hitos')} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#1D9E75',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>Ver todos los hitos →</button>
+                <button onClick={() => setTab('hitos')} style={{marginTop:'0.75rem',background:'none',border:'none',color:'#1D9E75',fontSize:'0.78rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontWeight:'600'}}>Ver todas las metas →</button>
               </div>
             )}
 
@@ -1361,7 +1361,7 @@ export default function Workspace() {
                     </div>
                   ))}
                   {hitos.filter(h=>!h.completado).length === 0 && (
-                    <div style={{color:'#8FA3CC',fontSize:'0.82rem',textAlign:'center',padding:'1.5rem',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px'}}>Sin hitos pendientes 🎉</div>
+                    <div style={{color:'#8FA3CC',fontSize:'0.82rem',textAlign:'center',padding:'1.5rem',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'10px'}}>Sin metas pendientes 🎉</div>
                   )}
                 </div>
               </div>
@@ -1727,7 +1727,7 @@ export default function Workspace() {
             <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
               <div>
                 <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Equipos, maquinaria y capital del proyecto</div>
-                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Define los recursos que necesitas y recibe fondeo por item de inversionistas</div>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Define los recursos que necesitas y recibe financiamiento por item de inversionistas</div>
               </div>
               <a href={`/proyectos/${proyecto?.id}/workspace/presupuesto`} style={{background:'#4A90D9',color:'#fff',padding:'0.5rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700',whiteSpace:'nowrap'}}>
                 💰 Ver presupuesto →

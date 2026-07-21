@@ -43,7 +43,7 @@ export default function Page() {
         <p style={s.p}>Tiendas de ropa, restaurantes, fruterias, almacenes de calzado, negocios de belleza, miscelaneas, panaderias y cualquier negocio de venta de productos o servicios que tenga ingresos diarios constantes.</p>
         <h2 style={s.h2}>Lo que necesitas para aplicar</h2>
         <p style={s.p}>El local identificado (aunque no este firmado), claridad de que vas a vender, proyeccion honesta de cuanto esperas vender al dia y disposicion de reportar ventas diariamente a traves de la plataforma.</p>
-        <Link href="/financiar-negocio-local-colombia" style={s.btn}>Ver como funciona el fondeo de local →</Link>
+        <Link href="/financiar-negocio-local-colombia" style={s.btn}>Ver como funciona el financiamiento de local →</Link>
       </div>
     </div>
   )

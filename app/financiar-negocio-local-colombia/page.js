@@ -40,7 +40,7 @@ export default function FinanciarNegocioLocalPage() {
         <h1 style={s.h1}>Tienes el negocio claro y el local visto. Solo te falta quien financie el arriendo.</h1>
         <p style={s.sub}>Escala financia el depósito, el los meses de arriendo del contrato y las adecuaciones de tu local. No necesitas banco, no necesitas garante. Pagas desde los ingresos diarios de tu negocio — cuando vendes, pagas.</p>
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
-          <a href="/registro" style={s.btn}>Solicitar fondeo para el arriendo de mi local →</a>
+          <a href="/registro" style={s.btn}>Solicitar financiamiento para el arriendo de mi local →</a>
           <a href="#como-funciona" style={s.btn2}>Ver cómo funciona</a>
         </div>
 
@@ -62,7 +62,7 @@ export default function FinanciarNegocioLocalPage() {
       </section>
 
       <section style={s.section} id="como-funciona">
-        <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff', marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>Como funciona el fondeo de Escala</h2>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#fff', marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>Como funciona el financiamiento de Escala</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
           {[
             { num: '01', titulo: 'Cuéntanos sobre tu negocio y el local', desc: 'Llegas a la plataforma con el local que ya tienes visto. Nos das los datos del propietario, el valor del arriendo y nos cuentas qué vas a vender y cuánto esperas vender por día.' },
@@ -124,7 +124,7 @@ export default function FinanciarNegocioLocalPage() {
         <div style={{ background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '20px', padding: '3rem', textAlign: 'center' }}>
           <h2 style={{ fontSize: '1.75rem', fontWeight: '800', color: '#fff', marginBottom: '1rem', letterSpacing: '-0.02em' }}>¿Tienes el local visto y el negocio claro?</h2>
           <p style={{ color: '#8FA3CC', marginBottom: '2rem', lineHeight: '1.6' }}>Crea tu cuenta en Escala y empieza el proceso. No necesitas capital propio — solo el negocio, el local y las ganas de trabajar.</p>
-          <a href="/registro" style={s.btn}>Solicitar fondeo para el arriendo de mi local →</a>
+          <a href="/registro" style={s.btn}>Solicitar financiamiento para el arriendo de mi local →</a>
         </div>
       </div>
 

@@ -126,7 +126,7 @@ export default function CapitalWorkspacePage() {
           </div>
           <div style={{ background: 'rgba(232,160,32,0.08)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: '12px', padding: '1.1rem', textAlign: 'center' }}>
             <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#E8A020' }}>${fmt(totalComprometido)}</div>
-            <div style={{ fontSize: '0.7rem', color: '#8FA3CC', marginTop: '3px' }}>En proceso de fondeo</div>
+            <div style={{ fontSize: '0.7rem', color: '#8FA3CC', marginTop: '3px' }}>En proceso de financiamiento</div>
           </div>
           <div style={{ background: 'rgba(74,144,217,0.08)', border: '1px solid rgba(74,144,217,0.2)', borderRadius: '12px', padding: '1.1rem', textAlign: 'center' }}>
             <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#4A90D9' }}>{fondeos.filter(f => f.estado === 'verificado').length}</div>

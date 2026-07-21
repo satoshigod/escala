@@ -1170,7 +1170,7 @@ export default function Proyectos() {
                   {[
                     { n:'1', txt:'Describes tu negocio y el local (5 minutos)' },
                     { n:'2', txt:'Escala verifica el local y te asigna la tasa (24-48 horas)' },
-                    { n:'3', txt:'Un ángel financia el depósito y el arriendo' },
+                    { n:'3', txt:'Un inversionista financia el depósito y el arriendo' },
                     { n:'4', txt:'Tú pagas desde las ventas diarias — sin banco, sin garante' },
                   ].map(p => (
                     <div key={p.n} style={{display:'flex',gap:'0.625rem',alignItems:'center'}}>

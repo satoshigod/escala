@@ -146,7 +146,7 @@ export default function Hitos() {
                 <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🎯</div>
                 <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin metas todavía</div>
                 <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Las metas marcan el avance del proyecto. Crea la primera.</div>
-                <button onClick={() => setVista('nuevo')} style={{background:'#1D9E75',color:'#fff',border:'none',padding:'0.75rem 1.5rem',borderRadius:'8px',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>+ Crear primer hito</button>
+                <button onClick={() => setVista('nuevo')} style={{background:'#1D9E75',color:'#fff',border:'none',padding:'0.75rem 1.5rem',borderRadius:'8px',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>+ Crear primera meta</button>
               </div>
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
