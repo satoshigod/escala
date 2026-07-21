@@ -93,19 +93,25 @@ export default function Chat() {
     const contenido = texto.trim()
     setTexto('')
 
-    await fetch('/api/mensajes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        proyecto_id: proyecto.id,
-        autor_id: usuario.id,
-        contenido
+    try {
+      const envio = await fetch('/api/mensajes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          proyecto_id: proyecto.id,
+          autor_id: usuario.id,
+          contenido
+        })
       })
-    })
+      const envioData = await envio.json()
+      if (envioData.error) { alert('No se pudo enviar el mensaje: ' + envioData.error); setTexto(contenido); setEnviando(false); return }
 
-    const res = await fetch('/api/mensajes?proyecto_id=' + proyecto.id)
-    const data = await res.json()
-    setMensajes(data.mensajes || [])
+      const res = await fetch('/api/mensajes?proyecto_id=' + proyecto.id)
+      const data = await res.json()
+      setMensajes(data.mensajes || [])
+    } catch (e) {
+      alert('No se pudo enviar el mensaje: ' + e.message); setTexto(contenido)
+    }
     setEnviando(false)
     inputRef.current?.focus()
   }

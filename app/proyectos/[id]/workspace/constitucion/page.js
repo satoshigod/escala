@@ -156,6 +156,7 @@ export default function Constitucion({ params }) {
     })
     const data = await res.json()
     if (data.contrato) setContrato(data.contrato)
+    else alert('No se pudo confirmar la firma: ' + (data.error || 'intenta de nuevo'))
   }
 
   function descargarContrato() {
@@ -172,13 +173,14 @@ export default function Constitucion({ params }) {
   async function enviarMensaje() {
     if (!nuevoMensaje.trim()) return
     setEnviandoMsg(true)
-    const { data } = await supabase.from('mensajes').insert([{
+    const contenidoMsg = nuevoMensaje.trim()
+    const { data, error } = await supabase.from('mensajes').insert([{
       proyecto_id: proyectoId,
       autor_id: usuario.id,
-      contenido: nuevoMensaje.trim(),
+      contenido: contenidoMsg,
     }]).select('*, perfiles:autor_id(nombre)').single()
-    if (data) setMensajes(prev => [...prev, data])
-    setNuevoMensaje('')
+    if (data) { setMensajes(prev => [...prev, data]); setNuevoMensaje('') }
+    else alert('No se pudo enviar el mensaje: ' + (error?.message || 'intenta de nuevo'))
     setEnviandoMsg(false)
   }
 

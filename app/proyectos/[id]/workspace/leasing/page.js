@@ -124,7 +124,8 @@ export default function LeasingPage({ params }) {
       })
       const data = await res.json()
       if (data.ok) { setContrato(data.contrato); setPaso(5) }
-    } catch (e) { console.error(e) }
+      else { alert('No se pudo firmar el contrato: ' + (data.error || 'intenta de nuevo')) }
+    } catch (e) { console.error(e); alert('No se pudo firmar el contrato: ' + e.message) }
     setGuardando(false)
   }
 
