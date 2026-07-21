@@ -1677,7 +1677,7 @@ export default function Workspace() {
                     </div>
                     <div>
                       <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Necesito un equipo o maquina</div>
-                      <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega el equipo que necesitas al presupuesto. Un angel lo financia por item — tu pagas desde los ingresos.</div>
+                      <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Agrega el equipo que necesitas al presupuesto. Un inversionista lo financia por item — tu pagas desde los ingresos.</div>
                     </div>
                   </div>
                   <button onClick={irAPresupuesto} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>
@@ -1695,7 +1695,7 @@ export default function Workspace() {
                     </div>
                     <div>
                       <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Necesito un local</div>
-                      <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Un angel financia el deposito y el arriendo del local. Tu lo pagas desde las ventas diarias del negocio.</div>
+                      <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Un inversionista financia el deposito y el arriendo del local. Tu lo pagas desde las ventas diarias del negocio.</div>
                     </div>
                   </div>
                   <a href="/proyectos?escenario=local_comercial" style={{background:'#4A90D9',color:'#fff',border:'none',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap',textDecoration:'none'}}>
@@ -1712,7 +1712,7 @@ export default function Workspace() {
                   </div>
                   <div>
                     <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'2px'}}>Necesito capital de trabajo</div>
-                    <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Para inventario, insumos, materia prima o cualquier gasto operativo. Agregalo al presupuesto y un angel lo financia.</div>
+                    <div style={{fontSize:'0.78rem',color:'#8FA3CC',lineHeight:'1.5'}}>Para inventario, insumos, materia prima o cualquier gasto operativo. Agregalo al presupuesto y un inversionista lo financia.</div>
                   </div>
                 </div>
                 <button onClick={irAPresupuesto} style={{background:'rgba(175,169,236,0.2)',color:'#AFA9EC',border:'1px solid rgba(175,169,236,0.3)',borderRadius:'8px',padding:'0.5rem 1.25rem',fontSize:'0.82rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif',whiteSpace:'nowrap'}}>

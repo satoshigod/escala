@@ -32,7 +32,7 @@ export default function Page() {
           {[
             { n:'1', t:'Publica tu idea en Escala', d:'Describe tu proyecto, que busca hacer, en que sector y que tipo de personas necesitas. No necesitas plan de negocios ni capital.' },
             { n:'2', t:'Construye tu equipo', d:'Especialistas y cofundadores se postulan para trabajar por participacion diferida. Tu aceptas los que encajan con el proyecto.' },
-            { n:'3', t:'Consigue el capital por item', d:'Para cada cosa que necesitas comprar (servidor, maquina, local), un angel lo financia a cambio de participacion o retorno.' },
+            { n:'3', t:'Consigue el capital por item', d:'Para cada cosa que necesitas comprar (servidor, maquina, local), un inversionista lo financia a cambio de participacion o retorno.' },
             { n:'4', t:'Constituye la empresa cuando sea el momento', d:'Escala te guia en la constitucion como SAS en la Camara de Comercio cuando el proyecto lo requiera.' },
           ].map(p => (
             <div key={p.n} style={s.paso}>

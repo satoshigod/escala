@@ -155,7 +155,7 @@ export default function PerfilPublico() {
             </svg>
             <div style={{marginTop:'-60px',marginBottom:'40px'}}>
               <div style={{fontFamily:'monospace',fontSize:'1.5rem',fontWeight:'900',color:'#fff',lineHeight:'1'}}>{score}</div>
-              <div style={{fontSize:'0.65rem',color:'#8FA3CC'}}>Score</div>
+              <div style={{fontSize:'0.65rem',color:'#8FA3CC'}}>Reputación</div>
             </div>
           </div>
         </div>

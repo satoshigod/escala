@@ -28,7 +28,7 @@ export default function Page() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: '1rem', marginBottom: '4rem' }}>
           {[
             { titulo: 'Sin capital inicial', desc: 'Publica tu proyecto en Escala. El equipo se postula para trabajar por participacion. No necesitas pagar nomina desde el inicio.' },
-            { titulo: 'Inversores por item', desc: 'Cuando necesitas un servidor, maquinaria o capital de trabajo, los angeles financian ese item especifico a cambio de participacion o retorno.' },
+            { titulo: 'Inversores por item', desc: 'Cuando necesitas un servidor, maquinaria o capital de trabajo, los inversionistas financian ese item especifico a cambio de participacion o retorno.' },
             { titulo: 'Empresa real en Perú', desc: 'Escala te guia en la constitucion de tu empresa como SAC u otro tipo societario segun tus necesidades.' },
           ].map(c => (
             <div key={c.titulo} style={s.card}>

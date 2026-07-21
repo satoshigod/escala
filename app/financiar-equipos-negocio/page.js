@@ -26,7 +26,7 @@ export default function Page() {
       <div style={s.wrap}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '1rem', marginBottom: '4rem' }}>
           {[
-            { titulo: 'El angel financia el item especifico', desc: 'No invierte en el proyecto completo — invierte en el horno, el servidor o el vehiculo. Tu sabes exactamente que estas dando a cambio.' },
+            { titulo: 'El inversionista financia el item especifico', desc: 'No invierte en el proyecto completo — invierte en el horno, el servidor o el vehiculo. Tu sabes exactamente que estas dando a cambio.' },
             { titulo: 'Tu defines los terminos', desc: 'Porcentaje de participacion, cuotas mensuales o porcentaje de ventas. Tu eliges el modelo que mejor funciona para tu negocio.' },
             { titulo: 'Sin banco, sin garante', desc: 'Escala no evalua historial crediticio. Evaluamos la viabilidad del negocio y el potencial del equipo que vas a comprar.' },
           ].map(c => (

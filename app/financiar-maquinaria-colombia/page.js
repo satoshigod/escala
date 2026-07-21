@@ -48,7 +48,7 @@ export default function Page() {
           {[
             { n: '1', t: 'Describes lo que necesitas', d: 'Nombre del equipo, precio aproximado y para que lo vas a usar. Toma 5 minutos.' },
             { n: '2', t: 'Lo publicas en el directorio', d: 'Los angeles de inversion ven tu necesidad. Tu defines a cambio de que: porcentaje del negocio, cuotas mensuales o parte de tus ventas.' },
-            { n: '3', t: 'Un angel lo financia', d: 'El inversionista compra el equipo o transfiere el capital. Escala verifica la operacion.' },
+            { n: '3', t: 'Un inversionista lo financia', d: 'El inversionista compra el equipo o transfiere el capital. Escala verifica la operacion.' },
             { n: '4', t: 'Tu pagas desde tus ingresos', d: 'Cada mes pagas al inversionista segun lo que acordaron. Sin banco, sin garante, sin historial de credito.' },
           ].map(p => (
             <div key={p.n} style={s.paso}>
