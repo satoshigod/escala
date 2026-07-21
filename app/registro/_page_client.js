@@ -156,6 +156,10 @@ export default function Registro() {
             : (esRegistro ? 'Crear cuenta en Escala →' : 'Iniciar sesión →')}
         </button>
 
+        {!esRegistro && (
+          <a href="/recuperar" style={{ display: 'block', textAlign: 'center', color: '#8FA3CC', fontSize: '0.8rem', marginTop: '1rem', textDecoration: 'none' }}>¿Olvidaste tu contraseña?</a>
+        )}
+
         {mensaje && <div style={mensaje.startsWith('Error:') ? s.error : s.info}>{mensaje}</div>}
         <a href="/" style={s.volver}>← Volver al inicio</a>
       </div>

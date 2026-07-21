@@ -2388,6 +2388,42 @@ const GRUPOS = [
         }
       },
     ]
+  },
+  {
+    nombre: '🔑 Recuperación de contraseña',
+    tests: [
+      {
+        id: 'recuperar_no_enumera',
+        nombre: 'POST /api/recuperar-password — no revela si el email existe',
+        run: async () => {
+          const email = 'qa-no-existe-' + Date.now() + '@escala-qa.test'
+          const res = await fetch('/api/recuperar-password', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          })
+          const data = await res.json()
+          if (res.status !== 200) throw new Error('Esperaba 200, recibió ' + res.status)
+          if (data.error) throw new Error('No debe exponer error (filtraría existencia): ' + data.error)
+          if (!data.ok || !data.mensaje) throw new Error('Debe responder ok:true con mensaje neutro')
+          return 'OK — email inexistente responde neutro sin filtrar existencia'
+        }
+      },
+      {
+        id: 'recuperar_formato_invalido',
+        nombre: 'POST /api/recuperar-password — formato inválido responde neutro',
+        run: async () => {
+          const res = await fetch('/api/recuperar-password', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: 'sin-arroba' })
+          })
+          const data = await res.json()
+          if (res.status !== 200) throw new Error('Esperaba 200, recibió ' + res.status)
+          if (data.error) throw new Error('No debe exponer error de validación (daría pistas)')
+          if (!data.ok) throw new Error('Debe responder ok:true')
+          return 'OK — formato inválido también responde neutro (sin pistas)'
+        }
+      },
+    ]
   }
 ]
 

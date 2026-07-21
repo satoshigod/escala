@@ -710,7 +710,7 @@ const fases = [
     titulo: 'Auditoría UX v2 - escenarios y roles (comité de producto, 2026-07-21)',
     estado: 'progreso',
     valor_total: 4600000,
-    valor_hecho: 2200000,
+    valor_hecho: 3000000,
     hitos: [
       { num: '42.1', nombre: 'Residuo de lenguaje "Un ángel lo financia" en el selector de maquinaria (3 ocurrencias: 2 en selector + 1 en detalle) reemplazado por "Un inversionista lo financia". Grupo Lenguaje.', done: true, valor: 400000, quien: 'Claude AI + Ivan' },
       { num: '42.2', nombre: 'Residuo "Fondeo de local" en el badge del escenario de local reemplazado por "Financiar local". Grupo Lenguaje.', done: true, valor: 300000, quien: 'Claude AI + Ivan' },
@@ -718,7 +718,7 @@ const fases = [
       { num: '42.4', nombre: 'El intent capturado en el home se propaga al onboarding: el onboarding lee ?intent= y preselecciona el rol, saltando al paso 2. Ya no se le vuelve a preguntar al usuario lo que ya dijo. Grupo Flujo.', done: true, valor: 800000, quien: 'Claude AI' },
       { num: '42.5', nombre: 'Doble "¿Qué necesitas?" resuelto: el home conserva la frase, el selector de proyecto (paso 0 y selector interno del formulario) pasa a "¿Qué quieres hacer?" para eliminar el eco confuso entre las dos superficies. Solo lenguaje, sin cambio de funcionalidad. Grupo Arquitectura.', done: true, valor: 400000, quien: 'Claude AI' },
       { num: '42.6', nombre: 'Diferir campos no esenciales del onboarding: convertir campos de ensayo en opcionales o tap-eables para reducir abandono en el tramo de entrada. Grupo Flujo. PENDIENTE.', done: false, valor: 600000, quien: 'Claude AI' },
-      { num: '42.7', nombre: 'Recuperación de contraseña (hoy inexistente, agujero de abandono duro). Resend ya integrado. Bloque dedicado. Grupo Agujero. PENDIENTE.', done: false, valor: 800000, quien: 'Claude AI' },
+      { num: '42.7', nombre: 'Recuperación de contraseña (cerraba un agujero de abandono duro): flujo completo con reset nativo de Supabase Auth y correo por Resend con marca Escala. Páginas /recuperar (pide enlace, respuesta neutra anti-enumeración de cuentas) y /restablecer (nueva contraseña vía updateUser, maneja PASSWORD_RECOVERY, sesión existente y PKCE), API /api/recuperar-password (generateLink type recovery server-side con SUPABASE_SECRET_KEY), y enlace "¿Olvidaste tu contraseña?" en el login. Config manual requerida: agregar https://escala.network/restablecer a Redirect URLs de Supabase Auth. Grupo Agujero.', done: true, valor: 800000, quien: 'Claude AI' },
       { num: '42.8', nombre: 'Migrar el id interno del escenario de maquinaria de "otro" a "maquinaria" con migración de datos cuidadosa (los proyectos ya creados con "otro" deben mapearse). El lenguaje visible ya está corregido; esto salda la deuda técnica de nomenclatura. Grupo Deuda técnica. PENDIENTE, el más delicado por tocar datos.', done: false, valor: 1000000, quien: 'Claude AI' },
     ]
   }
