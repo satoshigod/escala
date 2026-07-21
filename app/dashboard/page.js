@@ -126,9 +126,9 @@ export default function Dashboard() {
       setMensajesNoLeidos(data.mensajesNoLeidos || 0)
 
       // Cargar total de ingresos del primer proyecto del fundador
-      const primerProyecto = (data.misProyectos || [])[0]
-      if (primerProyectoFundado) {
-        fetch('/api/ingresos?proyecto_id=' + primerProyectoFundado.id)
+      const primerProyecto = (data.misProyectos || []).find(p => p.estado === 'activo') || (data.misProyectos || [])[0] || null
+      if (primerProyecto) {
+        fetch('/api/ingresos?proyecto_id=' + primerProyecto.id)
           .then(r => r.json())
           .then(d => setTotalIngresos(d.total || 0))
           .catch(() => {})
@@ -288,15 +288,28 @@ export default function Dashboard() {
     </div>
   )
 
+  const accFundador = esFundador || ['ideador','empresa'].includes(perfil?.rol_principal)
+  const accInversionista = ['capitalista','angel'].includes(perfil?.rol_principal)
+  const accColaborador = ['especialista','ejecutor','mentor'].includes(perfil?.rol_principal)
+
   const acciones = [
     ...(primerProyectoFundado ? [{ icon: '🧩', label: 'Publicar rol', href: '/proyectos/'+primerProyectoFundado.id+'/workspace?tab=roles' }] : []),
-    { icon: '🚀', label: 'Crear proyecto', href: '/proyectos' },
-    { icon: '🔍', label: 'Buscar especialista', href: '/directorio' },
-    { icon: '💰', label: 'Registrar aporte', href: '/aportes' },
-    { icon: '📈', label: 'Registrar ingreso', href: '/ingresos' },
-    { icon: '🎯', label: 'Crear meta financiable', href: '/hitos' },
-    { icon: '✉️', label: 'Invitar especialista', href: '/invitar' },
-    { icon: '🌟', label: 'Invertir en proyectos', href: '/angel' },
+    ...(accFundador ? [
+      { icon: '🚀', label: 'Crear proyecto', href: '/proyectos' },
+      { icon: '🔍', label: 'Buscar especialista', href: '/directorio' },
+      { icon: '📈', label: 'Registrar ingreso', href: '/ingresos' },
+      { icon: '🎯', label: 'Crear meta financiable', href: '/hitos' },
+      { icon: '✉️', label: 'Invitar especialista', href: '/invitar' },
+    ] : []),
+    ...(accInversionista ? [
+      { icon: '🌟', label: 'Invertir en proyectos', href: '/angel' },
+      { icon: '💰', label: 'Registrar aporte', href: '/aportes' },
+    ] : []),
+    ...(accColaborador ? [
+      { icon: '🔍', label: 'Buscar proyectos', href: '/buscar' },
+      { icon: '📋', label: 'Mis postulaciones', href: '/postulaciones' },
+      { icon: '👤', label: 'Mi perfil', href: '/perfil' },
+    ] : []),
     ...(perfil?.es_admin ? [{ icon: '🛠️', label: 'Admin Escala', href: '/admin-escala' }] : []),
   ]
 

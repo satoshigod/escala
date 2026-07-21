@@ -721,6 +721,20 @@ const fases = [
       { num: '42.7', nombre: 'Recuperación de contraseña (cerraba un agujero de abandono duro): flujo completo con reset nativo de Supabase Auth y correo por Resend con marca Escala. Páginas /recuperar (pide enlace, respuesta neutra anti-enumeración de cuentas) y /restablecer (nueva contraseña vía updateUser, maneja PASSWORD_RECOVERY, sesión existente y PKCE), API /api/recuperar-password (generateLink type recovery server-side con SUPABASE_SECRET_KEY), y enlace "¿Olvidaste tu contraseña?" en el login. Config manual requerida: agregar https://escala.network/restablecer a Redirect URLs de Supabase Auth. Grupo Agujero.', done: true, valor: 800000, quien: 'Claude AI' },
       { num: '42.8', nombre: 'Migrado el id interno del escenario de maquinaria de "otro" a "maquinaria" (patrón expand-migrate-contract, sin romper datos). Escrituras (opciones del selector, wizard, test QA) usan "maquinaria"; lecturas de datos persistidos (dashboard 3 sitios, workspace) aceptan "maquinaria" O "otro" durante la transición para no romper proyectos ya creados. Se distinguió del "otro" de categoría de negocio (label "Otro"), presupuesto e ingresos, que NO se tocaron. REQUIERE correr SQL en Supabase: UPDATE proyectos SET escenario=\'maquinaria\' WHERE escenario=\'otro\'. FASE 2 futura (trivial, cuando 0 filas con "otro"): quitar el fallback "otro" de las 4 lecturas. Grupo Deuda técnica.', done: true, valor: 1000000, quien: 'Claude AI' },
     ]
+  },
+  {
+    titulo: 'Auditoría de user flows - ejecución (Dashboard y Workplace, 2026-07-21)',
+    estado: 'progreso',
+    valor_total: 6000000,
+    valor_hecho: 900000,
+    hitos: [
+      { num: '43.1', nombre: 'D1 (bug, dashboard): el total de ingresos del fundador siempre mostraba $0. En cargar() se usaba primerProyectoFundado (null en el closure de montaje, se define después desde estado aún vacío) en vez del primerProyecto calculado desde los datos frescos. Fix: calcular primerProyecto desde data.misProyectos (activo, o el primero) y usarlo para el fetch de /api/ingresos. Grupo Bug.', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: '43.2', nombre: 'D2 (UX por perfil, dashboard): accesos rápidos filtrados por rol. Antes todos veían todas las acciones (un especialista veía Crear proyecto, Registrar ingreso, Crear meta, Invitar, Invertir). Ahora fundador ve acciones de fundador, inversionista las suyas, y colaborador (especialista/gerente/mentor) ve Buscar proyectos, Mis postulaciones, Mi perfil (rutas ya existentes). Grupo UX.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: '43.3', nombre: 'D3 (UX, dashboard): unificar los dos diseños de tarjeta de proyecto y arreglar el "···" engañoso (una variante parece menú pero es solo link al workspace). Grupo UX. PENDIENTE.', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: '43.4', nombre: 'D4 (acción faltante, dashboard): exponer en la tarjeta las acciones de proyecto que YA existen en backend (PATCH estado activo/completado/publicar borrador, DELETE). Editar/pausar/cerrar/eliminar/publicar desde el dashboard. Grupo Acción faltante. PENDIENTE.', done: false, valor: 800000, quien: 'Claude AI' },
+      { num: '43.5', nombre: 'Mejora "Necesito más" (C2.38): las 4 pills (empleado/equipo/local/capital) apuntan todas al hub genérico ?tab=necesito_mas en vez de hacer deep-link a su acción. Corregir con cuidado: los destinos son dependientes del escenario (en local/equipos "publicar rol" vive dentro de necesito_mas, presupuesto es subpágina en local). Grupo UX. PENDIENTE.', done: false, valor: 400000, quien: 'Claude AI' },
+      { num: '43.6', nombre: 'Auditoría y ejecución del resto del Dashboard (wallet, notificaciones, mensajes) y las 12 sub-pantallas del Workplace. Por tandas con hallazgos priorizados. Grupo UX. PENDIENTE.', done: false, valor: 3400000, quien: 'Claude AI' },
+    ]
   }
 ]
 export default function Desarrollo() {
