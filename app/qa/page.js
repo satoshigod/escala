@@ -2454,7 +2454,6 @@ const RUTAS_CRITICAS = [
   { ruta: '/admin/financiero',     label: 'Admin Financiero' },
   // Desarrollo
   { ruta: '/desarrollo',           label: 'Desarrollo' },
-  { ruta: '/desarrollo-limpio',    label: 'Desarrollo Limpio' },
 ]
 
 const MANUAL = [

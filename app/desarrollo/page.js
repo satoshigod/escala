@@ -1,873 +1,441 @@
 'use client'
+// app/desarrollo-limpio/page.js
+// ROADMAP ESCALA — Estructura de 10 Capas Estrategicas Permanentes
+// Cualquier funcionalidad nueva debe ubicarse en una de estas capas.
+// Si no cabe en ninguna, es senal de que identificamos una capa nueva.
+
 import { useState } from 'react'
 
-// NOTA: Esta es la vista HISTORICA del roadmap — organizada por orden de implementacion.
-// La vista ESTRATEGICA por capas esta en /desarrollo-limpio
-// Cualquier funcionalidad nueva debe agregarse alli, en la capa que corresponda.
+// ============================================================
+// DEFINICION DE CAPAS ESTRATEGICAS
+// Estas capas son permanentes. Todo el desarrollo de Escala
+// para los proximos 10 anos cabe dentro de estas 10 capas.
+// ============================================================
 
-const fases = [
+const CAPAS = [
   {
-    num: '01',
-    titulo: 'Presentación y diseño web',
-    estado: 'completa',
-    valor_total: 3200000,
-    valor_hecho: 3200000,
-    hitos: [
-      { num: '1.1', nombre: 'Arquitectura de información y navegación', done: true, valor: 400000, quien: 'Claude AI + Fundador' },
-      { num: '1.2', nombre: 'Diseño visual y sistema de estilos mobile-first', done: true, valor: 600000, quien: 'Claude AI' },
-      { num: '1.3', nombre: 'Página principal (index.html)', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '1.4', nombre: 'Página de proyectos (proyectos.html)', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '1.5', nombre: 'Página proyecto piloto (proyecto-escala.html)', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '1.6', nombre: 'Página Ángel de Impulso (impulso.html)', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '1.7', nombre: 'Página de costos (costos.html)', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '1.8', nombre: 'Página expectativa WhatsApp (coming.html)', done: true, valor: 100000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '02',
-    titulo: 'Backend y base de datos',
-    estado: 'completa',
-    valor_total: 12000000,
-    valor_hecho: 12000000,
-    hitos: [
-      { num: '2.1', nombre: 'Modelo de datos completo — 8 tablas Supabase PostgreSQL', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '2.2', nombre: 'Sistema de autenticación — Supabase Auth + trigger perfiles', done: true, valor: 1500000, quien: 'Supabase + Claude AI' },
-      { num: '2.3', nombre: 'API REST proyectos, usuarios y roles — 3 endpoints', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '2.4', nombre: 'API aportes, hitos y postulaciones — 3 endpoints', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '2.5', nombre: 'Sistema de notificaciones por email con Resend — postulaciones, tareas, invitaciones', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '2.6', nombre: 'Almacenamiento de archivos (Supabase Storage) — API /api/upload con validación de tipo y tamaño', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '2.7', nombre: 'Infraestructura y despliegue — GitHub + Vercel + Supabase', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '03',
-    titulo: 'Frontend operativo — plataforma real',
-    estado: 'completa',
-    valor_total: 20000000,
-    valor_hecho: 20000000,
-    hitos: [
-      { num: '3.1', nombre: 'Registro y onboarding de usuarios — 3 pasos', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '3.2', nombre: 'Publicación y gestión de proyectos con listado en tiempo real', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
-      { num: '3.3', nombre: 'Detalle de proyecto con 9 roles reales y postulación real', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '3.4', nombre: 'Panel de aportes con trazabilidad completa', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '3.5', nombre: 'Panel fundador — postulaciones recibidas por rol con aceptar/rechazar', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '3.6', nombre: 'Panel postulante — historial de postulaciones enviadas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '3.7', nombre: 'Hitos del proyecto — crear, completar, expediente', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '3.8', nombre: 'Perfil público de usuario con Score, métricas y WhatsApp directo', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '3.9', nombre: 'Panel de administración interno Escala con tabs', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '3.10', nombre: 'Link perfil postulante desde panel fundador', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '3.11', nombre: 'Página de proyecto enriquecida — descripción, hitos completados, roles prioritarios, WhatsApp', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '3.12', nombre: 'API postulaciones incluye nombre del proyecto (join con proyectos)', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '3.13', nombre: 'Postulaciones clickeables — llevan al proyecto o workspace según estado', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '04',
-    titulo: 'Dashboard contextual multi-rol',
-    estado: 'completa',
-    valor_total: 7500000,
-    valor_hecho: 7500000,
-    hitos: [
-      { num: '4.1', nombre: 'Dashboard con 3 tabs: Especialista / Fundador / Notificaciones', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '4.2', nombre: 'Tab especialista — postulaciones, score, explorar proyectos, aportes, carril', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '4.3', nombre: 'Tab fundador — mis proyectos, postulaciones recibidas, hitos, ingresos', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '4.4', nombre: 'Tab notificaciones — aceptaciones, rechazos, nuevas postulaciones recibidas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '4.5', nombre: 'Nombre del proyecto en cada postulación — fundador y especialista', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '4.6', nombre: 'Botones aceptar/rechazar y ver perfil directo desde dashboard fundador', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
-      { num: '4.7', nombre: 'Perfil público con WhatsApp — link desde panel fundador y notificaciones', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '05',
-    titulo: 'Sistema de calificación y Escala Score',
-    estado: 'completa',
-    valor_total: 8000000,
-    valor_hecho: 8000000,
-    hitos: [
-      { num: '5.1', nombre: 'Algoritmo del Escala Score — 4 dimensiones verificables', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '5.2', nombre: 'Página Mi Score con gráfico circular, métricas y cómo subir', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '5.3', nombre: 'Panel de definición de carril A/B/C por postulación', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '5.4', nombre: 'Track record público — historial verificable en perfil de usuario', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '06',
-    titulo: 'Ingresos, pagos y distribución',
+    id: 'C1',
+    titulo: 'CAPA 1 — Infraestructura',
+    descripcion: 'Los cimientos sobre los que todo lo demas se construye. Auth, base de datos, storage, deploy, seguridad, observabilidad, compliance, multi-tenant, i18n. Sin esta capa nada mas funciona.',
+    color: '#4A90D9',
     estado: 'progreso',
-    valor_total: 9800000,
-    valor_hecho: 5000000,
-    hitos: [
-      { num: '6.1', nombre: 'Registro de ingresos con preview de distribución automática', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
-      { num: '6.2', nombre: 'Panel Ángel de Impulso — explorar hitos, financiar, historial', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '6.3', nombre: 'Integración Wompi (pagos Colombia)', done: false, valor: 2500000, quien: 'Desarrollador' },
-      { num: '6.4', nombre: 'Facturación electrónica DIAN', done: false, valor: 2300000, quien: 'Desarrollador + Contador' },
-    ]
-  },
-  {
-    num: '09',
-    titulo: 'Workspace del proyecto — colaboración del equipo',
-    estado: 'completa',
-    valor_total: 10000000,
-    valor_hecho: 10000000,
-    hitos: [
-      { num: '9.1', nombre: 'Workspace con 5 tabs: Resumen, Hitos, Equipo, Mis aportes, Economía', done: true, valor: 3000000, quien: 'Claude AI + Fundador' },
-      { num: '9.2', nombre: 'Control de acceso — solo miembros aceptados y fundador', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '9.3', nombre: 'Tab equipo — todos los miembros con rol, ciudad, WhatsApp directo', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '9.4', nombre: 'Tab hitos — kanban pendiente/completado con crear y marcar desde workspace', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '9.5', nombre: 'Tab aportes — registrar aportes directamente en el workspace', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '9.6', nombre: 'Tab economía — deuda diferida, participación, carriles explicados', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '9.7', nombre: 'Links al workspace desde dashboard fundador y especialista', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '9.8', nombre: 'Chat interno del equipo por proyecto — tiempo real con Supabase Realtime', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '9.9', nombre: 'Notificaciones por email — nueva postulacion, aceptada, rechazada con Resend', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '10',
-    titulo: 'Descubrimiento — buscar, filtrar, directorio',
-    estado: 'completa',
-    valor_total: 5000000,
-    valor_hecho: 5000000,
-    hitos: [
-      { num: '10.1', nombre: 'Directorio de especialistas con búsqueda por nombre, especialidad y ciudad', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '10.2', nombre: 'Buscar proyectos con filtros por sector, tipo A/B y ciudad', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '10.3', nombre: 'Página de bienvenida para usuarios nuevos sin perfil', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '10.4', nombre: 'Redireccion inteligente según estado del perfil', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '11',
-    titulo: 'Herramientas del fundador — reclutamiento y analítica',
-    estado: 'completa',
-    valor_total: 6500000,
-    valor_hecho: 6500000,
-    hitos: [
-      { num: '11.1', nombre: 'Invitar especialistas por email con mensaje personalizado y link del proyecto', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '11.2', nombre: 'Pagina publica del proyecto sin login — compartible por WhatsApp y redes', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '11.3', nombre: 'Panel de metricas — postulaciones por rol, embudo de conversion, tasa de aceptacion', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '11.4', nombre: 'Template de invitacion por email con Resend', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '12',
-    titulo: 'Plan de trabajo por rol — tareas, historial y notificaciones',
-    estado: 'completa',
-    valor_total: 7000000,
-    valor_hecho: 7000000,
-    hitos: [
-      { num: '12.1', nombre: 'Plantillas de tareas iniciales por rol — Abogado, Contador, Desarrollador, Gerente, Diseñador, CM, Inversionista', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '12.2', nombre: 'Carga de plantilla por rol con asignación a miembro del equipo', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '12.3', nombre: 'Flujo de estados: pendiente → en progreso → completada → verificada', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '12.4', nombre: 'Verificación de tareas por fundador o gerente de proyecto', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '12.5', nombre: 'Crear tareas nuevas con razón de creación visible para el equipo', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '12.6', nombre: 'Filtros por estado — especialistas ven solo sus tareas por defecto', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '12.7', nombre: 'Gerente ve sus tareas primero con toggle para ver todo el equipo', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '12.8', nombre: 'Historial de asignaciones registrado en base de datos', done: true, valor: 750000, quien: 'Claude AI + Fundador' },
-      { num: '12.9', nombre: 'Emails automáticos: tarea asignada, completada y verificada', done: true, valor: 750000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '13',
-    titulo: 'Inteligencia operativa — automatización y personalización',
-    estado: 'completa',
-    valor_total: 20500000,
-    valor_hecho: 20500000,
-    hitos: [
-      { num: '13.1', nombre: 'Selector de industria al crear proyecto con carga automática de tareas comerciales', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '13.2', nombre: 'Selector de país al crear proyecto con carga automática de tareas regulatorias', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '13.3', nombre: 'Biblioteca de tareas regulatorias por país — 7 países con 5-6 tareas cada uno', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '13.4', nombre: 'Biblioteca de tareas comerciales por industria — 5 industrias con 6 tareas cada una', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '13.5', nombre: 'Asignación inteligente de tareas — filtrar ejecutores por categoría del rol', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '13.6', nombre: 'Campo país de jurisdicción en onboarding y perfil del especialista', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '13.7', nombre: 'Columnas industria y pais en tabla proyectos (migración SQL)', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '13.8', nombre: 'Perfiles comerciales por industria configurables desde admin sin tocar código', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '13.9', nombre: 'Panel admin completamente parametrizable — industrias, países, tareas sin deploy (CRUD completo)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '13.10', nombre: 'Selectores de país dinámicos — leen de DB, permiten crear país nuevo con alerta al admin', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '13.11', nombre: 'API /api/paises — crear país desde cliente, alerta email al admin con link a configurar tareas', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '13.12', nombre: 'Fix crítico: .single() de Supabase bloqueaba creación de países nuevos sin tareas previas', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '13.13', nombre: 'Fix botón crear país — type=button explícito para evitar conflicto de eventos en React', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '13.14', nombre: 'Fix crítico: campo estado faltaba en insert de proyectos — todos quedaban invisibles', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '13.15', nombre: 'Eliminar proyectos desde admin — borra en cascada roles, tareas, postulaciones, hitos, aportes', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '13.16', nombre: 'Eliminar usuarios desde admin — borra perfil, postulaciones y cuenta de Supabase Auth', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '13.17', nombre: 'Doble confirmación de seguridad al eliminar — requiere escribir el nombre exacto', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '13.18', nombre: 'QA completo del flujo de país — 4 funcionalidades verificadas end-to-end', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '14',
-    estado: 'completa',
-    titulo: 'Cobertura completa del documento consolidado',
-    estado: 'progreso',
-    valor_total: 19300000,
-    valor_hecho: 19300000,
-    hitos: [
-      { num: '14.1', nombre: 'Perfil Comercial de Escala — roadmap propio en /comercial con convenios estratégicos', done: true, valor: 2500000, quien: 'Claude AI + Fundador' },
-      { num: '14.2', nombre: 'Desarrollo de alianzas — incubadoras, aceleradoras, universidades, fondos (en /comercial)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '14.3', nombre: 'Estrategia de adquisición por tipo de usuario — Fundadores, Ejecutores, Gerentes, Ángeles, Mentores, Empresas (en /comercial)', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '14.4', nombre: 'Distinción especialistas locales vs globales — filtro regulatorio estricto vs apertura internacional', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '14.4b', nombre: 'Fix crítico: React no refrescaba opciones del selector Asignar — agregada key única por categoría', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '14.4c', nombre: 'Selector dinámico de especialidades en onboarding — igual que países, con opción de crear nueva', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '14.5', nombre: 'Crear nuevos perfiles profesionales (especialidades) desde admin sin tocar código — CRUD completo en tab Especialidades', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '14.6', nombre: 'Categorías como entidad dinámica — tabla propia, API y selector con opción crear nueva, igual que países', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '14.7', nombre: 'Dashboard único de admin (tab Resumen) — usuarios, proyectos, score promedio y enlaces a técnico/comercial/QA en un vistazo', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '14.8', nombre: 'Alerta visible de países pendientes de configurar — badge en tab y panel dedicado, no solo email', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
-      { num: '14.9', nombre: 'Auditoría creado_por extendida a países, categorías y especialidades — quién creó cada una, visible en admin', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
-      { num: '14.10', nombre: 'Panel Resumen incluye contadores de Categorías y Roles/Especialidades, no solo países', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '14.11', nombre: 'UX — explicación contextual de cada rol en onboarding (ejemplo concreto al seleccionar)', done: true, valor: 600000, quien: 'Claude AI + Fundador' },
-      { num: '14.12', nombre: 'UX — explainer expandible de cómo sube el Escala Score en /score', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '14.13', nombre: 'UX — tooltips de Tipo A/B en resultados de búsqueda', done: true, valor: 300000, quien: 'Claude AI + Fundador' },
-      { num: '14.14', nombre: 'UX — página /que-es-escala con manual funcional visible antes del registro', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '14.15', nombre: 'Resumen distingue categorías/especialidades base del sistema vs creadas orgánicamente por usuarios', done: true, valor: 300000, quien: 'Claude AI + Fundador' },
-      { num: '14.16', nombre: 'Fix UX: guardar especialidad crea automáticamente la categoría pendiente si el usuario escribió texto sin darle clic a Crear', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '14.17', nombre: 'Fix raíz: sintaxis .insert([objeto]) descartaba silenciosamente creado_por en Supabase JS — corregido a .insert(objeto) explícito en países, categorías y especialidades', done: true, valor: 600000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '15',
-    titulo: 'Rediseño del Dashboard — centro de operaciones',
-    estado: 'completa',
-    valor_total: 8000000,
-    valor_hecho: 8000000,
-    hitos: [
-      { num: '15.1', nombre: 'D1 — Endpoint agregador /api/dashboard, reemplaza 13+ llamadas N+1 por consultas paralelas en servidor', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '15.2', nombre: 'D2 — Bandeja de trabajo unificada: tareas, hitos y postulaciones pendientes en una sola lista accionable', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '15.3', nombre: 'D3 — Rediseño visual completo: header compacto, bandeja+acciones lado a lado, proyectos como tarjetas, sidebar de indicadores', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '15.4', nombre: 'D4 — Vistas diferenciadas: Gerente (carga de equipo por persona) y Ángel de Impulso (hitos financiados, retorno)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '15.5', nombre: 'D5 — Página /perfil/editar nueva + campos idiomas, disponibilidad, reconocimientos visibles en perfil público', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '15.6', nombre: 'D6 — Calendario mensual /calendario: tareas con fecha_limite, hitos, próximos 7 días, asignación de fechas inline', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '16',
-    titulo: 'Completar el documento de rediseño — todo lo faltante',
-    estado: 'completa',
-    valor_total: 6000000,
-    valor_hecho: 6000000,
-    hitos: [
-      { num: '16.1', nombre: 'Roles Mentor y Empresa — onboarding con 7 roles, vistas diferenciadas en dashboard', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
-      { num: '16.2', nombre: 'Métricas visuales — gráficos SVG nativos: aportes por mes, donut por tipo, tareas por estado, hitos', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '16.3', nombre: 'Perfil — horas aportadas, valor generado, participaciones activas visibles en perfil público', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
-      { num: '16.4', nombre: 'Dashboard — mensajes sin leer con badge real, proyectos finalizados en sidebar', done: true, valor: 700000, quien: 'Claude AI + Fundador' },
-      { num: '16.5', nombre: 'API usuarios extendida — metricas calculadas (horasAportadas, valorGenerado, participacionesActivas, empresasParticipa)', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
-      { num: '16.6', nombre: 'Endpoint dashboard — mensajesNoLeidos y proyectosFinalizados calculados en servidor', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-    ]
-  },
-  {
-    num: '07',
-    titulo: 'Contratos digitales y documentos legales',
-    estado: 'progreso',
-    valor_total: 8000000,
-    valor_hecho: 0,
-    hitos: [
-      { num: '7.1', nombre: 'Plantillas legales base — Contrato Marco + Anexo de Alcance + Instrumento de Deuda Diferida. 15 cláusulas legales colombianas generadas automáticamente ↑ completado Fase 23', done: true, valor: 1400000, quien: 'Abogado + Desarrollador' },
-      { num: '7.2', nombre: 'Motor de generación automática de contratos — se genera al aceptar una postulación, PDF inline sin librerías externas, Modalidad A y B ↑ completado Fase 23', done: true, valor: 2000000, quien: 'Desarrollador' },
-      { num: '7.3', nombre: 'Firma digital integrada (DocuSign/HelloSign) — pendiente, requiere contratar servicio', done: false, valor: 2500000, quien: 'Desarrollador' },
-      { num: '7.4', nombre: 'Expediente digital del proyecto — contratos visibles en workspace con estado de firma de ambas partes ↑ completado Fase 23', done: true, valor: 2100000, quien: 'Desarrollador' },
-    ]
-  },
-  {
-    num: '08',
-    titulo: 'Mejoras de plataforma y UX',
-    estado: 'progreso',
-    valor_total: 6000000,
-    valor_hecho: 4000000,
-    hitos: [
-      { num: '8.1', nombre: 'Notificaciones en tiempo real — toast + indicador de conexión vía Supabase Realtime en dashboard', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '8.2', nombre: 'Subida de archivos y evidencias de aportes — UI completa con preview en /aportes', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '8.3', nombre: 'Búsqueda y filtros avanzados — país, industria, especialidad, score mínimo, ordenamiento en /buscar y /directorio', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '8.4', nombre: 'App móvil (React Native o PWA)', done: false, valor: 2000000, quien: 'Desarrollador' },
-    ]
-  },
-  {
-    num: '17',
-    titulo: 'Sistema de Notificaciones Multicanal',
-    estado: 'progreso',
-    valor_total: 24950000,
-    valor_hecho: 12950000,
-    hitos: [
-      { num: '17.1', nombre: 'Infraestructura base — tablas notificaciones, push_subscriptions y preferencias_notificacion con RLS y Realtime activado', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '17.2', nombre: 'Motor central de despacho notificar() — email + in-app + push en un solo punto de entrada, con reglas de prioridad (CRÍTICA no se puede desactivar)', done: true, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '17.3', nombre: 'Catálogo de eventos Fase 1 — 12 eventos cableados a puntos reales: proyectos, postulaciones, tareas, hitos, aportes y alertas de administración', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '17.4', nombre: 'Web Push — Service Worker, suscripción VAPID y envío con librería web-push (funciona en desktop y Android; en iOS requiere agregar a pantalla de inicio)', done: true, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '17.5', nombre: 'Centro de notificaciones real en el Dashboard — feed persistente con marcar leída/marcar todas, realtime multi-evento (ya no solo postulaciones), botón activar push', done: true, valor: 1800000, quien: 'Claude AI + Fundador' },
-      { num: '17.6', nombre: 'Dominio propio verificado con DKIM/SPF/DMARC en Resend (mail.escala.network) — infraestructura de envío transaccional', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '17.7', nombre: 'Canal SMS — requiere contratar proveedor nuevo (Twilio o Sinch), no implementado todavía', done: false, valor: 1500000, quien: 'Desarrollador' },
-      { num: '17.8', nombre: 'Canal WhatsApp — requiere API oficial de Meta vía Twilio o 360Dialog, no implementado todavía', done: false, valor: 2000000, quien: 'Desarrollador' },
-      { num: '17.9', nombre: 'Preferencias por tipo de evento — hoy es un toggle global de email/push, falta granularidad por categoría como pide el documento', done: false, valor: 800000, quien: 'Desarrollador' },
-      { num: '17.10', nombre: 'Notificaciones basadas en tiempo (hito por vencer, proyecto sin actividad, tarea vencida) — requiere Vercel Cron Jobs', done: false, valor: 1200000, quien: 'Desarrollador' },
-      { num: '17.11', nombre: 'Migrar invitaciones (/invitar) al motor notificar() con detección de usuario ya registrado para sumar in-app', done: false, valor: 500000, quien: 'Desarrollador' },
-      { num: '17.12', nombre: 'Resto del catálogo del documento (~217 eventos) — contratos, facturación, marketplace, votaciones, inversionistas, suscripciones, moderación, soporte, comunidad, logros, liquidación, IA, integraciones, API pública. Se cablean a medida que cada módulo se construye; estimado solo del trabajo de notificación, no de construir el módulo en sí', done: false, valor: 6000000, quien: 'Desarrollador' },
-      { num: '17.13', nombre: 'Correos de autenticación (registro, recuperación de contraseña) conectados a Resend con dominio propio vía SMTP — infraestructura de envío, independiente de si se exige confirmar o no', done: true, valor: 800000, quien: 'Claude AI + Fundador' },
-      { num: '17.14', nombre: 'Migración de dominio — los 9 archivos que generaban links (correos, invitaciones, compartir proyecto) apuntan a escala.network en vez del subdominio de Vercel', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '17.15', nombre: 'Verificación de correo no-bloqueante — sistema propio independiente de Supabase Auth: banner en el dashboard con reenvío, nunca impide registrarse ni usar la plataforma', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
-      { num: '17.16', nombre: 'Panel de pruebas integrado a /qa — 13 tests nuevos que disparan los 12 eventos reales de notificación contra tu propio usuario, con limpieza automática de datos de prueba', done: true, valor: 700000, quien: 'Claude AI' },
-      { num: '17.17', nombre: 'Fix: POST /api/aportes insertaba NULL en fecha en vez de usar el default de la base de datos, violando el constraint — encontrado por el panel de QA, no era exclusivo de las pruebas', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '17.18', nombre: 'escala.network sirve la presentación (index.html) directo en la raíz sin cambiar la URL — antes redirigía visiblemente a /index.html', done: true, valor: 250000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '18',
-    titulo: 'Rediseño de la landing page — arquitectura de información',
-    estado: 'completa',
-    valor_total: 5950000,
-    valor_hecho: 5950000,
-    hitos: [
-      { num: '18.1', nombre: 'Auditoría UX y estrategia de contenido de la landing — comité de expertos simulado (producto, UX, VC, CRO, storytelling), 20 preguntas + 8 perspectivas de usuario', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '18.2', nombre: 'index.html reconstruido — de 3.840 a ~1.030 palabras (73% más corto), 6 secciones con un solo objetivo por página en vez de 16 secciones compitiendo entre sí', done: true, valor: 1500000, quien: 'Claude AI' },
-      { num: '18.3', nombre: '7 páginas nuevas — perfiles.html, casos.html, compensacion.html, proteccion.html, inversionistas.html, por-que-existe.html y faq.html, con el contenido que sobraba en el home movido a su propio lugar', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '18.4', nombre: 'Fix de honestidad — los 8 casos de ejemplo (VetApp, Ekivibe, etc.) quedan etiquetados como "ejemplo ilustrativo", ya no se leen como casos de éxito verificados con datos inventados', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '18.5', nombre: 'Fix de naming — "Tipo A/B" de proyectos ya no choca con "Carril A/B/C" de compensación, se renombraron a Creación/Transformación', done: true, valor: 150000, quien: 'Claude AI' },
-      { num: '18.6', nombre: 'FAQ nueva — 8 preguntas reales (legal, incumplimiento, diferencia con freelance, etc.) sin inventar cifras de negocio que Escala no tiene todavía', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '18.7', nombre: 'Deep-linking entre páginas — el selector de perfiles del home salta directo a la pestaña correcta en perfiles.html en vez de abrir la página en la pestaña por defecto', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '18.8', nombre: 'Fix: carriles de compensación y tipos de proyecto quedaron sin ninguna mención en el home tras la reestructuración inicial — se agregaron versiones resumidas con link a compensacion.html', done: true, valor: 300000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '19',
-    titulo: 'Modelo de Compensación — Cumplió/Forma de Pago (reemplaza Carriles A/B/C)',
-    estado: 'completa',
-    valor_total: 5500000,
+    valor_total: 29500000,
     valor_hecho: 5500000,
     hitos: [
-      { num: '19.1', nombre: 'Migración de base de datos — estado_financiacion en proyectos, cumplio/forma_pago en postulaciones, tabla nueva deuda_pendiente con RLS', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '19.2', nombre: 'Toggle "Con Recursos para Etapa Inicial" / "Riesgo Compartido" en la creación de proyecto', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '19.3', nombre: '/carril reescrito por completo — confirmar cumplimiento (con vista de tareas verificadas del especialista) y elegir forma de pago según el estado del proyecto', done: true, valor: 1800000, quien: 'Claude AI' },
-      { num: '19.4', nombre: 'API de deuda pendiente + registro visible en el workspace, ordenado de menor a mayor, con resolución selectiva (pagar cash o formalizar acciones deuda por deuda)', done: true, valor: 1500000, quien: 'Claude AI' },
-      { num: '19.5', nombre: 'Nuevo evento de notificación — cumplimiento_confirmado, avisa al especialista con la forma de pago definida (o que no aplicó pago)', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '19.6', nombre: 'Fix: GET de postulaciones no soportaba filtrar "todas las postulaciones de mis proyectos" — /carril viejo consultaba la relación al revés y nunca mostraba nada real', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '19.7', nombre: 'Actualización de textos en detalle de proyecto, workspace y dashboard — ya no mencionan carriles A/B/C', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: 'C1.1', nombre: 'Modelo de datos — 20+ tablas Supabase PostgreSQL con RLS, cascades FK correctos en 23 relaciones, funcion eliminar_usuario_completo(uid)', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C1.2', nombre: 'Autenticacion — Supabase Auth + trigger perfiles, verificacion de correo no-bloqueante, correos transaccionales con Resend + dominio propio mail.escala.network (DKIM/SPF/DMARC)', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C1.3', nombre: 'Almacenamiento — Supabase Storage con validacion de tipo/tamano, bucket escala-public para imagenes', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: 'C1.4', nombre: 'Infraestructura de deploy — GitHub (satoshigod/escala) + Vercel (auto-deploy main) + Supabase. Claude AI hace commits y push directos via PAT', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: 'C1.5', nombre: 'RLS publica en proyectos — policy proyectos_activos_publicos permite lectura sin sesion, necesaria para home y paginas publicas', done: true, valor: 200000, quien: 'Claude AI' },
+      { num: 'C1.6', nombre: 'Funcion SQL eliminar_usuario_completo(uid) — borra usuario y todos sus datos en el orden correcto respetando FK', done: true, valor: 300000, quien: 'Claude AI' },
+      { num: 'C1.7', nombre: 'Rate limiting global: Vercel Edge Middleware en todas las APIs — 100 req/min por IP, 1000/min por usuario autenticado', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C1.8', nombre: 'Cache de lectura: Upstash Redis para cachear tasas de cambio, catalogos y scores. TTL 5 min para datos frecuentes', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C1.9', nombre: 'Observabilidad: Sentry instalado (@sentry/nextjs). Captura errores cliente y servidor. DSN configurado. Org: plaza-black, proyecto: escala-production. Source maps ocultos. Tunnel /monitoring para evitar adblockers.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C1.10', nombre: 'React Server Components: migrar las 5 paginas mas criticas de fetch() client-side a RSC — eliminar waterfalls de datos y mejorar TTI', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C1.11', nombre: 'Multi-tenant: tabla organizations, separacion de datos por organizacion, modelo white-label — prerequisito para Escala for Teams y Capa 9', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: 'C1.12', nombre: 'i18n real: next-intl en todas las paginas, deteccion de pais por IP, moneda y proveedor de pago automaticos segun pais del usuario', done: false, valor: 4000000, quien: 'Claude AI' },
     ]
   },
   {
-    num: '20',
-    titulo: 'Navegación intuitiva — auditoría y fixes',
-    estado: 'completa',
-    valor_total: 9900000,
-    valor_hecho: 9900000,
-    hitos: [
-      { num: '20.1', nombre: 'Fix: el Enter en el campo de contraseña no enviaba el formulario de login ni el de registro — había que darle clic al botón sí o sí', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '20.2', nombre: 'Fix: el logo de Escala no era clickeable en NINGUNA de las 26 páginas de la app — auditoría completa + link agregado en las 20 que faltaban, con el destino correcto según si la página requiere sesión o es pública', done: true, valor: 1600000, quien: 'Claude AI' },
-      { num: '20.3', nombre: 'Fix: la landing pública solo tenía botón de Registrarme — se agregó "Iniciar sesión" al nav y al menú móvil de las 8 páginas, más soporte de ?modo=login en /registro para abrir directo en esa pestaña', done: true, valor: 700000, quien: 'Claude AI' },
-      { num: '20.4', nombre: 'Fix: "Salir" del dashboard llevaba a la pestaña de Crear cuenta en vez de la de Iniciar sesión — no seguía el estándar de la industria para logout', done: true, valor: 150000, quien: 'Claude AI' },
-      { num: '20.5', nombre: 'Auditoría exhaustiva de código — 30 páginas: mapa de navegación completo, 2 pantallas huérfanas encontradas (/admin-escala, /angel), duplicidad real entre /aportes e /ingresos (mismo endpoint), accesibilidad en 0/30 páginas', done: true, valor: 1200000, quien: 'Claude AI' },
-      { num: '20.6', nombre: 'Fix: crash de JS en /onboarding cuando alguien llega sin sesión (accedía a datos de un usuario null antes de que el redirect surtiera efecto)', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '20.7', nombre: 'Fix: confirmación obligatoria antes de marcar "No cumplió" en /carril — antes era un clic sin aviso para una decisión financiera irreversible desde la UI', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '20.8', nombre: 'Fix: mismo bug del logout pero disparado por sesión expirada — 23 páginas redirigían a la pestaña de Crear cuenta en vez de Iniciar sesión al perder la sesión', done: true, valor: 900000, quien: 'Claude AI' },
-      { num: '20.9', nombre: 'Accesibilidad — htmlFor/id agregado a los 31 campos de los 5 formularios de mayor tráfico (registro, onboarding, crear proyecto, editar perfil, aportes)', done: true, valor: 900000, quien: 'Claude AI' },
-      { num: '20.10', nombre: 'Accesibilidad — htmlFor/id en los 41 campos restantes (admin-escala, workspace/tareas, invitar, ingresos, hitos). Los 72 labels de toda la app quedan cubiertos', done: true, valor: 1100000, quien: 'Claude AI' },
-      { num: '20.11', nombre: 'Auditoría completa de las 14 páginas restantes (calendario, directorio, buscar, score, métricas, comercial, angel, bienvenida, postulaciones, perfil, chat, p/[id], que-es-escala) — cierra la revisión de las 30 páginas de la app', done: true, valor: 1000000, quien: 'Claude AI' },
-      { num: '20.12', nombre: 'Fix: /postulaciones mostraba el UUID crudo del proyecto en vez del nombre (el dato ya venía en la API, no se usaba), y tenía un link "Hitos" pegado por error dentro del botón del estado vacío', done: true, valor: 250000, quien: 'Claude AI' },
-      { num: '20.13', nombre: 'Fix: error de gramática en la pregunta pública de que-es-escala ("me convierto" → "se convierte")', done: true, valor: 50000, quien: 'Claude AI' },
-      { num: '20.14', nombre: 'Fix crítico: /score y /perfil/[id] calculaban el Escala Score con fórmulas propias inventadas, nunca leían el campo real escala_score que usa el resto de la app (directorio, métricas) — dos personas podían ver dos números distintos para el mismo score. Reconstruido con datos reales y la fórmula exacta de la función de base de datos', done: true, valor: 1200000, quien: 'Claude AI' },
-      { num: '20.15', nombre: 'Fix: "Iniciar sesión" en la página pública de proyecto (/p/[id]) abría la pestaña de Crear cuenta — mismo bug ya corregido en la landing, pero en un archivo distinto que no se había tocado', done: true, valor: 150000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '21',
-    titulo: 'Sistema de Ofertas + conexión de páginas huérfanas + roles unificados',
-    estado: 'completa',
-    valor_total: 5900000,
-    valor_hecho: 5900000,
-    hitos: [
-      { num: '21.1', nombre: 'Sistema de Ofertas — campo origen en postulaciones (postulante/fundador) distingue "yo apliqué" de "me invitaron". Migración + API + default retrocompatible', done: true, valor: 900000, quien: 'Claude AI' },
-      { num: '21.2', nombre: '/postulaciones reescrita en dos secciones: "Ofertas recibidas" (con Aceptar/Declinar — aquí sí decides tú) y "Mis postulaciones" (solo consulta — el fundador decide). Resuelve el error de diseño donde el usuario podía aceptarse a sí mismo', done: true, valor: 1400000, quien: 'Claude AI' },
-      { num: '21.3', nombre: '/invitar ahora detecta si el correo invitado ya está registrado en Escala — si sí y hay rol específico, crea la oferta real en su bandeja además del correo. Nueva búsqueda por email en /api/usuarios', done: true, valor: 1100000, quien: 'Claude AI' },
-      { num: '21.4', nombre: '/bienvenida conectada al flujo real de registro — pantalla intermedia con "Saltar por ahora y explorar", resuelve el onboarding forzoso de 3 pasos detectado en la auditoría', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '21.5', nombre: 'Seguridad: /admin-escala no verificaba es_admin — cualquier usuario logueado con la URL podía borrar proyectos, usuarios, países e industrias. Protegida antes de conectarla al dashboard (visible solo para admins)', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '21.6', nombre: '/angel conectada al dashboard (acceso rápido) — dejó de ser huérfana', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '21.7', nombre: 'Roles unificados a los 7 canónicos en las 4 definiciones que no coincidían: que-es-escala (6→7), filtro del directorio (mentores y empresas eran invisibles al filtrar), etiquetas del perfil público (5→7)', done: true, valor: 700000, quien: 'Claude AI' },
-      { num: '21.8', nombre: 'QA: 6 tests automáticos del sistema de ofertas (origen, separación, default, búsqueda por email) + 2 verificaciones manuales nuevas (flujo bienvenida, oferta visible al invitado)', done: true, valor: 400000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '22',
-    titulo: 'Ingresos del proyecto — ventas, contratos y negocios generados',
-    estado: 'completa',
-    valor_total: 3200000,
-    valor_hecho: 3200000,
-    hitos: [
-      { num: '22.1', nombre: 'Migración: tabla ingresos separada de aportes — ingresos es lo que el proyecto genera (ventas, contratos), aportes es lo que la gente mete (tiempo, servicios, capital)', done: true, valor: 600000, quien: 'Claude AI' },
-      { num: '22.2', nombre: 'API /api/ingresos: GET lista por proyecto con total acumulado, POST con verificación de permisos (fundador/gerente/admin), DELETE solo para fundador', done: true, valor: 900000, quien: 'Claude AI' },
-      { num: '22.3', nombre: '/ingresos reescrita desde cero: formulario con descripción, tipo, valor, fecha y comprobante — visible solo para quien tiene permisos, el resto ve mensaje explicativo', done: true, valor: 1100000, quien: 'Claude AI' },
-      { num: '22.4', nombre: 'QA: 4 tests automáticos (registrar, listar, verificar total, rechazar no autorizado)', done: true, valor: 600000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '23',
-    titulo: 'Workspace especialista — tareas, contratos y flujo de constitución',
-    estado: 'completa',
-    valor_total: 28415000,
-    valor_hecho: 28415000,
-    hitos: [
-      { num: '23.1', nombre: 'Tareas de constitución auto-inicializadas: cuando un abogado o contador de constitución entra al workspace por primera vez, sus tareas del país aparecen automáticamente en /workspace/tareas sin pasos adicionales', done: true, valor: 3000000, quien: 'Claude AI' },
-      { num: '23.2', nombre: 'Tab Constitución eliminada del workspace — las tareas de constitución se integran directamente en el plan de trabajo del especialista, sin destino separado ni botón extra', done: true, valor: 520000, quien: 'Claude AI' },
-      { num: '23.3', nombre: 'Fix crítico: supabase.auth.getUser() con SUPABASE_SECRET_KEY siempre devuelve null en server-side — corregido en /api/roles (POST, PATCH, DELETE) y /api/desistir para recibir fundador_id/especialista_id del body', done: true, valor: 780000, quien: 'Claude AI' },
-      { num: '23.4', nombre: 'Filtros de tareas corregidos para el especialista: Todas/Pendiente/En progreso/Completada/Verificada funcionan correctamente y siempre son visibles con botón "Ver todas" al filtrar', done: true, valor: 520000, quien: 'Claude AI' },
-      { num: '23.5', nombre: 'Tareas duplicadas eliminadas: el especialista ya no ve la misma tarea dos veces (una sin asignar y otra asignada). Solo aparecen las asignadas directamente', done: true, valor: 390000, quien: 'Claude AI' },
-      { num: '23.6', nombre: 'Modalidad legible en el workspace: "deuda_diferida" → "Riesgo Compartido", "equity" → "Equity" en la sección "Mi situación en este proyecto"', done: true, valor: 260000, quien: 'Claude AI' },
-      { num: '23.7', nombre: '"Retirarme del proyecto" — renombrado desde "Salir del proyecto" con advertencia clara de que es permanente e irreversible, color rojo, confirm con descripción completa de consecuencias', done: true, valor: 390000, quien: 'Claude AI' },
-      { num: '23.8', nombre: 'Contrato visible en workspace: sección en tab Resumen para el especialista con estado de firmas (fundador/profesional), botón Descargar PDF y botón Confirmar mi firma', done: true, valor: 2600000, quien: 'Claude AI' },
-      { num: '23.9', nombre: 'Tab Contratos en panel fundador (/admin): lista todos los contratos del proyecto con nombre del especialista, rol, modalidad, valor, estado de firmas visual (✅/⬜), Descargar PDF y Confirmar mi firma', done: true, valor: 3250000, quien: 'Claude AI' },
-      { num: '23.10', nombre: 'Generación automática de contrato al aceptar postulación: el admin ahora llama /api/contratos POST inmediatamente después de aceptar — sin pasos manuales del fundador', done: true, valor: 1040000, quien: 'Claude AI' },
-      { num: '23.11', nombre: 'Contrato completo con 15 cláusulas legales: objeto, naturaleza del vínculo, plazo, valor, obligaciones de ambas partes, confidencialidad, propiedad intelectual, conflicto de interés, indemnidad laboral, cesión, modificaciones, terminación, ley aplicable, integridad del acuerdo — con número de contrato único', done: true, valor: 5200000, quien: 'Claude AI' },
-      { num: '23.12', nombre: 'Botón Regenerar contrato en admin: permite actualizar cualquier contrato existente con el generador actualizado sin tocar Supabase manualmente — endpoint PUT /api/contratos', done: true, valor: 910000, quien: 'Claude AI' },
-      { num: '23.13', nombre: 'PDF del contrato generado en el browser con iframe inline: sin librerías externas, sin popups bloqueados, con barra de herramientas y botón Guardar PDF que abre el diálogo de impresión', done: true, valor: 1950000, quien: 'Claude AI' },
-      { num: '23.14', nombre: 'Fix: "Proyecto activo" en dashboard no aparece cuando eres fundador del mismo proyecto — evita que el fundador vea su propio proyecto listado dos veces', done: true, valor: 390000, quien: 'Claude AI' },
-      { num: '23.15', nombre: 'Botón Salir (cerrar sesión) agregado en todas las páginas que lo faltaban: /proyectos/[id], /postulaciones, /perfil/[id], /score, /carril, /admin, /workspace, /workspace/tareas, /workspace/chat', done: true, valor: 650000, quien: 'Claude AI' },
-      { num: '23.16', nombre: 'URL parsing robusto en página pública del proyecto: reemplaza window.location.pathname.split("/").pop() por getProyectoIdFromPath() que tolera trailing slash y query params', done: true, valor: 260000, quien: 'Claude AI' },
-      { num: '23.17', nombre: 'Roles unificados en /bienvenida y /onboarding: mismos textos, mismo orden, sin duplicados visuales. Flujo registro → /onboarding directo, eliminando /bienvenida como paso intermedio redundante', done: true, valor: 780000, quien: 'Claude AI' },
-      { num: '23.18', nombre: 'Sub-especialidad visible en tarjetas de roles en página pública del proyecto: "Constitución de empresas" aparece debajo de "Abogado" en verde', done: true, valor: 260000, quien: 'Claude AI' },
-      { num: '23.19', nombre: 'Descripción del rol auto-llenada al seleccionar sub-especialidad en el workspace del fundador — elimina el problema del placeholder vacío que aparecía en producción', done: true, valor: 390000, quien: 'Claude AI' },
-      { num: '23.20', nombre: 'Cascades FK corregidos en 23 relaciones de 14 tablas: ALTER TABLE con ON DELETE CASCADE/SET NULL — permite borrar usuarios desde Supabase Auth sin errores de FK', done: true, valor: 1950000, quien: 'Claude AI' },
-      { num: '23.21', nombre: 'Función SQL eliminar_usuario_completo(uid): borra un usuario y todos sus datos relacionados en el orden correcto — herramienta operacional para pruebas y administración', done: true, valor: 520000, quien: 'Claude AI' },
-      { num: '23.22', nombre: 'Tabla contratos migrada: renombrada especialista_id → profesional_id, agregadas 10 columnas nuevas (postulacion_id, fundador_id, estado, firmado_fundador, firmado_profesional, contenido_json, sub_especialidad, valor, fecha_firma_fundador, fecha_firma_profesional)', done: true, valor: 1560000, quien: 'Claude AI' },
-      { num: '23.23', nombre: 'GitHub push access configurado en entorno Claude AI con token PAT — permite commits y push directos sin intervención del fundador en el 90% de los cambios', done: true, valor: 390000, quien: 'Claude AI + Fundador' },
-      { num: '23.24', nombre: 'Tab Presupuesto oculta para abogados y contadores de constitución — no les competen esas actividades operacionales del proyecto', done: true, valor: 195000, quien: 'Claude AI' },
-      { num: '23.25', nombre: 'jsPDF instalado como dependencia npm: import local en vez de CDN externo, compatible con Next.js 16 y Turbopack sin errores de Content Security Policy', done: true, valor: 260000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '24',
-    titulo: 'Identidad visual y redes sociales',
-    estado: 'completa',
-    valor_total: 3250000,
-    valor_hecho: 3250000,
-    hitos: [
-      { num: '24.1', nombre: 'Identidad visual de Escala definida: isotipo (escalón + punto, proporciones áureas), paleta #0B1628 / #1D9E75 / #8FA3CC, tipografía Inter 800 — assets SVG generados en public/brand/ (isotipo, isotipo-blanco, isotipo-instagram, lockup, favicon, app-icon)', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
-      { num: '24.2', nombre: 'Logos actualizados en las 29 páginas del sitio: 13 HTML públicas y 16 páginas React del app router — favicon, app-icon y lockup consistentes en todo el sitio', done: true, valor: 650000, quien: 'Claude AI' },
-      { num: '24.3', nombre: 'Cuentas oficiales de Facebook e Instagram creadas y vinculadas: facebook.com/profile.php?id=61591678262407 · instagram.com/joinescala', done: true, valor: 200000, quien: 'Fundador' },
-      { num: '24.4', nombre: 'Redes sociales incorporadas al sitio: componente compartido components/RedesSociales.js, footer en 8 HTML públicos (index, casos, compensacion, faq, inversionistas, perfiles, por-que-existe, proteccion), footer en que-es-escala/page.js, JSON-LD Organization con sameAs en layout.tsx para SEO y verificación por Meta', done: true, valor: 1200000, quien: 'Claude AI + Fundador' },
-      { num: '24.5', nombre: 'Política de Privacidad completa publicada en escala.network/proteccion.html#politica-privacidad — 11 secciones: responsable, datos recopilados, uso, terceros (Meta API), cookies, retención, derechos Ley 1581 Colombia, seguridad, menores, cambios y contacto. Requerida para Meta App Review', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '24.6', nombre: 'Motor de publicación automática en redes sociales: lib/redes-sociales/ con 4 módulos (metaGraphApi, plantillas, generarTarjeta, publicar), 16 plantillas editables para proyectos/empresas/perfiles, generación de tarjetas SVG→PNG con identidad Escala, idempotencia, reintentos, auditoría en tabla publicaciones_redes, API route POST/PUT protegida', done: true, valor: 2800000, quien: 'Claude AI' },
-      { num: '24.7', nombre: 'Formulario de creación de proyectos mejorado: 5 niveles de avance en lenguaje universal (tarjetas), 3 modalidades de trabajo, 9 roles buscados seleccionables, botón ✨ Mejorar con IA via Claude API, 3 columnas nuevas en DB (nivel_avance, modalidad_trabajo, roles_buscados)', done: true, valor: 1200000, quien: 'Claude AI' },
-      { num: '24.8', nombre: 'Validación de descripción de proyectos: mínimo 80 caracteres, contador en tiempo real (rojo/verde), placeholder con ejemplo real, mensajes de error específicos por campo, país obligatorio', done: true, valor: 260000, quien: 'Claude AI' },
-      { num: '24.9', nombre: 'proyectos.html conectado a API real: script JS carga proyectos de Supabase dinámicamente, excluye los hardcodeados (Escala piloto, Ekivibe), muestra nivel de avance, roles buscados, ciudad, modalidad y progreso de equipo', done: true, valor: 390000, quien: 'Claude AI' },
-      { num: '24.10', nombre: 'Guía gratuita de descripción: reemplaza llamada a Claude API (con costo) por panel de 3 preguntas que el sistema concatena automáticamente en una descripción completa — sin costo, sin API externa', done: true, valor: 195000, quien: 'Claude AI' },
-      { num: '24.11', nombre: 'Eliminar proyecto: fundador puede eliminar su proyecto si no hay postulaciones aceptadas — validación en API (ownership + estado postulaciones) y botón con confirmación de dos pasos en la UI', done: true, valor: 390000, quien: 'Claude AI' },
-      { num: '24.12', nombre: 'Home (index.html): nueva sección de proyectos reales dinámicos cargados desde /api/proyectos — muestra hasta 6 proyectos, excluye el piloto hardcodeado, CTA a publicar si no hay proyectos aún', done: true, valor: 260000, quien: 'Claude AI' },
-      { num: '24.13', nombre: 'Proyectos públicos sin login: quita redirección forzada a registro en /proyectos/[id], visitantes previsual/izan el proyecto completo, botones de postulación se convierten en CTA de registro para no autenticados, banner de conversión visible', done: true, valor: 390000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '25',
-    titulo: 'Notificaciones avanzadas — preferencias, invitar y tiempo',
-    estado: 'completa',
-    valor_total: 2500000,
-    valor_hecho: 2500000,
-    hitos: [
-      { num: '25.1', nombre: 'Preferencias de notificación por categoría: 2 columnas nuevas en DB (categorias_email_desactivadas, categorias_push_desactivadas), motor notificar() verifica categoría además del toggle global, API GET/PATCH /api/notificaciones/preferencias, UI en /perfil/editar con toggles por categoría (postulaciones, tareas, hitos, aportes, proyectos)', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '25.2', nombre: '/invitar migrado al motor notificar(): nueva API /api/invitar/route.js, si el invitado ya está en Escala recibe email + in_app, si no está recibe solo email, evento invitacion agregado al catálogo', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '25.3', nombre: 'Notificaciones basadas en tiempo: Vercel Cron Job diario 9am UTC, 3 verificaciones: tareas vencidas (avisa al asignado), hitos por vencer en 0-2 días (avisa al fundador), proyectos sin actividad 15+ días (avisa al fundador). 4 eventos nuevos en el catálogo. Requiere CRON_SECRET en Vercel env vars', done: true, valor: 1200000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '26',
-    titulo: 'Calificaciones, logros y Ángel mejorado',
-    estado: 'completa',
-    valor_total: 4200000,
-    valor_hecho: 4200000,
-    hitos: [
-      { num: '26.1', nombre: 'Sistema de calificaciones: tabla calificaciones con RLS (escritura propia, lectura pública), API GET/POST /api/calificaciones, promedio y listado en /score, notificación al calificado via motor central', done: true, valor: 1400000, quien: 'Claude AI' },
-      { num: '26.2', nombre: 'Sistema de logros/badges: tabla logros_usuario, API idempotente /api/logros, 8 tipos de logro, otorgados automáticamente al aceptar postulación, verificar tarea, firmar contrato y primer impulso. Visibles en /score con emoji y fecha', done: true, valor: 1500000, quien: 'Claude AI' },
-      { num: '26.3', nombre: 'Panel Ángel de Impulso mejorado: nuevo tab Métricas con total invertido, % ejecutado, monto pendiente y historial con estado de ejecución por hito', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '26.4', nombre: '/score actualizado: sección de logros desbloqueados y sección de calificaciones recibidas con promedio ⭐, cargados desde sus APIs respectivas', done: true, valor: 500000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '27',
-    titulo: 'Eventos del catálogo — 8 nuevos cableados',
-    estado: 'completa',
-    valor_total: 1800000,
-    valor_hecho: 1800000,
-    hitos: [
-      { num: '27.1', nombre: 'contrato_generado y contrato_vigente cableados en /api/contratos', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '27.2', nombre: 'hito_creado cableado en /api/hitos', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '27.3', nombre: 'aporte_rechazado cableado en /api/aportes', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '27.4', nombre: 'miembro_se_retiro cableado en /api/desistir', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '27.5', nombre: 'primera_venta cableado en /api/ingresos — detecta primer ingreso y notifica', done: true, valor: 200000, quien: 'Claude AI' },
-      { num: '27.6', nombre: 'impulso_recibido + nueva API /api/impulsos (GET/POST) — notifica al fundador, otorga logro al Ángel', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '27.7', nombre: 'mensaje_recibido — trigger PostgreSQL con pg_net + API /api/notificaciones/mensaje, notifica a todos los miembros del proyecto excepto el autor. Requiere correr el SQL del migration en Supabase', done: true, valor: 200000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '28',
-    titulo: 'Eventos adicionales — score, niveles y estado de proyectos',
-    estado: 'completa',
-    valor_total: 1200000,
-    valor_hecho: 1200000,
-    hitos: [
-      { num: '28.1', nombre: 'score_subio: se dispara cuando el score sube 5+ puntos al recalcular en /api/score', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '28.2', nombre: 'nivel_alcanzado: notifica cuando el usuario cruza 25, 50, 75 o 100 puntos en el Score', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '28.3', nombre: 'proyecto_actualizado + proyecto_completado: PATCH /api/proyectos con validación de ownership, notifica al equipo completo al completar, otorga logro primer_proyecto_completado', done: true, valor: 600000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '29',
-    titulo: 'Auditoría UX — 11 correcciones',
-    estado: 'completa',
-    valor_total: 3200000,
-    valor_hecho: 3200000,
-    hitos: [
-      { num: '29.1', nombre: 'NavApp — componente nav compartido para 14 páginas, elimina 14 navs copiados. Cualquier cambio en el nav ahora aplica en toda la app desde un solo archivo', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '29.2', nombre: '/p/[id] eliminado (redirige a /proyectos/[id]), /admin renombrado a /mis-contratos (evita confusión con /admin-escala), /admin redirige automáticamente', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '29.3', nombre: '/metricas con manejo de error y botón reintentar. /directorio y /buscar vinculados con tabs 👥/🚀. /score y /angel con texto introductorio explicativo', done: true, valor: 600000, quien: 'Claude AI' },
-      { num: '29.4', nombre: 'Formulario de proyectos dividido en 2 pasos: Paso 1 (básico: nombre, descripción, sector, ciudad, país) → Paso 2 (equipo: nivel, modalidad, roles)', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '29.5', nombre: '/carril más visible en dashboard con color ámbar y emoji ⚡. Enlace a /desarrollo-limpio visible desde /desarrollo. coming.html y desarrollo.html obsoletos eliminados', done: true, valor: 700000, quien: 'Claude AI' },
-    ]
-  },,
-  {
-    num: '30',
-    titulo: 'Motor Financiero — Wallets, Ledger, Fondeos y Pagos',
+    id: 'C2',
+    titulo: 'CAPA 2 — Sistema Operativo del Proyecto',
+    descripcion: 'El nucleo de Escala. Todo lo que permite crear, ejecutar y cerrar un proyecto: roles, hitos, tareas, equipo, contratos, workspace, documentos, chat y cierre formal. Es el producto principal.',
+    color: '#1D9E75',
     estado: 'progreso',
-    valor_total: 18000000,
-    valor_hecho: 12000000,
+    valor_total: 75500000,
+    valor_hecho: 50500000,
     hitos: [
-      { num: '30.1', nombre: 'Arquitectura financiera diseñada: SQL multimoneda, ledger de doble partida, motor independiente con puente de eventos hacia motor Escala', done: true, valor: 1000000, quien: 'Claude AI + Fundador' },
-      { num: '30.2', nombre: 'SQL: exchange_rates (9 monedas vs USD), wallets (uno por usuario+moneda), ledger_entries (inmutable, doble partida), fondeos, payment_requests (9 estados), financial_audit (inmutable)', done: true, valor: 3000000, quien: 'Claude AI' },
-      { num: '30.3', nombre: 'lib/financiero/ledger.js: motor central con registrarMovimiento() + idempotencia, calcularSaldo() siempre desde ledger, tasaDelDia(), registrarAuditoria()', done: true, valor: 2500000, quien: 'Claude AI' },
-      { num: '30.4', nombre: '7 APIs: /api/wallet, /api/wallet/movimientos, /api/fondeos + /webhook (HMAC), /api/pagos, /api/admin/financiero, /api/exchange-rates', done: true, valor: 3000000, quien: 'Claude AI' },
-      { num: '30.5', nombre: '13 eventos financieros agregados al catálogo — catálogo pasa de 31 a 44 eventos. Wallet críticos no desactivables por el usuario', done: true, valor: 1500000, quien: 'Claude AI' },
-      { num: '30.6', nombre: 'Páginas: /wallet (módulo independiente, topbar propio "Escala · Finanzas"), /wallet/fondear (flujo 3 pasos BRE-B/Binance), /admin/financiero (KPIs + tabla + modal acciones)', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '30.7', nombre: 'Widget wallet en dashboard de Escala — acceso rápido sin mezclar módulos', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '30.8', nombre: 'Pendiente: correr SQL, configurar webhooks, /wallet/movimientos, /wallet/pagos/solicitar, QA tests', done: false, valor: 4500000, quien: 'Ivan + Claude AI' },
+      { num: 'C2.1', nombre: 'API proyectos — GET (con roles, paginacion), POST (con nivel_avance, modalidad_trabajo, roles_buscados, validacion ownership), DELETE (solo fundador)', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.2', nombre: 'Publicacion de proyectos — formulario con 5 niveles de avance, 3 modalidades, 9 roles buscados, validacion descripcion 80+ chars, guia de escritura gratuita', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C2.3', nombre: 'Detalle de proyecto publico — visitantes ven todo sin login, botones de postulacion se convierten en CTA de registro', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C2.4', nombre: 'Hitos del proyecto — crear, completar, kanban pendiente/completado desde workspace', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C2.5', nombre: 'Ingresos del proyecto — registrar ventas/contratos con tipo, valor, fecha y comprobante', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: 'C2.6', nombre: 'Panel fundador — postulaciones recibidas por rol, aceptar/rechazar, generacion automatica de contrato al aceptar', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C2.7', nombre: 'Postulaciones — Ofertas recibidas (usuario decide) separado de Mis postulaciones (solo consulta)', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: 'C2.8', nombre: 'Invitar — detecta correo ya registrado, crea oferta real en su bandeja + envia correo', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: 'C2.9', nombre: 'Contratos digitales — tabla contratos con 10 columnas, 15 clausulas legales colombianas, PDF inline en browser sin librerias externas', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C2.10', nombre: 'Firmas — estado visible en workspace. Boton Confirmar firma + Regenerar contrato', done: true, valor: 600000, quien: 'Claude AI' },
+      { num: 'C2.11', nombre: 'Workspace — tabs: Resumen, Hitos, Equipo, Aportes, Economia. Acceso solo para miembros aceptados y fundador', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.12', nombre: 'Workspace adaptivo — nav reducido segun contenido real del proyecto (local comercial, maquinaria, completo)', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.13', nombre: 'Plan de trabajo del especialista — tareas auto-inicializadas por rol y pais al entrar al workspace', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C2.14', nombre: 'Chat interno — tiempo real con Supabase Realtime', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C2.15', nombre: 'Documentacion segmentada — tabla documentos_proyecto, API /api/documentos, pestana Documentacion en workspace', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C2.16', nombre: 'Hilo de conversacion por tarea — mensajes automaticos al completar/verificar, panel hilo inline, indicador Requiere revision', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.17', nombre: 'Biblioteca de tareas regulatorias — 7 paises con 5-6 tareas cada uno, cargadas automaticamente segun pais del proyecto', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.18', nombre: 'Biblioteca de tareas comerciales — 5+ industrias con 6 tareas cada una, cargadas automaticamente segun industria', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C2.19', nombre: 'Reparto economico — fundador registra ingreso, sistema calcula distribucion automatica entre angeles, especialistas y fundador. API /api/reparto', done: true, valor: 7000000, quien: 'Claude AI' },
+      { num: 'C2.20', nombre: 'Cierre formal del proyecto — flujo 3 pasos (checklist, confirmacion, cerrado). Notifica a todos los participantes. Estado: activo → completado → cerrado', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C2.21', nombre: 'Retirarme del proyecto — con advertencia clara, consecuencias irreversibles', done: true, valor: 400000, quien: 'Claude AI' },
+      { num: 'C2.22', nombre: 'Proyectos en borrador: POST crea con estado=borrador por defecto. Workspace muestra banner amarillo pulsante con boton Publicar proyecto. Dashboard muestra badge Borrador en tarjeta. PATCH dispara notificacion proyecto_publicado al pasar a activo.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.23', nombre: 'Calificacion mutua post-cierre: en paso 3 del cierre aparece bloque de estrellas (1-5) para cada miembro del equipo. Comentario opcional. Se guarda en tabla calificaciones via /api/calificaciones. Solo aparece cuando hay equipo aceptado.', done: true, valor: 1500000, quien: 'Claude AI' }, 
+      { num: 'C2.24', nombre: 'Escenario: Arrendar local — wizard, tareas predefinidas: buscar local, negociar contrato, constituir empresa, licencia funcionamiento. Roles: Abogado + Contador', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C2.25', nombre: 'Escenario: Restaurante/comida — wizard, tareas INVIMA, permiso bomberos, uso de suelo, registro marca', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C2.26', nombre: 'Escenario: Importar mercancia — wizard, registro importador DIAN, agente aduanas, poliza, bodega', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C2.27', nombre: 'Escenario: Comprar vehiculo operativo — wizard, RUNT, SOAT, revision tecnico-mecanica, vinculacion plataforma', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C2.28', nombre: 'Escenario: Tienda online/e-commerce — wizard, constitucion, diseno marca, desarrollo tienda, catalogo, pagos, lanzamiento', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C2.29', nombre: 'Biblioteca 100 escenarios: 30 sectores (agricultura, manufactura, salud, educacion, logistica, IA, biotech, turismo, bienes raices, moda, alimentos, etc.) cada uno con wizard, tareas y roles sugeridos', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: 'C2.30', nombre: 'Lenguaje emprendedor en toda la plataforma: Necesito un local, Necesito equipos o maquinaria. 32 cambios en 8 archivos. Iconos y descripciones actualizados.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: 'C2.31', nombre: 'Calculadora interactiva paso 0 en wizard local: monto total antes de comprometerse. Selector de meses de deposito, campo adecuaciones, calculo en tiempo real, pre-llena el wizard.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.32', nombre: 'Buscador de equipos por nombre en presupuesto: el emprendedor escribe horno/nevera/servidor y el sistema categoriza automaticamente con diccionario de 18 tipos. Badge de confirmacion de categoria detectada.', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C2.33', nombre: 'Timeline 4 pasos visible al seleccionar escenario local o equipos: 1-describir 5min, 2-verificacion 24-48h, 3-angel financia, 4-pagas desde ventas. Expectativas claras desde el inicio.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: 'C2.34', nombre: 'Tres tarjetas visuales para modelo de retorno del inversionista: Parte del negocio / Le pago cuotas / Un % de mis ventas. Cada tarjeta muestra descripcion, ejemplo concreto con monto real y calculo automatico del impacto.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C2.35', nombre: 'Notificacion proactiva a angeles compatibles (C5.10): al crear un item en el presupuesto, detecta angeles que han invertido en el mismo sector o categoria con rango de monto similar (0.3x-5x). Les envia notificacion email+push+in-app con nombre del item, monto y proyecto. Sin esperar a que el angel entre al directorio.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C2.36', nombre: 'Wizard local simplificado: paso 0 pide nombre del negocio, ciudad, arriendo, deposito y adecuaciones. CTA muestra el monto exacto con el nombre del negocio. Pre-llena todo el wizard.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.37', nombre: 'Formulario creacion limpio por escenario: modalidad trabajo y perfiles solo en startup. Industria solo en startup. Etapa del proyecto en todos. Local y equipos tienen lenguaje propio para Tipo A/B. estado_financiacion auto riesgo_compartido para local y equipos.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C2.38', nombre: 'Tab Necesito mas permanente en workspace de local y equipos: empleado (publicar rol), equipo (presupuesto), local (nuevo proyecto), capital de trabajo. Bloque compacto equivalente en dashboard con pills de acceso rapido por escenario.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C2.39', nombre: 'Auditoria UX v2 (comite de producto): escenarios y roles. Eliminado el eco doble "Que necesitas?" (el selector de proyecto pasa a "Que quieres hacer?"), intent del home propagado al onboarding, onboarding con progressive profiling (campos no esenciales marcados opcional + completar despues desde el perfil), recuperacion de contrasena por email (reset nativo de Supabase Auth + correo por Resend), y migracion del id de escenario de maquinaria de "otro" a "maquinaria" (patron expand-migrate-contract, SQL corrido y verificado).', done: true, valor: 4600000, quien: 'Claude AI + Ivan' },
+      { num: 'C2.40', nombre: 'Auditoria de user flows (Dashboard): dashboard por perfil (accesos rapidos filtrados por rol; el colaborador ve Buscar proyectos / Mis postulaciones / Mi perfil), acciones de proyecto en la tarjeta (Publicar / Cerrar / Eliminar, ya soportadas por el backend), fix del bug de ingresos en $0 del fundador, aviso de mensajes sin leer tambien para especialistas, y "..." enganoso eliminado de la tarjeta compacta.', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C2.41', nombre: 'Auditoria de user flows (Workplace): confiabilidad de acciones. Feedback de error en handlers que fallaban en silencio (eje workspace, tareas, chat, leasing, constitucion; chat y mensajes restauran el texto si falla) y fix del "Cargando..." infinito sin sesion en 7 sub-pantallas (equipos, reparto, capital, cierre, presupuesto, local, local/inversionista).', done: true, valor: 2000000, quien: 'Claude AI' },
     ]
   },
   {
-    num: '31',
-    titulo: 'Enterprise Graph — Auditoría y diseño arquitectónico',
+    id: 'C3',
+    titulo: 'CAPA 3 — Motor Financiero',
+    descripcion: 'Todo lo relacionado con dinero en Escala. Wallets, ledger inmutable, fondeos, pagos, presupuesto por item CAPEX/OPEX, reparto economico, waterfall de locales comerciales, modelos de maquinaria y arriendos, comisiones y proveedores de pago por pais.',
+    color: '#E8A020',
+    estado: 'progreso',
+    valor_total: 65000000,
+    valor_hecho: 40000000,
+    hitos: [
+      { num: 'C3.1', nombre: 'SQL motor financiero: exchange_rates, wallets, ledger_entries (doble partida inmutable), fondeos, payment_requests, financial_audit — 9 monedas, RLS en todas las tablas', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C3.2', nombre: 'Motor central lib/financiero/ledger.js: registrarMovimiento() idempotente, calcularSaldo() siempre desde ledger, tasaDelDia(), obtenerOCrearWallet(), registrarAuditoria()', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C3.3', nombre: 'APIs financieras: /api/wallet, /api/wallet/movimientos, /api/fondeos, /api/fondeos/webhook (HMAC-SHA256), /api/pagos, /api/admin/financiero, /api/exchange-rates', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C3.4', nombre: 'Eventos financieros conectados al motor notificar(): wallet_fondeo_acreditado, wallet_debito_ejecutado, wallet_proyecto_fondeado, admin_transferencia_recibida, fondeo_completado/fallido, pago_ejecutado', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C3.5', nombre: 'Paginas wallet: /wallet (modulo independiente), /wallet/fondear (3 pasos: metodo → monto → instrucciones BRE-B/Binance), /wallet/movimientos, /admin/financiero', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C3.6', nombre: 'Presupuesto por item: 6 categorias (equipo, equipos_activos, tecnologia, capital_trabajo, marketing_ventas, legal_operacion) + Otro con 9 subcategorias. CAPEX/OPEX, multiples inversores por item, 3 modelos: participacion/deuda/revenue_share', done: true, valor: 0, quien: 'Claude AI' },
+      { num: 'C3.7', nombre: 'Tablas presupuesto: presupuesto_items (valor_total GENERATED), presupuesto_fondeos. RLS. Indices', done: true, valor: 1000000, quien: 'Ivan' },
+      { num: 'C3.8', nombre: 'API /api/presupuesto (GET/POST/PUT/DELETE): CRUD items. GET devuelve items agrupados por categoria + resumen financiero (total, fondeado, CAPEX/OPEX, pct_fondeado)', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C3.9', nombre: 'API /api/presupuesto/fondeo: angel propone fondeo, fundador acepta/rechaza/negocia, angel confirma transferencia, fundador verifica. Contrato automatico al aceptar. Capital al wallet del proyecto al verificar', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C3.10', nombre: 'UI /workspace/presupuesto: selector visual 6 categorias + submenu Otro. Modal agregar item. Modal proponer fondeo. Barra progreso por item y global. Export PDF', done: true, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C3.11', nombre: 'Motor waterfall local comercial: ventas → costo → fijos → excedente → intereses → abono capital. Ledger inmutable. Transicion automatica Fase 1 → 2 → 3', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C3.12', nombre: 'Paneles local comercial: wizard 6 pasos, panel operador con reporte diario, panel inversionista con semaforo, salida anticipada con penalidad por fase', done: true, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C3.13', nombre: 'Admin local comercial: checklist verificacion, tasas usura, aprobar/rechazar con tasa asignada. Alertas cron sin reporte', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C3.14', nombre: 'Motor notificaciones financieras: wallet_proyecto_fondeado, admin_fondeo_presupuesto_verificado, reparto_linea_pagada, local_abono_capital, local_pago_completado — cada movimiento de dinero notifica', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C3.15', nombre: 'Admin finanzas: panel consolidado /admin/finanzas — capital en movimiento, transferencias por verificar, locales en mora, fondeos recientes. Solo admin', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C3.16', nombre: 'Variables Vercel: BREB_WEBHOOK_SECRET, BINANCE_WEBHOOK_SECRET', done: false, valor: 0, quien: 'Ivan' },
+      { num: 'C3.17', nombre: 'Modelo inversion arriendos: inversionista financia deposito + meses de arriendo con contrato automatico y waterfall desde ingresos del negocio', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C3.18', nombre: 'Modelo inversion maquinaria: inversionista compra el activo, queda como propietario con leasing/renting al proyecto, recibe cuota mensual desde waterfall', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C3.19', nombre: 'SPEI (Mexico): integracion con PSP mexicano para fondeos en MXN', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: 'C3.20', nombre: 'Khipu / Fintoc (Chile): integracion para fondeos en CLP', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
+      { num: 'C3.21', nombre: 'Wompi (Colombia): PSE + tarjetas debito/credito para Colombia', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
+      { num: 'C3.22', nombre: 'Stripe (Internacional): USD/EUR para Espana, Ecuador y usuarios internacionales', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
+      { num: 'C3.23', nombre: 'BENCHMARK: Fondeo en 48 horas como promesa central. Una vez el angel acepta y transfiere, Escala verifica y acredita en menos de 48 horas. Mostrar en todo momento cuanto falta para ese plazo. Hacer del tiempo la propuesta de valor principal. (Leccion: Duckfund — fondos en 48h es su eslogan principal, no un beneficio secundario)', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C3.24', nombre: 'BENCHMARK: Financiar el 100% incluyendo costos adicionales. Cuando el emprendedor agrega un equipo al presupuesto, incluir automaticamente un buffer para instalacion, transporte y puesta en marcha (tipicamente 15-20% adicional). El angel ve el monto total real. (Leccion: Crest Capital — financia 100% incluyendo soft costs de instalacion y entrega)', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: 'C3.25', nombre: 'Financiamiento embebido en tab Mi proyecto: muestra items sin fondear con barras de progreso, monto faltante por item y boton Conseguir fondeo directo. Si todo esta fondeado muestra confirmacion verde. Si no hay presupuesto muestra CTA para agregar. Sin tener que ir al tab Maquinas y activos.', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C3.26', nombre: 'Panel angel con retorno esperado: deuda muestra cuota mensual y total a recuperar en N meses. Revenue share muestra pago mensual estimado a $10M ventas. Equity muestra porcentaje del negocio. Color por modelo.', done: true, valor: 1500000, quien: 'Claude AI' },
+    ]
+  },
+  {
+    id: 'C4',
+    titulo: 'CAPA 4 — Trust & Identity Graph',
+    descripcion: 'La reputacion verificable es el activo mas valioso de Escala y el moat mas dificil de copiar. Score, calificaciones, logros, certificaciones, historial inmutable, identidad digital, KYC/AML y prevencion de fraude.',
+    color: '#AFA9EC',
+    estado: 'progreso',
+    valor_total: 39500000,
+    valor_hecho: 8500000,
+    hitos: [
+      { num: 'C4.1', nombre: 'Algoritmo Score — 4 dimensiones verificables, calculado en funcion de DB, consistente en todos los modulos (directorio, metricas, perfil, score)', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C4.2', nombre: '/score — grafico circular, metricas reales, explainer expandible de como subir el score, logros desbloqueados, calificaciones recibidas', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C4.3', nombre: 'Track record publico — historial verificable en perfil de usuario', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: 'C4.4', nombre: 'Calificaciones entre colaboradores: tabla calificaciones (RLS escritura propia, lectura publica), API /api/calificaciones, promedio visible, unico por proyecto+par', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C4.5', nombre: 'Logros automaticos: 8 badges (primera postulacion aceptada, tarea verificada, contrato firmado, proyecto completado, primer impulso, aporte verificado, primera calificacion, perfil completo)', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C4.6', nombre: 'Badges de certificacion profesional: cert_tarjeta_profesional y cert_jcc. Uploader en /perfil/editar, auto-badge y recalculo Score. Visible en perfil publico', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C4.7', nombre: 'Trust Graph: reputacion calculada desde historial, contratos, pagos, cumplimiento, proyectos, resultados, referencias, aportes, experiencia e impacto — no solo conteo de tareas', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: 'C4.8', nombre: 'Score del grafo: PageRank-like sobre contribuciones verificadas. Reemplaza el simple contador actual por centralidad en el grafo de relaciones', done: false, valor: 6000000, quien: 'Claude AI' },
+      { num: 'C4.9', nombre: 'Sistema de reputacion y certificacion por especialidad: score verificable basado en proyectos completados, calificaciones, tiempo de respuesta y calidad de entregables', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C4.10', nombre: 'KYC/AML: verificacion de identidad de inversores y fundadores para cumplimiento regulatorio cuando los montos superen umbrales legales por pais', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: 'C4.11', nombre: 'Moats verificables: grafo de reputacion on-chain, historial de cumplimiento inmutable, valoraciones negociadas transparentes, red de especialistas certificados por Escala', done: false, valor: 7000000, quien: 'Claude AI + Ivan' },
+    ]
+  },
+  {
+    id: 'C5',
+    titulo: 'CAPA 5 — Marketplace & Liquidez',
+    descripcion: 'El problema del huevo y la gallina resuelto estructuralmente. Directorio de especialistas, directorio de inversion, descubrimiento de oportunidades, equipo base Escala, partners institucionales, fondo propio e inversores ancla.',
+    color: '#E05555',
+    estado: 'progreso',
+    valor_total: 31300000,
+    valor_hecho: 16300000,
+    hitos: [
+      { num: 'C5.1', nombre: 'Directorio de especialistas — busqueda por nombre, especialidad, ciudad, pais, score minimo; 7 roles canonicos en filtros', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C5.2', nombre: '/buscar proyectos — filtros por sector, tipo, ciudad, pais', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: 'C5.3', nombre: '/directorio-inversion — publico, sin login, angeles ven items de presupuesto sin fondear. Filtros categoria/prioridad. Modal fondeo inline. Stats globales', done: true, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C5.4', nombre: 'API /api/inversiones/oportunidades: items sin fondear de proyectos activos, paginado, filtros, resumen global por categoria', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C5.5', nombre: 'Panel angel /angel: portafolio activo, alertas de transferencias pendientes, oportunidades disponibles con deteccion de propuestas ya enviadas, KPIs de inversion', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C5.6', nombre: 'Dashboard contextual: tarjeta de proyecto detecta automaticamente equipos/maquinaria/local/tech y muestra informacion relevante sin entrar al workspace', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C5.7', nombre: 'Bloque descubrimiento en workspace: CTA azul a presupuesto, bloque warning hitos sin vincular al presupuesto', done: true, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C5.8', nombre: 'Equipo base interno de Escala: profesionales propios que aparecen listados cuando no hay especialistas externos. Se asignan temporalmente hasta tener masa critica', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: 'C5.9', nombre: 'Pantalla vacia resuelta: cuando no hay equipo ni roles abiertos el fundador ve CTA Publicar primer rol + Ver proyecto publico. Desaparece cuando hay miembros.', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: 'C5.10', nombre: 'Sistema de invitacion viralizado: inversionista invita a otro con incentivos, fundador trae inversionistas con beneficios de prioridad en fondeo', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C5.11', nombre: 'Red de partners institucionales: family offices, empresas, cooperativas que alimenten el marketplace con volumen desde el inicio', done: false, valor: 0, quien: 'Ivan' },
+      { num: 'C5.12', nombre: 'Fondo propio temporal de Escala: capital semilla para financiar los primeros proyectos y demostrar el modelo antes de atraer angeles externos', done: false, valor: 0, quien: 'Ivan (decision estrategica)' },
+      { num: 'C5.13', nombre: 'Grupo fundador de inversores ancla: 10-20 inversores comprometidos desde el inicio con condiciones preferenciales a cambio de liquidez inicial', done: false, valor: 0, quien: 'Ivan (desarrollo comercial)' },
+      { num: 'C5.14', nombre: 'KPIs de liquidez del marketplace: tiempo promedio para primer especialista, tiempo para primer fondeo, tasa de conversion visitante a proyecto publicado, NPS por rol', done: false, valor: 4000000, quien: 'Claude AI' },
+    ]
+  },
+  {
+    id: 'C6',
+    titulo: 'CAPA 6 — Intelligence Layer',
+    descripcion: 'La IA como sistema nervioso de Escala. Embeddings, matching inteligente, copiloto por proyecto, deteccion de riesgos, onboarding inteligente, enterprise graph, knowledge graph y valoracion de contribuciones. Prerequisito: capas 1-5 consolidadas.',
+    color: '#8FA3CC',
     estado: 'pendiente',
-    valor_total: 8000000,
+    valor_total: 77000000,
     valor_hecho: 0,
     hitos: [
-      { num: '31.1', nombre: 'Auditoría completa: 39 páginas, 41 APIs, 27 tablas, 15 módulos lib — mapear deuda técnica, inconsistencias y brechas vs visión Enterprise Graph', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '31.2', nombre: 'Diseño del Enterprise Graph: nodos (Persona, Empresa, Idea, Proyecto, Equipo, Capital, Contribución, Activo, Documento, Servicio, Evento, Conocimiento) y todas sus aristas con semántica y peso', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '31.3', nombre: 'Trust Graph: reputación calculada desde historial, contratos, pagos, cumplimiento, proyectos, resultados, referencias, aportes, experiencia e impacto — no solo conteo de tareas', done: false, valor: 1500000, quien: 'Claude AI' },
-      { num: '31.4', nombre: 'Diseño de la capa de IA sobre el grafo: búsqueda semántica de cofundadores e inversores, formación automática de equipos, detección de riesgos, recomendación de alianzas estratégicas', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '31.5', nombre: 'Roadmap 20 años: 6 fases desde MVP actual hasta infraestructura mundial — mapa de expansión por país, vertical y segmento de mercado', done: false, valor: 1000000, quien: 'Claude AI + Fundador' },
+      { num: 'C6.1', nombre: 'Enterprise Graph: nodos (Persona, Empresa, Idea, Proyecto, Equipo, Capital, Contribucion, Activo, Documento, Servicio, Evento, Conocimiento) y todas sus aristas con semantica y peso', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: 'C6.2', nombre: 'Preparacion del modelo relacional para grafo: tabla entity_relationships con tipo de relacion, peso y direccion. Reemplazar FKs implicitas por aristas explicitas con semantica', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C6.3', nombre: 'Contratos vivos: vincular contratos a hitos, pagos y evidencias en tiempo real. Estado del contrato derivado del estado real de sus componentes', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C6.4', nombre: 'Expertise graph: tabla expertise_nodes con skills verificadas, endorsements entre pares y niveles de profundidad — base para matching inteligente de equipos', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C6.5', nombre: 'Embeddings de perfiles: vectorizar cada usuario con OpenAI text-embedding-3. Almacenar en pgvector (Supabase) para busqueda semantica', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C6.6', nombre: 'Matching inteligente: dado un proyecto, encontrar los 5 perfiles mas compatibles por skills complementarias, disponibilidad, historial y posicion en el Trust Graph', done: false, valor: 6000000, quien: 'Claude AI' },
+      { num: 'C6.7', nombre: 'Generacion de contratos con IA: dado proyecto + rol + terminos negociados, generar contrato completo con clausulas especificas al contexto — reemplazar plantilla estatica', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C6.8', nombre: 'Deteccion de riesgos: identificar proyectos con alta probabilidad de abandono (sin actividad, hitos sin cumplir, conflictos) y alertar proactivamente a fundadores e inversores', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C6.9', nombre: 'Assistant sobre el grafo: chat que responde preguntas complejas del ecosistema usando el grafo como contexto (quién tiene experiencia en fintech en Chile con 3+ proyectos)', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: 'C6.10', nombre: 'Valoracion de contribuciones: dado el historial de un especialista en un proyecto, estimar el valor de mercado de su contribucion usando comparables del grafo', done: false, valor: 6000000, quien: 'Claude AI' },
+      { num: 'C6.11', nombre: 'Motor de matching automatico: IA recomienda especialistas, inversionistas y activos compatibles con cada proyecto segun historial, sector, ciudad y etapa', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: 'C6.12', nombre: 'Onboarding inteligente: cuando un usuario entra por primera vez, la IA le hace 3 preguntas y lo lleva al tipo de proyecto correcto sin que tenga que descubrir el camino', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C6.13', nombre: 'IA copiloto por proyecto: asistente que analiza y recomienda roles que faltan, hitos criticos, inversionistas compatibles, riesgos. Basado en embeddings del grafo', done: false, valor: 10000000, quien: 'Claude AI' },
+      { num: 'C6.14', nombre: 'Roadmap 20 anos: 6 fases desde MVP actual hasta infraestructura mundial — mapa de expansion por pais, vertical y segmento de mercado', done: false, valor: 0, quien: 'Ivan + Claude AI' },
+      { num: 'C6.15', nombre: 'IA FUTURA: Validador de precio de equipos. El emprendedor pone "horno industrial $3M" y la IA dice "el precio promedio de ese equipo en Colombia es $18M — verifica antes de publicar". Evita propuestas irreales que ningun angel fondeara. Requiere base de datos de precios de equipos por categoria y region.', done: false, valor: 4000000, quien: 'Claude AI (requiere C6.5 embeddings)' },
+      { num: 'C6.16', nombre: 'IA FUTURA: Estimador de ventas proyectadas para locales. Basado en tipo de negocio, ciudad y arriendo, la IA proyecta rango de ventas mensuales esperadas y calcula si el waterfall es viable. "Con un restaurante en Medellin pagando $3M de arriendo, se espera vender entre $15M y $25M al mes". Requiere datos historicos de proyectos cerrados.', done: false, valor: 5000000, quien: 'Claude AI (requiere datos historicos en Escala)' },
+      { num: 'C6.17', nombre: 'IA FUTURA: Detector de sobrecosto en presupuesto. Cuando el emprendedor ingresa el precio de un equipo, la IA compara con precios de mercado y alerta si esta inflado mas del 30%. Protege al inversionista y da credibilidad al proyecto. Requiere scraping de precios o integracion con proveedores.', done: false, valor: 4000000, quien: 'Claude AI (requiere fuentes de precios)' },
+      { num: 'C6.18', nombre: 'IA FUTURA: Copiloto de negociacion de terminos. Cuando fundador y angel estan negociando, la IA sugiere rangos razonables basados en proyectos similares cerrados en Escala. "Para un horno de $18M, los angeles tipicamente piden entre 8% y 15% de participacion". Requiere masa critica de deals cerrados en la plataforma.', done: false, valor: 5000000, quien: 'Claude AI (requiere datos historicos en Escala)' },
+      { num: 'C6.19', nombre: 'IA FUTURA: Cotizador de equipos integrado. El emprendedor escribe el nombre del equipo y la IA busca 3 proveedores con precios reales y los agrega al presupuesto con un clic. Elimina la friccion de buscar precios externamente. Requiere integracion con marketplaces (Mercado Libre, proveedores industriales).', done: false, valor: 6000000, quien: 'Claude AI (requiere integracion proveedores)' },
     ]
   },
   {
-    num: '32',
-    titulo: 'Deuda técnica crítica — hallazgos de auditoría',
+    id: 'C7',
+    titulo: 'CAPA 7 — Network Effects & Viralidad',
+    descripcion: 'Los mecanismos que hacen que Escala crezca solo. Feed interno de proyectos, publicaciones del equipo, motor viral, invitaciones entre pares, comunidad, rankings y eventos del ecosistema.',
+    color: '#6B7280',
     estado: 'pendiente',
-    valor_total: 6000000,
+    valor_total: 19000000,
     valor_hecho: 0,
     hitos: [
-      { num: '32.1', nombre: 'Modelo relacional plano → preparación para grafo: tabla entity_relationships con tipo de relación, peso y dirección. Reemplazar FKs implícitas por aristas explícitas con semántica', done: false, valor: 2000000, quien: 'Claude AI' },
-      { num: '32.2', nombre: 'Score actual (simple contador) → Score del grafo: reputación calculada desde centralidad en el grafo. PageRank-like sobre contribuciones verificadas, no solo completitud de tareas', done: false, valor: 1500000, quien: 'Claude AI' },
-      { num: '32.3', nombre: 'Contratos estáticos → Contratos vivos: vincular contratos a hitos, pagos y evidencias en tiempo real. Estado del contrato derivado del estado real de sus componentes', done: false, valor: 1000000, quien: 'Claude AI' },
-      { num: '32.4', nombre: 'Roles sin expertise graph: tabla expertise_nodes con skills verificadas, endorsements entre pares y niveles de profundidad — base para matching inteligente de equipos', done: false, valor: 1000000, quien: 'Claude AI' },
-      { num: '32.5', nombre: 'i18n real: next-intl en todas las páginas, detección de país por IP, moneda y proveedor de pago automáticos según país del usuario — hoy solo hay soporte parcial en el motor financiero', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: 'C7.1', nombre: 'Motor de publicaciones interno: feed de actualizaciones dentro de cada proyecto. Miembros publican avances, fotos, videos, documentos. Inversionistas y mentores comentan. LinkedIn interno por proyecto', done: false, valor: 8000000, quien: 'Claude AI' },
+      { num: 'C7.2', nombre: 'Mecanismo proyecto exitoso → ecosistema: al cerrar exitosamente, fundador recibe beneficios por traer nuevos proyectos, especialistas quedan certificados, inversores tienen case study publico', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C7.3', nombre: 'Rankings publicos: top fundadores, top especialistas, top proyectos por sector y pais. Genera aspiracion y competencia sana dentro del ecosistema', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C7.4', nombre: 'Eventos del ecosistema: demo days virtuales, pitch sessions, ruedas de negocios — dentro de la plataforma, no en herramientas externas', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
+      { num: 'C7.5', nombre: 'Programa de referidos: usuario que trae un nuevo usuario que completa un proyecto recibe beneficios en comisiones o suscripcion', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
     ]
   },
   {
-    num: '33',
-    titulo: 'Escala Intelligence Layer — IA sobre el grafo',
+    id: 'C8',
+    titulo: 'CAPA 8 — Expansion & Mercados',
+    descripcion: 'La presencia de Escala en el mundo. SEO por pais, landing pages, blog, redes sociales, motor de publicacion automatica, localizacion por mercado y estrategia de entrada por pais.',
+    color: '#4A90D9',
+    estado: 'progreso',
+    valor_total: 20400000,
+    valor_hecho: 14400000,
+    hitos: [
+      { num: 'C8.1', nombre: 'Infraestructura SEO: robots.txt, sitemap.ts dinamico (proyectos activos + perfiles publicos), metadata global mejorada, OpenGraph, Twitter Cards, JSON-LD Organization + WebSite + SoftwareApplication', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C8.2', nombre: 'Imagen OG 1200x630px, verificacion Google Search Console, sitemap enviado a Google', done: true, valor: 500000, quien: 'Claude AI' },
+      { num: 'C8.3', nombre: 'Landings Tier 1: /buscar-cofundador, /crear-empresa, /startup-colombia, /startup-mexico', done: true, valor: 2400000, quien: 'Claude AI' },
+      { num: 'C8.4', nombre: 'Landings Tier 2: /angel-investor, /buscar-cto, /startup-chile, /startup-bogota, /startup-medellin, /startup-santiago, /desarrollador-startup-colombia, /latinos-usa, /locales-comerciales x3', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C8.5', nombre: 'Blog con articulos indexados: historia-de-escala, participacion-diferida, constituir-sas-colombia, startup-sin-dinero', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C8.6', nombre: 'Identidad visual — isotipo (escalon + punto), paleta #0B1628/#1D9E75/#8FA3CC, Inter 800. Assets SVG en public/brand/. Consistente en 30+ paginas', done: true, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C8.7', nombre: 'Motor de publicacion en redes — lib/redes-sociales/ con 4 modulos: metaGraphApi (Graph API v25), plantillas (16 editables), generarTarjeta (SVG→PNG), publicar (idempotencia, reintentos, auditoria)', done: true, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C8.8', nombre: 'Meta App configurada — App ID: 4534429656788672, permisos pages_manage_posts + instagram_content_publish. Pendiente: verificacion negocio Meta', done: true, valor: 500000, quien: 'Claude AI + Ivan' },
+      { num: 'C8.9', nombre: 'Meta Business Verification — completar para mover la app a produccion. Requiere RUT o Camara de Comercio de Escala', done: false, valor: 0, quien: 'Ivan' },
+      { num: 'C8.10', nombre: 'Username personalizado Facebook — cambiar profile.php?id=... por facebook.com/EscalaNetwork una vez la pagina tenga 100 seguidores', done: false, valor: 0, quien: 'Ivan' },
+      { num: 'C8.11', nombre: 'Blog completo: 10 articulos adicionales por pais y sector (Colombia, Mexico, Chile, Espana)', done: true, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C8.12', nombre: 'SEO programatico: paginas generadas automaticamente por ciudad + industria + rol (ej: desarrollador-startup-bogota, contador-para-startups-medellin)', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C8.13', nombre: 'Hreflang y localizacion: indicadores de idioma/pais en todas las landing pages para SEO internacional', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C8.14', nombre: 'Estrategia de entrada por pais: plan de landings, partners y SEO local para Espana, Argentina, Peru, Ecuador y USA Hispanic', done: false, valor: 0, quien: 'Ivan + Claude AI' },
+    ]
+  },
+  {
+    id: 'C9',
+    titulo: 'CAPA 9 — Monetizacion & Modelo de Negocio',
+    descripcion: 'Como Escala genera ingresos sostenibles: comisiones por transaccion, suscripciones Pro, Escala for Teams, white label, franquicias, revenue share con partners y fuentes de ingresos adicionales conforme crece el ecosistema.',
+    color: '#1D9E75',
     estado: 'pendiente',
-    valor_total: 12000000,
+    valor_total: 23000000,
     valor_hecho: 0,
     hitos: [
-      { num: '33.1', nombre: 'Embeddings de perfiles: vectorizar perfil de cada usuario (skills, historial, proyectos, reputación) con OpenAI text-embedding-3. Almacenar en pgvector (Supabase) para búsqueda semántica', done: false, valor: 2500000, quien: 'Claude AI' },
-      { num: '33.2', nombre: 'Matching de cofundadores y especialistas: dado un proyecto, encontrar los 5 perfiles más compatibles por skills complementarias, disponibilidad, historial y posición en el Trust Graph', done: false, valor: 2000000, quien: 'Claude AI' },
-      { num: '33.3', nombre: 'Generación de contratos con IA: dado proyecto + rol + términos negociados, generar contrato completo con cláusulas específicas al contexto — reemplazar la plantilla estática actual', done: false, valor: 1500000, quien: 'Claude AI' },
-      { num: '33.4', nombre: 'Detección de riesgos: identificar proyectos con alta probabilidad de abandono (sin actividad, hitos sin cumplir, conflictos sin resolver) y alertar proactivamente a fundadores e inversores', done: false, valor: 1500000, quien: 'Claude AI' },
-      { num: '33.5', nombre: 'Assistant sobre el grafo: chat que responde preguntas complejas del ecosistema usando el grafo como contexto ("¿quién tiene experiencia en fintech en Chile con más de 3 proyectos completados?")', done: false, valor: 2500000, quien: 'Claude AI' },
-      { num: '33.6', nombre: 'Valoración de contribuciones: dado el historial de un especialista en un proyecto, estimar el valor de mercado de su contribución usando comparables del grafo — base para negociación de equity', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C9.1', nombre: 'Comision por transaccion: 2-4% sobre cada pago ejecutado en el motor financiero — campo comision_escala ya existe en el ledger, solo falta activarlo en el flujo de ejecucion', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C9.2', nombre: 'Suscripcion Pro: plan de pago para fundadores con mas de 3 proyectos activos — acceso a IA matching, contratos ilimitados, analytics avanzados y soporte prioritario', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C9.3', nombre: 'Escala for Teams: plan empresarial para companias que quieran usar Escala para gestionar proyectos internos y proveedores externos — prerequisito: Capa 1 multi-tenant', done: false, valor: 5000000, quien: 'Claude AI' },
+      { num: 'C9.4', nombre: 'Revenue share con partners: cuando un partner institucional (family office, cooperativa, empresa) trae inversores o especialistas, Escala comparte un % de las comisiones generadas', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C9.5', nombre: 'White label: empresas que quieran su propia instancia de Escala para gestionar proyectos internos — prerequisito: Capa 1 multi-tenant', done: false, valor: 8000000, quien: 'Claude AI + Ivan' },
+      { num: 'C9.6', nombre: 'Comision sobre fondeo verificado: porcentaje sobre el capital que fluye a traves de la plataforma entre inversores y proyectos', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C9.7', nombre: 'Freemium a Pro: modelo de conversion — primer proyecto gratis, a partir del segundo se requiere suscripcion o pago por transaccion', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
     ]
   },
   {
-    num: '34',
-    titulo: 'Escalabilidad y arquitectura enterprise',
-    estado: 'pendiente',
-    valor_total: 10000000,
-    valor_hecho: 0,
+    id: 'C10',
+    titulo: 'CAPA 10 — Legal & Regulatorio',
+    descripcion: 'El cumplimiento legal que permite a Escala operar en cada pais: contratos por jurisdiccion, firma digital, facturacion electronica, privacidad de datos (Ley 1581, GDPR), licencias financieras y regulacion especifica por mercado.',
+    color: '#E05555',
+    estado: 'progreso',
+    valor_total: 47000000,
+    valor_hecho: 2000000,
     hitos: [
-      { num: '34.1', nombre: 'React Server Components: migrar las 5 páginas más críticas (dashboard, proyectos, workspace, score, carril) de fetch() client-side a RSC — eliminar waterfalls de datos y mejorar TTI', done: false, valor: 2000000, quien: 'Claude AI' },
-      { num: '34.2', nombre: 'Rate limiting global: Vercel Edge Middleware en todas las APIs — 100 req/min por IP, 1000/min por usuario autenticado. Bloquear automáticamente abuso de webhooks', done: false, valor: 1000000, quien: 'Claude AI' },
-      { num: '34.3', nombre: 'Caché de lectura: Upstash Redis para cachear tasas de cambio, catálogos y scores. TTL 5 min para datos frecuentes — reducir carga en Supabase en picos de tráfico', done: false, valor: 1500000, quien: 'Claude AI' },
-      { num: '34.4', nombre: 'Observabilidad: Sentry para errores frontend y API, Vercel Analytics para performance, alertas automáticas si error rate > 1% o latencia P95 > 2s', done: false, valor: 1000000, quien: 'Claude AI' },
-      { num: '34.5', nombre: 'Multi-tenant: tabla organizations, separación de datos por organización, modelo white-label para que empresas tengan su propia instancia de Escala — prerequisito para Escala for Teams', done: false, valor: 4500000, quien: 'Claude AI + Fundador' },
+      { num: 'C10.1', nombre: 'Politica de Privacidad — 11 secciones, Ley 1581 Colombia, requerida para Meta App Review y confianza de usuarios', done: true, valor: 500000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.2', nombre: 'Admin Escala parametrizable — CRUD completo de paises, industrias, tareas, especialidades, categorias sin deploy. Selectores dinamicos con opcion crear nuevo', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C10.3', nombre: 'Canal SMS — Twilio o Sinch para notificaciones criticas', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.4', nombre: 'Canal WhatsApp API oficial Meta', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.5', nombre: 'Firma digital — DocuSign/HelloSign integrado en el flujo de contratos', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.6', nombre: 'App movil — React Native o PWA para iOS y Android', done: false, valor: 15000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.7', nombre: 'Facturacion electronica DIAN (Colombia)', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.8', nombre: 'Facturacion electronica SAT (Mexico)', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.9', nombre: 'Facturacion electronica SII (Chile)', done: false, valor: 4000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.10', nombre: 'Licencia como intermediario financiero: analisis legal de si Escala requiere licencia de operador de servicios financieros en Colombia y otros paises cuando maneje capital de terceros', done: false, valor: 0, quien: 'Ivan (decision legal)' },
+      { num: 'C10.11', nombre: 'KYC/AML: verificacion de identidad de inversores y fundadores para cumplimiento regulatorio cuando los montos superen umbrales legales por pais', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.12', nombre: 'GDPR y proteccion de datos: adaptacion de politicas, consentimientos y manejo de datos para expansion a Espana y Europa', done: false, valor: 3000000, quien: 'Claude AI + Ivan' },
+      { num: 'C10.13', nombre: 'Regulacion por mercado: analisis de requisitos legales especificos para operar en Mexico, Chile, Peru, Ecuador, Argentina y Espana', done: false, valor: 0, quien: 'Ivan (decision legal)' },
     ]
   },
   {
-    num: '35',
-    titulo: 'Expansión internacional — proveedores de pago por país',
+    id: 'C11',
+    titulo: 'CAPA 11 — Primera Campana: Las 10 Maquinas',
+    descripcion: 'Campana viral modelo concurso publico. Escasez real: Ivan es el angel que financia 10 maquinas de confeccion para las mejores confeccionistas de Medellin. Big Idea: Gana tu maquina, no la pidas. Meta 500+ aplicantes, 50 finalistas publicas, votacion comunidad (30%) + evaluacion interna (70%), 10 ganadoras en Instagram Live. Las ganadoras son heroinas publicas en su gremio. Su historia es el activo de la segunda campana. Ninguno de los importadores existentes (Titus, Juki Colombia, Jack Colombia) tiene un programa asi — todos venden transaccionalmente sin financiamiento para el segmento informal.',
+    color: '#D946EF',
     estado: 'pendiente',
     valor_total: 15000000,
-    valor_hecho: 0,
+    valor_hecho: 1000000,
     hitos: [
-      { num: '35.1', nombre: 'SPEI (México): integración con PSP mexicano para fondeos en MXN — equivalente a BRE-B Colombia. El motor financiero ya tiene proveedor_pago enum con spei', done: false, valor: 3000000, quien: 'Desarrollador + Contratar proveedor' },
-      { num: '35.2', nombre: 'Khipu / Fintoc (Chile): integración para fondeos en CLP', done: false, valor: 3000000, quien: 'Desarrollador + Contratar proveedor' },
-      { num: '35.3', nombre: 'Wompi (Colombia): PSE + tarjetas débito/crédito para Colombia', done: false, valor: 2500000, quien: 'Desarrollador + Contratar Wompi' },
-      { num: '35.4', nombre: 'Stripe (Internacional): USD/EUR para España, Ecuador y usuarios internacionales', done: false, valor: 2500000, quien: 'Desarrollador + Contratar Stripe' },
-      { num: '35.5', nombre: 'Facturación electrónica por país: DIAN (Colombia), SAT (México), SII (Chile) — cada uno requiere contratar proveedor de facturación electrónica certificado', done: false, valor: 4000000, quien: 'Desarrollador + Contador + Contratar proveedor' },
+      { num: 'C11.1', nombre: 'Landing /maquinaria-confeccion-medellin CREADA. Hero: Tienes los pedidos. Te falta la maquina. Te la conseguimos. 3 pasos, ejemplo Maria overlock $8.5M, 6 tipos maquinas con marcas, CTA WhatsApp, FAQ. Sitemap prioridad 0.95.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C11.2', nombre: 'Avatar Lorena: mujer 28-52, madre cabeza de familia, Belen/Robledo/Itagui, 1-3 maquinas, trabaja como satelite para marcas, produce 90u/mes podria hacer 180, ingreso $1.8M-$2.5M, rechazada 2x por bancos, activa en grupos WhatsApp de confeccionistas. Su dolor: tiene pedidos pero no da abasto.', done: false, valor: 0, quien: 'Ivan + Claude AI' },
+      { num: 'C11.3', nombre: 'Marco del concurso: no es programa de ayuda, es competencia. 5 semanas: S1-2 aplicaciones → S3 50 finalistas publicas anunciadas → S4 videos 60s + votacion publica → S5 Instagram Live 10 ganadoras. Votacion: 30% comunidad + 70% evaluacion interna (pedidos verificados + viabilidad).', done: false, valor: 0, quien: 'Ivan + Claude AI' },
+      { num: 'C11.4', nombre: 'Contador publico en landing: X aplicantes · 10 cupos. Tiempo real. Se cierra al llegar a 500 o al plazo. Hook principal ads: Solo estoy buscando 10 confeccionistas en Medellin. Segundo hook: Tengo $85 millones para comprar maquinas. El problema es que solo puedo elegir 10.', done: false, valor: 500000, quien: 'Claude AI' },
+      { num: 'C11.5', nombre: 'Formulario de aplicacion con score automatico 0-100: nombre, ciudad, tipo de maquina, pedidos mensuales actuales, capacidad actual vs proyectada. WhatsApp inmediato: Lorena, recibimos tu aplicacion. Estas en la fila de 487 personas. Te confirmamos en 48h si pasas.', done: false, valor: 800000, quien: 'Claude AI' },
+      { num: 'C11.6', nombre: 'Meta Ads TOFU $800K/semana: video 30-45s vertical. Audiencia: mujeres 28-52, Medellin + Valle de Aburra, intereses confeccion/maquinas coser/ropa interior/trabajo en casa. KPI: CTR 3%+, CPL menos $15K COP.', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.7', nombre: 'Meta Ads MOFU $600K/semana: retargeting 50%+ video + visitantes landing. Carrusel 3 pasos del modelo + contador aplicantes. Meta Ads BOFU $400K/semana: retargeting sin conversion. Story + historia aplicante real. Total pauta 2 semanas: ~$3.6M COP.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.8', nombre: 'WhatsApp flow 5 semanas (Tomo 7): S1 confirmacion inmediata → S2 educacion modelo + historia Lorena → S3 si pasa a finalistas: notificacion especial → S4 recordatorio votacion → S5 resultado. Mantener engagement 500 aplicantes durante todo el proceso.', done: false, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C11.9', nombre: 'Semana 3: anuncio publico 50 finalistas en Instagram con nombres y ciudad. Cada finalista etiquetada — comparte que llego a la final. Sus clientas, familias y redes amplifican sin costo. Es el momento de mayor alcance organico de toda la campana.', done: false, valor: 500000, quien: 'Ivan + Claude AI' },
+      { num: 'C11.10', nombre: 'Semana 4: las 50 finalistas entregan video 60s contando su historia (guion sugerido: quien soy, que hago, que maquina necesito, por que me la merezco). Votacion publica en Instagram stories o link. Videos circulan solos en grupos de confeccionistas de Medellin.', done: false, valor: 1000000, quien: 'Ivan + Claude AI' },
+      { num: 'C11.11', nombre: 'Semana 5: Instagram Live anuncio 10 ganadoras. Ivan anuncia una por una. Las 10 firman proyecto en Escala esa semana. Contrato de leasing generado automaticamente. Ivan aprueba como angel. Maximo impacto mediatico del proceso.', done: false, valor: 500000, quien: 'Ivan' },
+      { num: 'C11.12', nombre: 'Mes 2-3 documentar entregas (Tomo 9): video recibiendo maquina, primer dia produciendo, primer pedido cumplido con maquina nueva, numeros reales antes vs despues. Cada historia es un creativo para la segunda campana con CPL proyectado 40-60% menor.', done: false, valor: 2000000, quien: 'Ivan + Claude AI' },
+      { num: 'C11.13', nombre: 'Contenido organico 30 piezas (Tomo 8): S1-2 lanzamiento (polls, Ivan explica, historia dramatizada banco que dijo no, contador) → S3 presentacion finalistas → S4 votacion → S5 ganadoras. Instagram + TikTok. Meta: 500 seguidores nuevos por semana.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.14', nombre: 'Google Ads intencion de compra: maquina de coser industrial Medellin, maquina overlock precio Colombia, como comprar maquina sin credito, maquinas Juki Jack Medellin. Capturar quien ya busca activamente — son las mas calificadas.', done: false, valor: 1000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.15', nombre: 'Ronda 2 — Salon de belleza Medellin LANDING CREADA /equipos-salon-belleza-medellin: estilistas con silla propia o salon en casa. Avatar Sandra 25 clientas, no puede ofrecer tratamientos sin secadora casco $2.8M → cuota $98K/mes. Equipos: silla hidraulica, horno UV, secadora, cabina ozono, plancha vapor, camilla. Target Meta: mujeres 22-45 intereses peluqueria/nail art/cejas/extensiones.', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.16', nombre: 'Ronda 3 — Comida en el barrio Medellin LANDING CREADA /equipos-negocio-comida-medellin: empanadas, arepas, tamales, fritanga. Avatar Patricia 80 empanadas/dia → 250 con freidora $3.2M → cuota $112K/mes → ingreso adicional $7.6M/mes. Equipos: freidora, horno panadero, amasadora, estufa industrial, nevera, marmita. Target Meta: mujeres 28-55 comunas Belen/Robledo/Castilla/Manrique.', done: false, valor: 2000000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.17', nombre: 'KPIs y optimizacion semanal (Tomo 9): si CTR < 2% dia 3 cambiar hook. Si CPL > $25K revisar segmentacion. Si landing < 5% revisar headline. Si WhatsApp < 40% revisar confirmacion. Dashboard semanal. Cada ronda reduce CPL siguiente 40-60% con casos reales.', done: false, valor: 200000, quien: 'Claude AI + Ivan' },
+      { num: 'C11.18', nombre: 'Alianzas como cliente mayorista con distribuidores por nicho. CONFECCION: Maicoser (Medellin, Juki/Jack/Typical/Siruba/Brother, maicoser.com), Distmaquinas (nacional, 16 anos, importador directo, distmaquinas.com), Maicol (Medellin, distribuidor oficial Juki Cra 44 #10Sur-76). BELLEZA: Humberto Botero (Medellin, equipos peluqueria/spa/sillas hidraulicas, humbertobotero.com), Mueble Belleza JB (Colombia, sillas hidraulicas fabricacion propia, mueblebellezajb.com), Fabrica Royal (Colombia, muebles peluqueria/spa hasta 3 anos garantia). COMIDA: Union Gastronomica/Inventto Group (Medellin/nacional, freidoras/hornos/refrigeracion, inventtogroup.com), Frionox (Colombia, cocinas industriales/camaras frigorificas, frionox.com), Industrial Taylor (30 anos experiencia, foodservice Colombia, industrialtaylor.com.co). Objetivo: precio mayorista en cada maquina financiada = margen adicional para Escala del 8-15% sobre el valor de cada equipo. Ivan negocia directamente como cliente recurrente con volumen proyectado.', done: false, valor: 3000000, quien: 'Ivan' },
     ]
   },
-  {
-    num: '36',
-    titulo: 'Monetización — modelo de ingresos de Escala',
-    estado: 'pendiente',
-    valor_total: 5000000,
-    valor_hecho: 0,
-    hitos: [
-      { num: '36.1', nombre: 'Comisión por transacción: cobrar 2-4% sobre cada pago ejecutado en el motor financiero — campo comision_escala ya existe en el ledger, solo falta activarlo en el flujo de ejecución', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
-      { num: '36.2', nombre: 'Suscripción Pro: plan de pago para fundadores con más de 3 proyectos activos — acceso a IA matching, contratos ilimitados, analytics avanzados y soporte prioritario', done: false, valor: 2000000, quien: 'Claude AI + Fundador' },
-      { num: '36.3', nombre: 'Escala for Teams: plan empresarial para compañías que quieran usar Escala para gestionar proyectos internos y proveedores externos — prerequisito: Fase 25.5 (multi-tenant)', done: false, valor: 1500000, quien: 'Claude AI + Fundador' },
-    ]
-  }
-,
-  {
-    num: '37',
-    titulo: 'Rediseño del dashboard — reorganización sin eliminar funcionalidades',
-    estado: 'pendiente',
-    valor_total: 3500000,
-    valor_hecho: 0,
-    hitos: [
-      { num: '37.1', nombre: 'Auditoría profunda del dashboard: análisis de frecuencia de uso por módulo, jerarquía visual, flujo de trabajo por etapa del usuario y escalabilidad con 10/30/100 proyectos', done: true, valor: 500000, quien: 'Claude AI + Fundador' },
-      { num: '37.2', nombre: 'Bandeja de trabajo a ancho completo antes del grid — hoy oculta en grid con wallet y acciones sin relación', done: false, valor: 800000, quien: 'Claude AI' },
-      { num: '37.3', nombre: 'Proyectos disponibles condicional por rol (sube para especialistas, queda al fondo para fundadores)', done: false, valor: 500000, quien: 'Claude AI' },
-      { num: '37.4', nombre: 'Tarjetas de proyecto: 1 CTA visible + overflow. Lista compacta cuando hay más de 3 proyectos', done: false, valor: 1000000, quien: 'Claude AI' },
-      { num: '37.5', nombre: 'Sidebar: accionables vs informativos diferenciados visualmente. Score con mayor prominencia', done: false, valor: 700000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    num: '38',
-    titulo: 'SEO — Infraestructura, Search Console y landing pages',
-    estado: 'completa',
-    valor_total: 6000000,
-    valor_hecho: 5500000,
-    hitos: [
-      { num: '38.1', nombre: 'robots.txt, sitemap.ts dinámico (proyectos + perfiles), metadata global con 3 JSON-LD schemas', done: true, valor: 1600000, quien: 'Claude AI' },
-      { num: '38.2', nombre: 'Metadata dinámica en /proyectos/[id], /perfil/[id], /buscar, /directorio, /que-es-escala — wrappers de servidor', done: true, valor: 1000000, quien: 'Claude AI' },
-      { num: '38.3', nombre: 'Imagen OG 1200x630px, verificación Google Search Console, sitemap enviado a Google', done: true, valor: 700000, quien: 'Claude AI + Ivan' },
-      { num: '38.4', nombre: '4 landing pages SEO: /buscar-cofundador, /crear-empresa, /startup-colombia, /startup-mexico. H1 semántico, JSON-LD, FAQ, enlazado interno', done: true, valor: 2700000, quien: 'Claude AI' },
-      { num: '38.5', nombre: 'SEO Tier 2 ejecutado: /desarrollador-startup-colombia, /startup-bogota, /startup-medellin, /startup-santiago, /angel-investor, /buscar-cto. Blog 4 articulos. Sitemap 23 URLs. /seo dashboard.', done: true, valor: 500000, quien: 'Claude AI' },
-    ]
-  },
-
-  {
-    titulo: 'Flujo de verificación de tareas, onboarding guiado, badges contador y plan SEO',
-    estado: 'progreso',
-    valor_total: 18900000,
-    valor_hecho: 16400000,
-    hitos: [
-      { num: '39.1', nombre: 'Fix bug crítico: tareas de constitución duplicadas al inicializar especialista. inicializar_constitucion reasigna existentes sin asignar en vez de crear copias. Fix getSegmento() — razon_creacion "Constitución de empresas — Colombia" caía al segmento "Colombia". Migración SQL limpieza producción. QA grupo anti-duplicado.', done: true, valor: 2100000, quien: 'Claude AI' },
-      { num: '39.2', nombre: 'Hilo de conversación por tarea: columnas tarea_id, adjuntos, es_sistema en mensajes (SQL). Chat general y hilos separados por tarea_id. Al completar → mensaje automático de sistema abre hilo. Al verificar → mensaje de cierre. Especialista puede escribir y adjuntar docs directamente en el hilo de cada tarea.', done: true, valor: 1800000, quien: 'Claude AI' },
-      { num: '39.3', nombre: 'Documentación segmentada: tabla documentos_proyecto con RLS (SQL). Adjuntos de hilos se indexan por categoría según rol (Contador→Contabilidad, Abogado→Legal, etc.). API /api/documentos (GET/POST/DELETE). Nueva pestaña Documentación en workspace con accordion por categoría. Ruta /workspace/documentos/page.js.', done: true, valor: 1500000, quien: 'Claude AI' },
-      { num: '39.4', nombre: 'Indicador "Requiere revisión" en tareas: punto pulsante en cada tarea completada sin verificar. Botón 💬 abre panel de hilo inline con mensajes, input de texto y subida de archivos. Al hacer click en item de bandeja, URL incluye ?tarea=ID y el workspace abre ese hilo automáticamente al cargar.', done: true, valor: 900000, quien: 'Claude AI' },
-      { num: '39.5', nombre: 'Banner de verificación pendiente en dashboard del fundador: antes solo campanita. Ahora banner visible con punto pulsante, conteo de tareas y link directo al hilo (?tarea=ID). Dashboard API expone tareas_por_verificar en contadores y las incluye en bandeja de trabajo.', done: true, valor: 700000, quien: 'Claude AI' },
-      { num: '39.6', nombre: 'Notificaciones como dropdown tipo Slack/Notion: campanita abre panel 360px anclado, con scroll, marcar leídas y X. Se cierra al click afuera. Eliminada la vista de página completa que reemplazaba el dashboard. Estado notifPanelAbierto independiente del sistema de vistas anterior.', done: true, valor: 700000, quien: 'Claude AI' },
-      { num: '39.7', nombre: 'Fix bug crítico: workspace/tareas roto con "This page couldn\'t load". Causa 1: mensajes API insertaba en documentos_proyecto sin tabla existente (migración pendiente) — envuelto en try/catch. Causa 2: useState de rolesAbiertos y segmentosAbiertos declarados después de renderHiloPanel() violando reglas de hooks de React. Causa 3: rolesTareas se perdió en una edición.', done: true, valor: 600000, quien: 'Claude AI' },
-      { num: '39.8', nombre: 'Badges de certificación para Contador colombiano: cert_tarjeta_profesional y cert_jcc en DEFINICIONES_LOGROS. Columnas en perfiles (SQL). Sección "Documentos profesionales" en /perfil/editar con uploader por documento, auto-otorga badge y recalcula Score al guardar. Perfil público muestra badges y documentos con links.', done: true, valor: 1800000, quien: 'Claude AI' },
-      { num: '39.9', nombre: 'Email incentivo para contadores sin docs: plantilla incentivo_cert_contador (motivacional, explica qué subir y por qué). Cron Job semanal lunes 10am UTC (/api/cron/incentivo-cert-contador) — busca contadores colombianos con ambas columnas null. Registrado en vercel.json.', done: true, valor: 700000, quien: 'Claude AI' },
-      { num: '39.10', nombre: 'Tour onboarding workspace: modal 5 pasos para especialistas primera vez en workspace. Bienvenida → tareas → chat → aportes → ir a tareas. Solo especialistas (no fundador). localStorage escala_tour_workspace_{userId}. Overlay con blur, barra de progreso, botón Saltar.', done: true, valor: 900000, quien: 'Claude AI' },
-      { num: '39.11', nombre: 'Tour onboarding dashboard post-registro: modal 5 pasos, 2 variantes. Fundador: bienvenida → crear proyecto → publicar roles → directorio → CTA. Especialista: bienvenida → completar perfil (advertencia de por qué importa) → qué son los proyectos → cómo funcionan los roles → buscar proyectos. localStorage escala_tour_inicio_{userId}. Barra azul → verde en final.', done: true, valor: 1200000, quien: 'Claude AI' },
-      { num: '39.12', nombre: 'Mejora sección Proyectos disponibles para especialistas: lista vertical con país/sector/industria. Detector de match especialidad↔roles_buscados (badge "Encaja con tu perfil" + borde verde). CTA "Ver roles" por proyecto. Link "Ver todos →". Banner acceso a buscador avanzado.', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '39.13', nombre: 'Fix deploy Vercel: auto-deploy no se disparaba con pushes vía PAT (webhook inactivo). Solución: Deploy Hook creado en Vercel → Settings → Git → Deploy Hooks (claude-deploy, branch main). Flujo: push GitHub + commit vacío trigger. URL: https://api.vercel.com/v1/integrations/deploy/prj_csq0U7GFtjckeKZPu59sj9A7LITp/Q2wXkIR6Fz', done: true, valor: 300000, quien: 'Claude AI + Ivan' },
-      { num: '39.14', nombre: 'Fix duplicados Gerente de Proyecto: handler inicializar+rol_nombre filtra nombres existentes antes de insertar. Evita duplicar si plantilla cargada dos veces desde TAREAS_BASE y SEGMENTOS_ROLES simultaneamente.', done: true, valor: 600000, quien: 'Claude AI' },
-      { num: '39.15', nombre: '6 builds fallidos en Vercel por error JSX en dashboard/page.js: faltaba wrapper {toastNuevo && (} al insertar el tour de onboarding. Turbopack detecta este error pero esbuild no — todos los deploys desde tour dashboard hasta roadmap completo fallaron. Fix en commit 9f9a011. Pendiente: agregar verificacion JSX estricta antes de subir cambios al dashboard.', done: true, valor: 0, quien: 'Claude AI' },
-      { num: '39.16', nombre: 'SEO Tier 1 ejecutado: /contador-publico-colombia (contadores que buscan startups), /abogado-startups-colombia (abogados por equity), /startup-chile (mercado chileno), /crear-empresa-sin-capital (keyword conversion directa). Sitemap +7 URLs, robots.txt actualizado. PLAN_SEO.md en repo con 50 keywords, roadmap 6 meses, calendario editorial, backlinks, KPIs.', done: true, valor: 2500000, quien: 'Claude AI' },
-      { num: '39.17', nombre: 'SEO Tier 2 ejecutado: /desarrollador-startup-colombia, /startup-bogota, /startup-medellin, /startup-santiago, /angel-investor, /buscar-cto. Blog 4 articulos + indice /blog. Sitemap 23 URLs. /seo panel de seguimiento. Pendiente: 6 articulos restantes, Reddit/LinkedIn/Product Hunt.', done: true, valor: 3000000, quien: 'Claude AI + Ivan' },
-    ]
-  },
-  {
-    titulo: 'Escenarios frecuentes - flujo completo 13 etapas (Prompt Maestro 2026-07-09)',
-    estado: 'pendiente',
-    valor_total: 45000000,
-    valor_hecho: 0,
-    hitos: [
-      { num: '40.1', nombre: 'ANÁLISIS (2026-07-09): Top 5 escenarios frecuentes en LATAM: Arrendar local, Abrir restaurante, Importar mercancía, Comprar vehículo, Tienda online. Los 3 gaps que bloquean todos: levantamiento capital real, reparto económico, cierre formal. Flujo completo de 13 etapas definido.', done: true, valor: 0, quien: 'Claude AI + Ivan' },
-      { num: '40.2', nombre: 'GAP 1 — Validación proyecto (etapa 3): wizard checklist antes de publicar.', done: false, valor: 3000000, quien: 'Claude AI' },
-      { num: '40.3', nombre: 'GAP 2 — Estructuración financiera por escenario (etapa 6): wizard contextual tipo de proyecto + wizard financiero.', done: false, valor: 4000000, quien: 'Claude AI' },
-      { num: '40.4', nombre: 'GAP 3 — Levantamiento de capital real (etapa 7): flujo ángel → hito → wallet proyecto → verificación.', done: false, valor: 6000000, quien: 'Claude AI' },
-      { num: '40.5', nombre: 'GAP 4 — Reparto económico (etapa 11): distribución automática según contratos en evento de pago.', done: false, valor: 7000000, quien: 'Claude AI' },
-      { num: '40.6', nombre: 'GAP 5 — Cierre formal (etapa 12): confirmación partes, resumen, liberación reputación.', done: false, valor: 4000000, quien: 'Claude AI' },
-      { num: '40.7', nombre: 'GAP 6 — Reputación post-proyecto (etapa 13): calificación mutua al cerrar, Score actualizado con resultado real.', done: false, valor: 3000000, quien: 'Claude AI' },
-      { num: '40.8', nombre: 'Wizards específicos para Top 5 escenarios: local comercial, restaurante, importación, vehículo operativo, e-commerce. Cada uno con tareas predefinidas y roles sugeridos.', done: false, valor: 12000000, quien: 'Claude AI' },
-      { num: '40.9', nombre: 'Biblioteca 100 escenarios (30 sectores del doc Prompt Maestro): wizard + tareas + roles para cada uno.', done: false, valor: 5000000, quien: 'Claude AI + Ivan' },
-      { num: '40.10', nombre: 'Workspace badges + banner tareas pendientes: fundador (amarillo, tareas por verificar), especialista (azul, tareas por completar). Badge en botón Tareas del nav + banner pulsante debajo del nav.', done: true, valor: 1000000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    titulo: 'Identidad, mensaje y auditoría de lenguaje (2026-07-21)',
-    estado: 'completo',
-    valor_total: 18000000,
-    valor_hecho: 18000000,
-    hitos: [
-      { num: '41.1', nombre: 'IDENTIDAD REDEFINIDA (colaborativa, frase por frase con Ivan): rechazado "sistema operativo para construir empresas" y "empresas colaborativas". Definición oficial: "Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa." Subtítulo: "Si estás empezando, si ya tienes algo y quieres más, o si tienes un problema que no sabes cómo resolver — aquí encuentras el talento, el capital, los especialistas, la tecnología, la maquinaria y el financiamiento para lograrlo." Crear=el que no tiene nada, hacer crecer=el que ya tiene algo, mejorar=el que tiene un problema. "negocio o empresa" incluye informales.', done: true, valor: 2000000, quien: 'Claude AI + Ivan' },
-      { num: '41.2', nombre: 'Aplicada identidad en TODA la plataforma: H1 hero index, title/OG/meta/twitter/footer de 9 HTMLs, app/layout.tsx (SEO), que-es-escala, blog, registro, startups Colombia/Perú/España/Argentina. 0 residuos de "sistema operativo".', done: true, valor: 1500000, quien: 'Claude AI' },
-      { num: '41.3', nombre: 'favicon.ico regenerado con isotipo Escala (antes 180 bytes mostraba icono Vercel, ahora 10.7KB con 6 tamaños 16-256px). Hero stats alineados: "$0 Para empezar / Sin banco / Todo en un solo lugar". CTAs: "¿Qué necesitas?" + "¿Cómo funciona?".', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '41.4', nombre: 'Concepto de ángel corregido en toda la plataforma: NO son 3 tipos excluyentes (Impulso/Maquinaria/Local). Es UN inversionista que financia lo que quiera (máquina, local, especialista, empleado, meta) y decide con/sin retorno en cada aporte. impulso.html reenfocada en beneficios de invertir. "Ángel de Impulso" → "Inversionista" en todo el texto visible (0 residuos).', done: true, valor: 1500000, quien: 'Claude AI + Ivan' },
-      { num: '41.5', nombre: 'Sección home "¿Qué necesitas?" (JTBD): reemplaza los 7 roles internos (Ideador/Capitalista/etc que obligaban a autoclasificarse) por 8 necesidades en primera persona. Registro captura ?intent=X con banner contextual, pasa a onboarding.', done: true, valor: 1500000, quien: 'Claude AI + Ivan' },
-      { num: '41.6', nombre: 'Páginas intermedias para TODAS las tarjetas (estandarización UX): componente reutilizable LandingIntermedia.js. 5 landings nuevas (/necesito-capital, /contratar-talento, /conseguir-proyectos, /empezar-empresa, /resolver-problema). Flujo: tarjeta → landing → registro?intent=X → onboarding. Sitemap +5 URLs.', done: true, valor: 2000000, quien: 'Claude AI' },
-      { num: '41.7', nombre: 'AUDITORÍA DE LENGUAJE (comité de producto): principio de dos capas — jerga prohibida en capa de entrada, permitida pero explicada en capa de operación. "hito"→"meta" (23 archivos), "fondeo/fondear"→"financiamiento/recargar", "score"→"reputación", "carril"→"Pagar a mi equipo", fases local "Repago/Regalía/Libre"→"Pagando capital/Pagando retorno/Negocio libre". Roles: Ideador→Fundador, Capitalista→Inversionista, Ejecutor→Gerente de Proyecto. IDs internos y valores de BD preservados. "aporte" y "postularse" se dejan (español natural).', done: true, valor: 3000000, quien: 'Claude AI + Ivan' },
-      { num: '41.8', nombre: 'Nav mínimo + footer en columnas (estándar mundial Stripe/Airbnb): nav de 8 a 5 items orientados a acción. Footer en 4 columnas (marca/Soluciones/Escala/Recursos) como mapa del sitio. Aplicado a 11 HTMLs. Fix links que apuntaban a la misma página (link a página actual → texto atenuado "estás aquí").', done: true, valor: 1500000, quien: 'Claude AI + Ivan' },
-      { num: '41.9', nombre: 'Reescritura "Por qué existe" (ahora el corazón de Escala): antes solo hablaba de financiamiento sin banco. Ahora "Todo lo que un negocio necesita existe. Solo no está en un mismo lugar — hasta ahora." El problema es la desconexión, no solo la falta de crédito.', done: true, valor: 1200000, quien: 'Claude AI + Ivan' },
-      { num: '41.10', nombre: 'Reescritura "Cómo funciona" (3 caminos reales): antes 1 flujo de 7 pasos que solo servía para startups. Ahora 3 caminos (con talento/con máquina/con local) cada uno con su flujo de 4 pasos y link a su explicación ("¿Y si no cumple?" → compensación/protección). Agrupados los 3 bloques de reglas (compensación+inversión+protección) que estaban regados.', done: true, valor: 1500000, quien: 'Claude AI + Ivan' },
-      { num: '41.11', nombre: '"Tres tipos de proyecto" (decía 3 mostraba 4, usaba clasificación abstracta Creación/Transformación) → "Casos reales": 3 tarjetas por necesidad concreta (máquina/local/crear o hacer crecer). Local ahora refleja "vendes desde casa o redes y das el salto". Coherente con enfoque de necesidad concreta, no categoría abstracta interna.', done: true, valor: 1000000, quien: 'Claude AI + Ivan' },
-    ]
-  },
-  {
-    titulo: 'Auditoría UX v2 - escenarios y roles (comité de producto, 2026-07-21)',
-    estado: 'completo',
-    valor_total: 4600000,
-    valor_hecho: 4600000,
-    hitos: [
-      { num: '42.1', nombre: 'Residuo de lenguaje "Un ángel lo financia" en el selector de maquinaria (3 ocurrencias: 2 en selector + 1 en detalle) reemplazado por "Un inversionista lo financia". Grupo Lenguaje.', done: true, valor: 400000, quien: 'Claude AI + Ivan' },
-      { num: '42.2', nombre: 'Residuo "Fondeo de local" en el badge del escenario de local reemplazado por "Financiar local". Grupo Lenguaje.', done: true, valor: 300000, quien: 'Claude AI + Ivan' },
-      { num: '42.3', nombre: '"Mi Score" renombrado a "Mi Reputación" en el dashboard. Grupo Lenguaje.', done: true, valor: 300000, quien: 'Claude AI + Ivan' },
-      { num: '42.4', nombre: 'El intent capturado en el home se propaga al onboarding: el onboarding lee ?intent= y preselecciona el rol, saltando al paso 2. Ya no se le vuelve a preguntar al usuario lo que ya dijo. Grupo Flujo.', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '42.5', nombre: 'Doble "¿Qué necesitas?" resuelto: el home conserva la frase, el selector de proyecto (paso 0 y selector interno del formulario) pasa a "¿Qué quieres hacer?" para eliminar el eco confuso entre las dos superficies. Solo lenguaje, sin cambio de funcionalidad. Grupo Arquitectura.', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '42.6', nombre: 'Diferir campos no esenciales del onboarding (progressive profiling, estándar de industria): los campos que ya eran opcionales en código pero se veían obligatorios ahora se marcan "· opcional" (País y WhatsApp en paso 1, especialidad en paso 2, ambos ensayos en paso 3). El paso 3 (punto de abandono clásico, dos textareas de ensayo) se reformula: subtítulo aclara que es opcional y se puede completar después desde el perfil, y el botón pasa de "Completar mi perfil" a "Finalizar y entrar" para señalar que puede terminar ya. Solo lenguaje/affordance: no cambia qué se guarda ni la lógica, hace visible lo que ya era cierto. Grupo Flujo.', done: true, valor: 600000, quien: 'Claude AI' },
-      { num: '42.7', nombre: 'Recuperación de contraseña (cerraba un agujero de abandono duro): flujo completo con reset nativo de Supabase Auth y correo por Resend con marca Escala. Páginas /recuperar (pide enlace, respuesta neutra anti-enumeración de cuentas) y /restablecer (nueva contraseña vía updateUser, maneja PASSWORD_RECOVERY, sesión existente y PKCE), API /api/recuperar-password (generateLink type recovery server-side con SUPABASE_SECRET_KEY), y enlace "¿Olvidaste tu contraseña?" en el login. Config manual requerida: agregar https://escala.network/restablecer a Redirect URLs de Supabase Auth. Grupo Agujero.', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '42.8', nombre: 'Migrado el id interno del escenario de maquinaria de "otro" a "maquinaria" (patrón expand-migrate-contract, sin romper datos). Escrituras (opciones del selector, wizard, test QA) usan "maquinaria"; lecturas de datos persistidos (dashboard 3 sitios, workspace) aceptan "maquinaria" O "otro" durante la transición para no romper proyectos ya creados. Se distinguió del "otro" de categoría de negocio (label "Otro"), presupuesto e ingresos, que NO se tocaron. REQUIERE correr SQL en Supabase: UPDATE proyectos SET escenario=\'maquinaria\' WHERE escenario=\'otro\'. FASE 2 HECHA (SQL corrido con éxito por Ivan): quitado el fallback "otro" de las 4 lecturas, código 100% en "maquinaria". Grupo Deuda técnica.', done: true, valor: 1000000, quien: 'Claude AI' },
-    ]
-  },
-  {
-    titulo: 'Auditoría de user flows - ejecución (Dashboard y Workplace, 2026-07-21)',
-    estado: 'progreso',
-    valor_total: 7600000,
-    valor_hecho: 4100000,
-    hitos: [
-      { num: '43.1', nombre: 'D1 (bug, dashboard): el total de ingresos del fundador siempre mostraba $0. En cargar() se usaba primerProyectoFundado (null en el closure de montaje, se define después desde estado aún vacío) en vez del primerProyecto calculado desde los datos frescos. Fix: calcular primerProyecto desde data.misProyectos (activo, o el primero) y usarlo para el fetch de /api/ingresos. Grupo Bug.', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '43.2', nombre: 'D2 (UX por perfil, dashboard): accesos rápidos filtrados por rol. Antes todos veían todas las acciones (un especialista veía Crear proyecto, Registrar ingreso, Crear meta, Invitar, Invertir). Ahora fundador ve acciones de fundador, inversionista las suyas, y colaborador (especialista/gerente/mentor) ve Buscar proyectos, Mis postulaciones, Mi perfil (rutas ya existentes). Grupo UX.', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '43.3', nombre: 'D3 (UX, dashboard): quitado el "···" engañoso de la tarjeta compacta (4+ proyectos), que solo duplicaba el link "Workspace" y aparentaba menú. La tarjeta rica (1-3) ya tenía menú real. Grupo UX.', done: true, valor: 500000, quien: 'Claude AI' },
-      { num: '43.4', nombre: 'D4 (acción faltante, dashboard): expuestas en el menú de la tarjeta de proyecto (rica) las acciones que YA soporta el backend: Publicar (borrador->activo, PATCH), Cerrar (->completado, PATCH, con confirmación porque notifica al equipo) y Eliminar (DELETE, con confirmación). "Editar" queda fuera (no hay UI de edición, crearla seria funcionalidad nueva) y "Pausar" también (no existe el estado "pausado" en la app). Pendiente menor: replicar estas acciones en la tarjeta compacta (4+ proyectos). Grupo Acción faltante.', done: true, valor: 800000, quien: 'Claude AI' },
-      { num: '43.5', nombre: 'Mejora "Necesito más" (C2.38): las 4 pills apuntan todas al hub ?tab=necesito_mas en vez de deep-link. DIFERIDO: los destinos son dependientes del escenario (en local/equipos "publicar rol" vive dentro del hub, presupuesto es subpágina en local); solo "Local" tiene destino inequívoco (/proyectos). Deep-linkear una sola sería inconsistente y el beneficio (un clic) no justifica el riesgo de romper navegación. Las pills funcionan vía el hub. Grupo UX. DIFERIDO.', done: false, valor: 400000, quien: 'Claude AI' },
-      { num: '43.7', nombre: 'Cierre auditoría Dashboard: wallet y panel de notificaciones auditados (limpios, sin cambios). Fix: el aviso "mensajes sin leer" solo aparecía para fundadores y enrutaba al proyecto del fundador; ahora también aparece para especialistas y enruta al proyecto en que están activos (primerProyectoFundado || proyectoActivo). Dashboard queda auditado completo. Grupo UX/Bug.', done: true, valor: 300000, quien: 'Claude AI' },
-      { num: '43.6', nombre: 'Auditoría y ejecución de las 12 sub-pantallas del Workplace (resumen, tareas, chat, capital, presupuesto, reparto, equipos, leasing, local, constitución, documentos, cierre) y sus flujos por actor. Por tandas con hallazgos priorizados. Grupo UX. PENDIENTE.', done: false, valor: 3100000, quien: 'Claude AI' },
-      { num: '43.8', nombre: 'Workplace tanda 1 (workspace/page.js): feedback de error en las 4 acciones núcleo que fallaban en silencio. completarHito, resolverDeuda, crearHito y registrarAporte hacían if(!data.error){...} sin else, así que ante un fallo el usuario no veía nada. Ahora muestran alerta de error (mismo patrón que eliminarRol/salirProyecto). Grupo Confiabilidad/UX.', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '43.9', nombre: 'Workplace tanda 2 (sub-pantalla tareas, flujo núcleo de alto tráfico): feedback de error en 4 handlers que fallaban en silencio. cambiarEstado (cambiar estado de tarea), crearTarea, inicializarRol hacían if(!data.error) sin else. enviarMensajeHilo era fire-and-forget y perdía el texto del mensaje si fallaba: ahora chequea la respuesta, avisa y RESTAURA el texto para no perderlo. Grupo Confiabilidad.', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '43.10', nombre: 'Workplace tanda 3 (chat, leasing, constitución): feedback de error en handlers silenciosos. chat.enviar era fire-and-forget (perdía el mensaje si fallaba) -> ahora chequea, avisa y restaura el texto. leasing.firmarContrato solo hacía console.error al fallar (firmar contrato fallaba sin avisar al usuario) -> ahora avisa. constitucion.confirmarFirma sin else -> avisa; constitucion.enviarMensaje limpiaba el texto aunque fallara -> ahora solo limpia si tuvo éxito y avisa en error. Grupo Confiabilidad.', done: true, valor: 400000, quien: 'Claude AI' },
-      { num: '43.11', nombre: 'Workplace tanda 4 (bug transversal): 7 sub-pantallas (equipos, reparto, capital, cierre, presupuesto, local, local/inversionista) tenian if(!session) return dentro de cargar() SIN apagar el loading (setCargando(false) venia despues del return). Resultado: un usuario sin sesion o con sesion expirada quedaba colgado en Cargando para siempre. Fix: if(!session){ setCargando(false); return }. leasing no aplica (no gatea render con loading). Grupo Bug.', done: true, valor: 400000, quien: 'Claude AI' },
-    ]
-  }
 ]
+
 export default function Desarrollo() {
-  const [faseAbierta, setFaseAbierta] = useState(null)
+  const [capaAbierta, setCapaAbierta] = useState(null)
+  const [soloLimpio, setSoloLimpio] = useState(false)
 
-  const totalPlataforma = fases.reduce((s, f) => s + f.valor_total, 0)
-  const totalHecho = fases.reduce((s, f) => s + f.valor_hecho, 0)
-  const totalPendiente = totalPlataforma - totalHecho
-  const pct = Math.round((totalHecho / totalPlataforma) * 1000) / 10
-
+  const totalItems = CAPAS.reduce((s, c) => s + c.hitos.length, 0)
+  const totalDone = CAPAS.reduce((s, c) => s + c.hitos.filter(h => h.done).length, 0)
+  const totalPendiente = totalItems - totalDone
+  const pct = Math.round((totalDone / totalItems) * 100)
+  const totalValor = CAPAS.reduce((s, c) => s + c.valor_total, 0)
+  const totalHecho = CAPAS.reduce((s, c) => s + c.valor_hecho, 0)
   const fmt = v => '$' + v.toLocaleString('es-CO')
 
-  const estadoColor = { completa: '#1D9E75', progreso: '#E8A020', pendiente: '#6B7280' }
-  const estadoLabel = { completa: '✓ Completada', progreso: '⚡ En progreso', pendiente: '⏳ Pendiente' }
+  const s = {
+    page: { minHeight: '100vh', background: '#080F20', fontFamily: 'Inter,sans-serif', color: '#fff', padding: '0 0 4rem' },
+    header: { background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.08)', padding: '2rem 1.5rem', maxWidth: '960px', margin: '0 auto' },
+    wrap: { maxWidth: '960px', margin: '0 auto', padding: '2rem 1.5rem' },
+  }
 
   return (
-    <div style={{minHeight:'100vh',background:'#0D1B3E',fontFamily:'Inter,sans-serif',color:'#fff'}}>
-      <nav style={{background:'rgba(255,255,255,0.04)',borderBottom:'1px solid rgba(255,255,255,0.08)',padding:'0 1.5rem',height:'60px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <a href="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center'}}><img src="/brand/isotipo.svg" alt="Escala" width="26" height="26" style={{display:"inline-block",verticalAlign:"middle",marginRight:"6px"}}/><span style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></span></a>
-        <div style={{display:'flex',gap:'1.5rem'}}>
-          <a href="/dashboard" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Dashboard</a>
-          <a href="/desarrollo" style={{color:'#fff',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Historial</a>
-          <a href="/desarrollo-limpio" style={{color:'#1D9E75',fontSize:'0.82rem',fontWeight:'600',textDecoration:'none'}}>Entregable →</a>
-          <a href="/comercial" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Comercial</a>
-          <a href="/" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Sitio</a>
-        </div>
-      </nav>
-
-      <main style={{maxWidth:'900px',margin:'0 auto',padding:'2rem 1.25rem'}}>
-        {/* Banner: esta es la vista historica */}
-        <div style={{background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'0.875rem 1.25rem',marginBottom:'1.5rem',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'0.75rem'}}>
+    <div style={s.page}>
+      <div style={s.header}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#4A90D9',marginBottom:'2px'}}>Vista historica — organizada por orden de implementacion</div>
-            <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>La arquitectura estrategica por 10 capas permanentes esta en la vista Entregable. Cualquier item nuevo va alla.</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1D9E75', marginBottom: '0.5rem' }}>Escala Network</div>
+            <h1 style={{ fontSize: 'clamp(1.5rem,4vw,2.5rem)', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>Roadmap Estrategico</h1>
+            <p style={{ fontSize: '0.82rem', color: '#8FA3CC', maxWidth: '500px', lineHeight: '1.6' }}>10 capas permanentes. Cualquier funcionalidad nueva — hoy o en 10 anos — pertenece a una de estas capas.</p>
           </div>
-          <a href="/desarrollo-limpio" style={{background:'#4A90D9',color:'#fff',padding:'0.4rem 1rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.78rem',fontWeight:'700',whiteSpace:'nowrap'}}>
-            Ver roadmap por capas →
-          </a>
-        </div>
-
-        <div style={{marginBottom:'2rem'}}>
-          <div style={{fontSize:'0.7rem',fontWeight:'700',letterSpacing:'0.1em',textTransform:'uppercase',color:'#1D9E75',marginBottom:'0.4rem'}}>Seguimiento técnico</div>
-          <div style={{fontSize:'clamp(1.5rem,3vw,2rem)',fontWeight:'900',letterSpacing:'-0.03em',marginBottom:'0.3rem'}}>Plan de desarrollo</div>
-          <div style={{fontSize:'0.85rem',color:'#8FA3CC'}}>Lo que ya está construido — pagado por el fundador con IA — reduce la deuda diferida del desarrollador.</div>
-        </div>
-
-        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'1rem',marginBottom:'2rem'}}>
-          <div style={{background:'rgba(29,158,117,0.1)',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'12px',padding:'1.25rem'}}>
-            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalHecho)}</div>
-            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Valor ya construido — pagado por el fundador con IA</div>
-          </div>
-          <div style={{background:'rgba(232,160,32,0.1)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'12px',padding:'1.25rem'}}>
-            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalPendiente)}</div>
-            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Deuda diferida máxima para el desarrollador</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
-            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalPlataforma)}</div>
-            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Valor total estimado de la plataforma</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
-            <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC',lineHeight:'1',marginBottom:'0.3rem'}}>{pct}%</div>
-            <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Porcentaje completado del desarrollo total</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
+            <a href="/dashboard" style={{ fontSize: '0.75rem', color: '#1D9E75', textDecoration: 'none' }}>← Dashboard</a>
           </div>
         </div>
 
-        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'2rem'}}>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.72rem',color:'#8FA3CC',marginBottom:'6px'}}>
-            <span>Progreso total</span><span>{pct}%</span>
-          </div>
-          <div style={{height:'8px',background:'rgba(255,255,255,0.08)',borderRadius:'4px',overflow:'hidden'}}>
-            <div style={{height:'100%',width:pct+'%',background:'linear-gradient(90deg,#1D9E75,#25c795)',borderRadius:'4px'}}></div>
-          </div>
-          <div style={{display:'flex',justifyContent:'space-between',fontSize:'0.68rem',color:'#8FA3CC',marginTop:'4px'}}>
-            <span>$0</span><span>{fmt(totalHecho)} completados</span><span>{fmt(totalPlataforma)}</span>
-          </div>
+        {/* Stats globales */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: '0.75rem', marginTop: '1.5rem' }}>
+          {[
+            { label: 'Items completados', valor: `${totalDone}/${totalItems}`, color: '#1D9E75' },
+            { label: '% completado', valor: `${pct}%`, color: pct > 70 ? '#1D9E75' : '#E8A020' },
+            { label: 'Pendientes', valor: totalPendiente, color: '#E8A020' },
+            { label: 'Valor ejecutado', valor: fmt(totalHecho), color: '#4A90D9' },
+            { label: 'Valor total', valor: fmt(totalValor), color: '#8FA3CC' },
+          ].map(k => (
+            <div key={k.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '0.875rem', textAlign: 'center' }}>
+              <div style={{ fontSize: '1rem', fontWeight: '800', color: k.color, letterSpacing: '-0.02em' }}>{k.valor}</div>
+              <div style={{ fontSize: '0.62rem', color: '#6B7280', marginTop: '3px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{k.label}</div>
+            </div>
+          ))}
         </div>
 
-        <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
-          {fases.map(fase => {
-            const abierta = faseAbierta === fase.num
-            const pctFase = fase.valor_total > 0 ? Math.round((fase.valor_hecho / fase.valor_total) * 100) : 0
-            return (
-              <div key={fase.num} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',overflow:'hidden'}}>
-                <div onClick={() => setFaseAbierta(abierta ? null : fase.num)} style={{padding:'1.25rem',cursor:'pointer',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'1rem'}}>
-                  <div style={{display:'flex',gap:'1rem',alignItems:'center',flex:1}}>
-                    <div style={{fontFamily:'monospace',fontSize:'1.5rem',fontWeight:'700',color:'rgba(255,255,255,0.12)',flexShrink:0}}>{fase.num}</div>
-                    <div style={{flex:1}}>
-                      <div style={{fontSize:'0.9rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{fase.titulo}</div>
-                      <div style={{height:'4px',background:'rgba(255,255,255,0.08)',borderRadius:'2px',overflow:'hidden',width:'100%',maxWidth:'200px'}}>
-                        <div style={{height:'100%',width:pctFase+'%',background:estadoColor[fase.estado],borderRadius:'2px'}}></div>
+        {/* Barra de progreso global */}
+        <div style={{ marginTop: '1rem' }}>
+          <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${pct}%`, background: 'linear-gradient(90deg,#1D9E75,#4A90D9)', borderRadius: '3px', transition: 'width 0.8s' }} />
+          </div>
+        </div>
+      </div>
+
+      <div style={s.wrap}>
+        {/* Filtro */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+          <button onClick={() => setSoloLimpio(!soloLimpio)} style={{ background: soloLimpio ? 'rgba(224,85,85,0.15)' : 'rgba(255,255,255,0.06)', border: `1px solid ${soloLimpio ? 'rgba(224,85,85,0.4)' : 'rgba(255,255,255,0.12)'}`, color: soloLimpio ? '#E05555' : '#8FA3CC', borderRadius: '8px', padding: '0.4rem 0.875rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
+            {soloLimpio ? 'Mostrando solo pendientes' : 'Mostrar solo pendientes'}
+          </button>
+        </div>
+
+        {/* Capas */}
+        {CAPAS.map((capa, idx) => {
+          const done = capa.hitos.filter(h => h.done).length
+          const total = capa.hitos.length
+          const pctCapa = Math.round((done / total) * 100)
+          const abierta = capaAbierta === capa.id
+          const itemsFiltrados = soloLimpio ? capa.hitos.filter(h => !h.done) : capa.hitos
+          if (soloLimpio && itemsFiltrados.length === 0) return null
+
+          return (
+            <div key={capa.id} style={{ marginBottom: '1rem', background: 'rgba(255,255,255,0.02)', border: `1px solid rgba(255,255,255,0.07)`, borderRadius: '14px', overflow: 'hidden', borderLeft: `3px solid ${capa.color}` }}>
+              {/* Header de capa */}
+              <div onClick={() => setCapaAbierta(abierta ? null : capa.id)} style={{ padding: '1.1rem 1.25rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '0.65rem', fontWeight: '700', background: `${capa.color}22`, color: capa.color, padding: '2px 8px', borderRadius: '10px', border: `1px solid ${capa.color}44` }}>{capa.id}</span>
+                    <span style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff' }}>{capa.titulo}</span>
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#6B7280', lineHeight: '1.5', maxWidth: '600px' }}>{capa.descripcion}</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '0.88rem', fontWeight: '700', color: pctCapa === 100 ? '#1D9E75' : pctCapa > 0 ? '#E8A020' : '#6B7280' }}>{done}/{total}</div>
+                    <div style={{ fontSize: '0.65rem', color: '#6B7280' }}>{pctCapa}% hecho</div>
+                  </div>
+                  <span style={{ color: '#6B7280', fontSize: '1rem', transition: 'transform 0.2s', display: 'inline-block', transform: abierta ? 'rotate(180deg)' : 'none' }}>▾</span>
+                </div>
+              </div>
+
+              {/* Barra de progreso de la capa */}
+              <div style={{ height: '3px', background: 'rgba(255,255,255,0.04)', margin: '0 1.25rem' }}>
+                <div style={{ height: '100%', width: `${pctCapa}%`, background: capa.color, transition: 'width 0.5s' }} />
+              </div>
+
+              {/* Items */}
+              {abierta && (
+                <div style={{ padding: '0.75rem 1.25rem 1.25rem' }}>
+                  {itemsFiltrados.map(h => (
+                    <div key={h.num} style={{ display: 'flex', gap: '0.875rem', padding: '0.5rem 0', borderBottom: '1px solid rgba(255,255,255,0.04)', alignItems: 'flex-start' }}>
+                      <span style={{ fontSize: '0.9rem', flexShrink: 0, marginTop: '1px' }}>{h.done ? '✅' : '⏳'}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '0.65rem', fontWeight: '700', color: capa.color, background: `${capa.color}15`, padding: '1px 6px', borderRadius: '8px' }}>{h.num}</span>
+                          {h.valor > 0 && <span style={{ fontSize: '0.62rem', color: '#4B5563' }}>${h.valor.toLocaleString('es-CO')}</span>}
+                          <span style={{ fontSize: '0.62rem', color: '#4B5563' }}>{h.quien}</span>
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: h.done ? '#9CA3AF' : '#C8D4E8', lineHeight: '1.5' }}>{h.nombre}</div>
                       </div>
                     </div>
-                  </div>
-                  <div style={{textAlign:'right',flexShrink:0}}>
-                    <div style={{fontSize:'0.75rem',fontWeight:'700',color:estadoColor[fase.estado],marginBottom:'0.2rem'}}>{estadoLabel[fase.estado]}</div>
-                    <div style={{fontFamily:'monospace',fontSize:'0.78rem',color:fase.valor_hecho > 0 ? '#1D9E75' : '#8FA3CC'}}>{fmt(fase.valor_hecho)} / {fmt(fase.valor_total)}</div>
-                  </div>
-                  <div style={{color:'#8FA3CC',fontSize:'0.75rem',flexShrink:0}}>{abierta ? '▲' : '▼'}</div>
+                  ))}
                 </div>
-
-                {abierta && (
-                  <div style={{borderTop:'1px solid rgba(255,255,255,0.06)',padding:'0 1.25rem 1.25rem'}}>
-                    {fase.hitos.map(h => (
-                      <div key={h.num} style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',padding:'0.75rem 0',borderBottom:'1px solid rgba(255,255,255,0.04)',gap:'1rem'}}>
-                        <div style={{display:'flex',gap:'0.75rem',alignItems:'flex-start',flex:1}}>
-                          <div style={{width:'22px',height:'22px',borderRadius:'50%',background: h.done ? '#1D9E75' : 'rgba(255,255,255,0.06)',border: h.done ? 'none' : '1px solid rgba(255,255,255,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.65rem',flexShrink:0,marginTop:'2px',color: h.done ? '#fff' : '#8FA3CC'}}>
-                            {h.done ? '✓' : h.num.split('.')[1]}
-                          </div>
-                          <div>
-                            <div style={{fontSize:'0.82rem',fontWeight: h.done ? '600' : '400',color: h.done ? '#fff' : '#8FA3CC',marginBottom:'0.15rem'}}>{h.nombre}</div>
-                            <div style={{fontSize:'0.68rem',color: h.done ? '#1D9E75' : '#6B7280'}}>{h.quien}</div>
-                          </div>
-                        </div>
-                        <div style={{fontFamily:'monospace',fontSize:'0.78rem',fontWeight:'600',color: h.done ? '#1D9E75' : '#6B7280',flexShrink:0}}>{fmt(h.valor)}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </div>
-
-        <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.5rem',marginTop:'2rem'}}>
-          <div style={{fontSize:'0.875rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>El argumento para la negociación</div>
-          <div style={{fontSize:'0.82rem',color:'#8FA3CC',lineHeight:'1.6'}}>El fundador ya construyó <strong style={{color:'#1D9E75'}}>{fmt(totalHecho)}</strong> en valor real de plataforma — pagado con IA y tiempo propio. El desarrollador entra a construir los <strong style={{color:'#E8A020'}}>{fmt(totalPendiente)}</strong> restantes. No a repetir lo que ya existe.</div>
-        </div>
-      </main>
+              )}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
