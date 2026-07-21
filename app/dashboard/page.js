@@ -1221,8 +1221,8 @@ export default function Dashboard() {
                     <span style={{fontSize:'0.75rem',color:'#E8A020',fontWeight:'700'}}>→</span>
                   </a>
                 )}
-                {mensajesNoLeidos > 0 && primerProyectoFundado && (
-                  <a href={'/proyectos/'+primerProyectoFundado.id+'/workspace/chat'} style={{display:'flex',alignItems:'center',gap:'0.6rem',textDecoration:'none',padding:'0.4rem 0.5rem',borderRadius:'6px',background:'rgba(232,160,32,0.08)'}}>
+                {mensajesNoLeidos > 0 && (primerProyectoFundado || proyectoActivo) && (
+                  <a href={'/proyectos/'+(primerProyectoFundado || proyectoActivo).id+'/workspace/chat'} style={{display:'flex',alignItems:'center',gap:'0.6rem',textDecoration:'none',padding:'0.4rem 0.5rem',borderRadius:'6px',background:'rgba(232,160,32,0.08)'}}>
                     <span style={{fontSize:'0.8rem'}}>💬</span>
                     <div style={{flex:1,fontSize:'0.78rem',color:'#fff'}}>{mensajesNoLeidos} mensaje{mensajesNoLeidos > 1 ? 's' : ''} sin leer</div>
                     <span style={{fontSize:'0.75rem',color:'#E8A020',fontWeight:'700'}}>{mensajesNoLeidos}</span>
