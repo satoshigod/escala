@@ -277,7 +277,7 @@ export default function PresupuestoPage() {
             {esFundador ? (
               <>
                 <div style={{ fontSize: '1.5rem', marginBottom: '0.75rem' }}>💰</div>
-                <div style={{ fontSize: '0.88rem', marginBottom: '1rem' }}>Aún no has agregado lo que necesitas. Empieza aquí — una máquina, un empleado, tecnología, inventario. Los ángeles lo fondean por item.</div>
+                <div style={{ fontSize: '0.88rem', marginBottom: '1rem' }}>Aún no has agregado lo que necesitas. Empieza aquí — una máquina, un empleado, tecnología, inventario. Los inversionistas lo financian por item.</div>
                 <button onClick={() => setMostrarForm(true)} style={s.btn('#1D9E75')}>+ Agregar primer item</button>
               </>
             ) : (
@@ -634,7 +634,7 @@ export default function PresupuestoPage() {
               )}
               {formFondeo.a_cambio_de === 'leasing_maquinaria' && (
                 <div>
-                  <label style={s.label}>¿Qué % del excedente va al ángel? *</label>
+                  <label style={s.label}>¿Qué % del excedente va al inversionista? *</label>
                   <span style={{ fontSize: '0.72rem', color: '#8FA3CC', display: 'block', marginBottom: '0.5rem' }}>Del excedente mensual (ingresos - costos - gastos fijos), este % se abona al capital hasta pagar todo.</span>
                   <div style={{ position: 'relative', marginBottom: '0.875rem' }}>
                     <input style={{ ...s.input, marginBottom: 0, paddingRight: '2rem' }} type="number" step="5" min="20" max="80" value={formFondeo.pct_revenue} onChange={e => setFormFondeo(f => ({ ...f, pct_revenue: e.target.value }))} placeholder="60" />
@@ -642,14 +642,14 @@ export default function PresupuestoPage() {
                   </div>
                   {formFondeo.pct_revenue && formFondeo.monto && (
                     <div style={{ background: 'rgba(175,169,236,0.08)', border: '1px solid rgba(175,169,236,0.2)', borderRadius: '8px', padding: '0.875rem', marginBottom: '0.875rem', fontSize: '0.75rem', color: '#AFA9EC', lineHeight: '1.7' }}>
-                      <div style={{ marginBottom: '4px' }}>Si tu excedente mensual es <strong style={{ color: '#fff' }}>$1.000.000</strong> → abono al ángel: <strong style={{ color: '#AFA9EC' }}>${fmt(1000000 * parseFloat(formFondeo.pct_revenue || 0) / 100)}</strong></div>
-                      <div style={{ marginBottom: '4px' }}>Si tu excedente mensual es <strong style={{ color: '#fff' }}>$2.000.000</strong> → abono al ángel: <strong style={{ color: '#AFA9EC' }}>${fmt(2000000 * parseFloat(formFondeo.pct_revenue || 0) / 100)}</strong></div>
-                      <div style={{ marginBottom: '8px', color: '#6B7280', fontSize: '0.7rem' }}>Cuando el ángel recupera ${fmt(parseFloat(formFondeo.monto))} → la máquina pasa a tu nombre</div>
+                      <div style={{ marginBottom: '4px' }}>Si tu excedente mensual es <strong style={{ color: '#fff' }}>$1.000.000</strong> → abono al inversionista: <strong style={{ color: '#AFA9EC' }}>${fmt(1000000 * parseFloat(formFondeo.pct_revenue || 0) / 100)}</strong></div>
+                      <div style={{ marginBottom: '4px' }}>Si tu excedente mensual es <strong style={{ color: '#fff' }}>$2.000.000</strong> → abono al inversionista: <strong style={{ color: '#AFA9EC' }}>${fmt(2000000 * parseFloat(formFondeo.pct_revenue || 0) / 100)}</strong></div>
+                      <div style={{ marginBottom: '8px', color: '#6B7280', fontSize: '0.7rem' }}>Cuando el inversionista recupera ${fmt(parseFloat(formFondeo.monto))} → la máquina pasa a tu nombre</div>
                       <div style={{ color: '#1D9E75', fontWeight: '600' }}>Si produces más, pagas más rápido. Si produces menos, pagas menos ese mes.</div>
                     </div>
                   )}
                   <div style={{ fontSize: '0.72rem', color: '#8FA3CC', lineHeight: '1.5', marginBottom: '0.875rem' }}>
-                    El ángel compra la máquina y queda como propietario. Tú la usas y cada mes reportas tus ventas. El sistema calcula el excedente y abona automáticamente. Cuando el ángel recupera el total, la máquina es tuya.
+                    El inversionista compra la máquina y queda como propietario. Tú la usas y cada mes reportas tus ventas. El sistema calcula el excedente y abona automáticamente. Cuando el inversionista recupera el total, la máquina es tuya.
                   </div>
                 </div>
               )}

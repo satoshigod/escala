@@ -139,7 +139,7 @@ export default function LeasingPage({ params }) {
           <h1 style={s.h1}>¿En qué consiste este acuerdo?</h1>
           <p style={s.sub}>Antes de firmar, lee esto con calma. Está escrito en lenguaje simple, sin términos complicados.</p>
           {[
-            { emoji: '🔧', t: 'Un ángel inversionista compra la máquina', d: 'La máquina es comprada por un inversionista de Escala. Tú la recibes y la usas desde el primer día, pero el inversionista es el dueño durante el contrato.' },
+            { emoji: '🔧', t: 'Un inversionista compra la máquina', d: 'La máquina es comprada por un inversionista de Escala. Tú la recibes y la usas desde el primer día, pero el inversionista es el dueño durante el contrato.' },
             { emoji: '💰', t: 'Tú pagas desde lo que produce la máquina', d: 'Cada mes reportas tus ventas en la plataforma. Del excedente (ventas menos costos y gastos), el porcentaje acordado se abona al capital. Si produces más, pagas más rápido. Si produces menos, pagas menos ese mes.' },
             { emoji: '🏆', t: 'Cuando terminas de pagar, la máquina es tuya', d: 'Una vez el inversionista recupera el 100% del valor de la máquina, la propiedad se transfiere a tu nombre de forma automática. Puedes acelerarla comprándola antes con la opción de compra.' },
             { emoji: '🤝', t: 'Escala es el intermediario tecnológico', d: 'Escala no es dueño de la máquina ni prestamista. Conecta al inversionista con la beneficiaria y administra el proceso a través de la plataforma.' },
@@ -223,7 +223,7 @@ export default function LeasingPage({ params }) {
               <div style={s.row}>
                 <div style={s.kpi}><div style={s.kpiV}>${fmt(abonoMensual)}</div><div style={s.kpiL}>Abono mensual estimado</div></div>
                 <div style={s.kpi}><div style={s.kpiV}>~{mesesEstimados} meses</div><div style={s.kpiL}>Para pagar todo</div></div>
-                <div style={s.kpi}><div style={s.kpiV}>${fmt(form.valor_equipo)}</div><div style={s.kpiL}>Lo que recupera el ángel</div></div>
+                <div style={s.kpi}><div style={s.kpiV}>${fmt(form.valor_equipo)}</div><div style={s.kpiL}>Lo que recupera el inversionista</div></div>
                 <div style={s.kpi}><div style={{ ...s.kpiV, color: '#E8A020' }}>Tuya al terminar</div><div style={s.kpiL}>La máquina pasa a tu nombre</div></div>
               </div>
             </div>
@@ -395,13 +395,13 @@ export default function LeasingPage({ params }) {
           <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎉</div>
           <h1 style={{ ...s.h1, textAlign: 'center', marginBottom: '0.5rem' }}>¡Contrato firmado!</h1>
           <p style={{ ...s.sub, textAlign: 'center', maxWidth: '400px', margin: '0 auto 2rem' }}>
-            Tu firma quedó registrada. El contrato está pendiente de aprobación del ángel inversionista. Te notificamos cuando esté completo.
+            Tu firma quedó registrada. El contrato está pendiente de aprobación del inversionista inversionista. Te notificamos cuando esté completo.
           </p>
           <div style={{ ...s.card, textAlign: 'left', maxWidth: '420px', margin: '0 auto 1.5rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.875rem' }}>Estado del contrato</div>
             {[
               { l: '✅ Tu firma', v: 'Registrada', c: '#1D9E75' },
-              { l: '⏳ Firma del ángel', v: 'Pendiente', c: '#E8A020' },
+              { l: '⏳ Firma del inversionista', v: 'Pendiente', c: '#E8A020' },
               { l: '📦 Entrega del equipo', v: 'Después de la aprobación', c: '#8FA3CC' },
               { l: '📊 Primer reporte de ventas', v: 'El último día del mes', c: '#8FA3CC' },
             ].map(r => (

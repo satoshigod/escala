@@ -146,7 +146,7 @@ export default function CapitalWorkspacePage() {
         {misFondeos.length === 0 ? (
           <div style={{ ...s.card, textAlign: 'center', padding: '2.5rem', color: '#6B7280' }}>
             {esFundador
-              ? 'Aún no hay propuestas de inversión. Agrega items al presupuesto para que los ángeles puedan fondearte.'
+              ? 'Aún no hay propuestas de inversión. Agrega items al presupuesto para que los inversionistas puedan financiarte.'
               : 'No tienes inversiones en este proyecto.'}
           </div>
         ) : (
@@ -207,7 +207,7 @@ export default function CapitalWorkspacePage() {
 
                 {fondeo.estado === 'transferido' && esFundador && (
                   <div style={{ background: 'rgba(232,160,32,0.06)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: '8px', padding: '0.875rem 1rem', marginBottom: '0.875rem' }}>
-                    <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#E8A020', marginBottom: '4px' }}>El ángel reporta haber transferido ${fmt(fondeo.monto)}</div>
+                    <div style={{ fontSize: '0.78rem', fontWeight: '700', color: '#E8A020', marginBottom: '4px' }}>El inversionista reporta haber transferido ${fmt(fondeo.monto)}</div>
                     <div style={{ fontSize: '0.75rem', color: '#8FA3CC', marginBottom: '0.75rem' }}>
                       Comprobante: <strong style={{ color: '#fff' }}>{fondeo.comprobante_url || 'No especificado'}</strong>
                       <br />Verifica que el dinero llegó a la cuenta de Escala antes de confirmar.
@@ -220,7 +220,7 @@ export default function CapitalWorkspacePage() {
 
                 {fondeo.estado === 'verificado' && (
                   <div style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '8px', padding: '0.75rem 1rem', fontSize: '0.78rem', color: '#1D9E75' }}>
-                    ✅ Capital acreditado al proyecto · {fondeo.a_cambio_de === 'participacion' ? `El ángel tiene ${fondeo.pct_participacion}% de participación registrada` : fondeo.a_cambio_de === 'deuda' ? `Deuda activa: ${fondeo.tasa_mensual}% mensual` : `Revenue share: ${fondeo.pct_revenue}% de ingresos`}
+                    ✅ Capital acreditado al proyecto · {fondeo.a_cambio_de === 'participacion' ? `El inversionista tiene ${fondeo.pct_participacion}% de participación registrada` : fondeo.a_cambio_de === 'deuda' ? `Deuda activa: ${fondeo.tasa_mensual}% mensual` : `Revenue share: ${fondeo.pct_revenue}% de ingresos`}
                     {fondeo.contrato_id && <span style={{ marginLeft: '8px', color: '#8FA3CC' }}>· Contrato generado</span>}
                   </div>
                 )}
@@ -245,7 +245,7 @@ export default function CapitalWorkspacePage() {
           <div style={{ marginTop: '1.5rem', background: 'rgba(74,144,217,0.06)', border: '1px solid rgba(74,144,217,0.2)', borderRadius: '12px', padding: '1.5rem', textAlign: 'center' }}>
             <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>No hay inversiones aún</div>
             <div style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1rem' }}>
-              Agrega los recursos que necesitas al presupuesto para que los ángeles puedan fondearlos.
+              Agrega los recursos que necesitas al presupuesto para que los inversionistas puedan financiarlos.
             </div>
             <a href={`/proyectos/${id}/workspace/presupuesto`} style={{ background: '#4A90D9', color: '#fff', padding: '0.6rem 1.5rem', borderRadius: '8px', textDecoration: 'none', fontSize: '0.85rem', fontWeight: '700' }}>
               Agregar lo que necesito →

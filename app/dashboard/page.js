@@ -1069,7 +1069,7 @@ export default function Dashboard() {
                         )}
                         {esGenerico && (
                           <div style={{padding:'0.875rem 1rem'}}>
-                            <div style={{fontSize:'0.75rem',color:'#6B7280',marginBottom:'0.625rem'}}>Define qué necesitas para que los ángeles puedan fondearte.</div>
+                            <div style={{fontSize:'0.75rem',color:'#6B7280',marginBottom:'0.625rem'}}>Define qué necesitas para que los inversionistas puedan financiarte.</div>
                             <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'block',textAlign:'center',background:'rgba(74,144,217,0.12)',color:'#4A90D9',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'8px',padding:'0.45rem',fontSize:'0.78rem',fontWeight:'700',textDecoration:'none'}}>
                               Agregar al presupuesto →
                             </a>

@@ -2155,7 +2155,7 @@ function PresupuestoTab({ proyectoId, esFundador, usuarioId }) {
           <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>💸</div>
           <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'0.4rem'}}>Presupuesto del proyecto</div>
           <div style={{fontSize:'0.82rem',color:'#8FA3CC',marginBottom:esFundador?'1.25rem':0}}>
-            {esFundador ? 'Define los costos que necesita este proyecto para que el equipo, ángeles e inversionistas puedan verlos y financiarlos.' : 'El fundador aún no ha definido el presupuesto de este proyecto.'}
+            {esFundador ? 'Define los costos que necesita este proyecto para que el equipo e inversionistas puedan verlos y financiarlos.' : 'El fundador aún no ha definido el presupuesto de este proyecto.'}
           </div>
           {esFundador && (
             <div style={{display:'flex',gap:'0.75rem',justifyContent:'center',flexWrap:'wrap'}}>
