@@ -52,6 +52,25 @@ export default function Onboarding() {
     if (rolParam) {
       setForm(f => ({ ...f, rol_principal: rolParam }))
       setPaso(2)
+    } else {
+      // Si viene del home con una intención (?intent=X), preselecciona el rol correcto
+      // para no volver a preguntar lo que el usuario ya dijo.
+      const intentParam = params.get('intent')
+      const intentARol = {
+        capital:   'ideador',       // Necesito capital → publica como fundador
+        talento:   'ideador',       // Necesito talento → busca equipo como fundador
+        crear:     'ideador',       // Quiero empezar empresa → fundador
+        resolver:  'ideador',       // Tengo un problema → fundador que busca solución
+        proyectos: 'especialista',  // Quiero conseguir proyectos → especialista
+        invertir:  'capitalista',   // Quiero invertir → inversionista
+        maquina:   'ideador',       // Necesito máquina → fundador/negocio
+        local:     'ideador',       // Necesito local → fundador/negocio
+      }
+      const rolInferido = intentParam && intentARol[intentParam]
+      if (rolInferido) {
+        setForm(f => ({ ...f, rol_principal: rolInferido }))
+        setPaso(2)
+      }
     }
   }, [])
 
