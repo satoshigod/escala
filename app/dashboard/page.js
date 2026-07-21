@@ -294,9 +294,9 @@ export default function Dashboard() {
     { icon: '🔍', label: 'Buscar especialista', href: '/directorio' },
     { icon: '💰', label: 'Registrar aporte', href: '/aportes' },
     { icon: '📈', label: 'Registrar ingreso', href: '/ingresos' },
-    { icon: '🎯', label: 'Crear hito', href: '/hitos' },
+    { icon: '🎯', label: 'Crear meta financiable', href: '/hitos' },
     { icon: '✉️', label: 'Invitar especialista', href: '/invitar' },
-    { icon: '🌟', label: 'Ángel de Impulso', href: '/angel' },
+    { icon: '🌟', label: 'Invertir en proyectos', href: '/angel' },
     ...(perfil?.es_admin ? [{ icon: '🛠️', label: 'Admin Escala', href: '/admin-escala' }] : []),
   ]
 
@@ -673,14 +673,14 @@ export default function Dashboard() {
             <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Empresa</div>
             <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'14px',padding:'1.5rem',marginBottom:'1.5rem'}}>
               <div style={{fontSize:'0.82rem',color:'#C8D4E8',lineHeight:'1.7',marginBottom:'1rem'}}>
-                Como Empresa en Escala puedes actuar en múltiples roles: fundar proyectos, ejecutar servicios, financiar hitos como Ángel de Impulso, o aportar mentoría estratégica.
+                Como empresa en Escala puedes hacer varias cosas: crear tus propios proyectos, trabajar en proyectos de otros, invertir en negocios con potencial, o aportar tu experiencia como mentor.
               </div>
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:'0.6rem'}}>
                 {[
-                  { icon:'🚀', label:'Fundar proyecto', href:'/proyectos' },
-                  { icon:'🔧', label:'Ser ejecutora', href:'/buscar' },
-                  { icon:'🌟', label:'Financiar hito', href:'/buscar' },
-                  { icon:'🧭', label:'Ser mentora', href:'/directorio' },
+                  { icon:'🚀', label:'Crear mi proyecto', href:'/proyectos' },
+                  { icon:'🔧', label:'Trabajar en proyectos', href:'/buscar' },
+                  { icon:'🌟', label:'Invertir en proyectos', href:'/buscar' },
+                  { icon:'🧭', label:'Dar mentoría', href:'/directorio' },
                 ].map((a,i) => (
                   <a key={i} href={a.href} style={{textDecoration:'none',background:'rgba(232,160,32,0.06)',border:'1px solid rgba(232,160,32,0.15)',borderRadius:'10px',padding:'0.875rem',display:'block',textAlign:'center'}}>
                     <div style={{fontSize:'1.3rem',marginBottom:'0.35rem'}}>{a.icon}</div>
@@ -706,7 +706,7 @@ export default function Dashboard() {
           </div>
         ) : vista === 'angel' ? (
           <div>
-            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Ángel de Impulso
+            <div style={{fontSize:'0.95rem',fontWeight:'700',color:'#fff',marginBottom:'1.25rem'}}>Vista de Inversionista
               <a href="/angel" style={{marginLeft:'0.875rem',fontSize:'0.72rem',fontWeight:'600',color:'#AFA9EC',background:'rgba(175,169,236,0.12)',padding:'0.25rem 0.75rem',borderRadius:'20px',textDecoration:'none',border:'1px solid rgba(175,169,236,0.2)'}}>
                 Ver panel completo →
               </a>
@@ -743,7 +743,7 @@ export default function Dashboard() {
               <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(175,169,236,0.2)',borderRadius:'12px',padding:'2.5rem',textAlign:'center'}}>
                 <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>🌟</div>
                 <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Aún no has financiado ningún hito</div>
-                <div style={{color:'#8FA3CC',fontSize:'0.82rem',marginBottom:'1.25rem'}}>Explora proyectos y financia hitos puntuales sin invertir en toda la empresa.</div>
+                <div style={{color:'#8FA3CC',fontSize:'0.82rem',marginBottom:'1.25rem'}}>Explora proyectos y financia metas concretas (un logo, un dominio, una campaña) sin invertir en toda la empresa.</div>
                 <a href="/buscar" style={{background:'#AFA9EC',color:'#0D1B3E',padding:'0.65rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'800',display:'inline-block'}}>Explorar proyectos →</a>
               </div>
             ) : (
