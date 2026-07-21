@@ -269,6 +269,34 @@ export default function Dashboard() {
     setActualizando(null)
   }
 
+  async function cambiarEstadoProyecto(pid, nuevoEstado, aviso) {
+    if (!usuario) return
+    if (aviso && !window.confirm(aviso)) return
+    setActualizando(pid)
+    try {
+      const res = await fetch('/api/proyectos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pid, fundador_id: usuario.id, estado: nuevoEstado })
+      })
+      const d = await res.json()
+      if (d.error) { alert('Error: ' + d.error); setActualizando(null); return }
+      window.location.reload()
+    } catch (e) { alert('Error: ' + e.message); setActualizando(null) }
+  }
+
+  async function eliminarProyecto(pid, nombre) {
+    if (!usuario) return
+    if (!window.confirm('¿Eliminar el proyecto "' + nombre + '"? Esta acción no se puede deshacer.')) return
+    setActualizando(pid)
+    try {
+      const res = await fetch('/api/proyectos?id=' + pid + '&fundador_id=' + usuario.id, { method: 'DELETE' })
+      const d = await res.json()
+      if (d.error) { alert('Error: ' + d.error); setActualizando(null); return }
+      window.location.reload()
+    } catch (e) { alert('Error: ' + e.message); setActualizando(null) }
+  }
+
   const esFundador = misProyectos.length > 0
   const primerProyectoFundado = misProyectos.find(p => p.estado === 'activo') || misProyectos[0] || null
   const totalAportes = misAportes.reduce((s, a) => s + (a.valor || 0), 0)
@@ -841,9 +869,6 @@ export default function Dashboard() {
                         </div>
                         <div style={{display:'flex',gap:'0.4rem',flexShrink:0}}>
                           <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',fontWeight:'700',color:'#fff',background:'#1D9E75',padding:'0.3rem 0.875rem',borderRadius:'6px',textDecoration:'none'}}>Workspace</a>
-                          <div style={{position:'relative',display:'inline-block'}} title={'Publicar rol · Metas · Aportes'}>
-                            <a href={'/proyectos/'+p.id+'/workspace'} style={{fontSize:'0.7rem',color:'#8FA3CC',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',padding:'0.3rem 0.6rem',borderRadius:'6px',textDecoration:'none'}}>···</a>
-                          </div>
                         </div>
                       </div>
                     )
@@ -890,7 +915,14 @@ export default function Dashboard() {
                                   : <a href={'/proyectos/'+p.id+'/workspace/presupuesto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🔧 Maquinas y activos</a>
                                 }
                                 <a href={'/proyectos/'+p.id+'/workspace?tab=roles'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🧩 Publicar rol</a>
-                                <a href={'/proyectos/'+p.id+'/workspace/reparto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8'}}>💸 Reparto</a>
+                                <a href={'/proyectos/'+p.id+'/workspace/reparto'} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',textDecoration:'none',fontSize:'0.78rem',color:'#C8D4E8',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>💸 Reparto</a>
+                                {p.estado === 'borrador' && (
+                                  <div onClick={() => cambiarEstadoProyecto(p.id, 'activo')} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',fontSize:'0.78rem',color:'#1D9E75',cursor:'pointer',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>✅ Publicar proyecto</div>
+                                )}
+                                {p.estado === 'activo' && (
+                                  <div onClick={() => cambiarEstadoProyecto(p.id, 'completado', '¿Cerrar y marcar como completado? Se notificará a todo el equipo.')} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',fontSize:'0.78rem',color:'#C8D4E8',cursor:'pointer',borderBottom:'1px solid rgba(255,255,255,0.06)'}}>🏁 Cerrar proyecto</div>
+                                )}
+                                <div onClick={() => eliminarProyecto(p.id, p.nombre)} style={{display:'flex',alignItems:'center',gap:'0.5rem',padding:'0.6rem 0.875rem',fontSize:'0.78rem',color:'#D85A30',cursor:'pointer'}}>🗑️ Eliminar</div>
                               </div>
                             </details>
                           </div>
