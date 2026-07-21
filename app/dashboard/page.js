@@ -448,7 +448,7 @@ export default function Dashboard() {
         <div style={{display:'flex',alignItems:'center',gap:'1.25rem'}}>
           <a href="/proyectos" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Proyectos</a>
           <a href="/directorio-inversion" style={{color:'#4A90D9',fontSize:'0.82rem',textDecoration:'none',fontWeight:'600'}}>💰 Invertir</a>
-          <a href="/score" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mi Score</a>
+          <a href="/score" style={{color:'#8FA3CC',fontSize:'0.82rem',textDecoration:'none'}}>Mi Reputación</a>
           <div style={{position:'relative'}}>
             <button onClick={() => setNotifPanelAbierto(v => !v)} style={{background: notifPanelAbierto ? 'rgba(255,255,255,0.08)' : 'transparent',border:'none',borderRadius:'8px',color:'#8FA3CC',cursor:'pointer',fontSize:'1.05rem',position:'relative',padding:'0.35rem'}}>
               🔔

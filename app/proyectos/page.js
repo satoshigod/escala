@@ -1045,8 +1045,8 @@ export default function Proyectos() {
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
                   {[
                     { id:'startup', icon:'💡', titulo:'Crear o crecer mi empresa', desc:'Tienes una idea o empresa que quieres hacer crecer con un equipo que trabaja por participación.', badge:'Equipo + capital', badgeColor:'#1D9E75' },
-                    { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante u otro negocio y necesitas quien financie el depósito y el arriendo.', badge:'Fondeo de local', badgeColor:'#4A90D9', destacado:true },
-                    { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo u otro activo. Un ángel lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
+                    { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante u otro negocio y necesitas quien financie el depósito y el arriendo.', badge:'Financiar local', badgeColor:'#4A90D9', destacado:true },
+                    { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo u otro activo. Un inversionista lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
                   ].map(op => (
                     <div key={op.id}
                       onClick={() => {
@@ -1128,8 +1128,8 @@ export default function Proyectos() {
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'0.75rem',marginBottom:'1.25rem'}}>
               {[
                 { id:'startup', icon:'💡', titulo:'Crear o crecer mi empresa', desc:'Tienes una idea, un producto digital, un servicio o una empresa que quieres hacer crecer con un equipo que trabaja por participación.', badge:'Equipo + capital', badgeColor:'#1D9E75' },
-                { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante, frutería, almacén u otro negocio y necesitas que alguien financie el depósito y el arriendo del contrato.', badge:'Fondeo de local', badgeColor:'#4A90D9', destacado:true },
-                { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo, tecnología u otro activo para que tu negocio opere. Un ángel lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
+                { id:'local_comercial', icon:'🏪', titulo:'Necesito un local', desc:'Quieres montar una tienda, restaurante, frutería, almacén u otro negocio y necesitas que alguien financie el depósito y el arriendo del contrato.', badge:'Financiar local', badgeColor:'#4A90D9', destacado:true },
+                { id:'otro', icon:'🔧', titulo:'Necesito equipos o maquinaria', desc:'Necesitas una máquina, un horno, un vehículo, tecnología u otro activo para que tu negocio opere. Un inversionista lo financia y tú lo pagas desde tus ingresos.', badge:'Activos y capital', badgeColor:'#E8A020' },
               ].map(op => (
                 <div key={op.id}
                   onClick={() => {
@@ -1189,7 +1189,7 @@ export default function Proyectos() {
                   {[
                     { n:'1', txt:'Describes qué necesitas (máquina, horno, vehículo, servidor...)' },
                     { n:'2', txt:'Lo publicas con el precio y a cambio de qué' },
-                    { n:'3', txt:'Un ángel lo financia por item — no todo el proyecto' },
+                    { n:'3', txt:'Un inversionista lo financia por parte — no todo el proyecto' },
                     { n:'4', txt:'Cuando llega el capital, ejecutas la compra y arrancas' },
                   ].map(p => (
                     <div key={p.n} style={{display:'flex',gap:'0.625rem',alignItems:'center'}}>
