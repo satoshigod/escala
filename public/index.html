@@ -521,9 +521,16 @@ nav{
 .sub-btn:hover{background:#178f67;}
 
 /* ── FOOTER ── */
-footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var(--dm);font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);}
+footer{background:var(--navy);padding:3.5rem 1.25rem 2rem;color:var(--dm);font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);}
 .foot-logo{font-size:1rem;font-weight:900;color:#fff;margin-bottom:0.4rem;}
 .foot-logo span{color:var(--green);}
+.foot-cols{max-width:1080px;margin:0 auto 2.5rem;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:2rem;text-align:left;}
+@media(max-width:760px){.foot-cols{grid-template-columns:1fr 1fr;gap:1.75rem;}}
+.foot-col h4{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#fff;margin-bottom:0.875rem;opacity:0.9;}
+.foot-col a{display:block;color:var(--dm);font-size:0.82rem;margin-bottom:0.6rem;transition:color 0.2s;}
+.foot-col a:hover{color:#fff;}
+.foot-brand-col p{font-size:0.82rem;line-height:1.6;margin:0.75rem 0 1rem;max-width:280px;}
+.foot-bottom{max-width:1080px;margin:0 auto;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;text-align:left;}
 .foot-links{display:flex;gap:1.25rem;justify-content:center;flex-wrap:wrap;margin:0.875rem 0;}
 .foot-links a{color:var(--dm);font-size:0.8rem;transition:color 0.2s;}
 .foot-links a:hover{color:#fff;}
@@ -584,12 +591,9 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
 <nav>
   <a href="index.html" style="text-decoration:none;"><div class="nav-logo" style="display:flex;align-items:center"><img src="/brand/isotipo.svg" alt="Escala" width="28" height="28" style="display:inline-block;vertical-align:middle;margin-right:6px">Esca<span>la</span></div></a>
   <ul class="nav-links">
-    <li><a href="index.html#historia">La historia</a></li>
-    <li><a href="por-que-existe.html">Por qué existe</a></li>
-    <li><a href="casos.html">Casos reales</a></li>
     <li><a href="index.html#como-funciona">Cómo funciona</a></li>
-    <li><a href="perfiles.html">Tu perfil</a></li>
-    <li><a href="proteccion.html">Protección</a></li>
+    <li><a href="casos.html">Casos reales</a></li>
+    <li><a href="por-que-existe.html">Por qué existe</a></li>
     <li><a href="proyectos.html" class="hi">Proyectos ↗</a></li>
     <li><a href="impulso.html" class="ha">Inversionistas ✦</a></li>
   </ul>
@@ -600,18 +604,16 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   </button>
 </nav>
 <div class="mob-menu" id="mob-menu">
-  <a href="index.html#historia" onclick="closeMenu()">La historia →</a>
-  <a href="por-que-existe.html" onclick="closeMenu()">Por qué existe →</a>
-  <a href="casos.html" onclick="closeMenu()">Casos reales →</a>
   <a href="index.html#como-funciona" onclick="closeMenu()">Cómo funciona →</a>
+  <a href="casos.html" onclick="closeMenu()">Casos reales →</a>
+  <a href="por-que-existe.html" onclick="closeMenu()">Por qué existe →</a>
   <a href="perfiles.html" onclick="closeMenu()">Tu perfil →</a>
   <a href="compensacion.html" onclick="closeMenu()">Compensación →</a>
   <a href="proteccion.html" onclick="closeMenu()">Protección jurídica →</a>
-  <a href="inversionistas.html" onclick="closeMenu()">Para inversionistas →</a>
-  <a href="faq.html" onclick="closeMenu()">Preguntas frecuentes →</a>
-  <a href="proyectos.html" class="mg" onclick="closeMenu()">Proyectos ✦</a>
-  <a href="impulso.html" class="ma" onclick="closeMenu()">Angel Inversionista ✦</a>
   <a href="costos.html" onclick="closeMenu()">Costos →</a>
+  <a href="faq.html" onclick="closeMenu()">Preguntas frecuentes →</a>
+  <a href="proyectos.html" class="mg" onclick="closeMenu()">Ver proyectos ✦</a>
+  <a href="impulso.html" class="ma" onclick="closeMenu()">Invertir en Escala ✦</a>
   <a href="/registro?modo=login" onclick="closeMenu()">Iniciar sesión →</a>
   <a href="/registro" class="mc" onclick="closeMenu()">Registrarme gratis →</a>
 </div>
@@ -702,16 +704,42 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
 </section>
 <section class="flujo" id="como-funciona">
 <div class="container">
-  <span class="ey ey-w">Así nace una empresa en Escala</span>
-  <h2 class="ttl ttl-w">Escala no define cómo debe resolverse el problema.<br>Conecta la necesidad con quienes pueden solucionarla.</h2>
-  <div class="flujo-steps">
-    <div class="fs s1"><div class="fs-mob"><div class="fs-circle">💡</div><div class="fs-text"><div class="fs-n">01</div><div class="fs-l">Idea</div><div class="fs-s">El originador publica el proyecto con sus necesidades</div></div></div></div>
-    <div class="fs s2"><div class="fs-mob"><div class="fs-circle">👥</div><div class="fs-text"><div class="fs-n">02</div><div class="fs-l">Equipo</div><div class="fs-s">Los roles se cubren con especialistas que aportan a cambio de compensación diferida</div></div></div></div>
-    <div class="fs s3"><div class="fs-mob"><div class="fs-circle">📋</div><div class="fs-text"><div class="fs-n">03</div><div class="fs-l">Contratos</div><div class="fs-s">Cada aportante firma con valor y forma de pago definidos</div></div></div></div>
-    <div class="fs s4"><div class="fs-mob"><div class="fs-circle">⚙️</div><div class="fs-text"><div class="fs-n">04</div><div class="fs-l">Ejecución</div><div class="fs-s">Horas, entregables y avances se registran en tiempo real</div></div></div></div>
-    <div class="fs s5"><div class="fs-mob"><div class="fs-circle">✅</div><div class="fs-text"><div class="fs-n">05</div><div class="fs-l">Validación</div><div class="fs-s">El gerente y el inversionista evalúan con criterios objetivos</div></div></div></div>
-    <div class="fs s6"><div class="fs-mob"><div class="fs-circle">🏢</div><div class="fs-text"><div class="fs-n">06</div><div class="fs-l">Empresa</div><div class="fs-s">La empresa entra en operación y genera ingresos</div></div></div></div>
-    <div class="fs s7"><div class="fs-mob"><div class="fs-circle">📈</div><div class="fs-text"><div class="fs-n">07</div><div class="fs-l">Retorno</div><div class="fs-s">Cada aportante recibe lo que le corresponde</div></div></div></div>
+  <span class="ey ey-w">Cómo funciona</span>
+  <h2 class="ttl ttl-w">Un solo lugar. Tres caminos.<br>Tú eliges el que necesitas.</h2>
+  <p class="sub sub-w" style="max-width:640px;">Escala no obliga a nadie a hacer las cosas de una sola forma. Según lo que necesites, sigues el camino que se ajusta a tu realidad — y cada uno tiene su propia forma de financiarse.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;margin-top:3rem;text-align:left;">
+
+    <!-- CAMINO 1: CREAR/HACER CRECER CON EQUIPO -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:2rem;">
+      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--amber);margin-bottom:0.5rem;">Con talento</div>
+      <div style="font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:1.25rem;line-height:1.2;">Tienes una idea o empresa y necesitas equipo</div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:var(--amber);font-weight:700;font-size:0.85rem;flex-shrink:0;">1</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Publicas tu proyecto y qué roles necesitas</span></div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:var(--amber);font-weight:700;font-size:0.85rem;flex-shrink:0;">2</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Los especialistas se suman por participación, sin salario por adelantado</span></div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:var(--amber);font-weight:700;font-size:0.85rem;flex-shrink:0;">3</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Firman contrato, construyen desde la plataforma y todo queda registrado</span></div>
+      <div style="display:flex;gap:0.75rem;"><span style="color:var(--amber);font-weight:700;font-size:0.85rem;flex-shrink:0;">4</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Cuando la empresa genera, cada quien recibe lo acordado</span></div>
+    </div>
+
+    <!-- CAMINO 2: MAQUINARIA -->
+    <div style="background:rgba(83,74,183,0.1);border:1px solid rgba(83,74,183,0.3);border-radius:16px;padding:2rem;">
+      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AFA9EC;margin-bottom:0.5rem;">Con una máquina</div>
+      <div style="font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:1.25rem;line-height:1.2;">Ya produces y necesitas equipo para crecer</div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:#AFA9EC;font-weight:700;font-size:0.85rem;flex-shrink:0;">1</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Dices qué máquina necesitas y cuánto produces hoy</span></div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:#AFA9EC;font-weight:700;font-size:0.85rem;flex-shrink:0;">2</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Un inversionista la compra y queda como propietario</span></div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:#AFA9EC;font-weight:700;font-size:0.85rem;flex-shrink:0;">3</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">La usas desde el primer día y pagas desde el excedente que genera</span></div>
+      <div style="display:flex;gap:0.75rem;"><span style="color:#AFA9EC;font-weight:700;font-size:0.85rem;flex-shrink:0;">4</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Cuando terminas de pagarla, la máquina es tuya</span></div>
+    </div>
+
+    <!-- CAMINO 3: LOCAL -->
+    <div style="background:rgba(29,158,117,0.08);border:1px solid rgba(29,158,117,0.3);border-radius:16px;padding:2rem;">
+      <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:0.5rem;">Con un local</div>
+      <div style="font-size:1.15rem;font-weight:800;color:#fff;margin-bottom:1.25rem;line-height:1.2;">Quieres abrir un negocio en un local</div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:var(--green);font-weight:700;font-size:0.85rem;flex-shrink:0;">1</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Cuentas qué negocio quieres abrir y en qué local</span></div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:var(--green);font-weight:700;font-size:0.85rem;flex-shrink:0;">2</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Un inversionista financia el depósito y los primeros arriendos</span></div>
+      <div style="display:flex;gap:0.75rem;margin-bottom:0.875rem;"><span style="color:var(--green);font-weight:700;font-size:0.85rem;flex-shrink:0;">3</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Reportas tus ventas diarias y pagas desde el excedente</span></div>
+      <div style="display:flex;gap:0.75rem;"><span style="color:var(--green);font-weight:700;font-size:0.85rem;flex-shrink:0;">4</span><span style="font-size:0.85rem;color:var(--dm);line-height:1.5;">Cuando terminas de pagar, el negocio es completamente tuyo</span></div>
+    </div>
+
   </div>
 </div>
 </section>
@@ -754,7 +782,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
       <div style="position:absolute;top:-11px;left:1.25rem;background:#AFA9EC;color:#2D2866;font-size:0.6rem;font-weight:700;padding:2px 10px;border-radius:20px;letter-spacing:0.05em;">MAQUINARIA</div>
       <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#AFA9EC;margin-bottom:0.875rem;">Necesito una máquina</div>
       <div style="font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:0.5rem;">Tienes los pedidos pero te falta la máquina o el equipo para producir</div>
-      <div style="font-size:0.82rem;color:var(--dm);line-height:1.6;margin-bottom:1.25rem;">Un ángel compra la máquina y queda como propietario. Tú la usas desde el primer día y pagas desde el excedente que genera. Sin banco. Sin cuota fija. Cuando terminas de pagar, la máquina es tuya.</div>
+      <div style="font-size:0.82rem;color:var(--dm);line-height:1.6;margin-bottom:1.25rem;">Un inversionista compra la máquina y queda como propietario. Tú la usas desde el primer día y pagas desde el excedente que genera. Sin banco. Sin cuota fija. Cuando terminas de pagar, la máquina es tuya.</div>
       <div class="dt-item"><span>→</span>Máquina overlock para confección</div>
       <div class="dt-item"><span>→</span>Freidora industrial para tu negocio</div>
       <div class="dt-item"><span>→</span>Silla hidráulica para tu salón</div>
@@ -838,7 +866,7 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
   <div class="ptabs ptabs-need">
     <a href="/necesito-capital" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">💰</div><div class="ptab-l">Necesito capital para crecer</div><div class="ptab-s">Consigue quién financie tu negocio o empresa</div></div></a>
     <a href="/contratar-talento" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🤝</div><div class="ptab-l">Necesito contratar talento</div><div class="ptab-s">Un diseñador, un contador, un desarrollador…</div></div></a>
-    <a href="/programa-maquinaria" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🔧</div><div class="ptab-l">Necesito una máquina para producir más</div><div class="ptab-s">Un ángel la compra, tú pagas desde lo que produce</div></div></a>
+    <a href="/programa-maquinaria" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🔧</div><div class="ptab-l">Necesito una máquina para producir más</div><div class="ptab-s">Un inversionista la compra, tú pagas desde lo que produce</div></div></a>
     <a href="/financiar-negocio-local-colombia" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🏪</div><div class="ptab-l">Necesito un local para mi negocio</div><div class="ptab-s">Financiamos el arriendo, pagas desde tus ventas</div></div></a>
     <a href="/empezar-empresa" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">💡</div><div class="ptab-l">Quiero empezar mi empresa desde cero</div><div class="ptab-s">Arma tu equipo sin pagar salarios por adelantado</div></div></a>
     <a href="/conseguir-proyectos" style="text-decoration:none;color:inherit;"><div class="ptab"><div class="ptab-i">🎯</div><div class="ptab-l">Quiero conseguir proyectos y clientes</div><div class="ptab-s">Ofrece lo que sabes y gana participación</div></div></a>
@@ -1011,47 +1039,52 @@ footer{background:var(--navy);padding:2.5rem 1.25rem;text-align:center;color:var
 </div>
 </section>
 <footer>
-  <div class="foot-logo" style="display:flex;align-items:center"><img src="/brand/isotipo.svg" alt="Escala" width="28" height="28" style="display:inline-block;vertical-align:middle;margin-right:6px">Esca<span>la</span></div>
-  <p>Escala es la plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa · Colombia 2026</p>
-  <div class="foot-links">
-    <a href="proyectos.html">Proyectos</a>
-    <a href="impulso.html">Inversionistas</a>
-    <a href="costos.html">Costos</a>
-    <a href="proyecto-escala.html">Proyecto piloto</a>
-    <a href="por-que-existe.html">Por qué existe</a>
-    <a href="proteccion.html">Protección</a>
-    <a href="faq.html">Preguntas frecuentes</a>
-    <a href="/registro">Registrarme</a>
+  <div class="foot-cols">
+    <div class="foot-col foot-brand-col">
+      <div class="foot-logo" style="display:flex;align-items:center"><img src="/brand/isotipo.svg" alt="Escala" width="28" height="28" style="display:inline-block;vertical-align:middle;margin-right:6px">Esca<span>la</span></div>
+      <p>La plataforma donde encuentras lo que necesitas para crear, hacer crecer o mejorar tu negocio o empresa.</p>
+      <div style="display:flex;gap:0.75rem;">
+        <a href="https://www.facebook.com/profile.php?id=61591678262407" target="_blank" rel="noopener noreferrer" aria-label="Escala en Facebook" title="Facebook" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--dm);margin:0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/joinescala" target="_blank" rel="noopener noreferrer" aria-label="Escala en Instagram" title="Instagram" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--dm);margin:0;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.72 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.9 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77a4.9 4.9 0 0 1 1.77-1.15c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.28 2 12 2Zm0 1.8c-2.67 0-2.99.01-4.04.06-.92.04-1.42.2-1.75.33-.44.17-.75.37-1.08.7-.33.33-.53.64-.7 1.08-.13.33-.29.83-.33 1.75C4.05 8.77 4.04 9.09 4.04 12s.01 3.23.06 4.28c.04.92.2 1.42.33 1.75.17.44.37.75.7 1.08.33.33.64.53 1.08.7.33.13.83.29 1.75.33 1.05.05 1.37.06 4.04.06s2.99-.01 4.04-.06c.92-.04 1.42-.2 1.75-.33.44-.17.75-.37 1.08-.7.33-.33.53-.64.7-1.08.13-.33.29-.83.33-1.75.05-1.05.06-1.37.06-4.28s-.01-3.23-.06-4.28c-.04-.92-.2-1.42-.33-1.75a2.9 2.9 0 0 0-.7-1.08 2.9 2.9 0 0 0-1.08-.7c-.33-.13-.83-.29-1.75-.33C14.99 3.81 14.67 3.8 12 3.8Zm0 3.05a5.15 5.15 0 1 1 0 10.3 5.15 5.15 0 0 1 0-10.3Zm0 1.8a3.35 3.35 0 1 0 0 6.7 3.35 3.35 0 0 0 0-6.7Zm5.35-1.99a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Soluciones</h4>
+      <a href="/necesito-capital">Capital para crecer</a>
+      <a href="/contratar-talento">Contratar talento</a>
+      <a href="/programa-maquinaria">Programa de maquinaria</a>
+      <a href="/financiar-negocio-local-colombia">Financiar un local</a>
+      <a href="/empezar-empresa">Empezar desde cero</a>
+    </div>
+    <div class="foot-col">
+      <h4>Escala</h4>
+      <a href="por-que-existe.html">Por qué existe</a>
+      <a href="index.html#como-funciona">Cómo funciona</a>
+      <a href="casos.html">Casos reales</a>
+      <a href="proyecto-escala.html">Proyecto piloto</a>
+      <a href="impulso.html">Para inversionistas</a>
+    </div>
+    <div class="foot-col">
+      <h4>Recursos</h4>
+      <a href="faq.html">Preguntas frecuentes</a>
+      <a href="costos.html">Costos</a>
+      <a href="compensacion.html">Compensación</a>
+      <a href="proteccion.html">Protección jurídica</a>
+      <a href="/registro">Crear cuenta</a>
+    </div>
   </div>
-  <div style="margin-top:1.25rem;display:flex;flex-wrap:wrap;justify-content:center;gap:1.25rem;font-size:0.75rem;color:var(--dm);opacity:0.7;">
-    <span>📍 Medellín, Colombia</span>
-    <a href="mailto:hola@escala.network" style="color:var(--dm);text-decoration:none;">✉️ hola@escala.network</a>
-    <a href="https://wa.me/573005485019" target="_blank" style="color:var(--dm);text-decoration:none;">📲 +57 300 548 5019</a>
+  <div class="foot-bottom">
+    <div style="display:flex;flex-wrap:wrap;gap:1.25rem;font-size:0.75rem;opacity:0.7;">
+      <span>📍 Medellín, Colombia</span>
+      <a href="mailto:hola@escala.network" style="color:var(--dm);text-decoration:none;">✉️ hola@escala.network</a>
+      <a href="https://wa.me/573005485019" target="_blank" style="color:var(--dm);text-decoration:none;">📲 +57 300 548 5019</a>
+    </div>
+    <p style="opacity:0.35;font-size:0.72rem;margin:0;">© 2026 Escala · escala.network</p>
   </div>
-  <div style="margin-top:1rem;display:flex;justify-content:center;gap:0.75rem;">
-    <a href="https://www.facebook.com/profile.php?id=61591678262407" target="_blank" rel="noopener noreferrer" aria-label="Escala en Facebook" title="Facebook" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--dm);">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
-    </a>
-    <a href="https://www.instagram.com/joinescala" target="_blank" rel="noopener noreferrer" aria-label="Escala en Instagram" title="Instagram" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--dm);">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.72 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.9 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77a4.9 4.9 0 0 1 1.77-1.15c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.28 2 12 2Zm0 1.8c-2.67 0-2.99.01-4.04.06-.92.04-1.42.2-1.75.33-.44.17-.75.37-1.08.7-.33.33-.53.64-.7 1.08-.13.33-.29.83-.33 1.75C4.05 8.77 4.04 9.09 4.04 12s.01 3.23.06 4.28c.04.92.2 1.42.33 1.75.17.44.37.75.7 1.08.33.33.64.53 1.08.7.33.13.83.29 1.75.33 1.05.05 1.37.06 4.04.06s2.99-.01 4.04-.06c.92-.04 1.42-.2 1.75-.33.44-.17.75-.37 1.08-.7.33-.33.53-.64.7-1.08.13-.33.29-.83.33-1.75.05-1.05.06-1.37.06-4.28s-.01-3.23-.06-4.28c-.04-.92-.2-1.42-.33-1.75a2.9 2.9 0 0 0-.7-1.08 2.9 2.9 0 0 0-1.08-.7c-.33-.13-.83-.29-1.75-.33C14.99 3.81 14.67 3.8 12 3.8Zm0 3.05a5.15 5.15 0 1 1 0 10.3 5.15 5.15 0 0 1 0-10.3Zm0 1.8a3.35 3.35 0 1 0 0 6.7 3.35 3.35 0 0 0 0-6.7Zm5.35-1.99a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Z"/></svg>
-    </a>
-  </div>
-  <p style="margin-top:0.75rem;opacity:0.35;font-size:0.72rem;">Colombia · 2026 · escala.network</p>
-</footer>
-  <div style="margin-top:1.25rem;display:flex;flex-wrap:wrap;justify-content:center;gap:1.25rem;font-size:0.75rem;color:var(--dm);opacity:0.7;">
-    <span>📍 Cr 48 #10-45, Centro Comercial Monterrey, Medellín, Colombia</span>
-    <a href="mailto:hola@escala.network" style="color:var(--dm);text-decoration:none;">✉️ hola@escala.network</a>
-    <a href="https://wa.me/573005485019" target="_blank" style="color:var(--dm);text-decoration:none;">📲 +57 300 548 5019</a>
-  </div>
-  <div style="margin-top:1rem;display:flex;justify-content:center;gap:0.75rem;">
-    <a href="https://www.facebook.com/profile.php?id=61591678262407" target="_blank" rel="noopener noreferrer" aria-label="Escala en Facebook" title="Facebook" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--dm);">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.51 17.52 2 12 2S2 6.51 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.89h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94Z"/></svg>
-    </a>
-    <a href="https://www.instagram.com/joinescala" target="_blank" rel="noopener noreferrer" aria-label="Escala en Instagram" title="Instagram" style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--dm);">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.72 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.9 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77a4.9 4.9 0 0 1 1.77-1.15c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.28 2 12 2Zm0 1.8c-2.67 0-2.99.01-4.04.06-.92.04-1.42.2-1.75.33-.44.17-.75.37-1.08.7-.33.33-.53.64-.7 1.08-.13.33-.29.83-.33 1.75C4.05 8.77 4.04 9.09 4.04 12s.01 3.23.06 4.28c.04.92.2 1.42.33 1.75.17.44.37.75.7 1.08.33.33.64.53 1.08.7.33.13.83.29 1.75.33 1.05.05 1.37.06 4.04.06s2.99-.01 4.04-.06c.92-.04 1.42-.2 1.75-.33.44-.17.75-.37 1.08-.7.33-.33.53-.64.7-1.08.13-.33.29-.83.33-1.75.05-1.05.06-1.37.06-4.28s-.01-3.23-.06-4.28c-.04-.92-.2-1.42-.33-1.75a2.9 2.9 0 0 0-.7-1.08 2.9 2.9 0 0 0-1.08-.7c-.33-.13-.83-.29-1.75-.33C14.99 3.81 14.67 3.8 12 3.8Zm0 3.05a5.15 5.15 0 1 1 0 10.3 5.15 5.15 0 0 1 0-10.3Zm0 1.8a3.35 3.35 0 1 0 0 6.7 3.35 3.35 0 0 0 0-6.7Zm5.35-1.99a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0Z"/></svg>
-    </a>
-  </div>
-  <p style="margin-top:0.75rem;opacity:0.35;font-size:0.72rem;">Colombia · 2026 · escala.network</p>
 </footer>
 
 <script>
