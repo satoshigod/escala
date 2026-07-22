@@ -127,7 +127,7 @@ export async function PATCH(request) {
         receptor_externo: `Proveedor del equipo — ${data.tipo_equipo || 'equipo'} ${data.marca || ''} ${data.modelo || ''}`.trim(),
         monto: parseFloat(data.valor_equipo),
         moneda: 'COP',
-        concepto: `Compra de ${data.tipo_equipo || 'equipo'} ${data.marca || ''} ${data.modelo || ''} — contrato ${data.numero || data.id}`.trim(),
+        concepto: `Compra de ${data.tipo_equipo || 'equipo'} ${data.marca || ''} ${data.modelo || ''} — contrato ${data.numero_contrato || data.id}`.trim(),
         referencia_tipo: 'contrato_leasing',
         referencia_id: data.id,
         idempotency_key: `custodia-leasing-${data.id}`,

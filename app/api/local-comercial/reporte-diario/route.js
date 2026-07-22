@@ -185,7 +185,6 @@ export async function POST(req) {
           referencia_tipo: 'reporte_diario',
           referencia_id: reporte.id,
           idempotency_key: `custodia-${idempotency_key}`,
-          metadata_flujo: { intereses_dia: Math.round(intereses_dia), abono_capital: Math.round(abono_capital) },
         })
         orden_custodia = r.orden
       } catch (e) {
