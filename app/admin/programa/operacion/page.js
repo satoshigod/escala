@@ -23,6 +23,7 @@ export default function OperacionPrograma() {
   const [tab, setTab] = useState('equipos')
   const [contratos, setContratos] = useState([])
   const [mora, setMora] = useState({ casos: [], resumen: {} })
+  const [kpis, setKpis] = useState(null)
   const [proc, setProc] = useState(null)
   const [err, setErr] = useState('')
 
@@ -31,12 +32,14 @@ export default function OperacionPrograma() {
     if (!session) { window.location.href = '/registro?modo=login'; return }
     const h = { Authorization: 'Bearer ' + session.access_token }
     try {
-      const [e, m] = await Promise.all([
+      const [e, m, k] = await Promise.all([
         fetch('/api/programa/entrega', { headers: h }).then(r => r.json()),
         fetch('/api/programa/mora', { headers: h }).then(r => r.json()),
+        fetch('/api/programa/kpis', { headers: h }).then(r => r.json()),
       ])
       if (e.error) setErr(e.error); else setContratos(e.contratos || [])
       if (!m.error) setMora({ casos: m.casos || [], resumen: m.resumen || {} })
+      if (!k.error) setKpis(k)
     } catch (ex) { setErr(ex.message) }
     setCargando(false)
   }
@@ -156,6 +159,7 @@ export default function OperacionPrograma() {
       <div style={s.tabs}>
         <div style={s.tab(tab === 'equipos')} onClick={() => setTab('equipos')}>Equipos y entrega</div>
         <div style={s.tab(tab === 'mora')} onClick={() => setTab('mora')}>Recaudo y mora {mora.resumen.en_mora ? `(${mora.resumen.en_mora})` : ''}</div>
+        <div style={s.tab(tab === 'kpis')} onClick={() => setTab('kpis')}>KPIs</div>
       </div>
 
       {tab === 'equipos' && (
@@ -201,6 +205,61 @@ export default function OperacionPrograma() {
             </div>
           )
         })
+      )}
+
+      {tab === 'kpis' && kpis && (
+        <>
+          <div style={{ ...s.row, background: 'rgba(29,158,117,0.07)', borderColor: 'rgba(29,158,117,0.25)' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: '800', color: '#5FD3A8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Meta del piloto</div>
+            <div style={{ fontSize: '1.6rem', fontWeight: '900' }}>{kpis.meta.contratadas}<span style={{ fontSize: '1rem', color: '#8FA3CC' }}>/{kpis.meta.objetivo_piloto} máquinas</span></div>
+            <div style={{ fontSize: '0.8rem', color: '#8FA3CC', marginTop: '0.2rem' }}>Faltan {kpis.meta.faltan} por colocar</div>
+          </div>
+
+          <div style={{ ...s.row }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: '800', marginBottom: '0.7rem' }}>Embudo de conversión</div>
+            {kpis.embudo.map(e => (
+              <div key={e.paso} style={{ marginBottom: '0.6rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.25rem' }}>
+                  <span style={{ color: '#C8D4E8' }}>{e.paso}</span>
+                  <span style={{ fontWeight: '800' }}>{e.valor} <span style={{ color: '#6B7280', fontWeight: '400' }}>· {e.conversion}%</span></span>
+                </div>
+                <div style={{ height: '5px', background: 'rgba(255,255,255,0.08)', borderRadius: '99px', overflow: 'hidden' }}>
+                  <div style={{ width: `${e.conversion}%`, height: '100%', background: '#1D9E75' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ ...s.row }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: '800', marginBottom: '0.7rem' }}>Cartera</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '0.7rem' }}>
+              <div><div style={{ fontSize: '1.05rem', fontWeight: '900' }}>{fmt(kpis.cartera.capital_colocado)}</div><div style={{ fontSize: '0.72rem', color: '#8FA3CC' }}>Colocado</div></div>
+              <div><div style={{ fontSize: '1.05rem', fontWeight: '900', color: '#5FD3A8' }}>{kpis.cartera.pct_recuperado}%</div><div style={{ fontSize: '0.72rem', color: '#8FA3CC' }}>Recuperado</div></div>
+              <div><div style={{ fontSize: '1.05rem', fontWeight: '900', color: kpis.cartera.tasa_mora_capital > 15 ? '#D85A30' : '#fff' }}>{kpis.cartera.tasa_mora_capital}%</div><div style={{ fontSize: '0.72rem', color: '#8FA3CC' }}>Mora sobre capital</div></div>
+              <div><div style={{ fontSize: '1.05rem', fontWeight: '900' }}>{kpis.reporte.cumplimiento}%</div><div style={{ fontSize: '0.72rem', color: '#8FA3CC' }}>Cumple el reporte</div></div>
+            </div>
+          </div>
+
+          <div style={{ ...s.row }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: '800', marginBottom: '0.7rem' }}>¿El scoring separa bien?</div>
+            {kpis.scoring.map(b => (
+              <div key={b.banda} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', padding: '0.35rem 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ color: '#C8D4E8', textTransform: 'capitalize' }}>Banda {b.banda}</span>
+                <span style={{ color: '#8FA3CC' }}>{b.solicitudes} sol · {b.tasa}% llegó a verificación</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ ...s.row }}>
+            <div style={{ fontSize: '0.78rem', fontWeight: '800', marginBottom: '0.7rem' }}>Preguntas que el piloto debe contestar</div>
+            {kpis.preguntas_clave.map((q, i) => (
+              <div key={i} style={{ marginBottom: '0.55rem' }}>
+                <div style={{ fontSize: '0.82rem', color: '#fff', fontWeight: '700' }}>{q.pregunta}</div>
+                <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>{q.responde}</div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {tab === 'mora' && (
