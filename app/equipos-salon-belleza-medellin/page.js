@@ -66,7 +66,7 @@ export default function Page() {
         <div style={{ marginBottom: '3rem' }}>
           {[
             { n: '1', c: '#D946EF', t: 'Aplicas y nos dices qué equipo necesitas', d: 'Nos cuentas qué tienes, cuántas clientas atiendes y qué equipo te falta — silla hidráulica, secadora, horno UV, cabina de ozono, plancha de vapor. Y cuánto cuesta.' },
-            { n: '2', c: '#4A90D9', t: 'Un inversionista compra el equipo', d: 'Un ángel inversionista compra el equipo específico que necesitas. Juntos acuerdan qué porcentaje del excedente adicional que genera el equipo se abona al capital. Cuanto más produces, más rápido pagas.' },
+            { n: '2', c: '#4A90D9', t: 'Un inversionista compra el equipo', d: 'Un inversionista ángel compra el equipo específico que necesitas. Juntos acuerdan qué porcentaje del excedente adicional que genera el equipo se abona al capital. Cuanto más produces, más rápido pagas.' },
             { n: '3', c: '#1D9E75', t: 'Atiendes más clientas y pagas desde lo que ganas', d: 'Empiezas a usar el equipo de inmediato. Cada mes pagas al inversionista con lo que produces. Cuando termines de pagar, el equipo es tuyo.' },
           ].map(p => (
             <div key={p.n} style={s.paso}>
@@ -147,7 +147,7 @@ export default function Page() {
         {[
           { p: '¿Necesito historial crediticio o codeudor?', r: 'No. No evaluamos historial bancario. Lo que nos importa es que tengas clientas reales y sepas usar el equipo.' },
           { p: '¿El equipo es mío desde el primer día?', r: 'Lo usas desde el primer día. El inversionista queda como propietario hasta que termines de pagar. Al llegar al 100%, pasa a tu nombre.' },
-          { p: '¿Qué pasa si un mes atiendo menos clientas?', r: 'Hablamos contigo. El modelo está diseñado para que el excedente del equipo nuevo sea lo que paga al ángel. Si produces menos ese mes, el abono es menor. Si produces más, pagas más rápido.' },
+          { p: '¿Qué pasa si un mes atiendo menos clientas?', r: 'Hablamos contigo. El modelo está diseñado para que el excedente del equipo nuevo sea lo que paga al inversionista ángel. Si produces menos ese mes, el abono es menor. Si produces más, pagas más rápido.' },
           { p: '¿Cuánto tiempo toma el proceso?', r: 'Si tu perfil califica, entre 3 y 7 días hábiles. Una vez aprobado, el inversionista compra el equipo y te lo entregamos.' },
         ].map(f => (
           <div key={f.p} style={{ ...s.card, marginBottom: '0.75rem' }}>

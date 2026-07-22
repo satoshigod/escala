@@ -763,7 +763,7 @@ export default function Dashboard() {
             <div style={{background:'rgba(74,144,217,0.06)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:'0.75rem'}}>
               <div>
                 <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#4A90D9',marginBottom:'3px'}}>💰 Oportunidades de inversión disponibles</div>
-                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Proyectos activos que necesitan capital para equipos, tecnología, nómina y más. Fondea por item a cambio de participación, deuda o revenue share.</div>
+                <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Proyectos activos que necesitan capital para equipos, tecnología, nómina y más. Financia por item a cambio de participación, deuda o revenue share.</div>
               </div>
               <a href="/directorio-inversion" style={{background:'#4A90D9',color:'#fff',padding:'0.5rem 1.25rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.82rem',fontWeight:'700',whiteSpace:'nowrap'}}>
                 Ver oportunidades →

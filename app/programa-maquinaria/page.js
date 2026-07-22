@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export const metadata = {
   title: 'Programa de Maquinaria — Consigue tu equipo sin banco · Escala',
-  description: 'Un ángel compra el equipo que necesitas. Tú lo usas y pagas desde el excedente que genera. Sin banco, sin garante, sin cuota fija. Confección, belleza y comida en Medellín.',
+  description: 'Un inversionista ángel compra el equipo que necesitas. Tú lo usas y pagas desde el excedente que genera. Sin banco, sin garante, sin cuota fija. Confección, belleza y comida en Medellín.',
   keywords: ['programa maquinaria sin banco Colombia', 'conseguir equipo sin credito Medellin', 'leasing maquinaria excedente Colombia'],
 }
 
@@ -34,7 +34,7 @@ const NICHOS = [
     emoji: '🧵',
     nicho: 'Confección · Medellín',
     titulo: 'Máquina overlock, plana o fileteadora para tu taller',
-    desc: 'Si tienes pedidos de confección pero tu máquina no da abasto, un ángel compra la overlock o flatseamer que necesitas. Perfecto para vestidos de baño, ropa interior y maquila.',
+    desc: 'Si tienes pedidos de confección pero tu máquina no da abasto, un inversionista ángel compra la overlock o flatseamer que necesitas. Perfecto para vestidos de baño, ropa interior y maquila.',
     avatar: 'Lorena tiene 180 pedidos/mes. Su máquina solo da para 90.',
     excedente: '~$1M/mes excedente adicional',
     tiempo: 'Paga en 8-12 meses',
@@ -48,7 +48,7 @@ const NICHOS = [
     emoji: '💄',
     nicho: 'Belleza · Medellín',
     titulo: 'Silla hidráulica, secadora de casco o cabina de ozono para tu salón',
-    desc: 'Si tienes clientas pero te falta el equipo para ofrecer servicios premium, un ángel compra la silla hidráulica, la secadora o la cabina que necesitas.',
+    desc: 'Si tienes clientas pero te falta el equipo para ofrecer servicios premium, un inversionista ángel compra la silla hidráulica, la secadora o la cabina que necesitas.',
     avatar: 'Sandra tiene 25 clientas. Sin secadora no puede hacer hidrataciones a $60.000.',
     excedente: '~$720K/mes excedente adicional',
     tiempo: 'Paga en 4-6 meses',
@@ -62,7 +62,7 @@ const NICHOS = [
     emoji: '🍳',
     nicho: 'Comida · Medellín',
     titulo: 'Freidora, horno panadero o amasadora para tu negocio',
-    desc: 'Si vendes empanadas, arepas, pandebonos o fritanga y necesitas producir más, un ángel compra la freidora industrial o el horno que te da la capacidad que necesitas.',
+    desc: 'Si vendes empanadas, arepas, pandebonos o fritanga y necesitas producir más, un inversionista ángel compra la freidora industrial o el horno que te da la capacidad que necesitas.',
     avatar: 'Patricia hace 80 empanadas/día. Con freidora industrial puede hacer 250.',
     excedente: '~$7.6M/mes excedente adicional',
     tiempo: 'Paga en 1-2 meses',
@@ -85,7 +85,7 @@ export default function Page() {
           <span style={{ color: '#AFA9EC' }}>La conseguimos.</span>
         </h1>
         <p style={s.sub}>
-          Un ángel inversionista compra el equipo que necesitas. Tú lo usas desde el primer día y pagas desde el excedente que genera la misma máquina. Sin banco. Sin garante. Sin cuota fija.
+          Un inversionista ángel compra el equipo que necesitas. Tú lo usas desde el primer día y pagas desde el excedente que genera la misma máquina. Sin banco. Sin garante. Sin cuota fija.
         </p>
 
         {/* Cómo funciona — resumen */}
@@ -93,9 +93,9 @@ export default function Page() {
           <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#AFA9EC', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '1rem' }}>Cómo funciona</div>
           {[
             { n: '1', c: '#AFA9EC', t: 'Aplicas al programa', d: 'Nos cuentas qué equipo necesitas, cuánto produces hoy y cuánto podrías producir con el equipo nuevo.' },
-            { n: '2', c: '#4A90D9', t: 'El ángel compra el equipo', d: 'Un inversionista lo compra y queda como propietario registrado. Tú lo recibes y lo usas desde el primer día.' },
-            { n: '3', c: '#1D9E75', t: 'Pagas desde el excedente', d: 'Cada mes reportas tus ventas. Del excedente (ventas - costos - gastos), un % acordado va al ángel. Si produces más, pagas más rápido.' },
-            { n: '4', c: '#E8A020', t: 'La máquina es tuya', d: 'Cuando el ángel recupera el total, la máquina pasa a tu nombre. Sin deuda bancaria, sin historial crediticio.' },
+            { n: '2', c: '#4A90D9', t: 'El inversionista ángel compra el equipo', d: 'Un inversionista lo compra y queda como propietario registrado. Tú lo recibes y lo usas desde el primer día.' },
+            { n: '3', c: '#1D9E75', t: 'Pagas desde el excedente', d: 'Cada mes reportas tus ventas. Del excedente (ventas - costos - gastos), un % acordado va al inversionista ángel. Si produces más, pagas más rápido.' },
+            { n: '4', c: '#E8A020', t: 'La máquina es tuya', d: 'Cuando el inversionista ángel recupera el total, la máquina pasa a tu nombre. Sin deuda bancaria, sin historial crediticio.' },
           ].map(p => (
             <div key={p.n} style={s.paso}>
               <div style={s.num(p.c)}>{p.n}</div>

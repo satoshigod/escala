@@ -35,7 +35,7 @@ const MODELOS = [
     bg: 'rgba(175,169,236,0.08)',
     border: 'rgba(175,169,236,0.3)',
     badge: 'Nuevo',
-    desc: 'Tienes los pedidos pero te falta la máquina o el equipo para producir más. Un ángel inversionista compra el equipo y queda como propietario. Tú lo usas desde el primer día y pagas desde el excedente que genera el mismo equipo. Sin banco, sin garante, sin cuota fija mensual. Cuando terminas de pagar, la máquina es tuya.',
+    desc: 'Tienes los pedidos pero te falta la máquina o el equipo para producir más. Un inversionista ángel compra el equipo y queda como propietario. Tú lo usas desde el primer día y pagas desde el excedente que genera el mismo equipo. Sin banco, sin garante, sin cuota fija mensual. Cuando terminas de pagar, la máquina es tuya.',
     para: 'Confeccionistas, cocineras, estilistas y cualquier persona con pedidos reales que necesita un equipo para producir más.',
     ejemplos: ['Máquina overlock para confección · Medellín', 'Freidora industrial para empanadas', 'Silla hidráulica para salón de belleza', 'Horno panadero o amasadora'],
     link: '/programa-maquinaria',
@@ -62,7 +62,7 @@ const PREGUNTAS = [
   },
   {
     q: '¿Cómo funciona el leasing de maquinaria?',
-    a: 'El ángel compra la máquina y queda como propietario registrado. La beneficiaria la usa desde el primer día y cada mes reporta sus ventas. Del excedente mensual (ventas menos costos y gastos), un porcentaje acordado se abona al capital. Si produce más, paga más rápido. Cuando el ángel recupera el total, la máquina pasa a nombre de la beneficiaria. Sin banco, sin garante, sin cuota fija.'
+    a: 'El inversionista ángel compra la máquina y queda como propietario registrado. La beneficiaria la usa desde el primer día y cada mes reporta sus ventas. Del excedente mensual (ventas menos costos y gastos), un porcentaje acordado se abona al capital. Si produce más, paga más rápido. Cuando el inversionista ángel recupera el total, la máquina pasa a nombre de la beneficiaria. Sin banco, sin garante, sin cuota fija.'
   },
   {
     q: '¿Qué es el Reputación Escala?',
@@ -70,7 +70,7 @@ const PREGUNTAS = [
   },
   {
     q: '¿Necesito capital para empezar?',
-    a: 'No. Si eres fundador de una startup, puedes publicar tu proyecto sin capital. Si necesitas un local o una máquina, el capital lo aporta un ángel inversionista. Tú pones el negocio, el trabajo y el conocimiento.'
+    a: 'No. Si eres fundador de una startup, puedes publicar tu proyecto sin capital. Si necesitas un local o una máquina, el capital lo aporta un inversionista ángel. Tú pones el negocio, el trabajo y el conocimiento.'
   },
 ]
 

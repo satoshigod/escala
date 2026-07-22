@@ -395,7 +395,7 @@ export default function LeasingPage({ params }) {
           <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🎉</div>
           <h1 style={{ ...s.h1, textAlign: 'center', marginBottom: '0.5rem' }}>¡Contrato firmado!</h1>
           <p style={{ ...s.sub, textAlign: 'center', maxWidth: '400px', margin: '0 auto 2rem' }}>
-            Tu firma quedó registrada. El contrato está pendiente de aprobación del inversionista inversionista. Te notificamos cuando esté completo.
+            Tu firma quedó registrada. El contrato está pendiente de aprobación del inversionista. Te notificamos cuando esté completo.
           </p>
           <div style={{ ...s.card, textAlign: 'left', maxWidth: '420px', margin: '0 auto 1.5rem' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#1D9E75', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.875rem' }}>Estado del contrato</div>

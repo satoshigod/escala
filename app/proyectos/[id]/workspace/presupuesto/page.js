@@ -69,9 +69,9 @@ const PRIORIDADES = {
 }
 
 const ESTADO_FONDEO = {
-  sin_fondear: { label: 'Sin fondear', color: '#6B7280', bg: 'rgba(107,114,128,0.1)' },
+  sin_fondear: { label: 'Sin financiar', color: '#6B7280', bg: 'rgba(107,114,128,0.1)' },
   parcialmente_fondeado: { label: 'Parcial', color: '#E8A020', bg: 'rgba(232,160,32,0.1)' },
-  fondeado: { label: 'Fondeado', color: '#1D9E75', bg: 'rgba(29,158,117,0.1)' },
+  fondeado: { label: 'Financiado', color: '#1D9E75', bg: 'rgba(29,158,117,0.1)' },
   ejecutado: { label: 'Ejecutado', color: '#4A90D9', bg: 'rgba(74,144,217,0.1)' },
   verificado: { label: 'Verificado', color: '#AFA9EC', bg: 'rgba(175,169,236,0.1)' },
 }
@@ -229,10 +229,10 @@ export default function PresupuestoPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
             {[
               { label: 'Total presupuesto', valor: `$${fmt(data.resumen.total_presupuesto)}`, color: '#fff' },
-              { label: 'Total fondeado', valor: `$${fmt(data.resumen.total_fondeado)}`, color: '#1D9E75' },
+              { label: 'Total financiado', valor: `$${fmt(data.resumen.total_fondeado)}`, color: '#1D9E75' },
               { label: 'CAPEX', valor: `$${fmt(data.resumen.total_capex)}`, color: '#4A90D9' },
               { label: 'OPEX', valor: `$${fmt(data.resumen.total_opex)}`, color: '#E8A020' },
-              { label: '% fondeado', valor: `${data.resumen.pct_fondeado}%`, color: data.resumen.pct_fondeado >= 100 ? '#1D9E75' : '#E8A020' },
+              { label: '% financiado', valor: `${data.resumen.pct_fondeado}%`, color: data.resumen.pct_fondeado >= 100 ? '#1D9E75' : '#E8A020' },
             ].map(item => (
               <div key={item.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '0.875rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '0.65rem', color: '#6B7280', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{item.label}</div>
@@ -541,7 +541,7 @@ export default function PresupuestoPage() {
                   <span>Valor total del item</span><span style={{ color: '#fff', fontWeight: '600' }}>${fmt(mostrarFondeoModal.valor_total)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#8FA3CC' }}>
-                  <span>Ya fondeado</span><span style={{ color: '#1D9E75', fontWeight: '600' }}>${fmt(mostrarFondeoModal.monto_fondeado)}</span>
+                  <span>Ya financiado</span><span style={{ color: '#1D9E75', fontWeight: '600' }}>${fmt(mostrarFondeoModal.monto_fondeado)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', fontWeight: '700', color: '#fff', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
                   <span>Falta financiar</span><span style={{ color: '#E8A020' }}>${fmt(parseFloat(mostrarFondeoModal.valor_total) - parseFloat(mostrarFondeoModal.monto_fondeado))}</span>

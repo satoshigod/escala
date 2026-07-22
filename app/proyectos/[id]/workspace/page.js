@@ -1138,7 +1138,7 @@ export default function Workspace() {
                   <div style={{background:'rgba(29,158,117,0.06)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'1.5rem',display:'flex',alignItems:'center',gap:'0.875rem'}}>
                     <span style={{fontSize:'1.25rem'}}>✅</span>
                     <div>
-                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#1D9E75'}}>Todo fondeado</div>
+                      <div style={{fontSize:'0.85rem',fontWeight:'700',color:'#1D9E75'}}>Todo financiado</div>
                       <div style={{fontSize:'0.75rem',color:'#8FA3CC'}}>Todos los items del proyecto tienen capital asignado.</div>
                     </div>
                   </div>
