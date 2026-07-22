@@ -279,7 +279,7 @@ export async function PUT(req) {
     if (data.monto > 0) {
       const comision = Math.round(parseFloat(data.monto) * 0.03)
       await supabase.from('ledger_entries').insert({
-        tipo: 'comision',
+        tipo: 'debito',
         referencia_tipo: 'comision_escala',
         referencia_id: linea_id,
         cuenta_origen: `proyecto:${data.repartos?.proyecto_id}`,
@@ -291,7 +291,7 @@ export async function PUT(req) {
         moneda: 'COP',
         descripcion: `Comision Escala 3% sobre reparto`,
         idempotency_key: `comision-reparto-${linea_id}`,
-        comision_escala: comision,
+        metadata: { comision_escala: comision },
       }).catch(() => {})
     }
 

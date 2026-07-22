@@ -311,7 +311,7 @@ export async function PUT(req) {
 
         // Comision Escala 3% sobre el fondeo
         await supabase.from('ledger_entries').insert({
-          tipo: 'comision',
+          tipo: 'debito',
           referencia_tipo: 'comision_escala',
           referencia_id: fondeo_id,
           cuenta_origen: `proyecto:${fondeo.proyecto_id}`,
@@ -323,7 +323,7 @@ export async function PUT(req) {
           moneda: 'COP',
           descripcion: `Comision Escala 3% sobre fondeo ${fondeo.presupuesto_items?.nombre}`,
           idempotency_key: `comision-fondeo-${fondeo_id}`,
-          comision_escala: comision_escala,
+          metadata: { comision_escala },
         }).catch(() => {}) // No bloquea si falla
 
         // Buscar o crear wallet del proyecto

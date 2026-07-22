@@ -113,7 +113,7 @@ export async function POST(req) {
         idempotency_key: idempotency_salida,
       },
       {
-        tipo: 'comision',
+        tipo: 'debito',
         referencia_tipo: 'comision_escala',
         referencia_id: local.id,
         cuenta_origen: `operador:${user.id}`,
@@ -125,7 +125,7 @@ export async function POST(req) {
         moneda: 'COP',
         descripcion: `Comision Escala 3% salida anticipada ${local.fase_actual}`,
         idempotency_key: `comision-${idempotency_salida}`,
-        comision_escala: comision_escala,
+        metadata: { comision_escala },
       }
     ])
 

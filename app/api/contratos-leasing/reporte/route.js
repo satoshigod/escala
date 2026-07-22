@@ -75,7 +75,7 @@ export async function POST(request) {
   if (abonoReal > 0) {
     const comisionEscala = Math.round(abonoReal * 0.03)
     await supabaseAdmin.from('ledger_entries').insert({
-      tipo: 'comision',
+      tipo: 'debito',
       referencia_tipo: 'comision_escala',
       referencia_id: reporte.id,
       cuenta_origen: `proyecto:${proyecto_id}`,
@@ -87,7 +87,7 @@ export async function POST(request) {
       moneda: 'COP',
       descripcion: `Comision Escala 3% reporte leasing ${fecha_mes}`,
       idempotency_key: `comision-leasing-${contrato_id}-${fecha_mes}`,
-      comision_escala: comisionEscala,
+      metadata: { comision_escala: comisionEscala },
     }).catch(() => {})
   }
 
