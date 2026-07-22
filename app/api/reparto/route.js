@@ -280,12 +280,14 @@ export async function PUT(req) {
       const comision = Math.round(parseFloat(data.monto) * 0.03)
       await supabase.from('ledger_entries').insert({
         tipo: 'comision',
-        tipo_referencia: 'comision_escala',
+        referencia_tipo: 'comision_escala',
         referencia_id: linea_id,
         cuenta_origen: `proyecto:${data.repartos?.proyecto_id}`,
         cuenta_destino: 'escala:comisiones',
         monto: comision,
         monto_usd: comision / 4200,
+
+        tasa_usd: 1 / 4200,
         moneda: 'COP',
         descripcion: `Comision Escala 3% sobre reparto`,
         idempotency_key: `comision-reparto-${linea_id}`,

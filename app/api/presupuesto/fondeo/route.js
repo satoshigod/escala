@@ -296,12 +296,14 @@ export async function PUT(req) {
 
         await supabase.from('ledger_entries').insert({
           tipo: 'credito',
-          tipo_referencia: 'fondeo_presupuesto',
+          referencia_tipo: 'fondeo_presupuesto',
           referencia_id: fondeo_id,
           cuenta_origen: 'escala:custodia',
           cuenta_destino: `proyecto:${fondeo.proyecto_id}`,
           monto,
           monto_usd: monto / 4200,
+
+          tasa_usd: 1 / 4200,
           moneda: 'COP',
           descripcion: `Fondeo acreditado desde custodia: ${fondeo.presupuesto_items?.nombre} — ${fondeo.a_cambio_de}`,
           idempotency_key,
@@ -310,12 +312,14 @@ export async function PUT(req) {
         // Comision Escala 3% sobre el fondeo
         await supabase.from('ledger_entries').insert({
           tipo: 'comision',
-          tipo_referencia: 'comision_escala',
+          referencia_tipo: 'comision_escala',
           referencia_id: fondeo_id,
           cuenta_origen: `proyecto:${fondeo.proyecto_id}`,
           cuenta_destino: 'escala:comisiones',
           monto: comision_escala,
           monto_usd: comision_escala / 4200,
+
+          tasa_usd: 1 / 4200,
           moneda: 'COP',
           descripcion: `Comision Escala 3% sobre fondeo ${fondeo.presupuesto_items?.nombre}`,
           idempotency_key: `comision-fondeo-${fondeo_id}`,

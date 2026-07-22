@@ -76,12 +76,14 @@ export async function POST(request) {
     const comisionEscala = Math.round(abonoReal * 0.03)
     await supabaseAdmin.from('ledger_entries').insert({
       tipo: 'comision',
-      tipo_referencia: 'comision_escala',
+      referencia_tipo: 'comision_escala',
       referencia_id: reporte.id,
       cuenta_origen: `proyecto:${proyecto_id}`,
       cuenta_destino: 'escala:comisiones',
       monto: comisionEscala,
       monto_usd: comisionEscala / 4200,
+
+      tasa_usd: 1 / 4200,
       moneda: 'COP',
       descripcion: `Comision Escala 3% reporte leasing ${fecha_mes}`,
       idempotency_key: `comision-leasing-${contrato_id}-${fecha_mes}`,

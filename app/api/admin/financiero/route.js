@@ -171,7 +171,7 @@ export async function PATCH(request) {
   if (accion === 'ejecutar') {
     const tasa = await tasaDelDia(orden.moneda)
     await registrarMovimiento({
-      tipo_referencia: 'pago',
+      referencia_tipo: 'pago',
       referencia_id: orden.id,
       cuenta_origen: `wallet:${orden.wallet_origen_id}`,
       cuenta_destino: 'pagos_externos',
@@ -186,7 +186,7 @@ export async function PATCH(request) {
   // Si se reversa → registrar reversal en ledger
   if (accion === 'reversar') {
     await registrarMovimiento({
-      tipo_referencia: 'reversal',
+      referencia_tipo: 'reversal',
       referencia_id: orden.id,
       cuenta_origen: 'pagos_externos',
       cuenta_destino: `wallet:${orden.wallet_origen_id}`,

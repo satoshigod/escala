@@ -128,7 +128,7 @@ export async function POST(request) {
     const monto_final = monto_recibido || fondeo.monto_solicitado
 
     const ledgerResult = await registrarMovimiento({
-      tipo_referencia: 'fondeo',
+      referencia_tipo: 'fondeo',
       referencia_id: fondeo.id,
       cuenta_origen: cuenta_puente,
       cuenta_destino: `wallet:${fondeo.wallet_id}`,
@@ -143,12 +143,14 @@ export async function POST(request) {
     const comision_escala = Math.round(monto_final * 0.03)
     await supabase.from('ledger_entries').insert({
       tipo: 'comision',
-      tipo_referencia: 'comision_escala',
+      referencia_tipo: 'comision_escala',
       referencia_id: fondeo.id,
       cuenta_origen: `wallet:${fondeo.wallet_id}`,
       cuenta_destino: 'escala:comisiones',
       monto: comision_escala,
       monto_usd: comision_escala / 4200,
+
+      tasa_usd: 1 / 4200,
       moneda: 'COP',
       descripcion: `Comision Escala 3% fondeo ${proveedor.toUpperCase()} ref ${referencia}`,
       idempotency_key: `comision-fondeo-webhook-${fondeo.id}`,
