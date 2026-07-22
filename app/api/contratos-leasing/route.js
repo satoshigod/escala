@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { crearOrdenPago } from '@/lib/financiero/custodia'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -111,6 +112,31 @@ export async function PATCH(request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  // CUSTODIA: cuando el inversionista firma y el contrato queda activo, nace la
+  // obligacion de que el inversionista le pague a Escala el valor del equipo.
+  // Escala custodia ese dinero y compra la maquina (el receptor es externo: el
+  // proveedor/distribuidor), por eso receptor_id va null y lo confirma el admin.
+  if (updates.estado === 'activo' && updates.firmado_angel && data?.angel_id && data?.valor_equipo > 0) {
+    try {
+      await crearOrdenPago({
+        tipo_flujo: 'compra_maquina',
+        proyecto_id: data.proyecto_id || null,
+        pagador_id: data.angel_id,
+        receptor_id: null,
+        receptor_externo: `Proveedor del equipo — ${data.tipo_equipo || 'equipo'} ${data.marca || ''} ${data.modelo || ''}`.trim(),
+        monto: parseFloat(data.valor_equipo),
+        moneda: 'COP',
+        concepto: `Compra de ${data.tipo_equipo || 'equipo'} ${data.marca || ''} ${data.modelo || ''} — contrato ${data.numero || data.id}`.trim(),
+        referencia_tipo: 'contrato_leasing',
+        referencia_id: data.id,
+        idempotency_key: `custodia-leasing-${data.id}`,
+      })
+    } catch (e) {
+      console.error('custodia compra_maquina:', e.message)
+    }
+  }
+
   return Response.json({ ok: true, contrato: data })
 }
 
