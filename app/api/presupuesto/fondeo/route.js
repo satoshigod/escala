@@ -6,6 +6,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { crearOrdenPago } from '@/lib/financiero/custodia'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -176,6 +177,24 @@ export async function PUT(req) {
       }
 
       // Notificar al inversionista
+      // CUSTODIA: al aceptar, nace la obligacion de que el inversionista pague a
+      // Escala. Escala custodia y luego acredita al proyecto (tramo 2 al verificar).
+      try {
+        await crearOrdenPago({
+          tipo_flujo: 'fondeo',
+          proyecto_id: fondeo.proyecto_id,
+          pagador_id: fondeo.inversionista_id,
+          receptor_id: null,
+          receptor_externo: `Proyecto — ${fondeo.presupuesto_items?.nombre || 'item de presupuesto'}`,
+          monto: parseFloat(fondeo.monto),
+          moneda: 'COP',
+          concepto: `Fondeo de ${fondeo.presupuesto_items?.nombre || 'item'} (${fondeo.a_cambio_de})`,
+          referencia_tipo: 'fondeo_presupuesto',
+          referencia_id: fondeo_id,
+          idempotency_key: `custodia-fondeo-${fondeo_id}`,
+        })
+      } catch (e) { console.error('custodia fondeo:', e.message) }
+
       const { data: invPerfil } = await supabase.from('perfiles').select('id, nombre, email').eq('id', fondeo.inversionista_id).single()
       if (invPerfil) {
         await notificar('inversion_propuesta_aceptada', { id: invPerfil.id, email: invPerfil.email }, {
@@ -279,12 +298,12 @@ export async function PUT(req) {
           tipo: 'credito',
           tipo_referencia: 'fondeo_presupuesto',
           referencia_id: fondeo_id,
-          cuenta_origen: `angel:${fondeo.inversionista_id}`,
+          cuenta_origen: 'escala:custodia',
           cuenta_destino: `proyecto:${fondeo.proyecto_id}`,
           monto,
           monto_usd: monto / 4200,
           moneda: 'COP',
-          descripcion: `Fondeo verificado: ${fondeo.presupuesto_items?.nombre} — ${fondeo.a_cambio_de}`,
+          descripcion: `Fondeo acreditado desde custodia: ${fondeo.presupuesto_items?.nombre} — ${fondeo.a_cambio_de}`,
           idempotency_key,
         }).select().single()
 

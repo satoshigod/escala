@@ -6,6 +6,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { crearOrdenPago } from '@/lib/financiero/custodia'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -246,44 +247,50 @@ export async function PUT(req) {
 
     const { data, error } = await supabase
       .from('reparto_lineas')
-      .update({ estado: 'pagado', pagado_at: new Date().toISOString() })
+      .update({ estado: 'en_pago', pagado_at: new Date().toISOString() })
       .eq('id', linea_id)
       .select(`*, repartos(proyecto_id, descripcion, proyectos!proyecto_id(nombre))`)
       .single()
 
     if (error) throw error
 
-    // Registrar en ledger si hay monto
+    // CUSTODIA: el reparto no se paga directo proyecto -> beneficiario.
+    // Nace una orden (proyecto paga a Escala, Escala transfiere al beneficiario)
+    // y la linea solo queda 'pagado' cuando el beneficiario confirma que recibio.
     if (data.monto > 0) {
-      const ikey = `reparto-linea-${linea_id}`
-      const comision = Math.round(parseFloat(data.monto) * 0.03)
-      await supabase.from('ledger_entries').insert([
-        {
-          tipo: 'debito',
-          tipo_referencia: 'reparto_pago',
-          referencia_id: linea_id,
-          cuenta_origen: `proyecto:${data.repartos?.proyecto_id}`,
-          cuenta_destino: `perfil:${data.beneficiario_id}`,
+      try {
+        await crearOrdenPago({
+          tipo_flujo: 'reparto',
+          proyecto_id: data.repartos?.proyecto_id || null,
+          pagador_id: user.id,
+          receptor_id: data.beneficiario_id,
           monto: parseFloat(data.monto),
-          monto_usd: parseFloat(data.monto) / 4200,
           moneda: 'COP',
-          descripcion: `Reparto: ${data.concepto || 'participacion'} — ${data.repartos?.proyectos?.nombre || ''}`,
-          idempotency_key: ikey,
-        },
-        {
-          tipo: 'comision',
-          tipo_referencia: 'comision_escala',
+          concepto: `Reparto: ${data.concepto || 'participacion'} — ${data.repartos?.proyectos?.nombre || ''}`.trim(),
+          referencia_tipo: 'reparto_linea',
           referencia_id: linea_id,
-          cuenta_origen: `proyecto:${data.repartos?.proyecto_id}`,
-          cuenta_destino: 'escala:comisiones',
-          monto: comision,
-          monto_usd: comision / 4200,
-          moneda: 'COP',
-          descripcion: `Comision Escala 3% reparto ${data.repartos?.proyectos?.nombre || ''}`,
-          idempotency_key: `comision-${ikey}`,
-          comision_escala: comision,
-        }
-      ]).catch(() => {})
+          idempotency_key: `custodia-reparto-${linea_id}`,
+        })
+      } catch (e) { console.error('custodia reparto:', e.message) }
+    }
+
+    // Comision Escala 3% sobre el reparto (cobro de plataforma, independiente
+    // del tramo de custodia)
+    if (data.monto > 0) {
+      const comision = Math.round(parseFloat(data.monto) * 0.03)
+      await supabase.from('ledger_entries').insert({
+        tipo: 'comision',
+        tipo_referencia: 'comision_escala',
+        referencia_id: linea_id,
+        cuenta_origen: `proyecto:${data.repartos?.proyecto_id}`,
+        cuenta_destino: 'escala:comisiones',
+        monto: comision,
+        monto_usd: comision / 4200,
+        moneda: 'COP',
+        descripcion: `Comision Escala 3% sobre reparto`,
+        idempotency_key: `comision-reparto-${linea_id}`,
+        comision_escala: comision,
+      }).catch(() => {})
     }
 
     // Notificar al beneficiario que recibio el pago
