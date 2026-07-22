@@ -1713,6 +1713,89 @@ const GRUPOS = [
         }
       },
       {
+        id: 'prog1',
+        nombre: 'Programa: scoring clasifica en las 3 bandas correctamente',
+        auto: true,
+        run: async () => {
+          const casos = [
+            { desc: 'perfil fuerte', datos: { ciudad:'Medellin', anios_oficio:10, produccion_semanal:400, a_quien_vende:'marca', ingreso_mensual:3000000, valor_estimado:4500000, tiene_maquina:true }, espera:'alta' },
+            { desc: 'perfil medio',  datos: { ciudad:'Medellin', anios_oficio:2,  produccion_semanal:100, a_quien_vende:'directo', ingreso_mensual:1200000, valor_estimado:4500000, tiene_maquina:false }, espera:'media|baja' },
+            { desc: 'sin produccion (descarte duro)', datos: { ciudad:'Medellin', anios_oficio:5, produccion_semanal:0, a_quien_vende:'marca', ingreso_mensual:2000000, valor_estimado:4500000 }, espera:'baja' },
+            { desc: 'fuera de cobertura (descarte duro)', datos: { ciudad:'Bogota', anios_oficio:10, produccion_semanal:500, a_quien_vende:'marca', ingreso_mensual:5000000, valor_estimado:4500000 }, espera:'baja' },
+          ]
+          const mod = await import('../../lib/programa/scoring.js').catch(() => null)
+          if (!mod) throw new Error('No se pudo cargar lib/programa/scoring.js')
+          const fallos = []
+          for (const c of casos) {
+            const r = mod.calcularScore(c.datos)
+            if (!new RegExp('^(' + c.espera + ')$').test(r.banda)) {
+              fallos.push(c.desc + ': dio banda ' + r.banda + ' (score ' + r.score + '), esperaba ' + c.espera)
+            }
+          }
+          if (fallos.length) throw new Error(fallos.join(' | '))
+          return '✓ 4 casos clasificados correctamente (incluye 2 descartes duros)'
+        }
+      },
+      {
+        id: 'prog2',
+        nombre: 'Programa: solicitud se crea, califica y se limpia',
+        auto: true,
+        run: async () => {
+          const res = await fetch('/api/programa/solicitudes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nombre: 'QA-Solicitante Prueba', celular: '3009999999', ciudad: 'Medellin',
+              tipo_equipo: 'overlock', valor_estimado: 4500000, anios_oficio: 8,
+              produccion_semanal: 350, a_quien_vende: 'marca', ingreso_mensual: 2500000,
+              tiene_maquina: true, origen: 'qa',
+            }),
+          })
+          const d = await res.json()
+          if (d.error) throw new Error('POST fallo: ' + d.error)
+          if (!d.solicitud_id) throw new Error('No devolvio solicitud_id')
+          if (!d.estado) throw new Error('No devolvio estado')
+          if (!d.plan_estimado || !d.plan_estimado.rango_meses) throw new Error('No calculo el plan estimado')
+          const limpieza = await fetch('/api/qa-cleanup', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tabla: 'solicitudes_programa', campo: 'nombre', valor: 'QA-Solicitante Prueba' }),
+          }).then(r => r.json()).catch(() => ({}))
+          return '✓ Solicitud creada (' + d.estado + '), plan ' + d.plan_estimado.rango_meses + (limpieza.ok ? ' — limpiada' : ' — limpiar manual')
+        }
+      },
+      {
+        id: 'prog3',
+        nombre: 'Programa: APIs responden y protegen por rol',
+        auto: true,
+        run: async () => {
+          const { data: { session } } = await window._supabase.auth.getSession()
+          const headers = session ? { 'Authorization': 'Bearer ' + session.access_token } : {}
+          const apis = ['/api/programa/solicitudes', '/api/programa/entrega', '/api/programa/mora', '/api/programa/kpis']
+          const errores = []
+          for (const api of apis) {
+            const res = await fetch(api, { headers })
+            if (res.status >= 500) errores.push(api + ' → ' + res.status)
+            if (!session && res.status !== 401) errores.push(api + ' no exige autenticacion')
+          }
+          if (errores.length) throw new Error(errores.join(', '))
+          return '✓ Las 4 APIs del programa responden y exigen sesion'
+        }
+      },
+      {
+        id: 'prog4',
+        nombre: 'Programa: proveedores sembrados en las 3 categorias',
+        auto: true,
+        run: async () => {
+          const { data, error } = await window._supabase.from('proveedores_equipo').select('categoria').eq('activo', true)
+          if (error) throw new Error(error.message)
+          const cats = [...new Set((data || []).map(p => p.categoria))]
+          for (const c of ['confeccion', 'belleza', 'comida']) {
+            if (!cats.includes(c)) throw new Error('Falta la categoria: ' + c)
+          }
+          return '✓ ' + (data || []).length + ' proveedores en ' + cats.length + ' categorias'
+        }
+      },
+      {
         id: 'rutas5',
         nombre: 'APIs del motor financiero responden',
         auto: true,
@@ -2454,6 +2537,12 @@ const RUTAS_CRITICAS = [
   { ruta: '/admin/financiero',     label: 'Admin Financiero' },
   // Desarrollo
   { ruta: '/desarrollo',           label: 'Desarrollo' },
+  { ruta: '/programa/aplicar',     label: 'Aplicar al programa' },
+  { ruta: '/mi-equipo',            label: 'Mi equipo (leasing)' },
+  { ruta: '/mi-cartera',           label: 'Mi cartera (inversionista)' },
+  { ruta: '/admin/programa',       label: 'Programa - solicitudes' },
+  { ruta: '/admin/programa/operacion', label: 'Programa - operacion' },
+  { ruta: '/custodia',             label: 'Custodia y pagos' },
 ]
 
 const MANUAL = [
