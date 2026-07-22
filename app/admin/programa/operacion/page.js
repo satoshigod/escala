@@ -96,6 +96,24 @@ export default function OperacionPrograma() {
     setProc(null)
   }
 
+  async function emitirCarta(contrato_id) {
+    if (!confirm('Esto certifica que el equipo pasa a propiedad de la persona. ¿Emitir la carta?')) return
+    setProc(contrato_id)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const r = await fetch('/api/programa/liberacion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+        body: JSON.stringify({ contrato_id }),
+      })
+      const d = await r.json()
+      if (d.error) { alert('No se pudo: ' + d.error); setProc(null); return }
+      alert('Carta emitida. Se notifico a ambas partes.')
+      await cargar()
+    } catch (e) { alert('Error: ' + e.message) }
+    setProc(null)
+  }
+
   const s = {
     page: { minHeight: '100vh', background: '#080F20', fontFamily: 'Inter,sans-serif', color: '#fff', padding: '0 0 4rem' },
     wrap: { maxWidth: '1000px', margin: '0 auto', padding: '2rem 1.25rem' },
@@ -164,6 +182,13 @@ export default function OperacionPrograma() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <span style={s.pill(ESTADO_COLOR[c.estado] || '#8FA3CC')}>{c.estado}</span>
+                  {Number(c.valor_equipo || 0) - Number(c.capital_abonado || 0) <= 0 && c.estado !== 'liquidado' && (
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <button style={s.btn} disabled={proc === c.id} onClick={() => emitirCarta(c.id)}>
+                        {proc === c.id ? '...' : 'Emitir carta de propiedad'}
+                      </button>
+                    </div>
+                  )}
                   {hito && (
                     <div style={{ marginTop: '0.5rem' }}>
                       <button style={s.btn} disabled={proc === c.id} onClick={() => registrarHito(c.id, hito.id)}>

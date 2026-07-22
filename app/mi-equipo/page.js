@@ -37,6 +37,23 @@ export default function MiEquipo() {
     setCargando(false)
   })() }, [])
 
+  async function verCarta(contrato_id) {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const r = await fetch('/api/programa/liberacion?contrato_id=' + contrato_id, {
+        headers: { Authorization: 'Bearer ' + session.access_token },
+      })
+      const d = await r.json()
+      if (d.error || !d.carta) { alert(d.error || 'La carta todavia no esta disponible'); return }
+      // Descarga como archivo de texto para que la pueda guardar o imprimir
+      const blob = new Blob([d.carta], { type: 'text/plain;charset=utf-8' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url; a.download = 'carta-de-propiedad.txt'; a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) { alert('Error: ' + e.message) }
+  }
+
   const s = {
     page: { minHeight: '100vh', background: '#080F20', fontFamily: 'Inter,sans-serif', color: '#fff', padding: '0 0 4rem' },
     wrap: { maxWidth: '520px', margin: '0 auto', padding: '2rem 1.25rem' },
@@ -135,9 +152,15 @@ export default function MiEquipo() {
               </a>
             )}
             {listo && (
-              <div style={{ ...s.ayuda, background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.25)', marginTop: '1rem' }}>
-                Terminaste de pagar tu equipo. Escala te envía la carta que certifica que ahora es tuyo.
-              </div>
+              <>
+                <div style={{ ...s.ayuda, background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.25)', marginTop: '1rem' }}>
+                  Terminaste de pagar tu equipo. Esta es la carta que certifica que ahora es tuyo.
+                </div>
+                <button style={{ ...s.btn, border: 'none', width: '100%', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}
+                        onClick={() => verCarta(c.id)}>
+                  Ver mi carta de propiedad
+                </button>
+              </>
             )}
           </div>
         )
