@@ -18,6 +18,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { crearOrdenPago } from '@/lib/financiero/custodia'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -150,78 +151,46 @@ export async function POST(req) {
       nueva_fase = 'regalia'
     }
 
-    await supabase
-      .from('proyectos_local_comercial')
-      .update({
-        capital_pagado: nuevo_capital_pagado,
-        intereses_pagados: nuevo_intereses_pagados,
-        fase_actual: nueva_fase,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', local.id)
-
-    // 6. Registrar en ledger si hubo pago
-    if (pago_inversionista > 0) {
-      const comision_escala = Math.round(pago_inversionista * 0.03)
-
+    // NOTA (custodia): el capital_pagado/intereses NO se marcan al reportar ventas.
+    // Reportar no es pagar. Se marcan cuando la orden de custodia se completa
+    // (el inversionista confirma que recibio), en /api/custodia.
+    // Aqui solo se persiste la fase si el calculo la hace avanzar.
+    if (nueva_fase !== local.fase_actual) {
       await supabase
-        .from('ledger_entries')
-        .insert([
-          {
-            tipo: 'debito',
-            tipo_referencia: 'pago_local_comercial',
-            referencia_id: reporte.id,
-            cuenta_origen: `operador:${user.id}`,
-            cuenta_destino: `local:${proyecto_id}`,
-            monto: pago_inversionista,
-            monto_usd: pago_inversionista / 4200,
-            moneda: 'COP',
-            descripcion: `Pago dia ${hoy} - intereses $${intereses_dia} + capital $${abono_capital}`,
-            idempotency_key: `ledger-${idempotency_key}`,
-          },
-          {
-            tipo: 'comision',
-            tipo_referencia: 'comision_escala',
-            referencia_id: reporte.id,
-            cuenta_origen: `operador:${user.id}`,
-            cuenta_destino: 'escala:comisiones',
-            monto: comision_escala,
-            monto_usd: comision_escala / 4200,
-            moneda: 'COP',
-            descripcion: `Comision Escala 3% sobre pago dia ${hoy}`,
-            idempotency_key: `comision-${idempotency_key}`,
-            comision_escala: comision_escala,
-          }
-        ])
+        .from('proyectos_local_comercial')
+        .update({ fase_actual: nueva_fase, updated_at: new Date().toISOString() })
+        .eq('id', local.id)
+    }
 
-      // Notificar al inversionista del abono
+    // 6. CUSTODIA: crear la orden de pago (tendero -> Escala -> inversionista).
+    //    Reportar ventas NO es pagar: aqui solo nace la obligacion. El ledger se
+    //    escribe en dos tramos dentro de /api/custodia y el "recibido" del
+    //    inversionista solo ocurre cuando el confirma que recibio.
+    let orden_custodia = null
+    if (pago_inversionista > 0) {
       const { data: localData } = await supabase
         .from('proyectos_local_comercial')
-        .select('inversionista_id, nombre_negocio, perfiles!inversionista_id(id, nombre, email)')
+        .select('inversionista_id, nombre_negocio')
         .eq('proyecto_id', proyecto_id).single()
 
-      if (localData?.perfiles) {
-        const pctPagado = Math.round((nuevo_capital_pagado / capital_original) * 100)
-        await notificar('local_abono_capital', {
-          id: localData.perfiles.id,
-          email: localData.perfiles.email,
-        }, {
-          nombre_negocio: localData.nombre_negocio,
-          monto_formateado: Math.round(pago_inversionista).toLocaleString('es-CO'),
-          pct_pagado: pctPagado,
+      try {
+        const r = await crearOrdenPago({
+          tipo_flujo: 'local_repago',
           proyecto_id,
-        }).catch(() => {})
-
-        // Si el capital quedo completamente pagado, notificar con evento especial
-        if (nuevo_saldo <= 0) {
-          await notificar('local_pago_completado', {
-            id: localData.perfiles.id,
-            email: localData.perfiles.email,
-          }, {
-            nombre_negocio: localData.nombre_negocio,
-            proyecto_id,
-          }).catch(() => {})
-        }
+          pagador_id: user.id,
+          receptor_id: localData?.inversionista_id || null,
+          monto: pago_inversionista,
+          moneda: 'COP',
+          concepto: `Pago del dia ${hoy} - ${localData?.nombre_negocio || 'tu negocio'} (intereses $${intereses_dia} + capital $${abono_capital})`,
+          referencia_tipo: 'reporte_diario',
+          referencia_id: reporte.id,
+          idempotency_key: `custodia-${idempotency_key}`,
+          metadata_flujo: { intereses_dia: Math.round(intereses_dia), abono_capital: Math.round(abono_capital) },
+        })
+        orden_custodia = r.orden
+      } catch (e) {
+        // No romper el reporte si la orden falla; queda registrado el reporte igual.
+        console.error('custodia local_repago:', e.message)
       }
 
       // Notificar cambio de fase si ocurrio
