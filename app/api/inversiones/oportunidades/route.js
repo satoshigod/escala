@@ -50,10 +50,53 @@ export async function GET(req) {
     }
 
     // Calcular faltante por fondear en cada item
+    const clasificar = (cat = '') => {
+      const c = (cat || '').toLowerCase()
+      if (/maquin|equipo|herramient|vehic/.test(c)) return 'equipos'
+      if (/nomin|empleado|talento|salario|personal|servicio/.test(c)) return 'talento'
+      if (/tecnolog|software|licencia|web|app/.test(c)) return 'tecnologia'
+      if (/inventar|materia|insumo|producto|mercanc/.test(c)) return 'inventario'
+      return 'otros'
+    }
+
     const itemsConFaltante = (items || []).map(item => ({
       ...item,
+      tipo_oportunidad: clasificar(item.categoria),
       faltante: parseFloat(item.valor_total) - parseFloat(item.monto_fondeado || 0),
     }))
+
+    // LOCALES aprobados que buscan inversionista — se exponen como oportunidad
+    // con el mismo shape que los items de presupuesto para que la UI los liste.
+    let localesComoItems = []
+    try {
+      const { data: locales } = await supabase
+        .from('proyectos_local_comercial')
+        .select(`id, proyecto_id, nombre_negocio, ciudad, canon_mensual, capital_total, tasa_mensual, created_at, proyectos(id, nombre, sector, ciudad, pais)`)
+        .eq('estado_verificacion', 'aprobado')
+        .is('inversionista_id', null)
+        .order('created_at', { ascending: false })
+
+      localesComoItems = (locales || []).map(l => ({
+        id: l.id,
+        tipo_oportunidad: 'local_comercial',
+        nombre: `Local para ${l.nombre_negocio || 'un negocio'}`,
+        descripcion: `Deposito y arriendo de un local en ${l.ciudad || 'Colombia'}. El negocio paga desde sus ventas con tasa ${l.tasa_mensual || ''}% mensual.`,
+        categoria: 'local_comercial',
+        subcategoria: null,
+        valor_total: parseFloat(l.capital_total || 0),
+        monto_fondeado: 0,
+        faltante: parseFloat(l.capital_total || 0),
+        estado_fondeo: 'sin_fondear',
+        prioridad: 1,
+        tipo_gasto: 'capital',
+        es_recurrente: false,
+        justificacion: `Canon mensual $${Math.round(l.canon_mensual || 0).toLocaleString('es-CO')}`,
+        created_at: l.created_at,
+        proyectos: l.proyectos,
+      }))
+    } catch (e) {
+      console.error('oportunidades locales:', e.message)
+    }
 
     // Resumen global
     const { data: resumen } = await supabase
@@ -62,8 +105,8 @@ export async function GET(req) {
       .in('estado_fondeo', ['sin_fondear', 'parcialmente_fondeado'])
       .eq('es_aporte_especie', false)
 
-    const total_oportunidades = (resumen || []).length
-    const capital_requerido = (resumen || []).reduce((s, i) => s + parseFloat(i.valor_total) - parseFloat(i.monto_fondeado || 0), 0)
+    const total_oportunidades = (resumen || []).length + localesComoItems.length
+    const capital_requerido = (resumen || []).reduce((s, i) => s + parseFloat(i.valor_total) - parseFloat(i.monto_fondeado || 0), 0) + localesComoItems.reduce((s, l) => s + l.faltante, 0)
 
     const por_categoria = {}
     for (const item of (resumen || [])) {
@@ -72,7 +115,18 @@ export async function GET(req) {
 
     return NextResponse.json({
       ok: true,
-      items: itemsConFaltante,
+      items: [...localesComoItems, ...itemsConFaltante],
+      // agrupadas por tipo para mostrarlas en secciones separadas
+      grupos: (() => {
+        const todas = [...localesComoItems, ...itemsConFaltante]
+        const g = {}
+        for (const o of todas) {
+          const t = o.tipo_oportunidad || 'otros'
+          if (!g[t]) g[t] = []
+          g[t].push(o)
+        }
+        return g
+      })(),
       meta: { page, per_page, total: count },
       resumen: {
         total_oportunidades,

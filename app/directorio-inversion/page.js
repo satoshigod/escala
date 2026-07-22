@@ -27,6 +27,15 @@ const PRIORIDADES = {
   baja: { label: 'Baja', color: '#6B7280', bg: 'rgba(107,114,128,0.12)' },
 }
 
+const SECCIONES = [
+  { id: 'local_comercial', emoji: '🏪', label: 'Locales comerciales' },
+  { id: 'equipos',         emoji: '🔧', label: 'Equipos y maquinaria' },
+  { id: 'talento',         emoji: '🤝', label: 'Talento y nómina' },
+  { id: 'tecnologia',      emoji: '💻', label: 'Tecnología' },
+  { id: 'inventario',      emoji: '📦', label: 'Inventario e insumos' },
+  { id: 'otros',           emoji: '🧩', label: 'Otras necesidades' },
+]
+
 export default function DirectorioInversionPage() {
   const [items, setItems] = useState([])
   const [resumen, setResumen] = useState(null)
@@ -68,6 +77,24 @@ export default function DirectorioInversionPage() {
     const d = await res.json()
     if (d.ok) { setItems(d.items || []); setResumen(d.resumen) }
     setCargando(false)
+  }
+
+  async function financiarLocal(local) {
+    if (!confirm(`¿Financiar ${local.nombre}?\n\nPondrás $${Math.round(local.valor_total).toLocaleString('es-CO')} COP. Escala recibe el capital y paga el depósito y arriendo al arrendador.`)) return
+    setEnviando(true)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const res = await fetch('/api/local-comercial/financiar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+        body: JSON.stringify({ local_id: local.id }),
+      })
+      const d = await res.json()
+      if (d.error) { setMensaje('No se pudo financiar: ' + d.error); setEnviando(false); return }
+      setMensaje('¡Listo! Tomaste este local. Ve a /custodia para hacer el pago a Escala.')
+      await cargar()
+    } catch (e) { setMensaje('Error: ' + e.message) }
+    setEnviando(false)
   }
 
   async function proponerFondeo() {
@@ -184,8 +211,16 @@ export default function DirectorioInversionPage() {
         ) : items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '3rem', color: '#6B7280' }}>No hay oportunidades disponibles con estos filtros.</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {items.map(item => {
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            {SECCIONES.filter(sec => items.some(i => (i.tipo_oportunidad || 'otros') === sec.id)).map(sec => (
+            <div key={sec.id}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', marginBottom: '0.875rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                <span style={{ fontSize: '1.1rem' }}>{sec.emoji}</span>
+                <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#fff' }}>{sec.label}</span>
+                <span style={{ fontSize: '0.72rem', color: '#6B7280' }}>{items.filter(i => (i.tipo_oportunidad || 'otros') === sec.id).length} disponibles</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {items.filter(i => (i.tipo_oportunidad || 'otros') === sec.id).map(item => {
               const cat = CATEGORIAS[item.categoria] || CATEGORIAS.otro
               const prio = PRIORIDADES[item.prioridad] || PRIORIDADES.media
               const pct_fondeado = item.valor_total > 0 ? Math.round((parseFloat(item.monto_fondeado || 0) / parseFloat(item.valor_total)) * 100) : 0
@@ -225,8 +260,8 @@ export default function DirectorioInversionPage() {
 
                   <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     {usuario ? (
-                      <button onClick={() => setMostrarFondeo(item)} style={s.btn('#4A90D9')}>
-                        💰 Quiero financiar esto
+                      <button onClick={() => item.tipo_oportunidad === 'local_comercial' ? financiarLocal(item) : setMostrarFondeo(item)} disabled={enviando} style={s.btn('#4A90D9')}>
+                        {item.tipo_oportunidad === 'local_comercial' ? '🏪 Quiero financiar este local' : '💰 Quiero financiar esto'}
                       </button>
                     ) : (
                       <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -243,6 +278,9 @@ export default function DirectorioInversionPage() {
                 </div>
               )
             })}
+              </div>
+            </div>
+            ))}
           </div>
         )}
 
