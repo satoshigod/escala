@@ -28,3 +28,4 @@ cronologico: `AAAA-MM-DD_descripcion_en_snake_case.sql`.
 | `2026-07-22_reparto_lineas_estado_en_pago.sql` | CHECK de `reparto_lineas.estado` acepta `en_pago` | conector |
 | `2026-07-22_proyectos_escenario_maquinaria.sql` | CHECK de `proyectos.escenario` acepta `maquinaria` | conector |
 | `2026-07-22_perfiles_rol_mentor_empresa.sql` | CHECK de `perfiles.rol_principal` acepta `mentor` y `empresa` | conector |
+| `2026-07-22_rls_costos.sql` | RLS en `costos_predefinidos` (lectura publica) y `costos_proyecto` (solo el equipo) | conector |
