@@ -76,6 +76,9 @@ export async function POST(req) {
         .from('proyectos_local_comercial')
         .update({
           estado_verificacion: 'aprobado',
+          // al aprobarse, el local sale a buscar inversionista (aparece en el
+          // directorio de inversion como oportunidad)
+          estado: 'buscando_inversionista',
           tasa_mensual: parseFloat(tasa_mensual),
           verificado_por: admin.id,
           verificado_at: new Date().toISOString(),
