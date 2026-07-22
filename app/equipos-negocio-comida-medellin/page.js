@@ -137,13 +137,12 @@ export default function Page() {
           <div style={{ fontSize: '0.72rem', fontWeight: '700', color: '#E8A020', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Solicita tu cupo</div>
           <h2 style={{ ...s.h2, fontSize: '1.3rem', marginBottom: '0.5rem' }}>Solo 10 cupos para la primera ronda</h2>
           <p style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.5rem' }}>
-            Cuéntanos tu negocio. Te contactamos por WhatsApp en menos de 24 horas para confirmar tu cupo.
+            Cuéntanos tu negocio. Responde 3 preguntas cortas y te decimos de una si calificas y cuanto pagarias.
           </p>
           <Link
-            href="https://wa.me/573000000000?text=Hola%2C+quiero+aplicar+al+programa+de+equipos+para+negocio+de+comida+de+Escala"
-            target="_blank"
-            style={{ display: 'block', textAlign: 'center', background: '#25D366', color: '#fff', borderRadius: '10px', padding: '1rem', fontSize: '1rem', fontWeight: '700', textDecoration: 'none', marginBottom: '1rem' }}>
-            📲 Aplicar por WhatsApp
+            href="/programa/aplicar?origen=comida"
+            style={{ display: 'block', textAlign: 'center', background: '#1D9E75', color: '#fff', borderRadius: '10px', padding: '1rem', fontSize: '1rem', fontWeight: '700', textDecoration: 'none', marginBottom: '1rem' }}>
+            ✍️ Aplicar y ver mi plan
           </Link>
           <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#4B5563' }}>
             O escríbenos a <span style={{ color: '#E8A020' }}>hola@escala.network</span>

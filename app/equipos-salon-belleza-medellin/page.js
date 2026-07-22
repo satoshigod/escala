@@ -132,10 +132,9 @@ export default function Page() {
             Cuéntanos tu situación. Te contactamos por WhatsApp en menos de 24 horas.
           </p>
           <Link
-            href="https://wa.me/573000000000?text=Hola%2C+quiero+aplicar+al+programa+de+equipos+para+salon+de+belleza+de+Escala"
-            target="_blank"
-            style={{ display: 'block', textAlign: 'center', background: '#25D366', color: '#fff', borderRadius: '10px', padding: '1rem', fontSize: '1rem', fontWeight: '700', textDecoration: 'none', marginBottom: '1rem' }}>
-            📲 Aplicar por WhatsApp
+            href="/programa/aplicar?origen=belleza"
+            style={{ display: 'block', textAlign: 'center', background: '#1D9E75', color: '#fff', borderRadius: '10px', padding: '1rem', fontSize: '1rem', fontWeight: '700', textDecoration: 'none', marginBottom: '1rem' }}>
+            ✍️ Aplicar y ver mi plan
           </Link>
           <div style={{ textAlign: 'center', fontSize: '0.75rem', color: '#4B5563' }}>
             O escríbenos a <span style={{ color: '#D946EF' }}>hola@escala.network</span>
