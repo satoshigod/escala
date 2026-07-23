@@ -4,6 +4,12 @@
 Contiene el modelo de negocio, los patrones establecidos, las convenciones que ya
 costaron bugs, y dónde está cada cosa.
 
+**No reduzcas Escala a "financiamiento para negocios informales".** Es una
+plataforma donde se arma lo que a un negocio le falta —capital, equipo,
+conocimiento o activos— con 8 necesidades y 6 roles. El financiamiento de
+máquinas y locales es una vertical; el corazón es la colaboración por
+participación. La campaña "10 Máquinas" es un piloto, no el producto.
+
 Después mira `/desarrollo` → pestaña **Lecciones** en la app: 10 errores reales
 del proyecto con la regla que los evita. De 628 commits, 230 fueron correcciones;
 la mayoría se pudo evitar leyendo lo que ya estaba documentado.

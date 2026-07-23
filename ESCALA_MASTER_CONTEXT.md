@@ -11,11 +11,58 @@
 
 ## 1 · Qué es Escala
 
-Infraestructura financiera para negocios que el crédito formal rechaza. **No presta dinero:** conecta a quien necesita capital con quien lo tiene, custodia el dinero en el medio, y cobra desde el excedente real del negocio en vez de con cuota fija.
+> ⚠️ **No reduzcas Escala a "financiamiento para negocios informales".** Esa es
+> *una* de sus verticales. Leer solo la campaña actual da una idea equivocada del
+> producto.
 
-**Posición legal:** intermediario tecnológico. Nunca parte, garante ni empleador. Esto condiciona decisiones técnicas — por eso todo pago pasa por custodia con doble confirmación y el ledger es inmutable.
+Escala es una **plataforma donde se arma lo que a un negocio le falta**: capital,
+equipo, conocimiento o activos. Reúne en un solo lugar a las personas que se
+necesitan entre sí, con contratos y trazabilidad para que puedan colaborar sin
+conocerse previamente.
+
+### Las 8 necesidades que resuelve
+
+| Necesidad | Qué provee Escala |
+| --- | --- |
+| Necesito capital para crecer | Inversionistas que financian por item |
+| Necesito contratar talento | Especialistas que trabajan por participación |
+| Necesito una máquina para producir más | Leasing sobre excedente |
+| Necesito un local para mi negocio | Financiación de depósito y arriendo |
+| Quiero empezar mi empresa desde cero | Equipo + capital sin dinero inicial |
+| Quiero conseguir proyectos y clientes | Convertir conocimiento en participación |
+| Quiero invertir y ver retorno | Oportunidades con respaldo real |
+| Tengo un problema que resolver | Especialista o solución concreta |
+
+**Solo tres de esas ocho son financiamiento de activos.** Las otras cinco son
+colaboración, equipo y participación — el corazón del producto.
+
+### Los dos motores
+
+1. **Sistema Operativo del Proyecto** (CAPA 2): un fundador publica lo que
+   necesita, arma equipo con roles definidos, y cada quien aporta trabajo o
+   capital a cambio de **participación**, con contrato y tareas trazables. Sirve
+   igual a una startup de software que a una tienda de barrio.
+
+2. **Motor Financiero** (CAPA 3): custodia, ledger de doble partida y los
+   instrumentos de financiación (fondeo por item, leasing de equipos, local
+   comercial, reparto de utilidades).
+
+Las verticales de activos físicos (máquina, local) **usan** el motor financiero,
+pero no son el producto entero.
+
+### Los 6 roles
+
+Fundador · Especialista · Gerente de Proyecto · Inversionista · Mentor · Empresa.
+Una misma persona puede ser varios en proyectos distintos.
+
+**Posición legal:** intermediario tecnológico. Nunca parte, garante ni empleador.
+Esto condiciona decisiones técnicas — por eso todo pago pasa por custodia con
+doble confirmación y el ledger es inmutable.
 
 **Mercado:** Colombia (Medellín primero), 7 países LatAm + España en el modelo.
+
+**Las 10 Máquinas es CAPA 11 — una campaña de adquisición**, no el producto. Es
+el piloto para probar el instrumento de leasing con volumen real.
 
 ---
 
@@ -131,8 +178,9 @@ setEstado('aceptada')
 
 | Módulo | Rutas clave |
 | --- | --- |
-| Identidad | `registro` · `bienvenida` · `onboarding` · `perfil/[id]` |
-| Proyectos | `proyectos` · `proyectos/[id]/workspace/*` (12 sub-pantallas) |
+| Identidad y roles | `registro` · `bienvenida` · `onboarding` · `perfil/[id]` |
+| **Proyectos y colaboración** | `proyectos` · `proyectos/[id]/workspace/*` (12 sub-pantallas) — **el módulo más grande: equipo, roles, tareas, contratos, aportes** |
+| Descubrimiento | `directorio` (especialistas) · `buscar` (proyectos) · `directorio-inversion` (oportunidades) · `postulaciones` |
 | Motor financiero | `lib/financiero/ledger.js` · `custodia.js` · `api/pagos` · `api/wallet` |
 | Programa 10 Máquinas | `programa/aplicar` · `admin/programa` · `mi-equipo` · `mi-cartera` |
 | Notificaciones | `lib/notificaciones/eventos.js` |
@@ -192,7 +240,7 @@ Cuentas: `perfil:{id}` · `proyecto:{id}` · `wallet:{id}` · `angel:{id}` · `l
 | Páginas | 116 (73 app + 43 marketing) |
 | Rutas API | 70 |
 | Tablas | 45, **todas con RLS** |
-| Hitos completados | 121 de ~200 |
+| Hitos completados | 121 de ~200 (43 solo en CAPA 2, colaboración) |
 | Usuarios reales | 9 |
 | Proyectos reales | 1 |
 
