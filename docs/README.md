@@ -12,7 +12,7 @@
 
 ## Otras fuentes de verdad
 
-- **`/desarrollo`** (en la app) — roadmap por capas. Es el registro cronológico de qué se construyó y por qué.
+- **`/desarrollo`** (en la app) — dos vistas: **Roadmap** por capas (qué se construyó y por qué) y **Lecciones** (errores reales con la regla que los evita, alimentado igual que el roadmap).
 - **`/qa`** (en la app) — suite de pruebas manuales y automáticas.
 - **`sql/`** — migraciones nombradas con su explicación.
 

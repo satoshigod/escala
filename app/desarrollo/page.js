@@ -369,8 +369,124 @@ const CAPAS = [
   },
 ]
 
+// =============================================================================
+// LECCIONES APRENDIDAS
+//
+// Catalogo vivo de errores reales cometidos construyendo Escala y la regla que
+// los evita. Se alimenta igual que el roadmap: cuando se detecta un error que
+// se pudo haber evitado, se agrega aqui con su evidencia.
+//
+// Medicion sobre los 628 commits del proyecto (28-jun a 23-jul, 21 dias
+// activos): 230 fueron correcciones de algo ya entregado. El 36%.
+// =============================================================================
+
+const LECCIONES = [
+  {
+    id: 'L1',
+    categoria: 'Verificacion',
+    correcciones: 61,
+    titulo: 'Subir sin verificar que compile',
+    caso: 'Se encadeno build && commit && push en un solo comando. El build fallo, el commit se hizo igual y llego a produccion (550dc3e). Vercel fallo el deploy.',
+    regla: 'Verificar el build PRIMERO y mostrar el resultado. Commitear solo si paso. Nunca encadenados.',
+    estado: 'mitigado',
+    mitigacion: 'CI en .github/workflows/build.yml bloquea el push si no compila (C0.1).',
+  },
+  {
+    id: 'L2',
+    categoria: 'Producto',
+    correcciones: 42,
+    titulo: 'Construir la pantalla y no el camino a ella',
+    caso: '/mi-equipo, /mi-cartera y /custodia se construyeron completas y funcionando, pero sin enlace desde ningun menu. Solo se llegaba escribiendo la URL. Eran centrales para el piloto. Aparecieron dos dias despues, al mapear la navegacion.',
+    regla: 'Una pantalla no esta lista hasta que se pueda llegar navegando. La ruta de entrada es parte de la tarea, no un extra.',
+    estado: 'mitigado',
+    mitigacion: 'Enlazadas desde el dashboard por rol. docs/navegacion.md lista las huerfanas restantes.',
+  },
+  {
+    id: 'L3',
+    categoria: 'Datos',
+    correcciones: 34,
+    titulo: 'Asumir el esquema en vez de consultarlo',
+    caso: '10 inserts en 6 APIs usaban la columna tipo_referencia (la real es referencia_tipo), omitian tasa_usd que es NOT NULL, mandaban comision_escala que no existe como columna y usaban tipo:comision que no es valor valido del enum. Todos fallaban en silencio por .catch() vacio: ninguna comision de Escala se registro nunca.',
+    regla: 'Antes de escribir un insert o update, consultar las columnas y constraints reales de la tabla. Nunca .catch() vacio en operaciones de dinero.',
+    estado: 'corregido',
+    mitigacion: 'Los 10 inserts corregidos. docs/base-datos.md documenta las convenciones que ya costaron bugs.',
+  },
+  {
+    id: 'L4',
+    categoria: 'Datos',
+    correcciones: 0,
+    titulo: 'Cambiar el codigo sin migrar la base que lo valida',
+    caso: 'Se migro el escenario de "otro" a "maquinaria" en el codigo, pero el CHECK constraint de proyectos seguia aceptando solo el valor viejo: crear un proyecto de maquinaria habria fallado en produccion. Lo mismo con los roles Mentor y Empresa, que el onboarding ofrecia y la base rechazaba.',
+    regla: 'Al cambiar un valor que la base valida (enums, CHECK), migrar tambien la base. No asumir que acepta el valor nuevo.',
+    estado: 'corregido',
+    mitigacion: 'Migraciones aplicadas y documentadas en sql/.',
+  },
+  {
+    id: 'L5',
+    categoria: 'Lenguaje',
+    correcciones: 22,
+    titulo: 'Unificar un nombre y dejar duplicados visibles',
+    caso: 'Al unificar Capitalista y Angel bajo "Inversionista" quedaron DOS tarjetas identicas en el onboarding, porque tenian ids internos distintos. El usuario veia dos opciones iguales. Lo detecto Ivan mirando la pantalla, no la auditoria de codigo.',
+    regla: 'Al unificar nombres, verificar que no queden dos entradas con la misma etiqueta visible. Mostrar como queda la lista final.',
+    estado: 'corregido',
+    mitigacion: 'Fusionadas en onboarding, bienvenida y el filtro del directorio.',
+  },
+  {
+    id: 'L6',
+    categoria: 'Producto',
+    correcciones: 0,
+    titulo: 'Editar una pagina sin verificar que sus botones funcionen',
+    caso: 'Se editaron las 3 landings de campana corrigiendo lenguaje, sin notar que el CTA principal apuntaba a wa.me/573000000000, un numero de relleno. Cualquiera que hiciera clic caia en la nada.',
+    regla: 'Al tocar una pagina, verificar que sus enlaces y botones lleven a algo real. Reportar los rotos o de prueba.',
+    estado: 'corregido',
+    mitigacion: 'Los 3 CTA apuntan al formulario de solicitud, que ademas captura los datos del scoring.',
+  },
+  {
+    id: 'L7',
+    categoria: 'Modelo',
+    correcciones: 0,
+    titulo: 'Confundir informar con pagar',
+    caso: 'El sistema marcaba el pago como recibido y notificaba al inversionista cuando el comerciante REPORTABA sus ventas, no cuando pagaba. El inversionista veia "dinero recibido" sin que hubiera salido un peso. Salio de una pregunta de Ivan sobre el flujo, no de la auditoria tecnica.',
+    regla: 'Al modelar un flujo de dinero, separar explicitamente cada evento: informar, comprometerse, pagar y confirmar recepcion son cuatro cosas distintas.',
+    estado: 'corregido',
+    mitigacion: 'Modelo de custodia en dos tramos con confirmacion en ambos extremos.',
+  },
+  {
+    id: 'L8',
+    categoria: 'Duplicacion',
+    correcciones: 15,
+    titulo: 'El mismo arreglo no llega a todas las copias',
+    caso: '67 de 70 rutas API creaban su propio cliente de Supabase. 8 de ellas tenian la configuracion correcta de servidor y 59 no: la mejora de unas nunca llegaba a las demas. Lo mismo con el UUID de admin, escrito a mano en 13 archivos.',
+    regla: 'Cuando un patron se repite mas de 3 veces, extraerlo. La duplicacion no cuesta lineas: cuesta que los arreglos no se propaguen.',
+    estado: 'corregido',
+    mitigacion: 'lib/supabase-admin.js y lib/auth.js. Neto -423 lineas.',
+  },
+  {
+    id: 'L9',
+    categoria: 'Proceso',
+    correcciones: 0,
+    titulo: 'Trabajar sin ver la base de datos',
+    caso: 'Durante semanas se trabajo solo con el codigo. Al dar acceso directo a Supabase, aparecieron 7 bugs en una hora — incluido que ninguna comision se registraba y que dos vistas exponian el saldo de todos los usuarios. Ninguno se veia leyendo codigo.',
+    regla: 'Dar acceso a la base desde el dia 1. Lo que no se puede verificar, se asume — y las suposiciones sobre datos se pagan caro.',
+    estado: 'corregido',
+    mitigacion: 'Conector de Supabase activo. Auditoria completa de 45 tablas.',
+  },
+  {
+    id: 'L10',
+    categoria: 'Ritmo',
+    correcciones: 0,
+    titulo: 'Velocidad que se paga despues',
+    caso: 'El proyecto avanzo a 30 commits por dia con picos de 63. Los dias de mas commits son tambien los de mas correcciones al dia siguiente. El 36% del total fueron correcciones: el tiempo no se ahorro, se movio.',
+    regla: 'Decir explicitamente si se prefiere velocidad o verificacion. "Sigue" se interpreta como avanzar, y avanzar sin verificar produce el trabajo de corregir.',
+    estado: 'abierto',
+    mitigacion: 'Sin mitigar. Depende de como se pida en cada sesion.',
+  },
+]
+
 export default function Desarrollo() {
   const [capaAbierta, setCapaAbierta] = useState(null)
+  const [vista, setVista] = useState('roadmap')
+  const [leccionAbierta, setLeccionAbierta] = useState(null)
   const [soloLimpio, setSoloLimpio] = useState(false)
 
   const totalItems = CAPAS.reduce((s, c) => s + c.hitos.length, 0)
@@ -398,6 +514,15 @@ export default function Desarrollo() {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
             <a href="/dashboard" style={{ fontSize: '0.75rem', color: '#1D9E75', textDecoration: 'none' }}>← Dashboard</a>
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              {[['roadmap','Roadmap'],['lecciones','Lecciones']].map(([id,label]) => (
+                <div key={id} onClick={() => setVista(id)} style={{
+                  fontSize: '0.72rem', fontWeight: '700', padding: '0.3rem 0.8rem', borderRadius: '99px',
+                  cursor: 'pointer', border: `1px solid ${vista===id ? '#1D9E75' : 'rgba(255,255,255,0.15)'}`,
+                  background: vista===id ? 'rgba(29,158,117,0.15)' : 'transparent',
+                  color: vista===id ? '#5FD3A8' : '#8FA3CC' }}>{label}</div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -427,6 +552,7 @@ export default function Desarrollo() {
 
       <div style={s.wrap}>
         {/* Filtro */}
+        {vista === 'roadmap' && <>
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
           <button onClick={() => setSoloLimpio(!soloLimpio)} style={{ background: soloLimpio ? 'rgba(224,85,85,0.15)' : 'rgba(255,255,255,0.06)', border: `1px solid ${soloLimpio ? 'rgba(224,85,85,0.4)' : 'rgba(255,255,255,0.12)'}`, color: soloLimpio ? '#E05555' : '#8FA3CC', borderRadius: '8px', padding: '0.4rem 0.875rem', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'Inter,sans-serif' }}>
             {soloLimpio ? 'Mostrando solo pendientes' : 'Mostrar solo pendientes'}
@@ -488,6 +614,82 @@ export default function Desarrollo() {
             </div>
           )
         })}
+        </>}
+
+        {vista === 'lecciones' && (
+          <>
+            <div style={{ background: 'rgba(224,85,85,0.08)', border: '1px solid rgba(224,85,85,0.25)', borderRadius: '12px', padding: '1.1rem', marginBottom: '1.25rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: '800', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#E05555', marginBottom: '0.5rem' }}>El dato que resume el problema</div>
+              <div style={{ fontSize: '1.05rem', fontWeight: '800', color: '#fff', lineHeight: 1.5, marginBottom: '0.5rem' }}>
+                De 628 commits en 21 dias de trabajo, 230 fueron correcciones de algo ya entregado. El 36%.
+              </div>
+              <p style={{ fontSize: '0.82rem', color: '#C8D4E8', lineHeight: 1.65, margin: 0 }}>
+                No es que el codigo se escriba mal: es que se entrega sin verificar, y la verificacion llega despues — a veces dias despues, a veces en produccion. Cada leccion de abajo es un error real con la regla que lo evita.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: '0.6rem', marginBottom: '1.25rem' }}>
+              {[
+                { l: 'Lecciones', v: LECCIONES.length, c: '#fff' },
+                { l: 'Corregidas', v: LECCIONES.filter(x => x.estado === 'corregido').length, c: '#1D9E75' },
+                { l: 'Mitigadas', v: LECCIONES.filter(x => x.estado === 'mitigado').length, c: '#4A90D9' },
+                { l: 'Abiertas', v: LECCIONES.filter(x => x.estado === 'abierto').length, c: '#E8A020' },
+              ].map(k => (
+                <div key={k.l} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '10px', padding: '0.8rem' }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: '900', color: k.c }}>{k.v}</div>
+                  <div style={{ fontSize: '0.7rem', color: '#8FA3CC' }}>{k.l}</div>
+                </div>
+              ))}
+            </div>
+
+            {LECCIONES.map(lec => {
+              const abierta = leccionAbierta === lec.id
+              const col = lec.estado === 'corregido' ? '#1D9E75' : lec.estado === 'mitigado' ? '#4A90D9' : '#E8A020'
+              return (
+                <div key={lec.id} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '12px', marginBottom: '0.7rem', overflow: 'hidden' }}>
+                  <div onClick={() => setLeccionAbierta(abierta ? null : lec.id)} style={{ padding: '0.9rem 1.1rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#6B7280' }}>{lec.id}</span>
+                        <span style={{ fontSize: '0.65rem', fontWeight: '700', padding: '0.1rem 0.5rem', borderRadius: '99px', background: 'rgba(255,255,255,0.07)', color: '#8FA3CC' }}>{lec.categoria}</span>
+                        <span style={{ fontSize: '0.65rem', fontWeight: '700', padding: '0.1rem 0.5rem', borderRadius: '99px', background: col + '22', color: col, border: `1px solid ${col}44` }}>{lec.estado}</span>
+                      </div>
+                      <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#fff' }}>{lec.titulo}</div>
+                    </div>
+                    <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                      {lec.correcciones > 0 && (
+                        <div><span style={{ fontSize: '1.1rem', fontWeight: '900', color: '#E05555' }}>{lec.correcciones}</span>
+                        <div style={{ fontSize: '0.62rem', color: '#6B7280' }}>correcciones</div></div>
+                      )}
+                      <div style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '0.2rem' }}>{abierta ? '▲' : '▼'}</div>
+                    </div>
+                  </div>
+                  {abierta && (
+                    <div style={{ padding: '0 1.1rem 1.1rem', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+                      <div style={{ marginTop: '0.9rem' }}>
+                        <div style={{ fontSize: '0.65rem', fontWeight: '800', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#E05555', marginBottom: '0.3rem' }}>Que paso</div>
+                        <p style={{ fontSize: '0.82rem', color: '#C8D4E8', lineHeight: 1.65, margin: 0 }}>{lec.caso}</p>
+                      </div>
+                      <div style={{ marginTop: '0.9rem', background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.22)', borderRadius: '9px', padding: '0.8rem' }}>
+                        <div style={{ fontSize: '0.65rem', fontWeight: '800', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#5FD3A8', marginBottom: '0.3rem' }}>La regla que lo evita</div>
+                        <p style={{ fontSize: '0.85rem', color: '#fff', lineHeight: 1.6, margin: 0, fontWeight: '600' }}>{lec.regla}</p>
+                      </div>
+                      <div style={{ marginTop: '0.7rem' }}>
+                        <div style={{ fontSize: '0.65rem', fontWeight: '800', letterSpacing: '0.06em', textTransform: 'uppercase', color: '#8FA3CC', marginBottom: '0.3rem' }}>Estado</div>
+                        <p style={{ fontSize: '0.8rem', color: '#8FA3CC', lineHeight: 1.6, margin: 0 }}>{lec.mitigacion}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+
+            <p style={{ fontSize: '0.78rem', color: '#6B7280', lineHeight: 1.65, marginTop: '1.25rem', textAlign: 'center' }}>
+              Cuando se detecte un error que se pudo haber evitado, se agrega aqui con su evidencia y su regla.<br/>
+              Se mantiene igual que el roadmap y el QA.
+            </p>
+          </>
+        )}
       </div>
     </div>
   )
