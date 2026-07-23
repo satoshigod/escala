@@ -7,11 +7,11 @@
 
 | # | Deuda | Evidencia | Impacto | Esfuerzo |
 | --- | --- | --- | --- | --- |
-| D1 | Cliente Supabase duplicado en cada API | **67 de 70** rutas | Alto | Bajo |
-| D2 | ID de admin hardcodeado | **13 archivos** | Alto (seguridad) | Bajo |
+| ~~D1~~ | ~~Cliente Supabase duplicado~~ | ✅ **RESUELTO** — `lib/supabase-admin.js`, 67 rutas migradas | — | — |
+| ~~D2~~ | ~~ID de admin hardcodeado~~ | ✅ **RESUELTO** — `lib/auth.js` + `perfiles.es_admin` | — | — |
 | D3 | Casi sin componentes reutilizables | **2** para 116 páginas | Alto | Alto |
 | D4 | Archivos monolíticos | 4 archivos >1.300 líneas | Medio | Alto |
-| D5 | Sin CI ni tests automáticos | 0 workflows, 0 tests | Alto | Medio |
+| D5 | ~~Sin CI~~ / sin tests unitarios | ✅ CI activo · tests unitarios pendientes | Medio | Medio |
 | D6 | Estilos inline en todo el código | ~todas las páginas | Medio | Alto |
 | D7 | Rail de pagos manual | Custodia requiere admin | Alto (a escala) | Alto |
 | D8 | Sin caché ni RSC | Todo Client Component | Medio | Medio |
@@ -137,8 +137,7 @@ Casi todo es `'use client'` con `useEffect` + `fetch`. No se aprovechan Server C
 
 ## Orden recomendado
 
-**Semana 1 (quick wins):** D5 (CI) → D2 (admin) → D1 (cliente Supabase).
-Son los tres de mayor relación impacto/esfuerzo y no rompen nada.
+**Semana 1 (quick wins):** ✅ **HECHOS** el 22-jul — D5 (CI), D2 (admin centralizado) y D1 (cliente unificado).
 
 **Mes 1:** D3 (componentes base), empezando por los 4 más repetidos.
 

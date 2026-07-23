@@ -2,13 +2,8 @@
 // GET — devuelve HTML imprimible del presupuesto para exportar como PDF
 // El cliente abre /api/presupuesto/exportar?proyecto_id=X en nueva ventana y usa Ctrl+P
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 const CATEGORIAS = {
   equipo: { label: 'Equipo', emoji: '👥' },

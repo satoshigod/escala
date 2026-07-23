@@ -10,13 +10,8 @@
 //
 // Requiere variable de entorno CRON_SECRET en Vercel.
 
-import { createClient } from '@supabase/supabase-js'
 import { notificar } from '@/lib/notificaciones/notificar'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 export async function GET(request) {
   // Vercel envía CRON_SECRET automáticamente en el header Authorization

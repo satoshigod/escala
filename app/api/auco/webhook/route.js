@@ -1,4 +1,5 @@
-// /api/auco/webhook
+
+import { supabaseAdmin } from '@/lib/supabase-admin'// /api/auco/webhook
 // Recibe notificaciones de Auco cuando un contrato cambia de estado
 //
 // Estados posibles de Auco:
@@ -7,14 +8,6 @@
 // EXPIRED  → venció el plazo
 // BLOCKED  → un firmante fue bloqueado
 // REJECTED → un firmante rechazó
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
 
 export async function POST(request) {
   try {

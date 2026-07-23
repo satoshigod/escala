@@ -1,14 +1,8 @@
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 // app/api/exchange-rates/route.js
 //
 // GET  /api/exchange-rates          — tasas del día para todas las monedas
 // POST /api/exchange-rates (admin)  — actualizar tasa del día
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
 
 export async function GET() {
   const hoy = new Date().toISOString().split('T')[0]

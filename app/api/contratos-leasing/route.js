@@ -1,11 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import { crearOrdenPago } from '@/lib/financiero/custodia'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
+import { supabaseAdmin } from '@/lib/supabase-admin'
 
 // GET — obtener contrato de leasing de un proyecto
 export async function GET(request) {

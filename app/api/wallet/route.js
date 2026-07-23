@@ -3,13 +3,8 @@
 // GET /api/wallet — devuelve todos los wallets del usuario con saldos calculados
 // POST /api/wallet — crear wallet para una moneda nueva
 
-import { createClient } from '@supabase/supabase-js'
 import { calcularSaldo, obtenerOCrearWallet } from '@/lib/financiero/ledger'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 export async function GET(request) {
   const authHeader = request.headers.get('authorization')

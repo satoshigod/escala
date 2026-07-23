@@ -4,14 +4,9 @@
 // PUT  — actualizar item
 // DELETE — eliminar item
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 // C5.10 — Detecta angeles compatibles y les notifica cuando se publica un item
 // Compatible = alguien que ya ha invertido en proyectos del mismo sector

@@ -1,4 +1,5 @@
-// /api/auco/kyc
+
+import { supabaseAdmin } from '@/lib/supabase-admin'// /api/auco/kyc
 // Valida identidad usando AucoFace:
 // - Foto del documento (cédula)
 // - Selfie o video del usuario
@@ -6,14 +7,6 @@
 //
 // Se llama antes de firmar el contrato de leasing
 // para verificar que quien firma es quien dice ser
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
 
 const AUCO_BASE = process.env.AUCO_ENV === 'production'
   ? 'https://api.auco.ai/v1.5/ext'

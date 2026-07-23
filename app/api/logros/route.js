@@ -1,14 +1,8 @@
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 // app/api/logros/route.js
 //
 // GET  ?usuario_id=X  — logros de un usuario
 // POST               — otorgar un logro (idempotente — no duplica si ya existe)
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
 
 export const DEFINICIONES_LOGROS = {
   primera_postulacion_aceptada: {

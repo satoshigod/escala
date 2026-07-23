@@ -3,14 +3,9 @@
 // GET   /api/admin/financiero          — todas las órdenes con filtros
 // PATCH /api/admin/financiero          — aprobar | rechazar | ejecutar | reversar
 
-import { createClient } from '@supabase/supabase-js'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { registrarMovimiento, registrarAuditoria, calcularSaldo, tasaDelDia } from '@/lib/financiero/ledger'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 async function verificarAdmin(token) {
   const { data: { user }, error } = await supabase.auth.getUser(token)

@@ -1,14 +1,8 @@
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 // app/api/wallet/movimientos/route.js
 //
 // GET /api/wallet/movimientos — historial de movimientos del ledger del usuario
 // Parámetros: ?wallet_id=X&moneda=COP&limit=20&offset=0&tipo=entrada|salida
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
 
 export async function GET(request) {
   const authHeader = request.headers.get('authorization')

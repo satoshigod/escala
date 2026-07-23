@@ -2,13 +2,8 @@
 // GET — lista items de presupuesto sin fondear de proyectos activos
 // Filtros: categoria, monto_min, monto_max, a_cambio_de, prioridad
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 export async function GET(req) {
   try {

@@ -1,9 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 // GET — todo lo que necesita el dashboard, en una sola llamada desde el cliente.
 // El servidor hace todas las consultas en paralelo internamente con Promise.all.

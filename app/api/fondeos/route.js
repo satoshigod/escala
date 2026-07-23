@@ -3,14 +3,9 @@
 // POST /api/fondeos — iniciar un fondeo (genera instrucciones de pago)
 // GET  /api/fondeos — historial de fondeos del usuario
 
-import { createClient } from '@supabase/supabase-js'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { registrarAuditoria, obtenerOCrearWallet, tasaDelDia } from '@/lib/financiero/ledger'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 // Instrucciones de pago por proveedor
 const INSTRUCCIONES_BREB = {

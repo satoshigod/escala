@@ -1,12 +1,7 @@
-import { createClient } from '@supabase/supabase-js'
 import { notificar } from '../../../lib/notificaciones/notificar'
 import { otorgarLogro } from '@/lib/logros'
 import { SEGMENTOS_ROLES, getTareasSegmento } from '../../../lib/segmentosRoles'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 const BASE_URL = 'https://escala.network'
 

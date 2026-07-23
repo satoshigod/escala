@@ -1,10 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import { generarContenidoContrato, generarTextoPDF } from '../../../lib/generadorContrato'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 // GET — contratos de un proyecto, profesional o postulacion
 export async function GET(request) {

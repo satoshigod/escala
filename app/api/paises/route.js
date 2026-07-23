@@ -1,10 +1,5 @@
-import { createClient } from '@supabase/supabase-js'
 import { EVENTOS, COLOR_POR_PRIORIDAD } from '../../../lib/notificaciones/eventos'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 const BASE_URL = 'https://escala.network'
 const ADMIN_EMAIL = 'ivancorrea@plazablack.com'

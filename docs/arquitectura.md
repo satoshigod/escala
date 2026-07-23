@@ -118,8 +118,16 @@ Catálogo de eventos con canales (email, in_app, push), prioridad y plantilla. S
 
 | Contexto | Cliente | RLS |
 | --- | --- | --- |
-| Navegador | `lib/supabase.js` con `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | **Sí aplica** |
-| API routes | `createClient` con `SUPABASE_SECRET_KEY` | **Se ignora** |
+| Navegador | `lib/supabase.js` (clave publishable) | **Sí aplica** |
+| API routes | `lib/supabase-admin.js` (service role) | **Se ignora** |
+
+```js
+// En una ruta API — nunca crear el cliente a mano
+import { supabaseAdmin } from '@/lib/supabase-admin'
+```
+
+**Autorización de admin:** `lib/auth.js` con `esAdmin(userId)`, que lee
+`perfiles.es_admin`. Nunca comparar contra un UUID escrito a mano.
 
 ⚠️ La variable de service role se llama **`SUPABASE_SECRET_KEY`**, no `SUPABASE_SERVICE_ROLE_KEY`.
 

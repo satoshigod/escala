@@ -13,15 +13,10 @@
 //   7. Notificar al usuario
 //   8. Disparar evento en motor Escala si aplica
 
-import { createClient } from '@supabase/supabase-js'
 import { createHmac } from 'crypto'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { registrarMovimiento, registrarAuditoria, calcularSaldo } from '@/lib/financiero/ledger'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 function verificarFirma(body, signature, secret) {
   const hmac = createHmac('sha256', secret)

@@ -3,14 +3,9 @@
 // POST /api/pagos — crear solicitud de pago
 // GET  /api/pagos — mis solicitudes de pago
 
-import { createClient } from '@supabase/supabase-js'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { registrarAuditoria, calcularSaldo, tasaDelDia } from '@/lib/financiero/ledger'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 export async function POST(request) {
   try {

@@ -1,11 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
 
+import { supabaseAdmin } from '@/lib/supabase-admin'
 // Cliente service-role: SUPABASE_SECRET_KEY es el env real usado en toda la app
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
 
 const BASE_URL = 'https://escala.network'
 

@@ -2,16 +2,10 @@
 // GET — lista proyectos local_comercial en verificacion
 // POST — aprobar o rechazar un proyecto + asignar tasa
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { esAdmin } from '@/lib/auth'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
-
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 async function verificarAdmin(token) {
   const { data: { user } } = await supabase.auth.getUser(token)

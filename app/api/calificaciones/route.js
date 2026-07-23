@@ -4,13 +4,8 @@
 // GET  ?proyecto_id=X&de_id=Y  — si el usuario ya calificó en ese proyecto
 // POST                         — crear una calificación nueva
 
-import { createClient } from '@supabase/supabase-js'
 import { notificar } from '@/lib/notificaciones/notificar'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)

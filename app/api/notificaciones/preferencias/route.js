@@ -1,14 +1,8 @@
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 // app/api/notificaciones/preferencias/route.js
 //
 // GET  — devuelve las preferencias del usuario autenticado
 // PATCH — actualiza una o más preferencias
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
 
 // GET /api/notificaciones/preferencias
 export async function GET(request) {

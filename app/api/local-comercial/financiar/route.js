@@ -8,15 +8,10 @@
 // Escala recibe el capital, paga el deposito/arriendo al arrendador, y solo
 // cuando eso se confirma el local queda operando.
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { crearOrdenPago } from '@/lib/financiero/custodia'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 // GET — locales aprobados sin inversionista asignado
 export async function GET(req) {

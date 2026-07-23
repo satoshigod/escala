@@ -1,4 +1,5 @@
-// /api/auco/firma
+
+import { supabaseAdmin } from '@/lib/supabase-admin'// /api/auco/firma
 // Envía un contrato a Auco para firma electrónica
 // Soporta: contrato de leasing, contrato de local, contrato de servicios
 //
@@ -8,14 +9,6 @@
 // 3. Auco notifica a los firmantes por email o WhatsApp
 // 4. Cuando todos firman, Auco dispara el webhook → /api/auco/webhook
 // 5. El webhook actualiza el estado del contrato en Escala
-
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-)
 
 // Entorno: dev (stage) o producción
 const AUCO_BASE = process.env.AUCO_ENV === 'production'

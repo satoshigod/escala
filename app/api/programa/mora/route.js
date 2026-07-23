@@ -11,16 +11,10 @@
 // que es distinto de reportar poco. Por eso la escalera es progresiva y el
 // retiro del equipo es la ultima instancia, no la primera.
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { esAdmin } from '@/lib/auth'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
-
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 async function getUser(req) {
   const h = req.headers.get('authorization')

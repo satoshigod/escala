@@ -4,7 +4,6 @@
 // POST { accion, orden_id, ... } -> ejecuta la transicion segun el rol.
 // GET  -> lista las ordenes del usuario (como pagador/receptor) o todas si es admin.
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import {
   reportarPago,
@@ -14,12 +13,7 @@ import {
   cancelarOrden,
 } from '@/lib/financiero/custodia'
 import { esAdmin } from '@/lib/auth'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
-
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 async function getUser(req) {
   const authHeader = req.headers.get('authorization')

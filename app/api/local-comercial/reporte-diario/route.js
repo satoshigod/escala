@@ -15,16 +15,11 @@
 //      b. Luego abona al capital (excedente - intereses)
 //   6. Si excedente <= 0: acumula deficit, no hay pago ese dia
 
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { crearOrdenPago } from '@/lib/financiero/custodia'
 import { adminParaNotificar } from '@/lib/auth'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SECRET_KEY
-)
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 export async function POST(req) {
   try {
