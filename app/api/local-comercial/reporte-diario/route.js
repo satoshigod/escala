@@ -19,6 +19,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { crearOrdenPago } from '@/lib/financiero/custodia'
+import { adminParaNotificar } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -210,10 +211,7 @@ export async function POST(req) {
 
       // Notificar al admin de movimientos grandes (>$500.000)
       if (pago_inversionista > 500000) {
-        await notificar('admin_transferencia_recibida', {
-          id: 'a57b6849-1388-4186-8880-2ec31dd31af5',
-          email: 'ivan@escala.network',
-        }, {
+        await notificar('admin_transferencia_recibida', await adminParaNotificar(), {
           nombre_usuario: 'Motor waterfall local',
           monto_formateado: Math.round(pago_inversionista).toLocaleString('es-CO'),
           referencia: `Reporte ${hoy} - ${local.nombre_negocio}`,

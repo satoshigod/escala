@@ -8,13 +8,13 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { calcularScore, estimarPlan, BANDAS } from '@/lib/programa/scoring'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { esAdmin, adminParaNotificar } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const ADMIN_IDS = ['a57b6849-1388-4186-8880-2ec31dd31af5']
 
 async function getUser(req) {
   const h = req.headers.get('authorization')
@@ -86,7 +86,7 @@ export async function POST(req) {
     // Avisar al equipo cuando hay que revisar o cuando entra una preaprobada
     if (r.accion !== 'rechazada') {
       await notificar('admin_solicitud_programa',
-        { id: ADMIN_IDS[0], email: 'ivan@escala.network' },
+        await adminParaNotificar(),
         {
           nombre: b.nombre,
           tipo_equipo: b.tipo_equipo,
@@ -128,7 +128,7 @@ export async function GET(req) {
   try {
     const user = await getUser(req)
     if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-    const esAdmin = ADMIN_IDS.includes(user.id)
+    const esAdmin = await esAdmin(user.id)
 
     const { searchParams } = new URL(req.url)
     const estado = searchParams.get('estado')
@@ -172,7 +172,7 @@ export async function PATCH(req) {
   try {
     const user = await getUser(req)
     if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-    if (!ADMIN_IDS.includes(user.id)) {
+    if (!await esAdmin(user.id)) {
       return NextResponse.json({ error: 'Solo un analista de Escala puede revisar solicitudes' }, { status: 403 })
     }
 

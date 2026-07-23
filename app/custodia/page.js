@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 
-const ADMIN_IDS = ['a57b6849-1388-4186-8880-2ec31dd31af5']
-
 const ESTADOS = {
   pendiente_pago: { label: 'Pendiente de pago', color: '#E8A020' },
   pago_reportado: { label: 'Pago reportado — Escala verificando', color: '#4A90D9' },
@@ -35,7 +33,11 @@ export default function Custodia() {
     const session = await auth()
     if (!session) return
     setUsuario(session.user)
-    const admin = ADMIN_IDS.includes(session.user.id)
+    // El navegador no puede usar lib/auth (usa service key): lee es_admin del
+    // perfil, que es la misma fuente de verdad. El backend igual lo verifica.
+    const { data: perfil } = await supabase
+      .from('perfiles').select('es_admin').eq('id', session.user.id).maybeSingle()
+    const admin = perfil?.es_admin === true
     setEsAdmin(admin)
     const headers = { Authorization: 'Bearer ' + session.access_token }
     try {

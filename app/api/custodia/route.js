@@ -13,13 +13,13 @@ import {
   confirmarRecepcionReceptor,
   cancelarOrden,
 } from '@/lib/financiero/custodia'
+import { esAdmin } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const ADMIN_IDS = ['a57b6849-1388-4186-8880-2ec31dd31af5']
 
 async function getUser(req) {
   const authHeader = req.headers.get('authorization')
@@ -33,7 +33,7 @@ export async function POST(req) {
   try {
     const user = await getUser(req)
     if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-    const esAdmin = ADMIN_IDS.includes(user.id)
+    const esAdmin = await esAdmin(user.id)
 
     const { accion, orden_id, referencia } = await req.json()
     if (!accion || !orden_id) return NextResponse.json({ error: 'Faltan accion u orden_id' }, { status: 400 })
@@ -81,7 +81,7 @@ export async function GET(req) {
   try {
     const user = await getUser(req)
     if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-    const esAdmin = ADMIN_IDS.includes(user.id)
+    const esAdmin = await esAdmin(user.id)
 
     const { searchParams } = new URL(req.url)
     const rol = searchParams.get('rol') // 'pagador' | 'receptor' | 'admin'

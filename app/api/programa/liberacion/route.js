@@ -13,13 +13,13 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { esAdmin } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const ADMIN_IDS = ['a57b6849-1388-4186-8880-2ec31dd31af5']
 
 async function getUser(req) {
   const h = req.headers.get('authorization')
@@ -91,7 +91,7 @@ export async function GET(req) {
 
     if (!c) return NextResponse.json({ error: 'Contrato no encontrado' }, { status: 404 })
 
-    const esParte = c.beneficiaria_id === user.id || c.angel_id === user.id || ADMIN_IDS.includes(user.id)
+    const esParte = c.beneficiaria_id === user.id || c.angel_id === user.id || await esAdmin(user.id)
     if (!esParte) return NextResponse.json({ error: 'No tienes acceso a este contrato' }, { status: 403 })
 
     const pendiente = Number(c.valor_equipo || 0) - Number(c.capital_abonado || 0)
@@ -126,7 +126,7 @@ export async function POST(req) {
 
     // Solo admin emite: el documento certifica una transferencia de propiedad,
     // conviene que un humano lo revise aunque el calculo sea automatico.
-    if (!ADMIN_IDS.includes(user.id)) {
+    if (!await esAdmin(user.id)) {
       return NextResponse.json({ error: 'Solo Escala puede emitir la carta de liberacion' }, { status: 403 })
     }
 

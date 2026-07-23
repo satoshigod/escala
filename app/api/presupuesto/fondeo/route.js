@@ -7,6 +7,7 @@ import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
 import { crearOrdenPago } from '@/lib/financiero/custodia'
+import { adminParaNotificar } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -220,10 +221,7 @@ export async function PUT(req) {
       updates.comprobante_url = comprobante_url || null
 
       // Notificar a Escala (admin) para verificar
-      await notificar('inversion_transferencia_pendiente_verificacion', {
-        id: 'a57b6849-1388-4186-8880-2ec31dd31af5',
-        email: 'ivan@escala.network',
-      }, {
+      await notificar('inversion_transferencia_pendiente_verificacion', await adminParaNotificar(), {
         nombre_item: fondeo.presupuesto_items.nombre,
         monto: parseFloat(fondeo.monto).toLocaleString('es-CO'),
         proyecto_id: fondeo.proyecto_id,
@@ -277,10 +275,7 @@ export async function PUT(req) {
       }
 
       // Notificar al admin
-      await notificar('admin_fondeo_presupuesto_verificado', {
-        id: 'a57b6849-1388-4186-8880-2ec31dd31af5',
-        email: 'ivan@escala.network',
-      }, {
+      await notificar('admin_fondeo_presupuesto_verificado', await adminParaNotificar(), {
         monto_formateado: Math.round(parseFloat(fondeo.monto)).toLocaleString('es-CO'),
         nombre_item: fondeo.presupuesto_items?.nombre,
         proyecto_nombre: fondeo.presupuesto_items?.proyectos?.nombre,

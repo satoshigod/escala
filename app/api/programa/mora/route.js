@@ -14,13 +14,13 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { esAdmin } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const ADMIN_IDS = ['a57b6849-1388-4186-8880-2ec31dd31af5']
 
 async function getUser(req) {
   const h = req.headers.get('authorization')
@@ -49,7 +49,7 @@ export async function GET(req) {
   try {
     const user = await getUser(req)
     if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-    if (!ADMIN_IDS.includes(user.id)) {
+    if (!await esAdmin(user.id)) {
       return NextResponse.json({ error: 'Solo operacion de Escala' }, { status: 403 })
     }
 
@@ -116,7 +116,7 @@ export async function POST(req) {
   try {
     const user = await getUser(req)
     if (!user) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
-    if (!ADMIN_IDS.includes(user.id)) {
+    if (!await esAdmin(user.id)) {
       return NextResponse.json({ error: 'Solo operacion de Escala' }, { status: 403 })
     }
 

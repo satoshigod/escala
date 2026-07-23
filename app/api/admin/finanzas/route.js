@@ -4,13 +4,13 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { esAdmin } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const ADMIN_IDS = ['a57b6849-1388-4186-8880-2ec31dd31af5']
 
 export async function GET(req) {
   try {
@@ -18,7 +18,7 @@ export async function GET(req) {
     if (!authHeader) return NextResponse.json({ error: 'Sin autorizacion' }, { status: 401 })
     const token = authHeader.replace('Bearer ', '')
     const { data: { user } } = await supabase.auth.getUser(token)
-    if (!user || !ADMIN_IDS.includes(user.id)) return NextResponse.json({ error: 'Solo administradores' }, { status: 403 })
+    if (!user || !await esAdmin(user.id)) return NextResponse.json({ error: 'Solo administradores' }, { status: 403 })
 
     // 1. Fondeos por estado
     const { data: fondeos } = await supabase

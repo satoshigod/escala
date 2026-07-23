@@ -5,20 +5,18 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { notificar } from '@/lib/notificaciones/notificar'
+import { esAdmin } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const ADMIN_IDS = [
-  'a57b6849-1388-4186-8880-2ec31dd31af5', // Ivan Correa — fundador Escala
-]
 
 async function verificarAdmin(token) {
   const { data: { user } } = await supabase.auth.getUser(token)
   if (!user) return null
-  if (!ADMIN_IDS.includes(user.id)) return null
+  if (!await esAdmin(user.id)) return null
   return user
 }
 

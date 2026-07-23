@@ -8,20 +8,20 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { esAdmin } from '@/lib/auth'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY
 )
 
-const ADMIN_IDS = ['a57b6849-1388-4186-8880-2ec31dd31af5']
 
 export async function GET(req) {
   try {
     const h = req.headers.get('authorization')
     if (!h) return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
     const { data: { user } } = await supabase.auth.getUser(h.replace('Bearer ', ''))
-    if (!user || !ADMIN_IDS.includes(user.id)) {
+    if (!user || !await esAdmin(user.id)) {
       return NextResponse.json({ error: 'Solo operacion de Escala' }, { status: 403 })
     }
 
