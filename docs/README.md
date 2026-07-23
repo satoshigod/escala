@@ -6,7 +6,8 @@
 | --- | --- |
 | [arquitectura.md](./arquitectura.md) | Qué es Escala, stack, mapa de módulos, patrones establecidos y convenciones que ya costaron bugs |
 | [deuda-tecnica.md](./deuda-tecnica.md) | Deuda medida (no estimada) con impacto, esfuerzo y orden recomendado |
-| [base-datos.md](./base-datos.md) | Las 42 tablas, constraints, RLS y reglas del motor financiero |
+| [base-datos.md](./base-datos.md) | Las 45 tablas, constraints, RLS y reglas del motor financiero |
+| [escalabilidad.md](./escalabilidad.md) | Qué se rompe primero y a qué volumen, etapa por etapa |
 
 ## Otras fuentes de verdad
 
