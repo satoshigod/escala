@@ -14,6 +14,27 @@ import { useState } from 'react'
 
 const CAPAS = [
   {
+    id: 'C0',
+    titulo: 'CAPA 0 — Plataforma y deuda tecnica',
+    descripcion: 'La salud del sistema que sostiene a todas las capas de arriba: duplicacion, componentes, rendimiento, escalabilidad y calidad. No entrega funcionalidad al usuario, pero define que tan rapido y con que riesgo se construye todo lo demas. El detalle tecnico de cada item vive en docs/deuda-tecnica.md.',
+    color: '#8FA3CC',
+    estado: 'progreso',
+    valor_total: 22000000,
+    valor_hecho: 4500000,
+    hitos: [
+      { num: 'C0.1', nombre: 'CI que verifica el build en cada push y PR (.github/workflows/build.yml). Se agrego porque el 21-jul se desplego un build roto a produccion: el commit se encadeno al build y el error solo aparecio cuando Vercel fallo. Ahora GitHub bloquea esa clase de error antes del deploy.', done: true, valor: 800000, quien: 'Claude AI' },
+      { num: 'C0.2', nombre: 'Autorizacion de admin centralizada (lib/auth.js). El UUID del fundador estaba escrito a mano en 13 archivos: solo Ivan podia administrar y sumar a alguien exigia tocar 13 sitios, donde olvidar uno dejaba un hueco de permisos. Ahora la fuente de verdad es perfiles.es_admin y sumar un admin es un UPDATE, no un deploy.', done: true, valor: 1200000, quien: 'Claude AI' },
+      { num: 'C0.3', nombre: 'Cliente Supabase del servidor unificado (lib/supabase-admin.js). 67 de 70 rutas API creaban el suyo con el mismo bloque. El costo real no era la repeticion sino que un error se multiplicaba por copia-pega: paso con el ledger, donde 10 inserts en 6 archivos usaban la columna equivocada y ninguna comision se registro nunca. Beneficio inesperado: 8 rutas ya tenian la config correcta de servidor y 59 no; ahora las 67 la tienen. Neto -423 lineas.', done: true, valor: 1500000, quien: 'Claude AI' },
+      { num: 'C0.4', nombre: 'Documentacion viva en /docs (arquitectura, base-datos, deuda-tecnica) con datos medidos del repo y de la base, no estimados. Incluye la tabla de convenciones de nombres que ya costaron bugs para que no se repitan. Sin esto, cada sesion nueva vuelve a redescubrir el sistema.', done: true, valor: 1000000, quien: 'Claude AI' },
+      { num: 'C0.5', nombre: 'Componentes base reutilizables. Hoy hay 2 componentes para 116 paginas: todo lo demas esta copiado (tarjetas, badges, modales, estados vacios, formularios). Por eso llegaron a convivir dos disenos distintos de tarjeta de proyecto en el mismo dashboard. Empezar por los 4 mas repetidos: Card, Pill, EmptyState, Modal. Es la deuda mas grande que queda (D3).', done: false, valor: 4000000, quien: 'Claude AI' },
+      { num: 'C0.6', nombre: 'Tests unitarios del motor financiero. El CI ya verifica que compile, pero nada verifica que el calculo del waterfall, la doble partida o la maquina de estados de custodia sigan siendo correctos tras un cambio. Es lo que convierte un refactor del ledger en algo seguro de hacer.', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: 'C0.7', nombre: 'Rendimiento: 54 de 116 paginas son Client Components con useEffect + fetch, asi que cada visita golpea la base. Migrar primero las de lectura pura (landings, directorio, blog) a Server Components con cache. Con trafico bajo no se nota; a escala si.', done: false, valor: 3000000, quien: 'Claude AI' },
+      { num: 'C0.8', nombre: 'Consultas preparadas para escala: 236 selects sin limite y 23 con select(*) que traen columnas de mas. Con 9 usuarios no importa; con 10.000 proyectos una consulta sin limite tumba la pagina. Agregar limites y paginacion en los listados, y pedir solo las columnas que se usan.', done: false, valor: 2500000, quien: 'Claude AI' },
+      { num: 'C0.9', nombre: 'Design tokens: los colores de marca estan repetidos cientos de veces en objetos de estilo inline. Cambiar la paleta hoy es inviable. Hacerlo junto con C0.5, no antes (D6).', done: false, valor: 2000000, quien: 'Claude AI' },
+      { num: 'C0.10', nombre: 'Romper los archivos monoliticos: qa/page.js 2.796 lineas, workspace/page.js 2.211, proyectos/page.js 1.396, dashboard/page.js 1.322. El workspace concentra 12 sub-pantallas y 11 handlers en un archivo. NO hacer antes de C0.6: sin tests, el riesgo del refactor supera al beneficio (D4).', done: false, valor: 3500000, quien: 'Claude AI' },
+    ]
+  },
+  {
     id: 'C1',
     titulo: 'CAPA 1 — Infraestructura',
     descripcion: 'Los cimientos sobre los que todo lo demas se construye. Auth, base de datos, storage, deploy, seguridad, observabilidad, compliance, multi-tenant, i18n. Sin esta capa nada mas funciona.',

@@ -139,6 +139,45 @@ Casi todo es `'use client'` con `useEffect` + `fetch`. No se aprovechan Server C
 
 **Semana 1 (quick wins):** ✅ **HECHOS** el 22-jul — D5 (CI), D2 (admin centralizado) y D1 (cliente unificado).
 
+---
+
+## Roadmap técnico (fase 9)
+
+Vive en **`/desarrollo` → CAPA 0**, no en este archivo. Ahí compite por prioridad
+con el roadmap de producto, que es como se decide en la realidad. Este documento
+guarda el *por qué* y el *cómo*; el roadmap dice *qué* y *cuándo*.
+
+| Cuándo | Qué | Por qué en ese orden |
+| --- | --- | --- |
+| ✅ Semana 1 | C0.1 CI · C0.2 admin · C0.3 cliente · C0.4 docs | Alto impacto, bajo esfuerzo, no rompen nada |
+| Mes 1 | **C0.5 componentes base** | Es la deuda más grande que queda y desbloquea C0.9 |
+| Mes 1–2 | **C0.6 tests del motor financiero** | Requisito para tocar el ledger o el workspace sin riesgo |
+| Mes 3 | C0.7 Server Components · C0.8 consultas con límite | Rendimiento: no urgente hoy, crítico a escala |
+| Mes 3+ | C0.9 design tokens | Junto con C0.5, nunca antes |
+| Cuando haya tests | C0.10 romper monolitos | Depende de C0.6 |
+| Cuando haya capital | D7 pasarela de pagos | Depende de terceros |
+
+### Dependencias que importan
+
+- **C0.10 depende de C0.6.** Refactorizar `workspace/page.js` (2.211 líneas, 12
+  sub-pantallas, 11 handlers) sin tests es cambiar algo que funciona por algo que
+  quizá funcione. No hacerlo antes.
+- **C0.9 depende de C0.5.** Extraer tokens sin componentes que los consuman deja
+  el trabajo a medias y hay que rehacerlo.
+- **C0.7 y C0.8 son independientes** entre sí y del resto: se pueden hacer en
+  paralelo o partirse por página.
+
+### Cuándo dejar de aplazar el rendimiento
+
+Hoy: 9 usuarios, 1 proyecto. Ninguna consulta duele. Las señales para priorizar
+C0.7 y C0.8 por encima de features:
+
+- Más de ~500 proyectos activos (las consultas sin límite empiezan a pesar).
+- Más de ~2.000 usuarios (cada visita golpea la base sin caché).
+- Tiempo de carga del dashboard por encima de 2 segundos.
+
+Antes de eso, optimizar es trabajo que no compra nada.
+
 **Mes 1:** D3 (componentes base), empezando por los 4 más repetidos.
 
 **Trimestre:** D8 (RSC en páginas de lectura) y D6 (tokens) juntos con D3.
