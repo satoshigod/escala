@@ -344,7 +344,15 @@ export default function Dashboard() {
       { icon: '📋', label: 'Mis postulaciones', href: '/postulaciones' },
       { icon: '👤', label: 'Mi perfil', href: '/perfil' },
     ] : []),
-    ...(perfil?.es_admin ? [{ icon: '🛠️', label: 'Admin Escala', href: '/admin-escala' }] : []),
+    // Pagas o cobras por custodia: visible para cualquiera que tenga movimiento
+    { icon: '🔒', label: 'Custodia y pagos', href: '/custodia' },
+    // Piloto de leasing: cada actor ve su panel
+    ...(accInversionista ? [{ icon: '🔧', label: 'Mi cartera de equipos', href: '/mi-cartera' }] : []),
+    ...(accColaborador || accFundador ? [{ icon: '⚙️', label: 'Mi equipo en leasing', href: '/mi-equipo' }] : []),
+    ...(perfil?.es_admin ? [
+      { icon: '🛠️', label: 'Admin Escala', href: '/admin-escala' },
+      { icon: '📋', label: 'Programa 10 Máquinas', href: '/admin/programa' },
+    ] : []),
   ]
 
   // ── TOUR DE PRIMEROS PASOS ────────────────────────────────────────────

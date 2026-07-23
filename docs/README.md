@@ -8,6 +8,7 @@
 | [deuda-tecnica.md](./deuda-tecnica.md) | Deuda medida (no estimada) con impacto, esfuerzo y orden recomendado |
 | [base-datos.md](./base-datos.md) | Las 45 tablas, constraints, RLS y reglas del motor financiero |
 | [escalabilidad.md](./escalabilidad.md) | Qué se rompe primero y a qué volumen, etapa por etapa |
+| [navegacion.md](./navegacion.md) | Las 116 páginas por dominio, flujos y páginas huérfanas |
 
 ## Otras fuentes de verdad
 

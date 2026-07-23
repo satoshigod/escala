@@ -18,7 +18,7 @@ const LINKS = [
   { href: '/proyectos', label: 'Proyectos' },
   { href: '/directorio-inversion', label: '💰 Invertir' },
   { href: '/postulaciones', label: 'Postulaciones' },
-  { href: '/score', label: 'Mi Score' },
+  { href: '/score', label: 'Mi Reputación' },
 ]
 
 export default function NavApp({ paginaActual }) {
