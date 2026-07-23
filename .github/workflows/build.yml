@@ -1,0 +1,33 @@
+name: build
+
+# Verifica que main siempre compile. Existe porque el 21-jul se desplego un
+# build roto a produccion (commit 550dc3e): el commit se encadeno al build y
+# nadie vio el error hasta que Vercel fallo.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Compilar
+        run: npm run build
+        env:
+          # Valores de relleno: el build solo necesita que las variables
+          # existan para resolver los imports. No se conecta a la base.
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
+          SUPABASE_SECRET_KEY: placeholder
