@@ -1,0 +1,58 @@
+name: smoke
+
+# Pruebas de humo: tras cada push a main, abre las paginas criticas en un navegador
+# real (headless) contra el sitio y verifica que no crasheen en runtime. Existe por
+# la leccion L16: el build compila codigo que igual falla al ejecutarse (como el
+# ReferenceError que tumbo el workspace el 28-jul). El check 'build' cubre la
+# compilacion; este cubre el runtime.
+#
+# Si algo esta roto, este check se pone rojo. Con la proteccion de rama activada
+# (Settings -> Branches -> require 'smoke' to pass), eso bloquea el deploy.
+#
+# Requiere 3 secretos del repositorio (Settings -> Secrets and variables -> Actions):
+#   SMOKE_USER_EMAIL     — correo del usuario de prueba dedicado
+#   SMOKE_USER_PASSWORD  — su contraseña
+#   SMOKE_BASE_URL       — (opcional) por defecto https://escala.network
+
+on:
+  push:
+    branches: [main]
+  # Permite lanzarlo a mano desde la pestana Actions.
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar navegador (Chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Esperar a que el deploy de Vercel este listo
+        # Da un margen para que Vercel promueva el nuevo deploy antes de probar.
+        # Sin esto, la prueba podria correr contra la version anterior.
+        run: sleep 60
+
+      - name: Pruebas de humo
+        run: npm run test:smoke
+        env:
+          SMOKE_BASE_URL: ${{ secrets.SMOKE_BASE_URL || 'https://escala.network' }}
+          SMOKE_USER_EMAIL: ${{ secrets.SMOKE_USER_EMAIL }}
+          SMOKE_USER_PASSWORD: ${{ secrets.SMOKE_USER_PASSWORD }}
+
+      - name: Guardar reporte si algo fallo
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
