@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { Pill, EmptyState } from '@/components/base'
 
 function descargarContratoPDF(texto, nombreArchivo) {
   if (typeof window === 'undefined') return
@@ -257,11 +258,12 @@ export default function Admin() {
         </div>
 
         {proyectos.length === 0 ? (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🚀</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>No tienes proyectos publicados</div>
-            <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a>
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+            icon="🚀"
+            titulo="No tienes proyectos publicados"
+            accion={<a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a>}
+          />
         ) : (
           <>
             {proyectos.length > 1 && (
@@ -290,11 +292,12 @@ export default function Admin() {
             {/* TAB POSTULACIONES */}
             {tab === 'postulaciones' && (
               Object.keys(postulaciones).length === 0 ? (
-                <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-                  <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📭</div>
-                  <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Aún no te has postulado a ningún proyecto</div>
-                  <div style={{color:'#8FA3CC',fontSize:'0.85rem'}}>Agrega especialidades/roles a tu proyecto para empezar a recibir postulaciones.</div>
-                </div>
+                <EmptyState
+                  style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+                  icon="📭"
+                  titulo="Aún no te has postulado a ningún proyecto"
+                  descripcion="Agrega especialidades/roles a tu proyecto para empezar a recibir postulaciones."
+                />
               ) : (
                 <div style={{display:'flex',flexDirection:'column',gap:'2rem'}}>
                   {Object.entries(postulaciones).map(([rol, posts]) => (
@@ -312,9 +315,9 @@ export default function Admin() {
                               <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'2px'}}>Reputación: {p.perfiles?.escala_score || 0} · {new Date(p.created_at).toLocaleDateString('es-CO')}</div>
                             </div>
                             <div style={{display:'flex',alignItems:'center',gap:'0.75rem',flexWrap:'wrap'}}>
-                              <span style={{fontSize:'0.75rem',fontWeight:'700',padding:'0.3rem 0.875rem',borderRadius:'20px',background:`rgba(${p.estado==='aceptada'?'29,158,117':p.estado==='rechazada'?'216,90,48':'232,160,32'},0.15)`,color:estadoColor[p.estado]}}>
+                              <Pill tono={p.estado==='aceptada'?'verde':p.estado==='rechazada'?'rojo':'naranja'} style={{fontSize:'0.75rem',padding:'0.3rem 0.875rem'}}>
                                 {estadoLabel[p.estado]}
-                              </span>
+                              </Pill>
                               {p.estado === 'pendiente' && (
                                 <>
                                   <button onClick={() => cambiarEstado(p.id, 'aceptada', rol)} disabled={actualizando === p.id} style={{background:'rgba(29,158,117,0.15)',color:'#1D9E75',border:'1px solid rgba(29,158,117,0.3)',borderRadius:'6px',padding:'0.4rem 0.875rem',fontSize:'0.78rem',fontWeight:'600',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Aceptar</button>

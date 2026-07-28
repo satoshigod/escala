@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { Pill, EmptyState } from '@/components/base'
 
 export default function Postulaciones() {
   const [usuario, setUsuario] = useState(null)
@@ -70,9 +71,9 @@ export default function Postulaciones() {
             <div style={{fontSize:'1rem',fontWeight:'700',color:'#fff',marginBottom:'0.2rem'}}>{p.roles?.nombre || 'Rol'}</div>
             <div style={{fontSize:'0.78rem',color:'#8FA3CC'}}>{p.roles?.proyectos?.nombre || 'Proyecto'}</div>
           </div>
-          <span style={{fontSize:'0.75rem',fontWeight:'700',padding:'0.3rem 0.875rem',borderRadius:'20px',background:`rgba(${p.estado==='aceptada'?'29,158,117':p.estado==='rechazada'?'216,90,48':'232,160,32'},0.15)`,color:estadoColor[p.estado],border:`1px solid rgba(${p.estado==='aceptada'?'29,158,117':p.estado==='rechazada'?'216,90,48':'232,160,32'},0.3)`}}>
+          <Pill tono={p.estado==='aceptada'?'verde':p.estado==='rechazada'?'rojo':'naranja'} style={{fontSize:'0.75rem',padding:'0.3rem 0.875rem'}}>
             {estadoLabel[p.estado]}
-          </span>
+          </Pill>
         </div>
         {p.mensaje && p.origen === 'fundador' && (
           <div style={{fontSize:'0.8rem',color:'#C8D4E8',background:'rgba(255,255,255,0.03)',borderLeft:'2px solid rgba(232,160,32,0.4)',borderRadius:'0 8px 8px 0',padding:'0.6rem 0.875rem',marginBottom:'0.875rem',lineHeight:'1.5'}}>
@@ -148,12 +149,13 @@ export default function Postulaciones() {
           </div>
 
           {misPostulaciones.length === 0 ? (
-            <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-              <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📋</div>
-              <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Aún no te has postulado a ningún proyecto</div>
-              <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Explora los proyectos activos y postúlate a los roles que te interesen.</div>
-              <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>
-            </div>
+            <EmptyState
+              style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+              icon="📋"
+              titulo="Aún no te has postulado a ningún proyecto"
+              descripcion="Explora los proyectos activos y postúlate a los roles que te interesen."
+              accion={<a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>}
+            />
           ) : (
             <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
               {misPostulaciones.map(p => (

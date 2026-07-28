@@ -4,6 +4,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { Card, Pill, EmptyState } from '../../components/base'
 
 const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
 const fmtK = (n) => {
@@ -230,12 +231,13 @@ export default function AngelPage() {
         {tab === 'portafolio' && (
           <div>
             {fondeos.length === 0 ? (
-              <div style={{ ...s.card, textAlign: 'center', padding: '3rem' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🌟</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>Aún no has financiado ningún negocio</div>
-                <div style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.25rem' }}>Entra al directorio y elige qué quieres financiar.</div>
-                <button onClick={() => setTab('oportunidades')} style={s.btn('#4A90D9')}>Ver oportunidades</button>
-              </div>
+              <EmptyState
+                style={{ ...s.card }}
+                icon="🌟"
+                titulo="Aún no has financiado ningún negocio"
+                descripcion="Entra al directorio y elige qué quieres financiar."
+                accion={<button onClick={() => setTab('oportunidades')} style={s.btn('#4A90D9')}>Ver oportunidades</button>}
+              />
             ) : (
               <div>
                 {activos.length > 0 && (
@@ -327,7 +329,7 @@ export default function AngelPage() {
                   <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.75rem' }}>
                     <span style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.06)', color: '#8FA3CC', padding: '2px 8px', borderRadius: '20px' }}>{CATEGORIA_LABEL[item.categoria] || item.categoria}</span>
                     <span style={{ fontSize: '0.65rem', background: 'rgba(255,255,255,0.06)', color: '#8FA3CC', padding: '2px 8px', borderRadius: '20px' }}>{item.tipo_gasto?.toUpperCase()}</span>
-                    <span style={{ fontSize: '0.65rem', background: item.prioridad === 'critica' ? 'rgba(224,85,85,0.12)' : 'rgba(255,255,255,0.06)', color: item.prioridad === 'critica' ? '#E05555' : '#8FA3CC', padding: '2px 8px', borderRadius: '20px', fontWeight: '700' }}>{item.prioridad}</span>
+                    <Pill tono={item.prioridad === 'critica' ? 'rojo' : 'neutro'} style={{ fontSize: '0.65rem', padding: '2px 8px' }}>{item.prioridad}</Pill>
                   </div>
                   {yaInvertido ? (
                     <div style={{ fontSize: '0.75rem', color: '#1D9E75' }}>Ya tienes una propuesta enviada aquí</div>
@@ -361,7 +363,7 @@ export default function AngelPage() {
                       <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff', marginBottom: '3px' }}>{c.tipo_equipo} · {c.marca} {c.modelo || ''}</div>
                       <div style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>{c.proyectos?.nombre || 'Proyecto'} · {c.ciudad} · Contrato #{c.numero_contrato}</div>
                     </div>
-                    <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(232,160,32,0.15)', color: '#E8A020', padding: '3px 10px', borderRadius: '20px', flexShrink: 0 }}>Pendiente tu firma</span>
+                    <Pill tono="naranja" style={{ fontSize: '0.65rem', padding: '3px 10px', flexShrink: 0 }}>Pendiente tu firma</Pill>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: '0.5rem', marginBottom: '1.25rem' }}>
@@ -423,7 +425,7 @@ export default function AngelPage() {
                         <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#fff', marginBottom: '2px' }}>{c.tipo_equipo} {c.marca}</div>
                         <div style={{ fontSize: '0.72rem', color: '#6B7280' }}>{c.nombre_beneficiaria} · #{c.numero_contrato}</div>
                       </div>
-                      <span style={{ fontSize: '0.65rem', fontWeight: '700', background: 'rgba(29,158,117,0.15)', color: '#1D9E75', padding: '3px 10px', borderRadius: '20px' }}>Activo</span>
+                      <Pill tono="verde" style={{ fontSize: '0.65rem', padding: '3px 10px' }}>Activo</Pill>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '0.5rem', marginBottom: '0.875rem' }}>
                       {[
