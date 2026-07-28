@@ -191,7 +191,7 @@ export default function Workspace() {
         .then(d => { if (d.ok) setPresupuestoItems(d.items || []) })
 
       // Cargar datos del local si el proyecto es local_comercial
-      if (proyData.proyecto?.escenario === 'local_comercial') {
+      if (proy?.escenario === 'local_comercial') {
         fetch('/api/local-comercial?proyecto_id=' + pid)
           .then(r => r.json())
           .then(d => { if (d.local) setLocalData(d.local) })

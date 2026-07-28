@@ -12,7 +12,7 @@ export async function GET(request) {
 
   const { data, error } = await supabase
     .from('aportes')
-    .select(`*, perfiles ( nombre, rol_principal )`)
+    .select(`*, perfiles!aportes_aportante_id_fkey ( nombre, rol_principal )`)
     .eq('proyecto_id', proyecto_id)
     .order('fecha', { ascending: false })
 
