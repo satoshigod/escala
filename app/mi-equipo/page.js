@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { EmptyState } from '../../components/base'
 
 // Panel de quien tiene un equipo en leasing — sirve para cualquier activo
 // (maquina de confeccion, freidora, secadora, vehiculo, herramienta).
@@ -74,15 +75,13 @@ export default function MiEquipo() {
       <div style={s.page}><div style={s.wrap}>
         <div style={s.h1}>Mi equipo</div>
         <p style={s.sub}>Aquí verás tu equipo financiado, cuánto llevas pagado y cuándo reportar.</p>
-        <div style={s.card}>
-          <div style={{ fontSize: '2rem', marginBottom: '0.6rem' }}>🔧</div>
-          <div style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '0.4rem' }}>Todavía no tienes un equipo financiado</div>
-          <p style={{ fontSize: '0.85rem', color: '#8FA3CC', lineHeight: 1.6 }}>
-            Si necesitas una máquina, un horno, una secadora o cualquier equipo para tu negocio,
-            puedes aplicar y un inversionista lo compra por ti.
-          </p>
-          <a href="/programa/aplicar" style={s.btn}>Aplicar por un equipo</a>
-        </div>
+        <EmptyState
+          style={s.card}
+          icon="🔧"
+          titulo="Todavía no tienes un equipo financiado"
+          descripcion="Si necesitas una máquina, un horno, una secadora o cualquier equipo para tu negocio, puedes aplicar y un inversionista lo compra por ti."
+          accion={<a href="/programa/aplicar" style={s.btn}>Aplicar por un equipo</a>}
+        />
       </div></div>
     )
   }

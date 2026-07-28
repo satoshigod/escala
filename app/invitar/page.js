@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { EmptyState } from '@/components/base'
 
 export default function Invitar() {
   const [usuario, setUsuario] = useState(null)
@@ -120,11 +121,12 @@ export default function Invitar() {
         </div>
 
         {proyectos.length === 0 ? (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🚀</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Primero publica un proyecto</div>
-            <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700',display:'inline-block',marginTop:'1rem'}}>Publicar proyecto →</a>
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+            icon="🚀"
+            titulo="Primero publica un proyecto"
+            accion={<a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700',display:'inline-block',marginTop:'1rem'}}>Publicar proyecto →</a>}
+          />
         ) : (
           <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'14px',padding:'2rem'}}>
             {proyectos.length > 1 && (

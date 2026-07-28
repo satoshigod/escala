@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { EmptyState } from '../../components/base'
 
 // Panel del inversionista: su cartera de equipos financiados, cuanto ha
 // recuperado y el estado real de cada uno. Transparencia sobre el activo,
@@ -62,15 +63,13 @@ export default function MiCartera() {
       <div style={s.page}><div style={s.wrap}>
         <div style={s.h1}>Mi cartera</div>
         <p style={s.sub}>Aquí verás los equipos que has financiado y cuánto has recuperado.</p>
-        <div style={s.card}>
-          <div style={{ fontSize: '2rem', marginBottom: '0.6rem' }}>📈</div>
-          <div style={{ fontSize: '1rem', fontWeight: '800', marginBottom: '0.4rem' }}>Todavía no has financiado ningún equipo</div>
-          <p style={{ fontSize: '0.85rem', color: '#8FA3CC', lineHeight: 1.6 }}>
-            Cuando financias un equipo, la máquina queda a tu nombre hasta que se recupera el capital.
-            Ves la producción reportada y los abonos en tiempo real.
-          </p>
-          <a href="/directorio-inversion" style={s.btn}>Ver oportunidades</a>
-        </div>
+        <EmptyState
+          style={s.card}
+          icon="📈"
+          titulo="Todavía no has financiado ningún equipo"
+          descripcion="Cuando financias un equipo, la máquina queda a tu nombre hasta que se recupera el capital. Ves la producción reportada y los abonos en tiempo real."
+          accion={<a href="/directorio-inversion" style={s.btn}>Ver oportunidades</a>}
+        />
       </div></div>
     )
   }
