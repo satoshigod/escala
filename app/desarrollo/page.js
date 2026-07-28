@@ -543,6 +543,16 @@ const LECCIONES = [
     estado: 'abierto',
     mitigacion: 'Sin mitigar. La causa raiz es que no existe verificacion de runtime automatica: hoy depende de que un humano abra el sitio y revise la consola, y en la practica eso no pasa tras cada deploy (este bug se detecto porque un usuario entro al workspace, no por una prueba). Pendiente: suite de smoke tests (Playwright/headless) que cargue dashboard, workspace y las paginas principales, verifique que no hay errores en consola y que las APIs clave responden 200, ejecutada automaticamente en cada deploy. Es transversal: cualquier proyecto de este tipo la necesita desde el inicio.',
   },
+  {
+    id: 'L17',
+    categoria: 'Refactor',
+    correcciones: 0,
+    titulo: 'Un refactor se mide por su objetivo, no por dejar cero coincidencias',
+    caso: 'C0.5 (unificar tarjetas, badges y estados vacios en componentes) parecia incompleto porque quedaban decenas de archivos con borderRadius de 12px o 20px sin migrar. Al revisarlos uno por uno, casi ninguno era el patron: eran botones (que un componente de solo-lectura habria roto), contenedores con layout propio, tags de hero con color de marca, feature cards de landings (que comparten SU PROPIO sistema de estilos, no el del producto) y CTAs de seccion. El grep por valor de estilo encuentra coincidencias, no el patron. Perseguir el 100% literal habria significado romper funcionalidad y mezclar la identidad visual del marketing con la del producto.',
+    regla: 'El criterio para dar por completo un refactor es haber cumplido su OBJETIVO (aqui: que el patron salga de un componente y no este duplicado), no que no quede ni una coincidencia textual del estilo que se estaba unificando. Buscar coincidencias sirve para encontrar candidatos, no para definir el trabajo. Cuando lo que queda son cosas distintas que comparten un numero de estilo, el refactor esta hecho; forzarlas es migrar de mas (ver L12). Y si dos familias de pantallas (ej. producto y marketing) tienen lenguajes visuales distintos, no comparten componentes: cada una tiene los suyos.',
+    estado: 'corregido',
+    mitigacion: 'C0.5 cerrado en su alcance real: 24 paginas de la app funcional migradas (toda donde vivia el patron). Las landings de marketing quedan fuera; si acumulan duplicacion entre si, pediran su propio set de componentes, separado del producto.',
+  },
 ]
 
 export default function Desarrollo() {
