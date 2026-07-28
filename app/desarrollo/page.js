@@ -481,6 +481,16 @@ const LECCIONES = [
     estado: 'abierto',
     mitigacion: 'Sin mitigar. Depende de como se pida en cada sesion.',
   },
+  {
+    id: 'L11',
+    categoria: 'Arquitectura',
+    correcciones: 0,
+    titulo: 'No definir los cimientos antes de construir encima',
+    caso: 'Las 116 paginas se construyeron copiando estilos inline (tarjetas, badges, modales, estados vacios) porque al principio no se pidio partir de componentes base ni de tokens de color. El resultado: dos disenos distintos de tarjeta conviviendo en el mismo dashboard, el color de marca hardcodeado ~1200 veces, y una deuda (C0.5/C0.9) que ahora obliga a migrar decenas de archivos uno por uno — trabajo que no habria existido si los componentes hubieran sido el punto de partida. Migrar despues es mas caro y mas riesgoso que construir bien: hay que preservar la equivalencia visual exacta en cada pantalla ya en produccion.',
+    regla: 'Antes de construir muchas pantallas, definir primero los componentes base y los tokens compartidos. El costo de establecerlos al inicio es una fraccion del costo de retrofitearlos despues. Si una decision de fundamento (componentes, tokens, nombres, esquema) no se toma explicitamente al empezar, se paga multiplicada por cada pantalla que se construyo sin ella.',
+    estado: 'en_proceso',
+    mitigacion: 'C0.5: componentes base (Card, Pill, EmptyState, Modal) creados y migrandose por tandas. TONOS centraliza la paleta como semilla de C0.9. La galeria en /qa-componentes sirve de referencia para que las pantallas nuevas partan del componente, no del copy-paste.',
+  },
 ]
 
 export default function Desarrollo() {
@@ -633,6 +643,7 @@ export default function Desarrollo() {
                 { l: 'Lecciones', v: LECCIONES.length, c: '#fff' },
                 { l: 'Corregidas', v: LECCIONES.filter(x => x.estado === 'corregido').length, c: '#1D9E75' },
                 { l: 'Mitigadas', v: LECCIONES.filter(x => x.estado === 'mitigado').length, c: '#4A90D9' },
+                { l: 'En proceso', v: LECCIONES.filter(x => x.estado === 'en_proceso').length, c: '#AFA9EC' },
                 { l: 'Abiertas', v: LECCIONES.filter(x => x.estado === 'abierto').length, c: '#E8A020' },
               ].map(k => (
                 <div key={k.l} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '10px', padding: '0.8rem' }}>
@@ -644,7 +655,7 @@ export default function Desarrollo() {
 
             {LECCIONES.map(lec => {
               const abierta = leccionAbierta === lec.id
-              const col = lec.estado === 'corregido' ? '#1D9E75' : lec.estado === 'mitigado' ? '#4A90D9' : '#E8A020'
+              const col = lec.estado === 'corregido' ? '#1D9E75' : lec.estado === 'mitigado' ? '#4A90D9' : lec.estado === 'en_proceso' ? '#AFA9EC' : '#E8A020'
               return (
                 <div key={lec.id} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: '12px', marginBottom: '0.7rem', overflow: 'hidden' }}>
                   <div onClick={() => setLeccionAbierta(abierta ? null : lec.id)} style={{ padding: '0.9rem 1.1rem', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem' }}>
@@ -652,7 +663,7 @@ export default function Desarrollo() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.25rem' }}>
                         <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#6B7280' }}>{lec.id}</span>
                         <span style={{ fontSize: '0.65rem', fontWeight: '700', padding: '0.1rem 0.5rem', borderRadius: '99px', background: 'rgba(255,255,255,0.07)', color: '#8FA3CC' }}>{lec.categoria}</span>
-                        <span style={{ fontSize: '0.65rem', fontWeight: '700', padding: '0.1rem 0.5rem', borderRadius: '99px', background: col + '22', color: col, border: `1px solid ${col}44` }}>{lec.estado}</span>
+                        <span style={{ fontSize: '0.65rem', fontWeight: '700', padding: '0.1rem 0.5rem', borderRadius: '99px', background: col + '22', color: col, border: `1px solid ${col}44` }}>{lec.estado.replace('_', ' ')}</span>
                       </div>
                       <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#fff' }}>{lec.titulo}</div>
                     </div>
