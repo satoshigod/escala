@@ -533,6 +533,16 @@ const LECCIONES = [
     estado: 'corregido',
     mitigacion: 'Roadmap de 12 capas en /desarrollo, con estado por item y dependencias explicitas. Reutilizable como plantilla para otros proyectos.',
   },
+  {
+    id: 'L16',
+    categoria: 'Verificacion',
+    correcciones: 0,
+    titulo: 'Que compile no significa que funcione',
+    caso: 'El workspace dejo de abrir en produccion (This page couldnt load, luego spinner infinito). El build pasaba sin un solo error. Eran tres bugs que el compilador no puede ver: (1) una const usada antes de declararse (esEscenarioEquipos se usaba en la linea 440 pero se declaraba en la 648 -> ReferenceError en ejecucion por la temporal dead zone); (2) una variable inexistente por un renombrado incompleto (proyData donde la real era proy); (3) un query a la base ambiguo (join a perfiles cuando la tabla tenia DOS claves foraneas hacia perfiles -> 500 solo al ejecutarse contra datos reales). Los tres compilan perfecto: el primero y el segundo solo fallan cuando el navegador ejecuta el componente, el tercero solo cuando la API corre contra la base.',
+    regla: 'Verificar que compila (L1) es necesario pero no suficiente. Hacen falta dos verificaciones mas que el build no cubre: abrir la pagina en el navegador y mirar la consola (atrapa los ReferenceError y errores de runtime), y ejercitar las APIs contra datos reales (atrapa errores de query, relaciones ambiguas y constraints). Los errores de orden de declaracion y de relaciones de datos NO los detecta el compilador; solo aparecen en ejecucion.',
+    estado: 'abierto',
+    mitigacion: 'Sin mitigar de raiz: falta una prueba de humo que cargue las paginas criticas en un navegador headless y golpee las APIs principales tras cada deploy. Por ahora se depende de abrir el sitio y revisar consola manualmente.',
+  },
 ]
 
 export default function Desarrollo() {
