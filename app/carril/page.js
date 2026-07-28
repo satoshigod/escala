@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { EmptyState } from '@/components/base'
 
 const FORMAS = {
   cash: { label: 'Cash', desc: 'Pago en efectivo, inmediato', color: '#1D9E75' },
@@ -110,12 +111,13 @@ export default function Carril() {
         </div>
 
         {postulaciones.length === 0 ? (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📋</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin postulaciones aceptadas</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Aquí confirmas si cada especialista de tus proyectos cumplió su trabajo y decides cómo pagarle.</div>
-            <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+            icon="📋"
+            titulo="Sin postulaciones aceptadas"
+            descripcion="Aquí confirmas si cada especialista de tus proyectos cumplió su trabajo y decides cómo pagarle."
+            accion={<a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Ver proyectos →</a>}
+          />
         ) : (
           <div style={{display:'flex',flexDirection:'column',gap:'1rem'}}>
             {postulaciones.map(p => {

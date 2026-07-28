@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { Card, EmptyState } from '@/components/base'
 
 const tiposAporte = [
   { id: 'horas', label: '⏱️ Horas de trabajo', desc: 'Tiempo dedicado al proyecto' },
@@ -167,18 +168,18 @@ export default function Aportes() {
         )}
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
-          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
+          <Card tono="neutro" padding="1.25rem" style={{background:'rgba(255,255,255,0.05)'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff',lineHeight:'1'}}>${totalMios.toLocaleString()}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Mis aportes totales</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
+          </Card>
+          <Card tono="neutro" padding="1.25rem" style={{background:'rgba(255,255,255,0.05)'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75',lineHeight:'1'}}>${totalAportes.toLocaleString()}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Total del proyecto</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
+          </Card>
+          <Card tono="neutro" padding="1.25rem" style={{background:'rgba(255,255,255,0.05)'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020',lineHeight:'1'}}>{misAportes.length}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Mis aportes registrados</div>
-          </div>
+          </Card>
         </div>
 
         {vista === 'nuevo' && (
@@ -249,12 +250,13 @@ export default function Aportes() {
         )}
 
         {aportes.length === 0 ? (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📊</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin aportes registrados</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Registra tu primer aporte para que quede en el expediente del proyecto.</div>
-            <button onClick={() => setVista('nuevo')} style={{background:'#1D9E75',color:'#fff',border:'none',padding:'0.75rem 1.5rem',borderRadius:'8px',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>+ Registrar aporte</button>
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+            icon="📊"
+            titulo="Sin aportes registrados"
+            descripcion="Registra tu primer aporte para que quede en el expediente del proyecto."
+            accion={<button onClick={() => setVista('nuevo')} style={{background:'#1D9E75',color:'#fff',border:'none',padding:'0.75rem 1.5rem',borderRadius:'8px',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>+ Registrar aporte</button>}
+          />
         ) : (
           <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
             {aportes.map(a => (
