@@ -8,8 +8,10 @@ import { useState } from 'react'
 
 // ============================================================
 // DEFINICION DE CAPAS ESTRATEGICAS
-// Estas capas son permanentes. Todo el desarrollo de Escala
-// para los proximos 10 anos cabe dentro de estas 10 capas.
+// Estas capas son permanentes y TRANSVERSALES: son la guia master
+// para CUALQUIER proyecto, no solo Escala. Todo el desarrollo cabe
+// dentro de estas capas; si algo no cabe, es senal de una capa nueva.
+// (Ver leccion L15: el mapa de capas es reutilizable como plantilla.)
 // ============================================================
 
 const CAPAS = [
@@ -491,6 +493,46 @@ const LECCIONES = [
     estado: 'en_proceso',
     mitigacion: 'C0.5: componentes base (Card, Pill, EmptyState, Modal) creados y migrandose por tandas. TONOS centraliza la paleta como semilla de C0.9. La galeria en /qa-componentes sirve de referencia para que las pantallas nuevas partan del componente, no del copy-paste.',
   },
+  {
+    id: 'L12',
+    categoria: 'Refactor',
+    correcciones: 0,
+    titulo: 'Migrar por deteccion superficial produce falsos positivos',
+    caso: 'Al migrar los patrones inline a componentes, un censo por valor de estilo (buscar todo lo que tuviera borderRadius 20px como "badge", o 12px como "tarjeta") mezclo cosas distintas: los 11 "badges" de perfil/editar eran en realidad botones toggle con onClick — reemplazarlos por el componente Pill (un span sin interaccion) habria roto la funcionalidad. Lo mismo con estados vacios de una sola linea (distintos de los de bloque) y con el modulo financiero, que tiene estetica propia deliberada y no debia heredar el estilo del dashboard. El valor de estilo no determina la semantica: dos elementos con el mismo borderRadius pueden ser un badge, un boton o un contenedor.',
+    regla: 'En un refactor masivo, el criterio de reemplazo es la semantica (que ES el elemento y que hace), no una coincidencia de estilo. Revisar cada candidato antes de migrarlo: un patron visual compartido no implica un rol compartido. Cuando un caso es ambiguo o pertenece a un modulo con identidad propia, dejarlo — no migrar de mas es preferible a romper algo que ya funcionaba.',
+    estado: 'en_proceso',
+    mitigacion: 'C0.5 se migra archivo por archivo revisando el contexto de cada candidato, no por reemplazo automatico. Los falsos positivos (toggles, empty states de una linea, modulo financiero) se dejan intactos de forma explicita.',
+  },
+  {
+    id: 'L13',
+    categoria: 'Metodo',
+    correcciones: 0,
+    titulo: 'Un archivo maestro de contexto que sobreviva a la sesion',
+    caso: 'El asistente no recuerda nada entre sesiones: cada una empieza con la maquina en blanco. Sin un documento unico que concentre que es el proyecto, sus IDs, su estado y sus reglas, cada sesion vuelve a redescubrir el sistema leyendo codigo — y redescubrir mal es lo que produce los bugs por suposicion. En Escala se creo ESCALA_MASTER_CONTEXT.md como fuente de verdad primaria; el plan de desarrollo en base de datos habia quedado desactualizado (decia 39 paginas cuando habia 116, decia que faltaba correr el motor financiero cuando ya estaba corrido), y solo se detecto al contrastar contra la realidad.',
+    regla: 'Todo proyecto arranca con un unico archivo maestro de contexto versionado en el repo: que es, para quien, stack, IDs de infraestructura, estado actual, reglas que no se rompen y convenciones que ya costaron bugs. Es lo primero que se lee cada sesion y lo primero que se actualiza al terminar una fase. Si hay dos fuentes de verdad, declarar cual manda. Un contexto que no se mantiene es peor que no tenerlo, porque se confia en el.',
+    estado: 'corregido',
+    mitigacion: 'ESCALA_MASTER_CONTEXT.md como fuente primaria. El plan de desarrollo se sincronizo contra la realidad verificada (116 paginas, 45 tablas, motor financiero corrido).',
+  },
+  {
+    id: 'L14',
+    categoria: 'Metodo',
+    correcciones: 0,
+    titulo: 'Conectar las herramientas reales desde el dia 1',
+    caso: 'Durante semanas se trabajo solo con el codigo, sin ver la base ni poder desplegar directo. Al conectar Supabase por MCP aparecieron 7 bugs en una hora que ninguna lectura de codigo mostraba. La maquina de trabajo ademas se resetea entre sesiones: sin GitHub conectado no hay forma de traer el codigo ni de guardar el avance, y el token de acceso hay que reponerlo cada sesion y limpiarlo del remote despues de usar (por higiene, nunca dejarlo escrito en la config de git).',
+    regla: 'Conectar desde el primer dia las tres piezas que cierran el ciclo: el repositorio (traer y guardar codigo), la base de datos (verificar el estado real en vez de asumirlo) y el deploy (ver el resultado en produccion). Lo que no se puede verificar se asume, y las suposiciones se pagan. Los secretos (tokens, llaves) se usan y se limpian: nunca quedan escritos en configuracion versionada, y se rotan si se exponen.',
+    estado: 'corregido',
+    mitigacion: 'Conector Supabase (execute_sql/apply_migration) y GitHub activos. Protocolo de PAT: inyectar en el remote solo para el push, limpiar a HTTPS inmediatamente despues.',
+  },
+  {
+    id: 'L15',
+    categoria: 'Metodo',
+    correcciones: 0,
+    titulo: 'Un plan de desarrollo estructurado, no una lista de tareas suelta',
+    caso: 'Escala organizo todo su desarrollo en 12 capas permanentes (de la salud tecnica del sistema hasta la campana de adquisicion), donde cada funcionalidad nueva tiene que ubicarse en una capa; si no cabe en ninguna, es senal de que falta una capa. Eso convirtio cientos de tareas dispersas en una estructura donde se ve que esta hecho, que falta, que depende de que y que no toca hacer todavia (optimizar rendimiento sin trafico real, por ejemplo). La misma estructura de capas sirve para cualquier proyecto: no son especificas de Escala, son el mapa de en que orden madura un producto.',
+    regla: 'El desarrollo se organiza en capas estables de proposito (cimientos tecnicos, infraestructura, producto central, y las que sigan segun el proyecto), no en una lista plana de tareas. Cada tarea se ubica en su capa; lo que no cabe revela una capa faltante. La estructura hace visibles las dependencias y el orden de madurez, y evita construir capas altas sobre cimientos que aun no existen. Este mapa de capas es transversal: es la guia master con la que arranca cualquier proyecto nuevo.',
+    estado: 'corregido',
+    mitigacion: 'Roadmap de 12 capas en /desarrollo, con estado por item y dependencias explicitas. Reutilizable como plantilla para otros proyectos.',
+  },
 ]
 
 export default function Desarrollo() {
@@ -520,7 +562,7 @@ export default function Desarrollo() {
           <div>
             <div style={{ fontSize: '0.7rem', fontWeight: '700', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#1D9E75', marginBottom: '0.5rem' }}>Escala Network</div>
             <h1 style={{ fontSize: 'clamp(1.5rem,4vw,2.5rem)', fontWeight: '900', color: '#fff', letterSpacing: '-0.03em', marginBottom: '0.5rem' }}>Roadmap Estrategico</h1>
-            <p style={{ fontSize: '0.82rem', color: '#8FA3CC', maxWidth: '500px', lineHeight: '1.6' }}>10 capas permanentes. Cualquier funcionalidad nueva — hoy o en 10 anos — pertenece a una de estas capas.</p>
+            <p style={{ fontSize: '0.82rem', color: '#8FA3CC', maxWidth: '560px', lineHeight: '1.6' }}>12 capas permanentes y transversales. Son la guia master para cualquier proyecto, no solo Escala: cualquier funcionalidad nueva pertenece a una de estas capas, y lo que no cabe revela una capa nueva.</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
             <a href="/dashboard" style={{ fontSize: '0.75rem', color: '#1D9E75', textDecoration: 'none' }}>← Dashboard</a>
