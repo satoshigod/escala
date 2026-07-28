@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../../../lib/supabase'
+import { EmptyState } from '../../../../../components/base'
 
 const estadoConfig = {
   pendiente: { label: 'Pendiente', color: '#8FA3CC', bg: 'rgba(143,163,204,0.1)', icon: 'o' },
@@ -665,18 +666,13 @@ export default function Tareas() {
         )}
 
         {tareasFiltradas.length === 0 && tareas.length === 0 ? (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>&#x1F4CB;</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.4rem'}}>Sin tareas todavia</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>
-              {esFundador||esGerente ? 'Carga la plantilla de tareas para cada rol del equipo o crea tareas manualmente.' : 'El fundador asignara tareas a tu rol proximamente.'}
-            </div>
-            {(esFundador||esGerente) && (
-              <button onClick={()=>setMostrarInicializar(true)} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.75rem 1.5rem',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>
-                Cargar plantilla de rol
-              </button>
-            )}
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px'}}
+            icon="📋"
+            titulo="Sin tareas todavia"
+            descripcion={esFundador||esGerente ? 'Carga la plantilla de tareas para cada rol del equipo o crea tareas manualmente.' : 'El fundador asignara tareas a tu rol proximamente.'}
+            accion={(esFundador||esGerente) ? <button onClick={()=>setMostrarInicializar(true)} style={{background:'#E8A020',color:'#fff',border:'none',borderRadius:'8px',padding:'0.75rem 1.5rem',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>Cargar plantilla de rol</button> : null}
+          />
         ) : tareasFiltradas.length === 0 ? (
           <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.1)',borderRadius:'12px',padding:'2rem',textAlign:'center',color:'#8FA3CC',fontSize:'0.85rem'}}>
             No hay tareas con ese filtro.{' '}
