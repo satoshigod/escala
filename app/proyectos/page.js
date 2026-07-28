@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { Pill, EmptyState } from '@/components/base'
 
 // ── WIZARD LOCAL COMERCIAL ────────────────────────────────────────────────────
 function WizardLocalComercial({ onCancelar, onPublicar }) {
@@ -964,12 +965,13 @@ export default function Proyectos() {
             </div>
 
             {proyectos.length === 0 ? (
-              <div style={s.empty}>
-                <div style={s.emptyIcon}>🚀</div>
-                <div style={s.emptyTitle}>Sé el primero en publicar</div>
-                <div style={s.emptyDesc}>Aún no hay proyectos en Escala. Publica el tuyo y empieza a formar el equipo.</div>
-                <button style={s.btnNew} onClick={() => setVista('nuevo')}>+ Publicar mi proyecto</button>
-              </div>
+              <EmptyState
+                style={s.empty}
+                icon="🚀"
+                titulo="Sé el primero en publicar"
+                descripcion="Aún no hay proyectos en Escala. Publica el tuyo y empieza a formar el equipo."
+                accion={<button style={s.btnNew} onClick={() => setVista('nuevo')}>+ Publicar mi proyecto</button>}
+              />
             ) : (
               <div style={s.grid}>
                 {proyectos.map(p => (
@@ -982,7 +984,7 @@ export default function Proyectos() {
                     <div style={s.cardBody}>
                       <div style={s.cardDesc}>{p.descripcion}</div>
                       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:'0.5rem'}}>
-                        <span style={s.cardBadge}>● {p.estado}</span>
+                        <Pill tono="verde">● {p.estado}</Pill>
                         {p.fundador_id === usuario?.id && !proyectosConEquipo[p.id] && (
                           confirmarEliminar === p.id ? (
                             <div style={{display:'flex',gap:'0.4rem',alignItems:'center'}}>
