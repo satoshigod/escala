@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { EmptyState } from '@/components/base'
 
 export default function Hitos() {
   const [usuario, setUsuario] = useState(null)
@@ -112,12 +113,13 @@ export default function Hitos() {
         )}
 
         {proyectos.length === 0 ? (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🎯</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>No tienes proyectos publicados</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Solo el fundador puede crear metas.</div>
-            <a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Metas</a><a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a>
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+            icon="🎯"
+            titulo="No tienes proyectos publicados"
+            descripcion="Solo el fundador puede crear metas."
+            accion={<><a href="/hitos" style={{color:"#8FA3CC",fontSize:"0.82rem",textDecoration:"none"}}>Metas</a><a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Publicar proyecto →</a></>}
+          />
         ) : (
           <>
             {vista === 'nuevo' && (
@@ -142,12 +144,13 @@ export default function Hitos() {
             )}
 
             {hitos.length === 0 && vista === 'lista' ? (
-              <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-                <div style={{fontSize:'2rem',marginBottom:'1rem'}}>🎯</div>
-                <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin metas todavía</div>
-                <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Las metas marcan el avance del proyecto. Crea la primera.</div>
-                <button onClick={() => setVista('nuevo')} style={{background:'#1D9E75',color:'#fff',border:'none',padding:'0.75rem 1.5rem',borderRadius:'8px',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>+ Crear primera meta</button>
-              </div>
+              <EmptyState
+                style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+                icon="🎯"
+                titulo="Sin metas todavía"
+                descripcion="Las metas marcan el avance del proyecto. Crea la primera."
+                accion={<button onClick={() => setVista('nuevo')} style={{background:'#1D9E75',color:'#fff',border:'none',padding:'0.75rem 1.5rem',borderRadius:'8px',fontSize:'0.875rem',fontWeight:'700',cursor:'pointer',fontFamily:'Inter,sans-serif'}}>+ Crear primera meta</button>}
+              />
             ) : (
               <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>
                 {hitos.map((h, i) => (
