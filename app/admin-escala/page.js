@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { Card } from '../../components/base'
 
 const ROLES = ['Abogado','Contador','Desarrollador Full-Stack','Gerente de Proyecto','Diseñador','Community Manager','Inversionista inicial']
 const BANDERAS = { 'Colombia':'🇨🇴','México':'🇲🇽','Perú':'🇵🇪','Chile':'🇨🇱','Argentina':'🇦🇷','España':'🇪🇸','Estados Unidos':'🇺🇸' }
@@ -321,38 +322,38 @@ export default function AdminEscala() {
             </div>
 
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+              <Card tono="neutro" padding="1.25rem">
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>{perfiles.length}</div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Usuarios registrados</div>
-              </div>
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+              </Card>
+              <Card tono="neutro" padding="1.25rem">
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#1D9E75'}}>{proyectos.length}</div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Proyectos activos</div>
-              </div>
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+              </Card>
+              <Card tono="neutro" padding="1.25rem">
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>
                   {perfiles.length > 0 ? Math.round(perfiles.reduce((s,p)=>s+(p.escala_score||0),0)/perfiles.length) : 0}
                 </div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Reputación promedio de la red</div>
-              </div>
-              <div style={{background: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? 'rgba(232,160,32,0.1)' : 'rgba(255,255,255,0.04)', border: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? '1px solid rgba(232,160,32,0.3)' : '1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+              </Card>
+              <Card tono={paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? 'naranja' : 'neutro'} padding="1.25rem">
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color: paises.filter(p=>!p.tareas||p.tareas.length===0).length>0 ? '#E8A020' : '#fff'}}>
                   {paises.filter(p=>!p.tareas||p.tareas.length===0).length}
                 </div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Países pendientes de configurar</div>
-              </div>
-              <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.25rem'}}>
+              </Card>
+              <Card tono="neutro" padding="1.25rem">
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#fff'}}>{(categoriasDB||[]).length}</div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Categorías de tareas</div>
                 {(categoriasDB||[]).filter(c => c.creado_por).length > 0 && (
                   <div style={{fontSize:'0.65rem',color:'#1D9E75',marginTop:'0.4rem'}}>+{(categoriasDB||[]).filter(c => c.creado_por).length} creadas por usuarios</div>
                 )}
-              </div>
-              <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.25)',borderRadius:'12px',padding:'1.25rem'}}>
+              </Card>
+              <Card tono="lila" padding="1.25rem" style={{border:'1px solid rgba(175,169,236,0.25)'}}>
                 <div style={{fontFamily:'monospace',fontSize:'1.6rem',fontWeight:'700',color:'#AFA9EC'}}>3%</div>
                 <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Comision Escala activa</div>
                 <div style={{fontSize:'0.65rem',color:'#AFA9EC',marginTop:'0.4rem'}}>Sobre cada pago en el motor financiero</div>
-              </div>
+              </Card>
             </div>
 
             <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:'1rem'}}>

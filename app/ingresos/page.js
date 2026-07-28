@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { EmptyState } from '@/components/base'
 
 const TIPOS = {
   venta: { label: 'Venta', color: '#1D9E75' },
@@ -106,12 +107,13 @@ export default function Ingresos() {
         </div>
 
         {proyectos.length === 0 ? (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px',padding:'3rem',textAlign:'center'}}>
-            <div style={{fontSize:'2rem',marginBottom:'1rem'}}>📊</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.5rem'}}>Sin proyectos activos</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.85rem',marginBottom:'1.5rem'}}>Crea un proyecto para empezar a registrar sus ingresos.</div>
-            <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Crear proyecto →</a>
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px dashed rgba(255,255,255,0.12)',borderRadius:'12px'}}
+            icon="📊"
+            titulo="Sin proyectos activos"
+            descripcion="Crea un proyecto para empezar a registrar sus ingresos."
+            accion={<a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700'}}>Crear proyecto →</a>}
+          />
         ) : (
           <div style={{display:'grid',gridTemplateColumns:'1fr 340px',gap:'1.5rem',alignItems:'start'}}>
 

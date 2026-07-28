@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { Card } from '../../components/base'
 
 const fases = [
   {
@@ -108,22 +109,22 @@ export default function Comercial() {
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'1rem',marginBottom:'2rem'}}>
-          <div style={{background:'rgba(29,158,117,0.1)',border:'1px solid rgba(29,158,117,0.25)',borderRadius:'12px',padding:'1.25rem'}}>
+          <Card tono="verde" padding="1.25rem">
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalHecho)}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Valor comercial ya construido</div>
-          </div>
-          <div style={{background:'rgba(232,160,32,0.1)',border:'1px solid rgba(232,160,32,0.25)',borderRadius:'12px',padding:'1.25rem'}}>
+          </Card>
+          <Card tono="naranja" padding="1.25rem">
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalPendiente)}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Pendiente por ejecutar</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
+          </Card>
+          <Card tono="neutro" padding="1.25rem" style={{background:'rgba(255,255,255,0.05)'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff',lineHeight:'1',marginBottom:'0.3rem'}}>{fmt(totalPlataforma)}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Valor total del plan comercial</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.25rem'}}>
+          </Card>
+          <Card tono="neutro" padding="1.25rem" style={{background:'rgba(255,255,255,0.05)'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC',lineHeight:'1',marginBottom:'0.3rem'}}>{pct}%</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC'}}>Porcentaje completado</div>
-          </div>
+          </Card>
         </div>
 
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1rem 1.25rem',marginBottom:'2rem'}}>
