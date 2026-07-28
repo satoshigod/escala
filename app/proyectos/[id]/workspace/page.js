@@ -432,6 +432,8 @@ export default function Workspace() {
 
   // Detectar qué tiene el proyecto para adaptar el nav
   const esLocalComercial = proyecto?.escenario === 'local_comercial'
+  const esEscenarioEquipos = proyecto?.escenario === 'maquinaria'
+  const esEscenarioLocal = proyecto?.escenario === 'local_comercial'
 
   // Helpers para navegar al tab correcto segun escenario
   // En local y equipos no existe el tab 'roles' ni 'presupuesto' como tal
@@ -644,9 +646,6 @@ export default function Workspace() {
       <a href="/proyectos" style={{background:'#1D9E75',color:'#fff',padding:'0.75rem 1.5rem',borderRadius:'8px',textDecoration:'none',fontSize:'0.875rem',fontWeight:'700',marginTop:'0.5rem'}}>Ver proyectos →</a>
     </div>
   )
-
-  const esEscenarioEquipos = proyecto?.escenario === 'maquinaria'
-  const esEscenarioLocal = proyecto?.escenario === 'local_comercial'
 
   // Tour para FUNDADORES — diferente segun escenario
   const TOUR_PASOS_FUNDADOR = esEscenarioEquipos ? [
