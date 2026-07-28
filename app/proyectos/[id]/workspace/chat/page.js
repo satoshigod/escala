@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../../../../lib/supabase'
+import { EmptyState } from '../../../../../components/base'
 
 export default function Chat() {
   const [usuario, setUsuario] = useState(null)
@@ -183,11 +184,12 @@ export default function Chat() {
       {/* MENSAJES */}
       <div style={{flex:1,overflowY:'auto',padding:'1.5rem',display:'flex',flexDirection:'column',gap:'0.25rem'}}>
         {mensajes.length === 0 && (
-          <div style={{textAlign:'center',color:'#8FA3CC',fontSize:'0.85rem',margin:'auto',padding:'2rem'}}>
-            <div style={{fontSize:'2rem',marginBottom:'0.75rem'}}>💬</div>
-            <div style={{fontWeight:'600',color:'#fff',marginBottom:'0.3rem'}}>Bienvenidos al chat del equipo</div>
-            <div>Este es el espacio de comunicación para {proyecto?.nombre}. Solo los miembros aceptados pueden escribir aquí.</div>
-          </div>
+          <EmptyState
+            style={{margin:'auto'}}
+            icon="💬"
+            titulo="Bienvenidos al chat del equipo"
+            descripcion={`Este es el espacio de comunicación para ${proyecto?.nombre || ''}. Solo los miembros aceptados pueden escribir aquí.`}
+          />
         )}
 
         {mensajes.map((m, i) => {

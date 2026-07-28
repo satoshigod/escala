@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '../../../../../lib/supabase'
+import { Card } from '../../../../../components/base'
 
 const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
 
@@ -120,18 +121,18 @@ export default function CapitalWorkspacePage() {
 
         {/* Wallet del proyecto */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '0.75rem', marginBottom: '1.5rem' }}>
-          <div style={{ background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '12px', padding: '1.1rem', textAlign: 'center' }}>
+          <Card tono="verde" padding="1.1rem" style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#1D9E75' }}>${fmt(totalAcreditado)}</div>
             <div style={{ fontSize: '0.7rem', color: '#8FA3CC', marginTop: '3px' }}>Capital disponible</div>
-          </div>
-          <div style={{ background: 'rgba(232,160,32,0.08)', border: '1px solid rgba(232,160,32,0.2)', borderRadius: '12px', padding: '1.1rem', textAlign: 'center' }}>
+          </Card>
+          <Card tono="naranja" padding="1.1rem" style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#E8A020' }}>${fmt(totalComprometido)}</div>
             <div style={{ fontSize: '0.7rem', color: '#8FA3CC', marginTop: '3px' }}>En proceso de financiamiento</div>
-          </div>
-          <div style={{ background: 'rgba(74,144,217,0.08)', border: '1px solid rgba(74,144,217,0.2)', borderRadius: '12px', padding: '1.1rem', textAlign: 'center' }}>
+          </Card>
+          <Card tono="azul" padding="1.1rem" style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '1.4rem', fontWeight: '800', color: '#4A90D9' }}>{fondeos.filter(f => f.estado === 'verificado').length}</div>
             <div style={{ fontSize: '0.7rem', color: '#8FA3CC', marginTop: '3px' }}>Inversiones activas</div>
-          </div>
+          </Card>
         </div>
 
         {mensaje && (

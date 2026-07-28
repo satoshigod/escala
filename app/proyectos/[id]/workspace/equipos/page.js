@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '../../../../../lib/supabase'
+import { EmptyState } from '../../../../../components/base'
 
 const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
 const fmtK = (n) => {
@@ -132,16 +133,13 @@ export default function ReporteEquiposPage() {
         <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#fff' }}>Reporte mensual</div>
         <div />
       </nav>
-      <div style={{ ...s.wrap, textAlign: 'center', paddingTop: '4rem' }}>
-        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📄</div>
-        <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.5rem' }}>No tienes un contrato de leasing activo</div>
-        <div style={{ fontSize: '0.82rem', color: '#8FA3CC', marginBottom: '1.5rem' }}>
-          Primero firma el contrato de leasing con tu angel inversionista.
-        </div>
-        <a href={'/proyectos/' + id + '/workspace/leasing'} style={{ background: '#AFA9EC', color: '#2D2866', borderRadius: '10px', padding: '0.75rem 1.5rem', textDecoration: 'none', fontSize: '0.88rem', fontWeight: '700' }}>
-          Ir al contrato de leasing →
-        </a>
-      </div>
+      <EmptyState
+        style={{ ...s.wrap, paddingTop: '4rem' }}
+        icon="📄"
+        titulo="No tienes un contrato de leasing activo"
+        descripcion="Primero firma el contrato de leasing con tu angel inversionista."
+        accion={<a href={'/proyectos/' + id + '/workspace/leasing'} style={{ background: '#AFA9EC', color: '#2D2866', borderRadius: '10px', padding: '0.75rem 1.5rem', textDecoration: 'none', fontSize: '0.88rem', fontWeight: '700' }}>Ir al contrato de leasing →</a>}
+      />
     </div>
   )
 

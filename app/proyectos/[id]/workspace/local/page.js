@@ -5,6 +5,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '../../../../../lib/supabase'
+import { EmptyState } from '../../../../../components/base'
 
 const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
 
@@ -364,11 +365,12 @@ export default function PanelLocalComercial() {
             </button>
           </div>
         ) : yaReportoHoy && !resultado ? (
-          <div style={{ ...s.card, textAlign: 'center', padding: '2rem' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>✅</div>
-            <div style={{ fontSize: '0.95rem', fontWeight: '700', color: '#fff', marginBottom: '0.4rem' }}>Ya reportaste las ventas de hoy</div>
-            <div style={{ fontSize: '0.8rem', color: '#8FA3CC' }}>Vuelve manana para reportar el siguiente dia.</div>
-          </div>
+          <EmptyState
+            style={{ ...s.card }}
+            icon="✅"
+            titulo="Ya reportaste las ventas de hoy"
+            descripcion="Vuelve manana para reportar el siguiente dia."
+          />
         ) : null}
 
         {/* Link al panel del inversionista */}
@@ -468,11 +470,12 @@ export default function PanelLocalComercial() {
         )}
 
         {local && local.fase_actual === 'libre' && (
-          <div style={{ ...s.card, background: 'rgba(29,158,117,0.06)', borderColor: 'rgba(29,158,117,0.3)', textAlign: 'center', padding: '2rem' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>🎉</div>
-            <div style={{ fontSize: '1rem', fontWeight: '700', color: '#1D9E75', marginBottom: '0.4rem' }}>Estas en Fase 3 — Libre</div>
-            <div style={{ fontSize: '0.82rem', color: '#8FA3CC' }}>Terminaste de pagar al inversionista. El negocio es tuyo completamente.</div>
-          </div>
+          <EmptyState
+            style={{ ...s.card, background: 'rgba(29,158,117,0.06)', borderColor: 'rgba(29,158,117,0.3)' }}
+            icon="🎉"
+            titulo={<span style={{ color: '#1D9E75' }}>Estas en Fase 3 — Libre</span>}
+            descripcion="Terminaste de pagar al inversionista. El negocio es tuyo completamente."
+          />
         )}
 
         {/* Historial de ultimos 30 dias */}
