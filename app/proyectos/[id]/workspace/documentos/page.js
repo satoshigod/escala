@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../../../lib/supabase'
+import { EmptyState } from '../../../../../components/base'
 
 function getProyectoIdFromPath() {
   const parts = window.location.pathname.split('/').filter(Boolean)
@@ -102,11 +103,12 @@ export default function Documentos() {
         </div>
 
         {categorias.length === 0 && (
-          <div style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'12px',padding:'2rem',textAlign:'center'}}>
-            <div style={{fontSize:'1.75rem',marginBottom:'0.5rem'}}>📁</div>
-            <div style={{color:'#fff',fontWeight:'700',marginBottom:'0.3rem'}}>Todavía no hay documentos</div>
-            <div style={{color:'#8FA3CC',fontSize:'0.82rem'}}>Cuando alguien adjunte un archivo en la conversación de una tarea (en la pestaña Tareas), va a aparecer aquí, organizado automáticamente.</div>
-          </div>
+          <EmptyState
+            style={{background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:'12px'}}
+            icon="📁"
+            titulo="Todavía no hay documentos"
+            descripcion="Cuando alguien adjunte un archivo en la conversación de una tarea (en la pestaña Tareas), va a aparecer aquí, organizado automáticamente."
+          />
         )}
 
         <div style={{display:'flex',flexDirection:'column',gap:'0.75rem'}}>

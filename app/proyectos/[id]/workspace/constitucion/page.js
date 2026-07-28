@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../../../lib/supabase'
+import { Pill } from '../../../../../components/base'
 
 const ROL_ABOGADO = ['abogado', 'legal', 'jurídico']
 const ROL_CONTADOR = ['contador', 'contable', 'contabilidad', 'tributario']
@@ -205,9 +206,9 @@ export default function Constitucion({ params }) {
         <a href="/dashboard" style={{textDecoration:'none',display:'flex',alignItems:'center'}}><img src="/brand/isotipo.svg" alt="Escala" width="26" height="26" style={{display:"inline-block",verticalAlign:"middle",marginRight:"6px"}}/><span style={{fontSize:'1.1rem',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em'}}>Esca<span style={{color:'#1D9E75'}}>la</span></span></a>
         <div style={{display:'flex',gap:'1rem',alignItems:'center'}}>
           <span style={{fontSize:'0.8rem',color:'#8FA3CC'}}>{proyecto?.nombre}</span>
-          <span style={{fontSize:'0.68rem',fontWeight:'700',padding:'3px 10px',borderRadius:'20px',background: proyecto?.estado_financiacion==='con_recursos'?'rgba(29,158,117,0.15)':'rgba(232,160,32,0.15)',color: proyecto?.estado_financiacion==='con_recursos'?'#1D9E75':'#E8A020'}}>
+          <Pill tono={proyecto?.estado_financiacion==='con_recursos'?'verde':'naranja'} style={{fontSize:'0.68rem',padding:'3px 10px'}}>
             {proyecto?.estado_financiacion==='con_recursos'?'Con recursos':'Riesgo compartido'}
-          </span>
+          </Pill>
           <a href={proyectoId ? '/proyectos/'+proyectoId+'/workspace' : '/proyectos'} style={{color:'#8FA3CC',fontSize:'0.78rem',textDecoration:'none'}}>← Workspace</a>
         </div>
       </nav>
@@ -240,9 +241,9 @@ export default function Constitucion({ params }) {
                 {contrato ? 'Contrato de prestación de servicios' : 'Contrato pendiente de generación'}
               </div>
               {contrato && (
-                <span style={{fontSize:'0.65rem',fontWeight:'700',padding:'3px 10px',borderRadius:'20px',background: contrato.estado==='vigente'?'rgba(29,158,117,0.15)':contrato.estado==='firmado_parcial'?'rgba(232,160,32,0.15)':'rgba(255,255,255,0.08)',color: contrato.estado==='vigente'?'#1D9E75':contrato.estado==='firmado_parcial'?'#E8A020':'#8FA3CC'}}>
+                <Pill tono={contrato.estado==='vigente'?'verde':contrato.estado==='firmado_parcial'?'naranja':'neutro'} style={{fontSize:'0.65rem',padding:'3px 10px'}}>
                   {contrato.estado==='vigente'?'✓ Vigente':contrato.estado==='firmado_parcial'?'Firma parcial':'Pendiente de firma'}
-                </span>
+                </Pill>
               )}
             </div>
 
