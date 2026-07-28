@@ -30,6 +30,7 @@ export const TONOS = {
   verde:   { rgb: '29,158,117',  hex: '#1D9E75' }, // marca principal
   naranja: { rgb: '232,160,32',  hex: '#E8A020' }, // finanzas / alerta suave
   morado:  { rgb: '83,74,183',   hex: '#534AB7' }, // inversión / destacado
+  lila:    { rgb: '175,169,236', hex: '#AFA9EC' }, // inversión clara / ángel
   azul:    { rgb: '74,144,217',  hex: '#4A90D9' }, // local comercial / info
   rojo:    { rgb: '224,85,85',   hex: '#E05555' }, // error / destructivo
   neutro:  { rgb: '255,255,255', hex: '#C8D4E8' }, // superficie sin tono
@@ -66,8 +67,8 @@ export function Card({
   const esNeutro = nombreTono === 'neutro'
 
   const estilo = {
-    background: esNeutro ? 'rgba(255,255,255,0.04)' : `rgba(${t.rgb},0.06)`,
-    border: `1px solid ${esNeutro ? 'rgba(255,255,255,0.08)' : `rgba(${t.rgb},0.18)`}`,
+    background: esNeutro ? 'rgba(255,255,255,0.04)' : `rgba(${t.rgb},0.08)`,
+    border: `1px solid ${esNeutro ? 'rgba(255,255,255,0.1)' : `rgba(${t.rgb},0.2)`}`,
     borderRadius: '12px',
     padding,
     ...(onClick || href ? { cursor: 'pointer', transition: 'all 0.15s' } : {}),

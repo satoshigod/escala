@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../../lib/supabase'
+import { Card, Pill, EmptyState } from '../../../../components/base'
 
 function descargarContratoPDF(texto, nombreArchivo) {
   if (typeof window === 'undefined') return
@@ -1027,22 +1028,22 @@ export default function Workspace() {
               <div>
                 {/* LOCAL COMERCIAL — ventas, deuda, proximo pago */}
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:'0.875rem',marginBottom:'1.25rem'}}>
-                  <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  <Card tono="verde" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#1D9E75'}}>${Math.round(parseFloat(localData.capital_pagado||0)).toLocaleString('es-CO')}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Pagado al angel</div>
-                  </div>
-                  <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  </Card>
+                  <Card tono="naranja" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#E8A020'}}>${Math.round(parseFloat(localData.capital_total||0)-parseFloat(localData.capital_pagado||0)).toLocaleString('es-CO')}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Saldo pendiente</div>
-                  </div>
-                  <div style={{background:'rgba(74,144,217,0.08)',border:'1px solid rgba(74,144,217,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  </Card>
+                  <Card tono="azul" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#4A90D9'}}>{Math.round((parseFloat(localData.capital_pagado||0)/parseFloat(localData.capital_total||1))*100)}%</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Completado</div>
-                  </div>
-                  <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  </Card>
+                  <Card tono="neutro" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.1rem',fontWeight:'700',color:'#fff',textTransform:'capitalize'}}>{localData.fase_actual === 'repago' ? 'Pagando capital' : localData.fase_actual === 'regalia' ? 'Pagando retorno' : 'Negocio libre'}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Fase actual</div>
-                  </div>
+                  </Card>
                 </div>
                 {/* Barra de progreso */}
                 <div style={{height:'6px',background:'rgba(255,255,255,0.06)',borderRadius:'3px',overflow:'hidden',marginBottom:'1.25rem'}}>
@@ -1057,22 +1058,22 @@ export default function Workspace() {
               <div>
                 {/* EQUIPOS — items fondeados vs sin fondear */}
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:'0.875rem',marginBottom:'1.25rem'}}>
-                  <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  <Card tono="verde" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{presupuestoItems.filter(i=>i.estado_fondeo==='fondeado').length}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Items financiados</div>
-                  </div>
-                  <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  </Card>
+                  <Card tono="naranja" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{presupuestoItems.filter(i=>i.estado_fondeo!=='fondeado').length}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Sin financiar</div>
-                  </div>
-                  <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  </Card>
+                  <Card tono="lila" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#AFA9EC'}}>${Math.round(presupuestoItems.reduce((s,i)=>s+parseFloat(i.monto_fondeado||0),0)).toLocaleString('es-CO')}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Capital recibido</div>
-                  </div>
-                  <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                  </Card>
+                  <Card tono="neutro" padding="1.1rem" style={{textAlign:'center'}}>
                     <div style={{fontFamily:'monospace',fontSize:'1.3rem',fontWeight:'700',color:'#fff'}}>${Math.round(presupuestoItems.reduce((s,i)=>s+parseFloat(i.valor_total||0)-parseFloat(i.monto_fondeado||0),0)).toLocaleString('es-CO')}</div>
                     <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Falta conseguir</div>
-                  </div>
+                  </Card>
                 </div>
 
                 {/* CTAs de acción para equipos */}
@@ -1096,22 +1097,22 @@ export default function Workspace() {
               </div>
             ) : (
               <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:'1rem',marginBottom:'1.5rem'}}>
-                <div style={{background:'rgba(29,158,117,0.08)',border:'1px solid rgba(29,158,117,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                <Card tono="verde" padding="1.1rem" style={{textAlign:'center'}}>
                   <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{hitosCompletados}</div>
                   <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Metas completadas</div>
-                </div>
-                <div style={{background:'rgba(232,160,32,0.08)',border:'1px solid rgba(232,160,32,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                </Card>
+                <Card tono="naranja" padding="1.1rem" style={{textAlign:'center'}}>
                   <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{hitosPendientes}</div>
                   <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Metas pendientes</div>
-                </div>
-                <div style={{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                </Card>
+                <Card tono="neutro" padding="1.1rem" style={{textAlign:'center',background:'rgba(255,255,255,0.05)'}}>
                   <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff'}}>{equipo.length + 1}</div>
                   <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Miembros del equipo</div>
-                </div>
-                <div style={{background:'rgba(175,169,236,0.08)',border:'1px solid rgba(175,169,236,0.2)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+                </Card>
+                <Card tono="lila" padding="1.1rem" style={{textAlign:'center'}}>
                   <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>${totalAportes.toLocaleString()}</div>
                   <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Total aportado</div>
-                </div>
+                </Card>
               </div>
             )}
 
@@ -1269,9 +1270,9 @@ export default function Workspace() {
               <div style={{background: miContrato ? 'rgba(175,169,236,0.06)' : 'rgba(255,255,255,0.03)', border:`1px solid ${miContrato?.estado==='vigente'?'rgba(29,158,117,0.3)':'rgba(175,169,236,0.2)'}`,borderRadius:'12px',padding:'1.25rem',marginBottom:'1rem'}}>
                 <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'0.75rem'}}>
                   <div style={{fontSize:'0.82rem',fontWeight:'700',color:'#fff'}}>📄 Contrato de prestación de servicios</div>
-                  {miContrato && <span style={{fontSize:'0.65rem',fontWeight:'700',padding:'3px 10px',borderRadius:'20px',background:miContrato.estado==='vigente'?'rgba(29,158,117,0.15)':miContrato.estado==='firmado_parcial'?'rgba(232,160,32,0.15)':'rgba(255,255,255,0.08)',color:miContrato.estado==='vigente'?'#1D9E75':miContrato.estado==='firmado_parcial'?'#E8A020':'#8FA3CC'}}>
+                  {miContrato && <Pill tono={miContrato.estado==='vigente'?'verde':miContrato.estado==='firmado_parcial'?'naranja':'neutro'} style={{fontSize:'0.65rem',padding:'3px 10px'}}>
                     {miContrato.estado==='vigente'?'✓ Vigente':miContrato.estado==='firmado_parcial'?'Firma parcial':'Pendiente de firma'}
-                  </span>}
+                  </Pill>}
                 </div>
                 {miContrato ? (<>
                   <div style={{fontSize:'0.75rem',color:'#8FA3CC',marginBottom:'0.875rem',lineHeight:'1.5'}}>
