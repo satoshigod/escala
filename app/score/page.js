@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { Card } from '@/components/base'
 
 export default function Score() {
   const [usuario, setUsuario] = useState(null)
@@ -128,22 +129,22 @@ export default function Score() {
         </div>
 
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:'1rem',marginBottom:'2rem'}}>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          <Card tono="neutro" padding="1.1rem" style={{textAlign:'center'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#1D9E75'}}>{aceptadas}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Postulaciones aceptadas</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          </Card>
+          <Card tono="neutro" padding="1.1rem" style={{textAlign:'center'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#E8A020'}}>{pendientes}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Postulaciones pendientes</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          </Card>
+          <Card tono="neutro" padding="1.1rem" style={{textAlign:'center'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#AFA9EC'}}>{perfil?.proyectos_completados || 0}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Proyectos completados</div>
-          </div>
-          <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.1rem',textAlign:'center'}}>
+          </Card>
+          <Card tono="neutro" padding="1.1rem" style={{textAlign:'center'}}>
             <div style={{fontFamily:'monospace',fontSize:'1.4rem',fontWeight:'700',color:'#fff'}}>{postulaciones.length}</div>
             <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.3rem'}}>Total postulaciones</div>
-          </div>
+          </Card>
         </div>
 
         <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',padding:'1.5rem',marginBottom:'2rem'}}>
