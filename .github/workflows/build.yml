@@ -23,6 +23,11 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Tests unitarios (logica financiera)
+        # Puros, sin base ni credenciales. Si el waterfall, la doble partida o
+        # las transiciones de custodia se rompen, falla aqui antes de compilar.
+        run: npm run test:unit
+
       - name: Compilar
         run: npm run build
         env:
