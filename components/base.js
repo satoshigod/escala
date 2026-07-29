@@ -22,30 +22,12 @@
 //   <Modal abierto={x} onCerrar={() => setX(false)} titulo="Confirmar">contenido</Modal>
 
 import { useEffect } from 'react'
+import { TONOS, COLORES } from '../lib/tokens'
 
-// ---------------------------------------------------------------------------
-// Paleta de marca — fuente única de verdad para color (semilla de C0.9)
-// ---------------------------------------------------------------------------
-export const TONOS = {
-  verde:   { rgb: '29,158,117',  hex: '#1D9E75' }, // marca principal
-  naranja: { rgb: '232,160,32',  hex: '#E8A020' }, // finanzas / alerta suave
-  morado:  { rgb: '83,74,183',   hex: '#534AB7' }, // inversión / destacado
-  lila:    { rgb: '175,169,236', hex: '#AFA9EC' }, // inversión clara / ángel
-  azul:    { rgb: '74,144,217',  hex: '#4A90D9' }, // local comercial / info
-  rojo:    { rgb: '224,85,85',   hex: '#E05555' }, // error / destructivo
-  neutro:  { rgb: '255,255,255', hex: '#C8D4E8' }, // superficie sin tono
-}
-
-export const COLORES = {
-  textoPrimario:   '#fff',
-  textoSecundario: '#8FA3CC',
-  textoTerciario:  '#6B7280',
-  fondoPanel:      '#15234a',
-  fondoProfundo:   '#0D1B3E',
-  borde:           'rgba(255,255,255,0.12)',
-  bordeSutil:      'rgba(255,255,255,0.08)',
-  fuente:          'Inter, sans-serif',
-}
+// TONOS y COLORES ahora viven en lib/tokens.js (fuente unica de verdad — C0.9).
+// Se re-exportan aqui para no romper los imports existentes que los toman de este
+// archivo. El codigo nuevo puede importar de '@/lib/tokens' directamente.
+export { TONOS, COLORES }
 
 function tono(nombre) {
   return TONOS[nombre] || TONOS.neutro
