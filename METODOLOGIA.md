@@ -174,6 +174,15 @@ consistente.
 
 ### Método de trabajo
 
+**El entregable de un "proyecto" es una app en el stack establecido, no HTML suelto ni un
+prototipo.** Cuando alguien pide "construir un proyecto" o "una app", el formato del
+entregable es una aplicación real en el stack que el ecosistema ya usa (aquí: Next.js con
+App Router, sobre Supabase, desplegada en Vercel), no un conjunto de archivos HTML sueltos.
+Antes de escribir una sola línea, leer cómo está construido el proyecto de referencia —su
+`package.json`, su estructura `app/`, sus `lib/`, cómo conecta auth y datos— y replicar esa
+arquitectura. Empezar con el formato equivocado obliga a rehacer todo y deja a quien pidió
+el trabajo sin saber qué se construyó.
+
 **Un archivo maestro de contexto que sobreviva a la sesión.** Todo proyecto arranca con un
 único archivo, versionado en el repo, que concentra: qué es, para quién, el stack, los IDs
 de infraestructura, el estado actual, las reglas que no se rompen y las convenciones que
