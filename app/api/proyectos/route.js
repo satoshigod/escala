@@ -1,4 +1,4 @@
-import { notificar } from '../../../lib/notificaciones/notificar'
+import { notificar, avisarAdmin } from '../../../lib/notificaciones/notificar'
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 const BASE_URL = 'https://escala.network'
@@ -45,10 +45,21 @@ export async function POST(request) {
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
+  const { data: fundador } = await supabase.from('perfiles').select('nombre, email').eq('id', fundador_id).single()
+
+  // Avisar al admin de todo proyecto nuevo, también en borrador: un borrador que nunca
+  // se publica es un fundador al que hay que llamar.
+  await avisarAdmin('admin_proyecto_nuevo', {
+    proyecto_nombre: data.nombre,
+    proyecto_id: data.id,
+    fundador_nombre: fundador?.nombre,
+    lugar: [data.ciudad, data.pais].filter(Boolean).join(', '),
+    estado: data.estado,
+  }, { actorId: fundador_id })
+
   // Notificar al fundador — solo si quedó publicado (no en borrador)
   if (data.estado !== 'borrador') {
     try {
-      const { data: fundador } = await supabase.from('perfiles').select('nombre, email').eq('id', fundador_id).single()
       if (fundador?.email) {
         await notificar('proyecto_publicado', { id: fundador_id, email: fundador.email }, {
           fundador_nombre: fundador.nombre,
@@ -103,12 +114,16 @@ export async function PATCH(request) {
     const dest = { id: fundador_id, email: fundador?.email, nombre: fundador?.nombre }
 
     if (estado === 'completado' && proyecto.estado !== 'completado') {
-      // Notificar a todo el equipo
-      const { data: miembros } = await supabase
+      // Notificar a todo el equipo — solo las postulaciones aceptadas en roles de ESTE
+      // proyecto (antes tomaba las aceptadas de todos los proyectos de Escala)
+      const { data: rolesProyecto } = await supabase.from('roles').select('id').eq('proyecto_id', id)
+      const rolIds = (rolesProyecto || []).map(r => r.id)
+      const { data: miembros } = rolIds.length ? await supabase
         .from('postulaciones')
         .select('postulante_id, perfiles!postulaciones_postulante_id_fkey(id, email, nombre)')
         .eq('estado', 'aceptada')
-      
+        .in('rol_id', rolIds) : { data: [] }
+
       const todos = [dest, ...(miembros || []).map(m => m.perfiles).filter(p => p?.email && p.id !== fundador_id)]
       await Promise.allSettled(todos.map(d =>
         notificar('proyecto_completado', d, { proyecto_nombre: data.nombre, proyecto_id: id })
@@ -128,6 +143,12 @@ export async function PATCH(request) {
         proyecto_id: id,
         proyecto_url: BASE_URL + '/proyectos/' + id,
       }).catch(() => {})
+
+      await avisarAdmin('admin_proyecto_publicado', {
+        proyecto_nombre: data.nombre,
+        proyecto_id: id,
+        fundador_nombre: fundador?.nombre,
+      }, { actorId: fundador_id })
 
     } else if (Object.keys(updates).some(k => k !== 'estado')) {
       // Actualización de datos — notificar solo al fundador

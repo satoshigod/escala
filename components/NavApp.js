@@ -34,7 +34,7 @@ export default function NavApp({ paginaActual }) {
       const { count } = await supabase
         .from('notificaciones')
         .select('id', { count: 'exact', head: true })
-        .eq('usuario_id', user.id)
+        .eq('destinatario_id', user.id) // la columna es destinatario_id; con usuario_id daba 400 y el contador nunca aparecía
         .eq('leido', false)
       setNotifCount(count || 0)
 

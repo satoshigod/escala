@@ -40,10 +40,13 @@ export default function Registro() {
     if (error) {
       setMensaje('Error: ' + error.message)
     } else if (data.session && data.user) {
+      // keepalive: la redirección de abajo no debe cancelar esta llamada (correo de
+      // verificación + aviso al admin del usuario nuevo)
       fetch('/api/verificar-correo', {
         method: 'POST',
+        keepalive: true,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: data.user.id, email, nombre })
+        body: JSON.stringify({ id: data.user.id, email, nombre, registro: true, intent: intent || null })
       }).catch(() => {})
       window.location.href = intent ? `/onboarding?intent=${intent}` : '/onboarding'
     } else {

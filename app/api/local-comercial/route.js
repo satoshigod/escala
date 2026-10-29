@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
+import { avisarAdmin } from '@/lib/notificaciones/notificar'
 
 export async function POST(req) {
   try {
@@ -87,6 +88,15 @@ export async function POST(req) {
       await supabase.from('proyectos').delete().eq('id', proyecto.id)
       throw localError
     }
+
+    const { data: fundador } = await supabase.from('perfiles').select('nombre').eq('id', user.id).maybeSingle()
+    await avisarAdmin('admin_proyecto_nuevo', {
+      proyecto_nombre: proyecto.nombre,
+      proyecto_id: proyecto.id,
+      fundador_nombre: fundador?.nombre,
+      lugar: ciudad,
+      estado: proyecto.estado,
+    }, { actorId: user.id })
 
     return NextResponse.json({
       ok: true,
