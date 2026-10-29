@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { EmptyState } from '../../components/base'
+import { rolLabel, formatoCapital, buscaInversion } from '../../lib/roles'
 
 const COLOR_RGB = {
   '#1D9E75': '29,158,117',
@@ -316,6 +317,11 @@ export default function Dashboard() {
   const rolActivo = postulacionActiva?.roles?.nombre || null
   const postAceptadas = misPostulaciones.filter(p => p.estado === 'aceptada').length
   const recibidasPendientes = postulacionesRecibidas.filter(p => p.estado === 'pendiente').length
+  // Proyectos activos de otros que piden inversionista (vista de inversionista). Antes solo
+  // existía el directorio de ítems de presupuesto, que los proyectos nuevos no cargan.
+  const proyectosBuscanCapital = todosProyectos.filter(p =>
+    p.estado === 'activo' && p.fundador_id !== usuario?.id && buscaInversion(p)
+  )
 
   if (cargando) return (
     <div style={{minHeight:'100vh',background:'#0D1B3E',display:'flex',alignItems:'center',justifyContent:'center',color:'#8FA3CC',fontFamily:'Inter,sans-serif'}}>
@@ -330,7 +336,7 @@ export default function Dashboard() {
   const acciones = [
     ...(primerProyectoFundado ? [{ icon: '🧩', label: 'Publicar rol', href: '/proyectos/'+primerProyectoFundado.id+'/workspace?tab=roles' }] : []),
     ...(accFundador ? [
-      { icon: '🚀', label: 'Crear proyecto', href: '/proyectos' },
+      { icon: '🚀', label: 'Crear proyecto', href: '/proyectos?nuevo=1' },
       { icon: '🔍', label: 'Buscar especialista', href: '/directorio' },
       { icon: '📈', label: 'Registrar ingreso', href: '/ingresos' },
       { icon: '🎯', label: 'Crear meta financiable', href: '/hitos' },
@@ -343,7 +349,7 @@ export default function Dashboard() {
     ...(accColaborador ? [
       { icon: '🔍', label: 'Buscar proyectos', href: '/buscar' },
       { icon: '📋', label: 'Mis postulaciones', href: '/postulaciones' },
-      { icon: '👤', label: 'Mi perfil', href: '/perfil' },
+      { icon: '👤', label: 'Mi perfil', href: usuario ? '/perfil/' + usuario.id : '/perfil/editar' }, // /perfil sola da 404
     ] : []),
     // Pagas o cobras por custodia: visible para cualquiera que tenga movimiento
     { icon: '🔒', label: 'Custodia y pagos', href: '/custodia' },
@@ -351,25 +357,49 @@ export default function Dashboard() {
     ...(accInversionista ? [{ icon: '🔧', label: 'Mi cartera de equipos', href: '/mi-cartera' }] : []),
     ...(accColaborador || accFundador ? [{ icon: '⚙️', label: 'Mi equipo en leasing', href: '/mi-equipo' }] : []),
     ...(perfil?.es_admin ? [
+      { icon: '📲', label: 'Seguimiento por WhatsApp', href: '/admin/seguimiento' },
       { icon: '🛠️', label: 'Admin Escala', href: '/admin-escala' },
       { icon: '📋', label: 'Programa 10 Máquinas', href: '/admin/programa' },
     ] : []),
   ]
 
   // ── TOUR DE PRIMEROS PASOS ────────────────────────────────────────────
-  const esFundadorTour = misProyectos.length > 0 || ['ideador','capitalista','empresa'].includes(perfil?.rol_principal)
+  // Cada rol recibe su propio tour. Antes inversionistas y empresas recibían el de fundador
+  // ("Eres fundador — crea tu proyecto"), que no es lo que vinieron a hacer.
+  const esInversionistaTour = misProyectos.length === 0 && ['capitalista','angel'].includes(perfil?.rol_principal)
+  const esFundadorTour = !esInversionistaTour && (misProyectos.length > 0 || ['ideador','empresa'].includes(perfil?.rol_principal))
+  const primerNombre = perfil?.nombre?.split(' ')[0] || 'bienvenido'
 
-  const TOUR_INICIO_PASOS = esFundadorTour ? [
+  const TOUR_INICIO_PASOS = esInversionistaTour ? [
     {
-      titulo: '👋 Hola, ' + (perfil?.nombre?.split(' ')[0] || 'bienvenido') + '!',
-      texto: 'Bienvenido a Escala. Eres fundador — aquí puedes crear tu proyecto, armar un equipo y hacer crecer tu empresa sin necesitar capital inicial para contratar.',
+      titulo: '👋 Hola, ' + primerNombre + '!',
+      texto: 'Bienvenido a Escala. Aquí ves negocios reales que buscan capital y eliges en cuáles participar: por participación, deuda o porcentaje de ventas.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: '💰 Proyectos que buscan inversión',
+      texto: 'En tu panel aparecen los proyectos que piden un inversionista, con dónde están y cuánto necesitan. Abre el que te interese para ver el detalle y al fundador.',
+      accion: 'Siguiente →',
+    },
+    {
+      titulo: '🤝 Cómo se invierte',
+      texto: 'Te postulas al rol de Inversionista del proyecto, conversas con el fundador y, si llegan a un acuerdo, el contrato y los pagos pasan por la custodia de Escala: el dinero nunca va directo entre las partes.',
+      accion: 'Ver los proyectos →',
+      esFinal: true,
+    },
+  ] : esFundadorTour ? [
+    {
+      titulo: '👋 Hola, ' + primerNombre + '!',
+      texto: perfil?.rol_principal === 'empresa' && misProyectos.length === 0
+        ? 'Bienvenido a Escala. Tu empresa puede publicar lo que le falta — talento, capital o conocimiento — y armar el equipo para lograrlo, pagando con participación.'
+        : 'Bienvenido a Escala. Eres fundador — aquí puedes crear tu proyecto, armar un equipo y hacer crecer tu empresa sin necesitar capital inicial para contratar.',
       accion: 'Siguiente →',
     },
     {
       titulo: '🚀 Crea tu primer proyecto',
       texto: 'El primer paso es publicar tu proyecto. Cuéntale al mundo qué estás construyendo, en qué industria y qué necesitas. Aparecerás en el directorio de proyectos.',
       accion: 'Crear proyecto →',
-      href: '/proyectos',
+      href: '/proyectos?nuevo=1',
     },
     {
       titulo: '🧩 Publica roles para tu equipo',
@@ -386,12 +416,12 @@ export default function Dashboard() {
       titulo: '✅ ¡Todo listo!',
       texto: 'Ya sabes cómo funciona. Empieza publicando tu proyecto — el equipo viene solo cuando el proyecto está visible.',
       accion: 'Ir a crear proyecto →',
-      href: '/proyectos',
+      href: '/proyectos?nuevo=1',
       esFinal: true,
     },
   ] : [
     {
-      titulo: '👋 Hola, ' + (perfil?.nombre?.split(' ')[0] || 'bienvenido') + '!',
+      titulo: '👋 Hola, ' + primerNombre + '!',
       texto: 'Bienvenido a Escala. Eres especialista — aquí puedes convertir tu conocimiento y tiempo en participación real en empresas que están construyendo algo.',
       accion: 'Siguiente →',
     },
@@ -592,12 +622,12 @@ export default function Dashboard() {
               <div style={{fontSize:'clamp(1.3rem,3vw,1.8rem)',fontWeight:'900',color:'#fff',letterSpacing:'-0.03em',marginBottom:'0.25rem'}}>
                 Hola, {perfil?.nombre?.split(' ')[0] || 'bienvenido'} 👋
               </div>
-              <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{perfil?.especialidad || perfil?.rol_principal || 'Miembro de Escala'} · {perfil?.ciudad || ''}</div>
+              <div style={{fontSize:'0.82rem',color:'#8FA3CC'}}>{perfil?.especialidad || rolLabel(perfil?.rol_principal) || 'Miembro de Escala'} · {perfil?.ciudad || ''}</div>
             </div>
             {(vistaSugerida === 'gerente' || vistaSugerida === 'angel' || vistaSugerida === 'mentor' || vistaSugerida === 'empresa') && (
               <div style={{display:'flex',gap:'0.3rem',background:'rgba(255,255,255,0.04)',borderRadius:'9px',padding:'3px',border:'1px solid rgba(255,255,255,0.08)'}}>
                 {[
-                  { id: vistaSugerida, label: vistaSugerida === 'gerente' ? '👥 Gerente' : vistaSugerida === 'angel' ? '🌟 Ángel' : vistaSugerida === 'mentor' ? '🧭 Mentor' : '🏢 Empresa' },
+                  { id: vistaSugerida, label: vistaSugerida === 'gerente' ? '👥 Gerente' : vistaSugerida === 'angel' ? '💰 Inversionista' : vistaSugerida === 'mentor' ? '🧭 Mentor' : '🏢 Empresa' },
                   { id: 'resumen', label: '📋 General' },
                 ].map(v => (
                   <button key={v.id} onClick={() => setVista(v.id)} style={{background: vista===v.id ? 'rgba(255,255,255,0.1)' : 'transparent',border:'none',borderRadius:'7px',padding:'0.45rem 0.875rem',cursor:'pointer',fontFamily:'Inter,sans-serif',fontSize:'0.76rem',fontWeight: vista===v.id?'700':'400',color: vista===v.id?'#fff':'#8FA3CC'}}>
@@ -793,6 +823,27 @@ export default function Dashboard() {
                 <div style={{fontSize:'0.7rem',color:'#8FA3CC',marginTop:'0.2rem'}}>Total invertido</div>
               </div>
             </div>
+
+            <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Proyectos que buscan inversión</div>
+            {proyectosBuscanCapital.length === 0 ? (
+              <div style={{fontSize:'0.78rem',color:'#8FA3CC',marginBottom:'1.75rem'}}>Hoy no hay proyectos pidiendo inversionista.</div>
+            ) : (
+              <div style={{display:'flex',flexDirection:'column',gap:'0.6rem',marginBottom:'1.75rem'}}>
+                {proyectosBuscanCapital.slice(0, 6).map(p => (
+                  <a key={p.id} href={'/proyectos/' + p.id} style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(74,144,217,0.25)',borderRadius:'10px',padding:'1rem 1.1rem',display:'flex',justifyContent:'space-between',alignItems:'center',gap:'0.75rem',flexWrap:'wrap',textDecoration:'none'}}>
+                    <div style={{minWidth:0,flex:'1 1 240px'}}>
+                      <div style={{fontSize:'0.88rem',fontWeight:'700',color:'#fff'}}>{p.nombre}</div>
+                      <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'0.2rem'}}>{[p.sector, p.ciudad, p.pais].filter(Boolean).join(' · ')}</div>
+                      {p.descripcion && <div style={{fontSize:'0.74rem',color:'#C8D4E8',marginTop:'0.35rem',lineHeight:1.5}}>{p.descripcion.length > 140 ? p.descripcion.slice(0, 140) + '…' : p.descripcion}</div>}
+                    </div>
+                    <div style={{textAlign:'right'}}>
+                      <div style={{fontSize:'0.8rem',fontWeight:'700',color:'#4A90D9'}}>{formatoCapital(p.capital_necesario, p.pais) || 'Monto por definir'}</div>
+                      <div style={{fontSize:'0.72rem',color:'#AFA9EC',marginTop:'0.2rem'}}>Ver proyecto →</div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
 
             <div style={{fontSize:'0.78rem',fontWeight:'700',color:'#fff',marginBottom:'0.875rem'}}>Tus inversiones</div>
             {misImpulsos.length === 0 ? (

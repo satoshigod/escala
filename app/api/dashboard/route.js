@@ -180,7 +180,10 @@ export async function GET(request) {
     // Detección de qué vista mostrar — cruza rol_principal con especialidad de texto libre
     const especialidadLower = (perfil?.especialidad || '').toLowerCase()
     const esGerente = especialidadLower.includes('gerente') || especialidadLower.includes('project manager')
-    const esAngelRol = perfil?.rol_principal === 'angel' || (misImpulsos && misImpulsos.length > 0)
+    // 'capitalista' es el id interno de Inversionista que asigna el onboarding; antes solo
+    // 'angel' (que el onboarding ya no ofrece) abría esta vista y los inversionistas caían
+    // en la de especialista
+    const esAngelRol = ['angel', 'capitalista'].includes(perfil?.rol_principal) || (misImpulsos && misImpulsos.length > 0)
 
     let vistaSugerida = 'especialista'
     if (esGerente) vistaSugerida = 'gerente'

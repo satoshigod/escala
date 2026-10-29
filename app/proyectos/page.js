@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
 import { Pill, EmptyState } from '@/components/base'
+import { MONEDA_PAIS } from '../../lib/roles'
 
 // ── WIZARD LOCAL COMERCIAL ────────────────────────────────────────────────────
 function WizardLocalComercial({ onCancelar, onPublicar }) {
@@ -726,7 +727,7 @@ export default function Proyectos() {
   const [mostrarNuevoPais, setMostrarNuevoPais] = useState(false)
   const [creandoPais, setCreandoPais] = useState(false)
   const [form, setForm] = useState({
-    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', paso: 1, escenario: ''
+    nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], capital_necesario: '', mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', paso: 1, escenario: ''
   })
 
   useEffect(() => {
@@ -734,6 +735,8 @@ export default function Proyectos() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { window.location.href = '/registro?modo=login'; return }
       setUsuario(user)
+      // ?nuevo=1 (dashboard, tour y correos de activación): abrir directo el formulario
+      if (new URLSearchParams(window.location.search).get('nuevo') === '1') setVista('nuevo')
       const [pRes, paisRes] = await Promise.all([
         fetch('/api/proyectos'),
         fetch('/api/paises')
@@ -895,7 +898,7 @@ export default function Proyectos() {
       }
 
       setProyectos(p => [data.proyecto, ...p])
-      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', escenario: '' })
+      setForm({ nombre: '', descripcion: '', tipo: 'A', sector: '', ciudad: '', industria: '', pais: '', estado_financiacion: 'riesgo_compartido', nivel_avance: '', modalidad_trabajo: '', roles_buscados: [], capital_necesario: '', mostrar_guia: false, guia_que: '', guia_problema: '', guia_quien: '', escenario: '' })
       // Redirigir al workspace con flag de borrador recien creado
       window.location.href = '/proyectos/' + pid + '/workspace?nuevo=1'
     }
@@ -1358,6 +1361,15 @@ export default function Proyectos() {
                     )
                   })}
                 </div>
+                {form.roles_buscados.includes('Capitalista') && (
+                  <div style={{marginBottom:'1.5rem'}}>
+                    <label style={s.label}>¿Cuánto capital necesitas? ({MONEDA_PAIS[form.pais] || 'en la moneda de tu país'})</label>
+                    <input style={s.input} inputMode="numeric" placeholder="Ej: 20000000"
+                      value={form.capital_necesario ? Number(form.capital_necesario).toLocaleString('es-CO') : ''}
+                      onChange={e => actualizar('capital_necesario', e.target.value.replace(/\D/g, ''))} />
+                    <div style={{fontSize:'0.72rem',color:'#8FA3CC',marginTop:'-0.4rem'}}>Lo ven los inversionistas en tu proyecto. Puedes cambiarlo después.</div>
+                  </div>
+                )}
               </div>
             )}
 

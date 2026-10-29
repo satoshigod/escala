@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react'
 import NavApp from '@/components/NavApp'
 import { supabase } from '../../lib/supabase'
+import { formatoCapital } from '../../lib/roles'
 
 const fmt = (n) => Math.round(parseFloat(n || 0)).toLocaleString('es-CO')
 
@@ -38,6 +39,7 @@ const SECCIONES = [
 
 export default function DirectorioInversionPage() {
   const [items, setItems] = useState([])
+  const [proyectosCapital, setProyectosCapital] = useState([])
   const [resumen, setResumen] = useState(null)
   const [cargando, setCargando] = useState(true)
   const [filtroCategoria, setFiltroCategoria] = useState('todas')
@@ -61,7 +63,7 @@ export default function DirectorioInversionPage() {
     fetch(url)
       .then(r => r.json())
       .then(d => {
-        if (d.ok) { setItems(d.items || []); setResumen(d.resumen) }
+        if (d.ok) { setItems(d.items || []); setProyectosCapital(d.proyectos || []); setResumen(d.resumen) }
         setCargando(false)
       })
       .catch(() => setCargando(false))
@@ -75,7 +77,7 @@ export default function DirectorioInversionPage() {
     if (filtroMontoMax) url += `&monto_max=${filtroMontoMax}`
     const res = await fetch(url)
     const d = await res.json()
-    if (d.ok) { setItems(d.items || []); setResumen(d.resumen) }
+    if (d.ok) { setItems(d.items || []); setProyectosCapital(d.proyectos || []); setResumen(d.resumen) }
     setCargando(false)
   }
 
@@ -159,7 +161,7 @@ export default function DirectorioInversionPage() {
             {[
               { label: 'Oportunidades disponibles', valor: resumen.total_oportunidades, color: '#4A90D9' },
               { label: 'Capital requerido total', valor: `$${fmt(resumen.capital_requerido)}`, color: '#E8A020' },
-              { label: 'Proyectos activos', valor: new Set(items.map(i => i.proyectos?.id)).size, color: '#1D9E75' },
+              { label: 'Proyectos activos', valor: new Set([...items.map(i => i.proyectos?.id), ...proyectosCapital.map(p => p.id)].filter(Boolean)).size, color: '#1D9E75' },
             ].map(s => (
               <div key={s.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '0.875rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '1.25rem', fontWeight: '800', color: s.color, letterSpacing: '-0.02em' }}>{s.valor}</div>
@@ -187,6 +189,30 @@ export default function DirectorioInversionPage() {
           </a>
         </div>
 
+        {/* Proyectos que piden inversionista — se postula al rol de capital desde la ficha pública */}
+        {proyectosCapital.length > 0 && (
+          <div style={{ marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', marginBottom: '0.875rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: '1.1rem' }}>🚀</span>
+              <span style={{ fontSize: '0.95rem', fontWeight: '800', color: '#fff' }}>Proyectos que buscan inversionista</span>
+              <span style={{ fontSize: '0.75rem', color: '#8FA3CC' }}>{proyectosCapital.length}</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: '0.875rem' }}>
+              {proyectosCapital.map(p => (
+                <a key={p.id} href={`/proyectos/${p.id}`} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(74,144,217,0.25)', borderRadius: '12px', padding: '1.1rem', textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <div style={{ fontSize: '0.92rem', fontWeight: '800', color: '#fff' }}>{p.nombre}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#8FA3CC' }}>{[p.perfiles?.nombre, p.sector, p.ciudad, p.pais].filter(Boolean).join(' · ')}</div>
+                  {p.descripcion && <div style={{ fontSize: '0.78rem', color: '#C8D4E8', lineHeight: 1.5 }}>{p.descripcion.length > 160 ? p.descripcion.slice(0, 160) + '…' : p.descripcion}</div>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '0.4rem' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#4A90D9' }}>{formatoCapital(p.capital_necesario, p.pais) || 'Monto por definir'}</span>
+                    <span style={{ fontSize: '0.75rem', color: '#AFA9EC', fontWeight: '700' }}>Ver proyecto →</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Filtros */}
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -209,7 +235,7 @@ export default function DirectorioInversionPage() {
         {cargando ? (
           <div style={{ textAlign: 'center', padding: '3rem', color: '#8FA3CC' }}>Cargando oportunidades...</div>
         ) : items.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '3rem', color: '#6B7280' }}>No hay oportunidades disponibles con estos filtros.</div>
+          <div style={{ textAlign: 'center', padding: '3rem', color: '#6B7280' }}>No hay ítems de presupuesto por financiar con estos filtros.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {SECCIONES.filter(sec => items.some(i => (i.tipo_oportunidad || 'otros') === sec.id)).map(sec => (
@@ -271,7 +297,7 @@ export default function DirectorioInversionPage() {
                         <span style={{ fontSize: '0.75rem', color: '#6B7280' }}>¿Ya tienes cuenta? <a href="/registro?modo=login" style={{ color: '#4A90D9', textDecoration: 'none' }}>Inicia sesión</a></span>
                       </div>
                     )}
-                    <a href={`/proyectos/${item.proyectos?.id}/workspace`} style={{ fontSize: '0.78rem', color: '#8FA3CC', textDecoration: 'none' }}>
+                    <a href={`/proyectos/${item.proyectos?.id}`} style={{ fontSize: '0.78rem', color: '#8FA3CC', textDecoration: 'none' }}>
                       Ver proyecto →
                     </a>
                   </div>
@@ -289,7 +315,7 @@ export default function DirectorioInversionPage() {
           <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100, padding: '1rem' }}>
             <div style={{ background: '#0F1E3A', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '16px', padding: '1.5rem', width: '100%', maxWidth: '480px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-                <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff' }}>Fondear: {mostrarFondeo.nombre}</div>
+                <div style={{ fontSize: '1rem', fontWeight: '700', color: '#fff' }}>Financiar: {mostrarFondeo.nombre}</div>
                 <button onClick={() => { setMostrarFondeo(null); setMensaje('') }} style={{ background: 'none', border: 'none', color: '#8FA3CC', fontSize: '1.25rem', cursor: 'pointer' }}>✕</button>
               </div>
               <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', padding: '0.875rem', marginBottom: '1rem', fontSize: '0.82rem' }}>

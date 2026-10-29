@@ -1,7 +1,47 @@
 import { notificar, avisarAdmin } from '../../../lib/notificaciones/notificar'
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
+import { crearRolesDesdeBuscados } from '../../../lib/rolesProyecto'
+import { buscaInversion, formatoCapital } from '../../../lib/roles'
 
 const BASE_URL = 'https://escala.network'
+
+// Monto pedido por el fundador: entero >= 0 (null si no vino en el body)
+function montoCapital(valor) {
+  if (valor === undefined || valor === null || valor === '') return null
+  const n = Math.round(Number(String(valor).replace(/[^0-9.]/g, '')))
+  return Number.isFinite(n) && n >= 0 ? n : null
+}
+
+// Los chips "perfiles que busco" se vuelven roles abiertos (sin esto el proyecto queda
+// publicado sin nada a qué postularse). Un fallo aquí no tumba la creación del proyecto.
+async function asegurarRoles(proyecto, fundadorId) {
+  try {
+    await crearRolesDesdeBuscados(supabase, proyecto, fundadorId)
+  } catch (e) {
+    console.error('[proyectos] crear roles desde chips:', e.message)
+  }
+}
+
+// Proyecto publicado que pide inversionista → avisar a los inversionistas de Escala
+async function avisarInversionistas(proyecto, fundadorId) {
+  if (!buscaInversion(proyecto)) return
+  try {
+    const { data: inversionistas, error } = await supabase
+      .from('perfiles').select('id, email, nombre')
+      .in('rol_principal', ['capitalista', 'angel'])
+      .neq('id', fundadorId)
+    if (error) throw new Error(error.message)
+    if (!inversionistas?.length) return
+    await notificar('inversion_proyecto_nuevo', inversionistas, {
+      proyecto_nombre: proyecto.nombre,
+      proyecto_id: proyecto.id,
+      lugar: [proyecto.ciudad, proyecto.pais].filter(Boolean).join(', '),
+      monto: formatoCapital(proyecto.capital_necesario, proyecto.pais),
+    })
+  } catch (e) {
+    console.error('[proyectos] avisar inversionistas:', e.message)
+  }
+}
 
 // GET — listar proyectos activos
 export async function GET(request) {
@@ -31,7 +71,7 @@ export async function GET(request) {
 // POST — crear nuevo proyecto
 export async function POST(request) {
   const body = await request.json()
-  const { nombre, descripcion, tipo, sector, ciudad, fundador_id, industria, pais, estado, estado_financiacion, nivel_avance, modalidad_trabajo, roles_buscados } = body
+  const { nombre, descripcion, tipo, sector, ciudad, fundador_id, industria, pais, estado, estado_financiacion, nivel_avance, modalidad_trabajo, roles_buscados, capital_necesario } = body
 
   if (!nombre || !descripcion || !tipo || !fundador_id) {
     return Response.json({ error: 'Faltan campos requeridos' }, { status: 400 })
@@ -39,11 +79,13 @@ export async function POST(request) {
 
   const { data, error } = await supabase
     .from('proyectos')
-    .insert([{ nombre, descripcion, tipo, sector, ciudad, fundador_id, industria: industria || null, pais: pais || null, estado: estado || 'borrador', estado_financiacion: estado_financiacion || 'riesgo_compartido', nivel_avance: nivel_avance || null, modalidad_trabajo: modalidad_trabajo || null, roles_buscados: roles_buscados || [] }])
+    .insert([{ nombre, descripcion, tipo, sector, ciudad, fundador_id, industria: industria || null, pais: pais || null, estado: estado || 'borrador', estado_financiacion: estado_financiacion || 'riesgo_compartido', nivel_avance: nivel_avance || null, modalidad_trabajo: modalidad_trabajo || null, roles_buscados: roles_buscados || [], capital_necesario: montoCapital(capital_necesario) || 0 }])
     .select()
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  await asegurarRoles(data, fundador_id)
 
   const { data: fundador } = await supabase.from('perfiles').select('nombre, email').eq('id', fundador_id).single()
 
@@ -71,6 +113,7 @@ export async function POST(request) {
     } catch (e) {
       console.error('Error notificando proyecto publicado:', e.message)
     }
+    await avisarInversionistas(data, fundador_id)
   }
 
   return Response.json({ proyecto: data }, { status: 201 })
@@ -80,7 +123,7 @@ export async function POST(request) {
 export async function PATCH(request) {
   try {
     const body = await request.json()
-    const { id, fundador_id, estado, nombre, descripcion, sector, ciudad, pais, industria, nivel_avance, modalidad_trabajo, roles_buscados } = body
+    const { id, fundador_id, estado, nombre, descripcion, sector, ciudad, pais, industria, nivel_avance, modalidad_trabajo, roles_buscados, capital_necesario } = body
 
     if (!id || !fundador_id) return Response.json({ error: 'Faltan id y fundador_id' }, { status: 400 })
 
@@ -102,12 +145,16 @@ export async function PATCH(request) {
     if (nivel_avance) updates.nivel_avance = nivel_avance
     if (modalidad_trabajo) updates.modalidad_trabajo = modalidad_trabajo
     if (roles_buscados) updates.roles_buscados = roles_buscados
+    if (montoCapital(capital_necesario) !== null) updates.capital_necesario = montoCapital(capital_necesario)
     if (estado) updates.estado = estado
 
     const { data, error } = await supabase
       .from('proyectos').update(updates).eq('id', id).select().single()
 
     if (error) return Response.json({ error: error.message }, { status: 500 })
+
+    // Chips nuevos → roles abiertos (nunca borra los que ya existen)
+    if (roles_buscados) await asegurarRoles(data, fundador_id)
 
     // Notificar según el tipo de cambio
     const { data: fundador } = await supabase.from('perfiles').select('nombre, email').eq('id', fundador_id).single()
@@ -149,6 +196,7 @@ export async function PATCH(request) {
         proyecto_id: id,
         fundador_nombre: fundador?.nombre,
       }, { actorId: fundador_id })
+      await avisarInversionistas(data, fundador_id)
 
     } else if (Object.keys(updates).some(k => k !== 'estado')) {
       // Actualización de datos — notificar solo al fundador

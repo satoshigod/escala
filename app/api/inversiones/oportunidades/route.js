@@ -4,6 +4,7 @@
 
 import { NextResponse } from 'next/server'
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
+import { buscaInversion } from '@/lib/roles'
 
 export async function GET(req) {
   try {
@@ -93,6 +94,19 @@ export async function GET(req) {
       console.error('oportunidades locales:', e.message)
     }
 
+    // Proyectos activos que piden inversionista (chip "Inversionista" o rol abierto de capital).
+    // Antes esta página solo listaba ítems de presupuesto, que los proyectos nuevos no cargan,
+    // y ningún proyecto que buscaba capital aparecía aquí.
+    const { data: proyectosActivos, error: errProyectos } = await supabase
+      .from('proyectos')
+      .select('id, nombre, descripcion, ciudad, pais, sector, capital_necesario, roles_buscados, created_at, perfiles!proyectos_fundador_id_fkey ( nombre ), roles ( id, nombre, tipo_aporte, estado )')
+      .eq('estado', 'activo')
+      .order('created_at', { ascending: false })
+    if (errProyectos) throw errProyectos
+    const proyectosBuscanCapital = (proyectosActivos || [])
+      .filter(p => buscaInversion(p) || (p.roles || []).some(r => r.tipo_aporte === 'capital' && r.estado === 'abierto'))
+      .map(({ roles, ...p }) => ({ ...p, rol_capital: (roles || []).find(r => r.tipo_aporte === 'capital' && r.estado === 'abierto') || null }))
+
     // Resumen global
     const { data: resumen } = await supabase
       .from('presupuesto_items')
@@ -100,7 +114,7 @@ export async function GET(req) {
       .in('estado_fondeo', ['sin_fondear', 'parcialmente_fondeado'])
       .eq('es_aporte_especie', false)
 
-    const total_oportunidades = (resumen || []).length + localesComoItems.length
+    const total_oportunidades = (resumen || []).length + localesComoItems.length + proyectosBuscanCapital.length
     const capital_requerido = (resumen || []).reduce((s, i) => s + parseFloat(i.valor_total) - parseFloat(i.monto_fondeado || 0), 0) + localesComoItems.reduce((s, l) => s + l.faltante, 0)
 
     const por_categoria = {}
@@ -111,6 +125,7 @@ export async function GET(req) {
     return NextResponse.json({
       ok: true,
       items: [...localesComoItems, ...itemsConFaltante],
+      proyectos: proyectosBuscanCapital,
       // agrupadas por tipo para mostrarlas en secciones separadas
       grupos: (() => {
         const todas = [...localesComoItems, ...itemsConFaltante]

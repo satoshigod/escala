@@ -74,5 +74,5 @@ test('la plantilla genérica de admin escapa el HTML de los datos', () => {
 })
 
 test('un evento de usuario sin plantilla propia no genera correo genérico', () => {
-  assert.equal(plantillaPara('proyecto_sin_actividad', DATOS, EVENTOS.proyecto_sin_actividad), null)
+  assert.equal(plantillaPara('tarea_vencida', DATOS, EVENTOS.tarea_vencida), null)
 })

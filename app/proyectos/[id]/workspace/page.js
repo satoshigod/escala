@@ -608,7 +608,8 @@ export default function Workspace() {
     'documentos',
     ...(esFundador ? ['necesito_mas'] : []),
   ] : esFundador ? [
-    'resumen', 'equipo', 'presupuesto', 'economia', 'tareas', 'chat',
+    // 'roles' visible: antes crear un rol estaba escondido detrás de un botón
+    'resumen', 'equipo', 'roles', 'presupuesto', 'economia', 'tareas', 'chat',
     ...(esEscenarioEquipos ? ['necesito_mas'] : []),
   ] : [
     'tareas', 'resumen', 'aportes', 'economia', 'chat',

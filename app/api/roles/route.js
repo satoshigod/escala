@@ -1,4 +1,4 @@
-import { SEGMENTOS_ROLES } from '../../../lib/segmentosRoles'
+import { crearRol } from '../../../lib/rolesProyecto'
 import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 
 // GET — roles de un proyecto
@@ -44,41 +44,14 @@ export async function POST(request) {
     return Response.json({ error: 'Solo el fundador puede publicar roles' }, { status: 403 })
   }
 
-  // Crear el rol
-  const { data: rol, error } = await supabase
-    .from('roles')
-    .insert([{ proyecto_id, nombre, sub_especialidad: sub_especialidad || null, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario, estado: estado || 'abierto' }])
-    .select()
-    .single()
-
-  if (error) return Response.json({ error: error.message }, { status: 500 })
-
-  // Auto-inicializar TODAS las tareas de todos los segmentos del rol
-  const segmentosDelRol = SEGMENTOS_ROLES[nombre]
-  if (segmentosDelRol) {
-    const todasLasTareas = []
-    for (const [segmento, tareas] of Object.entries(segmentosDelRol)) {
-      for (const tarea of tareas) {
-        todasLasTareas.push({
-          proyecto_id,
-          rol_nombre: nombre,
-          asignado_a: null,
-          nombre: tarea.nombre,
-          descripcion: tarea.descripcion || '',
-          categoria: tarea.categoria || 'General',
-          estado: 'pendiente',
-          creado_por: fundador_id,
-          razon_creacion: `Tarea inicial del rol ${nombre} — ${segmento}`,
-        })
-      }
-    }
-
-    if (todasLasTareas.length > 0) {
-      await supabase.from('tareas').insert(todasLasTareas)
-    }
+  // Crear el rol + sus tareas iniciales (lib/rolesProyecto.js, compartido con la creación
+  // automática de roles al publicar un proyecto)
+  try {
+    const { rol, tareasCreadas } = await crearRol(supabase, { proyecto_id, fundador_id, nombre, sub_especialidad, descripcion, tipo_aporte, valor_mercado, modalidad, es_prioritario, estado })
+    return Response.json({ rol, tareas_creadas: tareasCreadas }, { status: 201 })
+  } catch (e) {
+    return Response.json({ error: e.message }, { status: 500 })
   }
-
-  return Response.json({ rol, tareas_creadas: segmentosDelRol ? Object.values(segmentosDelRol).flat().length : 0 }, { status: 201 })
 }
 
 // PATCH — actualizar estado de un rol
